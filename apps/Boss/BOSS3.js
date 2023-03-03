@@ -63,8 +63,8 @@ export class BOSS3 extends plugin {
     async DeleteWorldBoss(e) {
         if (e.isMaster) {
             if (await BossIsAlive()) {
-                await redis.del("Xiuxian:WorldBossStatus");
-                await redis.del("Xiuxian:PlayerRecord");
+                await redis.del("Xiuxian:WorldBossStatus3");
+                await redis.del("Xiuxian:PlayerRecord3");
                 e.reply("雷电将军挑战关闭！");
             }
             else e.reply("雷电将军未开启");
@@ -74,7 +74,7 @@ export class BOSS3 extends plugin {
     //雷电将军状态指令
     async LookUpWorldBossStatus(e) {
         if (await BossIsAlive()) {
-            let WorldBossStatusStr = await redis.get("Xiuxian:WorldBossStatus");
+            let WorldBossStatusStr = await redis.get("Xiuxian:WorldBossStatus3");
             if (WorldBossStatusStr != undefined) {
                 let WorldBossStatus = JSON.parse(WorldBossStatusStr);
                 if (WorldBossStatus != undefined) {
@@ -106,8 +106,8 @@ export class BOSS3 extends plugin {
     //雷电将军伤害贡献榜
     async ShowDamageList(e) {
         if (await BossIsAlive()) {
-            let PlayerRecord = await redis.get("Xiuxian:PlayerRecord");
-            let WorldBossStatusStr = await redis.get("Xiuxian:WorldBossStatus");
+            let PlayerRecord = await redis.get("Xiuxian:PlayerRecord3");
+            let WorldBossStatusStr = await redis.get("Xiuxian:WorldBossStatus3");
             let WorldBossStatus = JSON.parse(WorldBossStatusStr);
             if (WorldBossStatus == undefined) {
                 e.reply("WorldBossStatus Error");
@@ -202,8 +202,8 @@ export class BOSS3 extends plugin {
                 }
             }
 
-            let WorldBossStatusStr = await redis.get("Xiuxian:WorldBossStatus");
-            let PlayerRecord = await redis.get("Xiuxian:PlayerRecord");
+            let WorldBossStatusStr = await redis.get("Xiuxian:WorldBossStatus3");
+            let PlayerRecord = await redis.get("Xiuxian:PlayerRecord3");
             if (WorldBossStatusStr == undefined) {
                 e.reply("Redis WorldBossStatus Error");
                 return true;
@@ -476,9 +476,9 @@ export class BOSS3 extends plugin {
             }
             await sleep(1000);
             PlayerRecordJSON.TotalDamage[Userid] += TotalDamage;
-            redis.set("Xiuxian:PlayerRecord", JSON.stringify(PlayerRecordJSON));
+            redis.set("Xiuxian:PlayerRecord3", JSON.stringify(PlayerRecordJSON));
             await data.setData("player", e.user_id, CurrentPlayerAttributes);
-            redis.set("Xiuxian:WorldBossStatus", JSON.stringify(WorldBossStatus));
+            redis.set("Xiuxian:WorldBossStatus3", JSON.stringify(WorldBossStatus));
             //记录cd
             await redis.set("xiuxian:player:" + usr_qq + "BOSSCD", now_Time);
             if (WorldBossStatus.Health == 0) {
@@ -500,7 +500,7 @@ export class BOSS3 extends plugin {
                 action.end_time = new Date().getTime();
                 await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(action));
                 WorldBossStatus.KilledTime = new Date().getTime();
-                redis.set("Xiuxian:WorldBossStatus", JSON.stringify(WorldBossStatus));
+                redis.set("Xiuxian:WorldBossStatus3", JSON.stringify(WorldBossStatus));
                 let PlayerList = await SortPlayer(PlayerRecordJSON);
                 e.reply("正在进行存档有效性检测，如果长时间没有回复请联系主人修复存档并手动按照贡献榜发放奖励");
                 for (let i = 0; i < PlayerList.length; i++)
@@ -582,14 +582,14 @@ async function InitWorldBoss(e) {
         "Reward": Reward * 5,
     };
     let PlayerRecord = 0;
-    await redis.set("Xiuxian:WorldBossStatus", JSON.stringify(WorldBossStatus));
-    await redis.set("Xiuxian:PlayerRecord", JSON.stringify(PlayerRecord));
+    await redis.set("Xiuxian:WorldBossStatus3", JSON.stringify(WorldBossStatus));
+    await redis.set("Xiuxian:PlayerRecord3", JSON.stringify(PlayerRecord));
     return 0;
 }
 
 //获取雷电将军是否已开启
 async function BossIsAlive() {
-    return (await redis.get("Xiuxian:WorldBossStatus") && await redis.get("Xiuxian:PlayerRecord"));
+    return (await redis.get("Xiuxian:WorldBossStatus3") && await redis.get("Xiuxian:PlayerRecord3"));
 }
 
 //排序
