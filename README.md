@@ -1,4 +1,4 @@
-# 绝云间修仙V1.2.5「附魔版本」(暂停更新，详情见服主交流群)
+# 绝云间修仙V1.3「秘境版本」
 ## 玩家攻略：
 [修仙攻略](https://docs.qq.com/doc/DSUhqZWdpZXJuUndZ?&u=4bd0757f64094c48b02d7cfc4eaeb44b)  
 ## 访问量：        
@@ -7,7 +7,7 @@
 
 > Yunzai-Bot/目录下执行  
 ```
-git clone  https://gitee.com/xialuo03/DDZS-XIUXIAN-V1.2.4.git ./plugins/xiuxian-emulator-plugin/
+git clone  https://gitee.com/xialuo03/xiuxian-emulator-plugin.git ./plugins/xiuxian-emulator-plugin/
 
 ```           
 ## 转移存档            
