@@ -12,7 +12,7 @@ const __dirname = path.resolve() + path.sep + "plugins" + path.sep + "xiuxian-em
 // 文件存放路径
 export const __PATH = {
     //更新日志
-    updata_log_path: path.join(__dirname, "A版本补丁目录.txt"),
+    updata_log_path: path.join(__dirname, "补丁日志.txt"),
     //用户数据
     player_path: path.join(__dirname, "/resources/data/xiuxian_player"),
     //装备
