@@ -541,7 +541,7 @@ export async function Goweizhi(e, weizhi, addres) {
         "***" + adr + "***"
     ];
     for (let i = 0; i < weizhi.length; i++) {
-        msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "灵石：" + weizhi[i].Price + "灵石")
+        msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "所需：" + weizhi[i].Price + "灵石")
     }
     await ForwardMsg(e, msg);
 }
@@ -552,7 +552,7 @@ export async function jindi(e, weizhi, addres) {
         "***" + adr + "***"
     ];
     for (let i = 0; i < weizhi.length; i++) {
-        msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "灵石：" + weizhi[i].Price + "灵石" + "\n" + "修为：" + weizhi[i].experience + "修为")
+        msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "所需：" + weizhi[i].Price + "灵石" + "\n" + "所需：" + weizhi[i].experience + "修为")
     }
     await ForwardMsg(e, msg);
 }
