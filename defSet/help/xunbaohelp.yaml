@@ -1,0 +1,44 @@
+- group: 寻宝
+  list:
+    - icon: help-icon_14
+      title: '#单抽(寻宝常驻祈愿|寻宝活动祈愿|附魔台)'
+      desc: '需要泥土,非仙心的附魔材料在这里'
+    - icon: help-icon_14
+      title: '#十连抽(寻宝常驻祈愿|寻宝活动祈愿|附魔台)'
+      desc: '需要树苗,这里也有应该(这里有附魔台)'
+    - icon: help-icon_59
+      title: '#自选存档皮肤'
+      desc: '自选存档皮肤+皮肤编号+类型+(练气/装备)'
+    - icon: help-icon_71
+      title: '#我的饰品'
+      desc: '查看项链'
+    - icon: help-icon_70
+      title: '#幻影楼'
+      desc: '查看皮肤列表'
+    - icon: help-icon_81
+      title: '#寻宝'
+      desc: '查看寻宝列表'
+    - icon: help-icon_82
+      title: '#消耗熔炉,消耗燃料'
+      desc: '熔炉消耗一次即可,燃料更多的自己研究'
+    - icon: help-icon_83
+      title: '#服用xx'
+      desc: '服用你的食物'
+    - icon: help-icon_84
+      title: '#合成xx'
+      desc: '具体自己研究'
+    - icon: help-icon_85
+      title: '#加工xx'
+      desc: '具体自己研究'
+    - icon: help-icon_86
+      title: '#附魔'
+      desc: '附魔附魔台是抽卡,附魔书就是你得到附魔书后附魔到你的武器上'
+    - icon: help-icon_87
+      title: '#降临秘境广寒宫'
+      desc: '里面有附魔需要的一些珍稀材料'
+    - icon: help-icon_88
+      title: '#前往禁地提瓦特'
+      desc: '里面有元素附魔需要的一些珍稀材料'
+    - icon: help-icon_89
+      title: '#讨伐初夏'
+      desc: '初夏有草药盒子'
