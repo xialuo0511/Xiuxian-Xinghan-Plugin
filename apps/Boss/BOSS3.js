@@ -8,7 +8,7 @@ let WorldBOSSBattleCD = [];//CD
 let WorldBOSSBattleLock = 0;//BOSS战斗锁，防止打架频率过高造成奖励多发
 let WorldBOSSBattleUnLockTimer = 0;//防止战斗锁因意外锁死
 //处理消息
-export class BOSS extends plugin {
+export class BOSS3 extends plugin {
     constructor() {
         super({
             /** 功能名称 */
@@ -171,11 +171,12 @@ export class BOSS extends plugin {
         }
         if (await data.existData("player", e.user_id)) {
             let CurrentPlayerAttributes = await data.getData("player", e.user_id);
+            /*
             if (data.Level_list.find(item => item.level_id === CurrentPlayerAttributes.level_id).level_id < 42 && CurrentPlayerAttributes.lunhui == 0) {
                 e.reply("你在仙界吗");
                 return true;
             }
-            //if (Lilian_CD[e.user_id]) { e.reply("正在历练中"); return true; }
+            */
             let action = await redis.get("xiuxian:player:" + e.user_id + ":action");
             action = JSON.parse(action);
             if (action != null) {
@@ -289,7 +290,7 @@ export class BOSS extends plugin {
                         Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 0.3);
                     }
                     else if (Random < 0.55 && CurrentPlayerAttributes.攻击 >= 1500000) {
-                        msg.push("你的实力引起了【雷电将军】的重视，【雷电将军】开启了【护身剑罡】，导致你的攻击没有太大效果");
+                        msg.push("你的实力引起了【雷电将军】的重视，【雷电将军】开启了【护盾保护】，导致你的攻击没有太大效果");
                         Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 0.6);
                     }
                     else if (Random < 0.2 && CurrentPlayerAttributes.攻击 >= 1200000) {
@@ -297,11 +298,11 @@ export class BOSS extends plugin {
                         Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 0.5);
                     }
                     else if (Random < 0.5 && CurrentPlayerAttributes.攻击 >= 1200000) {
-                        msg.push("你的实力强大，【雷电将军】见你袭来，开启了【护身剑罡】，攻击被影响了");
+                        msg.push("你的实力强大，【雷电将军】见你袭来，开启了【护盾保护】，攻击被影响了");
                         Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 0.7);
                     }
                     else if (Random < 1 && CurrentPlayerAttributes.攻击 >= 2000000) {
-                        msg.push("你的实力强大，【雷电将军】见你袭来，开启了【护身剑罡】，攻击被影响了");
+                        msg.push("你的实力强大，【雷电将军】见你袭来，开启了【护盾保护】，攻击被影响了");
                         Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 0.5);
                     }
                     else if (Random < 0.09 && CurrentPlayerAttributes.攻击 <= 600000) {
@@ -348,7 +349,7 @@ export class BOSS extends plugin {
                         Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 3);
                     }
                     else if (Random < 0.11) {
-                        msg.push("你等了许久，终于【雷电将军】疲劳，露出了破绽，你飞杀而去，但是【雷电将军】使用了【混元】！！你的伤害被吸收了！");
+                        msg.push("你等了许久，终于【雷电将军】疲劳，露出了破绽，你飞杀而去，但是【雷电将军】使用了【创生·雷陨】！！你的伤害被吸收了！");
                         Player_To_BOSS_Damage = -250000;
                     }
                     else if (Random >= 0.95) {
@@ -360,7 +361,7 @@ export class BOSS extends plugin {
                         Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 2);
                     }
                     else if (Random >= 0.82) {
-                        msg.push("你瞄了许久，看准时机放出一道凌厉剑气，结果【雷电将军】使用了【幻剑】，你一头雾水");
+                        msg.push("你瞄了许久，看准时机放出一道凌厉剑气，结果【雷电将军】使用了【雷斩·圆轮】，你一头雾水");
                         Player_To_BOSS_Damage = 0;
                     }
                     else if (Random >= 0 && CurrentPlayerAttributes.攻击 >= 1500000) {
@@ -384,11 +385,11 @@ export class BOSS extends plugin {
                         BOSS_To_Player_Damage = 0;
                     }
                     else if (Random < 0.05) {
-                        msg.push("【雷电将军】使用了超上古功法【唱，跳，rap】你被不知名的球体差点打的形神具灭");
+                        msg.push("【雷电将军】使用了超上古功法【雷劈·一刀斩】你被一刀击杀");
                         BOSS_To_Player_Damage = 9999999999;
                     }
                     else if (CurrentPlayerAttributes.学习的功法 && CurrentPlayerAttributes.学习的功法.indexOf("八品·桃花神功") > -1 && BattleFrame == 5 && Random > 0.66) {
-                        msg.push(`${CurrentPlayerAttributes.名号} 使用了【三生桃花！】让攻击慢慢变成了漫天桃花飞舞。`);
+                        msg.push(`${CurrentPlayerAttributes.名号} 使用了【分身·残影召唤】让攻击逐渐迷惑。`);
                         BOSS_To_Player_Damage *= -0.2;
                     }
                     else if (CurrentPlayerAttributes.学习的功法 && CurrentPlayerAttributes.学习的功法.indexOf("伪九品·魔帝功") > -1 && BattleFrame == 3 && Random > 0.50) {
@@ -396,15 +397,15 @@ export class BOSS extends plugin {
                         BOSS_To_Player_Damage *= -0.1;
                     }
                     else if (Random < 0.06) {
-                        msg.push("【雷电将军】使用【流云剑法】，刚刚好你学过一门功法可以克制。");
+                        msg.push("【雷电将军】使用【雷斩·三段】，刚刚好你学过一门功法可以克制。");
                         BOSS_To_Player_Damage = Math.trunc(BOSS_To_Player_Damage * 0.3);
                     }
                     else if (Random < 0.15) {
-                        msg.push("【雷电将军】使用了绝技【开天】");
+                        msg.push("【雷电将军】使用了绝技【雷劈·蓄力一斩】");
                         BOSS_To_Player_Damage = 4000000;
                     }
                     else if (Random < 0.25) {
-                        msg.push("【雷电将军】使用了【葬天剑】，这招你感受到了恐怖的能量，不过还好速度不快，但也稍受波及。");
+                        msg.push("【雷电将军】使用了【雷劈·圆斩】，这招你感受到了恐怖的能量，不过还好速度不快，但也稍受波及。");
                         BOSS_To_Player_Damage = Math.trunc(BOSS_To_Player_Damage * 0.3);
                     }
                     else if (Random < 0.3) {
@@ -412,15 +413,15 @@ export class BOSS extends plugin {
                         BOSS_To_Player_Damage = 2500000;
                     }
                     else if (Random < 0.4) {
-                        msg.push("【雷电将军】释放技能【灭灵剑】");
+                        msg.push("【雷电将军】释放技能【雷劈·横竖斩】");
                         BOSS_To_Player_Damage = 3000000;
                     }
                     else if (Random >= 0.8) {
-                        msg.push("【雷电将军】释放技能【流云乱剑】");
+                        msg.push("【雷电将军】释放技能【召唤·冲击波】");
                         BOSS_To_Player_Damage = 20000000;
                     }
                     else if (Random >= 0.7) {
-                        msg.push("【雷电将军】释放技能【乱剑冢】");
+                        msg.push("【雷电将军】释放技能【召唤·夹击】");
                         BOSS_To_Player_Damage = 1600000;
                     }
                     else if (Random >= 0.4) {
@@ -486,11 +487,11 @@ export class BOSS extends plugin {
 
                 var a
                 var z = 1
-                var weizhi = data.sanbin
+                var weizhi = data.leidianjiangjun
                 a = Math.floor(Math.random() * (weizhi.length));
                 await Add_najie_thing(e.user_id, weizhi[a].name, weizhi[a].class, z)
 
-                e.reply([segment.at(e.user_id), "\n恭喜你亲手结果了雷电将军的性命,为民除害，额外获得100000灵石奖励！并在雷电将军身上翻到了" + weizhi[a].name + "!"]);
+                e.reply([segment.at(e.user_id), "\n恭喜你成功在梦境重演了与雷电将军的这场战斗，额外获得100000灵石奖励！并在雷电将军身上翻到了" + weizhi[a].name + "!"]);
                 CurrentPlayerAttributes.灵石 += 100000;
                 Bot.logger.mark(`[雷电将军] 结算:${e.user_id}增加奖励100000`);
                 await data.setData("player", e.user_id, CurrentPlayerAttributes);
@@ -566,7 +567,7 @@ async function InitWorldBoss(e) {
     let X = AverageDamage * 0.01;
     Bot.logger.mark(`[雷电将军] 化神玩家总数：${player_quantity}`);
     Bot.logger.mark(`[雷电将军] 生成基数:${X}`);
-    let Health = Math.trunc(X * 500 * player_quantity * 4);//血量要根据人数来
+    let Health = Math.trunc(X * 500 * player_quantity * 10);//血量要根据人数来
     let Attack = Math.trunc(X * 120);
     let Defence = Math.trunc(X);
     let Reward = Math.trunc(X * (fairyNums > 7 ? 2 : 4) * (player_quantity > 20 ? 20 : player_quantity));
