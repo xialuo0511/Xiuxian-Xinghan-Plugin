@@ -7,7 +7,7 @@
 
 > Yunzai-Bot/目录下执行  
 ```
-git clone  https://gitee.com/xialuo03/DDZS-XIUXIAN-V1.2.4.git ./plugins/xiuxian-emulator-plugin/
+git clone  https://gitee.com/xialuo03/xiuxian-emulator-plugin.git ./plugins/xiuxian-emulator-plugin/
 
 ```           
 ## 转移存档            
