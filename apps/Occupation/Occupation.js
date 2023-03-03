@@ -1126,14 +1126,14 @@ export class Occupation extends plugin {
             let B_win = `${player_B.名号}击败了${player_A.名号}`;
             if (msg.find(item => item == A_win)) {
                 player_B.魔道值 -= 50;
-                player_B.灵石 -= 1000000;
+                player_B.灵石 -= 300000;
                 player_B.当前血量 = 0;
                 await Write_player(qq, player_B);
                 player.灵石 += action.arm[num].赏金;
                 player.魔道值 -= 5;
                 await Write_player(usr_qq, player);
                 await Add_职业经验(usr_qq, 2255);
-                last_msg += "【全服公告】" + player_B.名号 + "失去了1000000灵石,罪恶得到了洗刷,魔道值-50,无名侠客获得了部分灵石,自己的正气提升了,同时获得了更多的悬赏加成";
+                last_msg += "【全服公告】" + player_B.名号 + "失去了300000灵石,罪恶得到了洗刷,魔道值-50,无名侠客获得了部分灵石,自己的正气提升了,同时获得了更多的悬赏加成";
             }
             else if (msg.find(item => item == B_win)) {
                 var shangjing = Math.trunc(action.arm[num].赏金 * 0.5);
