@@ -126,7 +126,7 @@ export class UserHome extends plugin {
             }
         }
         //特殊兑换码调整
-        if (data.duihuan[i].name == "测试兑换码") {
+        if (data.duihuan[i].name == "1.3版本参与测试") {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
                 if (usr_qq == data.duihuan[i].qq[o].name) {
                     action.push(name);
@@ -136,11 +136,11 @@ export class UserHome extends plugin {
                         await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
                         msg.push("\n" + data.duihuan[i].thing[k].name + "x" + data.duihuan[i].thing[k].数量);
                     }
-                    e.reply("恭喜获得:" + msg);
+                    e.reply("感谢您参与测试！恭喜获得:" + msg);
                     return;
                 }
             }
-            e.reply("test" + data.duihuan[i].qq[1].name);
+            e.reply("您不是测试服成员，无法使用此兑换码");
             return;
         }
         //普通兑换流程
