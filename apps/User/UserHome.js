@@ -125,7 +125,8 @@ export class UserHome extends plugin {
                 return;
             }
         }
-        if (!qq == "") {
+        //特殊兑换码调整
+        if (data.duihuan[i].name == "测试兑换码") {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
                 if (usr_qq == data.duihuan[i].qq[o]) {
                     action.push(name);
@@ -142,6 +143,16 @@ export class UserHome extends plugin {
             e.reply("test");
             return;
         }
+        //普通兑换流程
+        action.push(name);
+        await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
+        let msg = [];
+        for (var k = 0; k < data.duihuan[i].thing.length; k++) {
+            await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
+            msg.push("\n" + data.duihuan[i].thing[k].name + "x" + data.duihuan[i].thing[k].数量);
+        }
+        e.reply("恭喜获得:" + msg);
+        return;
         
     }
 
