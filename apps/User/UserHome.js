@@ -128,7 +128,7 @@ export class UserHome extends plugin {
         //特殊兑换码调整
         if (data.duihuan[i].name == "测试兑换码") {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
-                if (usr_qq == data.duihuan[i].qq[o]) {
+                if (usr_qq == data.duihuan[i].qq[o].name) {
                     action.push(name);
                     await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
                     let msg = [];
@@ -140,7 +140,7 @@ export class UserHome extends plugin {
                     return;
                 }
             }
-            e.reply("test" + data.duihuan[i].qq[1]);
+            e.reply("test" + data.duihuan[i].qq[1].name);
             return;
         }
         //普通兑换流程
