@@ -134,7 +134,7 @@ export class UserHome extends plugin {
                     let msg = [];
                     for (var k = 0; k < data.duihuan[i].thing.length; k++) {
                         await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
-                        msg.push("\n" + data.duihuan[i].thing[k].name + "x" + data.duihuan[i].thing[k].数量);
+                        msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
                     }
                     e.reply("感谢您参与测试！恭喜获得:" + msg);
                     return;
@@ -149,7 +149,7 @@ export class UserHome extends plugin {
         let msg = [];
         for (var k = 0; k < data.duihuan[i].thing.length; k++) {
             await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
-            msg.push("\n" + data.duihuan[i].thing[k].name + "x" + data.duihuan[i].thing[k].数量);
+            msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
         }
         e.reply("恭喜获得:" + msg);
         return;
