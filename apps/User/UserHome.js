@@ -140,7 +140,7 @@ export class UserHome extends plugin {
                     return;
                 }
             }
-            e.reply("test");
+            e.reply("test" + data.duihuan[i].qq[1]);
             return;
         }
         //普通兑换流程
