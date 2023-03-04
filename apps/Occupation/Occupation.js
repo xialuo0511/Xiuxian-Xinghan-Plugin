@@ -1018,7 +1018,7 @@ export class Occupation extends plugin {
             let this_qq = File[k].replace(".json", '');
             this_qq = parseInt(this_qq);
             let players = await Read_player(this_qq);
-            if (players.魔道值 > 1200 && this_qq != usr_qq) {
+            if (players.魔道值 > 999 && this_qq != usr_qq) {
                 mubiao[i] = {
                     名号: players.名号,
                     赏金: Math.trunc(1000000 * (1.2 + 0.05 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
