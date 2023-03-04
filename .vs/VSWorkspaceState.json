@@ -1,9 +1,17 @@
 {
   "ExpandedNodes": [
-    "\\apps",
-    "\\config",
-    "\\model",
-    "\\resources"
+    "",
+    "\\apps\\Battle",
+    "\\apps\\Occupation",
+    "\\apps\\SecretPlace",
+    "\\apps\\User",
+    "\\apps\\Xijie",
+    "\\defSet",
+    "\\defSet\\help",
+    "\\resources",
+    "\\resources\\data",
+    "\\resources\\data\\item"
   ],
+  "SelectedNode": "\\defSet\\help\\help.yaml",
   "PreviewInSolutionExplorer": false
 }

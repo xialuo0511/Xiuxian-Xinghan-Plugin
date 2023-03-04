@@ -49,14 +49,13 @@
 	},
 	{
 		"name": "甜酿丹",
-		"type": "血量",
 		"materials": [
 			{
 				"name": "千年甜甜花",
 				"amount": 5
 			}
 		],
-		"rate": 0.95,
+		"rate": 1,
 		"level_limit": 0,
 		"exp": [
 			100,
