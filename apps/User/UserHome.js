@@ -125,15 +125,24 @@ export class UserHome extends plugin {
                 return;
             }
         }
-        action.push(name);
-        await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
-        let msg = [];
-        for (var k = 0; k < data.duihuan[i].thing.length; k++) {
-            await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
-            msg.push("\n" + data.duihuan[i].thing[k].name + "x" + data.duihuan[i].thing[k].数量);
+        if (!qq == "") {
+            for (var o = 0; o < data.duihuan[i].qq.length; o++) {
+                if (usr_qq == data.duihuan[i].qq[o]) {
+                    action.push(name);
+                    await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
+                    let msg = [];
+                    for (var k = 0; k < data.duihuan[i].thing.length; k++) {
+                        await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
+                        msg.push("\n" + data.duihuan[i].thing[k].name + "x" + data.duihuan[i].thing[k].数量);
+                    }
+                    e.reply("恭喜获得:" + msg);
+                    return;
+                }
+            }
+            e.reply("test");
+            return;
         }
-        e.reply("恭喜获得:" + msg);
-        return;
+        
     }
 
     async check_player(e) {
