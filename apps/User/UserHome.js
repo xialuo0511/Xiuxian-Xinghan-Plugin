@@ -125,15 +125,35 @@ export class UserHome extends plugin {
                 return;
             }
         }
+        //特殊兑换码调整
+        if (data.duihuan[i].name == "1.3版本参与测试") {
+            for (var o = 0; o < data.duihuan[i].qq.length; o++) {
+                if (usr_qq == data.duihuan[i].qq[o].name) {
+                    action.push(name);
+                    await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
+                    let msg = [];
+                    for (var k = 0; k < data.duihuan[i].thing.length; k++) {
+                        await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
+                        msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
+                    }
+                    e.reply("感谢您参与测试！恭喜获得:" + msg);
+                    return;
+                }
+            }
+            e.reply("您不是测试服成员，无法使用此兑换码");
+            return;
+        }
+        //普通兑换流程
         action.push(name);
         await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
         let msg = [];
         for (var k = 0; k < data.duihuan[i].thing.length; k++) {
             await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
-            msg.push("\n" + data.duihuan[i].thing[k].name + "x" + data.duihuan[i].thing[k].数量);
+            msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
         }
         e.reply("恭喜获得:" + msg);
         return;
+        
     }
 
     async check_player(e) {
