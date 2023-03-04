@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
-    "",
     "\\apps",
-    "\\apps\\Occupation"
+    "\\config",
+    "\\model",
+    "\\resources"
   ],
   "PreviewInSolutionExplorer": false
 }
