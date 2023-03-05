@@ -548,10 +548,6 @@ export class UserStart extends plugin {
         let Yesterday = await shijianc(nowTime - 24 * 60 * 60 * 1000);//获得昨天日期
         let Today = await shijianc(nowTime);
         let lastsign_time = await getLastsign(usr_qq);//获得上次签到日期
-        if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
-            e.reply(`今日已经签到过了`);
-            return;
-        }
         /*
         if (nowTime < 1681660800000) {
             e.reply(`活动暂未开启！`);
@@ -560,6 +556,10 @@ export class UserStart extends plugin {
         */
         if (nowTime > 1650124800000) {
             e.reply(`活动已结束！`);
+            return;
+        }
+        if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
+            e.reply(`今日已经签到过了`);
             return;
         }
         let Sign_Yesterday;        //昨日日是否签到
