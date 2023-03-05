@@ -549,10 +549,12 @@ export class UserStart extends plugin {
         let Today = await shijianc(nowTime);
         let lastsign_time = await huodonggetLastsign(usr_qq);//获得上次签到日期
 
+        /*
         if (nowTime < 1681660800000) {
             e.reply(`「七日馈赠」活动暂未开启！`);
             return;
         }
+        */
         if (nowTime > 1682524799999) {
             e.reply(`「七日馈赠」已结束！`);
             return;
