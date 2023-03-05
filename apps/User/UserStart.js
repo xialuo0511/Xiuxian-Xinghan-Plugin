@@ -552,8 +552,15 @@ export class UserStart extends plugin {
             e.reply(`今日已经签到过了`);
             return;
         }
+        /*
         if (nowTime < 1681660800000) {
             e.reply(`活动暂未开启！`);
+            return;
+        }
+        */
+        if (nowTime > 1650124800000) {
+            e.reply(`活动已结束！`);
+            return;
         }
         let Sign_Yesterday;        //昨日日是否签到
         if (Yesterday.Y == lastsign_time.Y && Yesterday.M == lastsign_time.M && Yesterday.D == lastsign_time.D) {
