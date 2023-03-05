@@ -55,6 +55,10 @@ export class UserStart extends plugin {
                 {
                     reg: '^#修仙签到$',
                     fnc: 'daily_gift'
+                },
+                {
+                    reg: '^#调试$',
+                    fnc: 'huodong_gift'
                 }
             ]
         })
@@ -518,15 +522,65 @@ export class UserStart extends plugin {
         //给奖励
         let gift_xiuwei = player.连续签到天数 * 3000;
         await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
-        await Add_najie_thing(usr_qq, "仙子邀约", "道具", 1);
-        await Add_najie_thing(usr_qq, "树脂", "道具", 180);
         await Add_修为(usr_qq, gift_xiuwei);
         let msg = [
             segment.at(usr_qq),
-            `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,秘境之匙x${this.xiuxianConfigData.Sign.ticket},仙子邀约*1,树脂*180`
+            `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,秘境之匙x${this.xiuxianConfigData.Sign.ticket}`
         ]
         e.reply(msg);
         return;
+    }
+
+    //活动
+    async huodong_gift(e) {
+        let now = new Date();
+        let nowTime = now.getTime();
+        e.reply(nowTime);
+        return;
+        /*
+        //不开放私聊功能
+        if (!e.isGroup) {
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无账号
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let now = new Date();
+        let nowTime = now.getTime(); //获取当前日期的时间戳
+        let Yesterday = await shijianc(nowTime - 24 * 60 * 60 * 1000);//获得昨天日期
+        let Today = await shijianc(nowTime);
+        let lastsign_time = await getLastsign(usr_qq);//获得上次签到日期
+        if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
+            e.reply(`今日已经签到过了`);
+            return;
+        }
+        let Sign_Yesterday;        //昨日日是否签到
+        if (Yesterday.Y == lastsign_time.Y && Yesterday.M == lastsign_time.M && Yesterday.D == lastsign_time.D) {
+            Sign_Yesterday = true;
+        } else {
+            Sign_Yesterday = false;
+        }
+        await redis.set("xiuxian:player:" + usr_qq + ":lastsign_time", nowTime);//redis设置签到时间
+        let player = await data.getData("player", usr_qq);
+        if (player.连续签到天数 == 7 || !Sign_Yesterday) {//签到连续7天或者昨天没有签到,连续签到天数清零
+            player.连续签到天数 = 0;
+        }
+        player.连续签到天数 += 1;
+        data.setData("player", usr_qq, player);
+        //给奖励
+        let gift_xiuwei = player.连续签到天数 * 3000;
+        await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
+        await Add_修为(usr_qq, gift_xiuwei);
+        let msg = [
+            segment.at(usr_qq),
+            `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,秘境之匙x${this.xiuxianConfigData.Sign.ticket}`
+        ]
+        e.reply(msg);
+        return;
+        */
     }
 }
 

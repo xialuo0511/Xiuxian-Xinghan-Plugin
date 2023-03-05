@@ -170,24 +170,6 @@ export class SecretPlace extends plugin {
             e.reply("冒险等级不足(职业等级不足)")
             return
         }
-        if (didian == '广寒宫') {
-            let number = await exist_najie_thing(usr_qq, '仙子邀约', '道具');
-            if (isNotNull(number) && number >= 1) {
-                await Add_najie_thing(usr_qq, '仙子邀约', '道具', -1);
-            } else {
-                e.reply('你没有足够数量的"仙子邀约"');
-                return;
-            }
-        }
-        if (didian == '神铸赋形') {
-            let number = await exist_najie_thing(usr_qq, '浓缩树脂', '道具');
-            if (isNotNull(number) && number >= 1) {
-                await Add_najie_thing(usr_qq, '浓缩树脂', '道具', -1);
-            } else {
-                e.reply('你没有足够数量的"浓缩树脂"');
-                return;
-            }
-        }
         if (player.occupation != "采药师" && didian == "须弥") {
             e.reply("由于没有带虚空终端，被教令院抓了起来(您不是采药师)")
             return
