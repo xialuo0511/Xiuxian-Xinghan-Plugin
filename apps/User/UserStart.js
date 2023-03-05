@@ -57,7 +57,7 @@ export class UserStart extends plugin {
                     fnc: 'daily_gift'
                 },
                 {
-                    reg: '^#调试$',
+                    reg: '^#领取七日馈赠$',
                     fnc: 'huodong_gift'
                 }
             ]
@@ -547,17 +547,17 @@ export class UserStart extends plugin {
         let nowTime = now.getTime(); //获取当前日期的时间戳
         let Yesterday = await shijianc(nowTime - 24 * 60 * 60 * 1000);//获得昨天日期
         let Today = await shijianc(nowTime);
-        let lastsign_time = await getLastsign(usr_qq);//获得上次签到日期
-        /*
+        let lastsign_time = await huodonggetLastsign(usr_qq);//获得上次签到日期
+
         if (nowTime < 1681660800000) {
-            e.reply(`活动暂未开启！`);
+            e.reply(`「七日馈赠」活动暂未开启！`);
             return;
         }
-        */
-        if (nowTime > 1650124800000) {
-            e.reply(`活动已结束！`);
+        if (nowTime > 1682524799999) {
+            e.reply(`「七日馈赠」已结束！`);
             return;
         }
+
         if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
             e.reply(`今日已经签到过了`);
             return;
@@ -568,23 +568,25 @@ export class UserStart extends plugin {
         } else {
             Sign_Yesterday = false;
         }
-        await redis.set("xiuxian:player:" + usr_qq + ":lastsign_time", nowTime);//redis设置签到时间
+        await redis.set("xiuxian:player:" + usr_qq + ":huodonglastsign_time", nowTime);//redis设置签到时间
         let player = await data.getData("player", usr_qq);
-        if (player.连续签到天数 == 7 || !Sign_Yesterday) {//签到连续7天或者昨天没有签到,连续签到天数清零
-            player.连续签到天数 = 0;
+        if (player.连续签到天数 > 7 || !Sign_Yesterday) {//签到连续7天或者昨天没有签到,连续签到天数清零
+            e.reply(`「七日馈赠」已领取完毕！`);
+            return;
         }
+
         player.连续签到天数 += 1;
         data.setData("player", usr_qq, player);
-        //给奖励
-        let gift_xiuwei = player.连续签到天数 * 3000;
-        await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
-        await Add_修为(usr_qq, gift_xiuwei);
-        let msg = [
-            segment.at(usr_qq),
-            `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,秘境之匙x${this.xiuxianConfigData.Sign.ticket}`
-        ]
-        e.reply(msg);
-        return;
+
+        if (player.连续签到天数 = 1 || !Sign_Yesterday) {
+            await Add_najie_thing(usr_qq, "2w", "道具", "+5");
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${player.连续签到天数}天馈赠成功！获得[2w]*5`
+            ]
+            e.reply(msg);
+            return;
+        }
     }
 }
 
