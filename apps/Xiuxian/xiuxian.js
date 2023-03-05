@@ -26,7 +26,7 @@ export const __PATH = {
     Exchange: path.join(__dirname, "/resources/data/Forum"),
     mingdang: path.join(__dirname, "/resources/data/mingdang"),
     mingdang_log: path.join(__dirname, "/resources/data/mingdang"),
-    shop: path.join(__dirname, "/resources/data/shop"),
+    shop: path.join(__dirname, "/resources/data/item"),
     log_path: path.join(__dirname, "/resources/data/suduku"),
     cangbaoge: path.join(__dirname, "/resources/data"),
     association: path.join(__dirname, "/resources/data/association"),
