@@ -618,7 +618,7 @@ export class UserStart extends plugin {
             return;
         }
         if (player.连续签到天数 = 6) {
-            await Add_najie_thing(usr_qq, "西游记", "功法", "1);
+            await Add_najie_thing(usr_qq, "西游记", "功法", "1");
             let msg = [
                 segment.at(usr_qq),
                 `领取第${player.连续签到天数}天馈赠成功！获得[西游记]*1`
