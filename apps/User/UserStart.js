@@ -533,11 +533,6 @@ export class UserStart extends plugin {
 
     //活动
     async huodong_gift(e) {
-        let now = new Date();
-        let nowTime = now.getTime();
-        e.reply(nowTime);
-        return;
-        /*
         //不开放私聊功能
         if (!e.isGroup) {
             return;
@@ -556,6 +551,9 @@ export class UserStart extends plugin {
         if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
             e.reply(`今日已经签到过了`);
             return;
+        }
+        if (nowTime < 1681660800000) {
+            e.reply(`活动暂未开启！`);
         }
         let Sign_Yesterday;        //昨日日是否签到
         if (Yesterday.Y == lastsign_time.Y && Yesterday.M == lastsign_time.M && Yesterday.D == lastsign_time.D) {
@@ -580,7 +578,6 @@ export class UserStart extends plugin {
         ]
         e.reply(msg);
         return;
-        */
     }
 }
 
