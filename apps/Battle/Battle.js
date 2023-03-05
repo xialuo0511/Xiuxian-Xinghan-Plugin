@@ -297,18 +297,16 @@ export class Battle extends plugin {
       }
       A_player.灵石 += lingshi;
       B_player.灵石 -= lingshi;
-      A_player.血气 += qixue;
       A_player.魔道值 += mdz;
       A_player.灵石 += mdzJL;
       await Write_player(A, A_player);
       await Write_player(B, B_player);
       final_msg.push(
-        ` 经过一番大战,${A_win},成功抢走${lingshi}灵石,${A_player.名号}获得${qixue}血气，`
+        ` 经过一番大战,${A_win},成功抢走${lingshi}灵石，`
       );
     } else if (msg.find(item => item == B_win)) {
-      if (A_player.灵石 < 30002) {
+        if (A_player.灵石 < 30002) {
         let qixue = Math.trunc(100 * now_level_idBB);
-        B_player.血气 += qixue;
         await Write_player(B, B_player);
         var time2 = 60; //时间（分钟）
         var action_time2 = 60000 * time2; //持续时间，单位毫秒
@@ -321,7 +319,7 @@ export class Battle extends plugin {
           JSON.stringify(action2)
         );
         final_msg.push(
-          `经过一番大战,${A_player.名号}被${B_player.名号}击败了,${B_player.名号}获得${qixue}血气,${A_player.名号} 真是偷鸡不成蚀把米,被关禁闭60分钟`
+          `经过一番大战,${A_player.名号}被${B_player.名号}击败了,${A_player.名号} 真是偷鸡不成蚀把米,被关禁闭60分钟`
         );
       } else {
         let lingshi = Math.trunc(A_player.灵石 / 4);
@@ -331,11 +329,10 @@ export class Battle extends plugin {
         }
         A_player.灵石 -= lingshi;
         B_player.灵石 += lingshi;
-        B_player.血气 += qixue;
         await Write_player(A, A_player);
         await Write_player(B, B_player);
         final_msg.push(
-          `经过一番大战,${A_player.名号}被${B_player.名号}击败了,${B_player.名号}获得${qixue}血气,${A_player.名号} 真是偷鸡不成蚀把米,被劫走${lingshi}灵石`
+          `经过一番大战,${A_player.名号}被${B_player.名号}击败了,${A_player.名号} 真是偷鸡不成蚀把米,被劫走${lingshi}灵石`
         );
       }
     } else {

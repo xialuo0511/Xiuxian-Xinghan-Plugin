@@ -58,9 +58,9 @@ export class qitao extends plugin {
             }
         }
         var random=Math.random()
-        if(random>0.01){
+        if(random>0.2){
             if(player.灵石>200000){
-                e.reply("给DD斩首充电，花了200000灵石")
+                e.reply("给屑洛充电，花了200000灵石")
                 await Add_灵石(usr_qq,-200000)
                 return
             }
@@ -99,7 +99,7 @@ export class qitao extends plugin {
 
         }
         var random2=Math.random2
-        if(random2>0.99){
+        if(random2>0.8){
             e.reply("水脚脚赶着去考研，飞奔而过，钱包掉落在地，正好被你捡到了")
             let thing_name="水脚脚的钱包"
             let thing_class="装备"

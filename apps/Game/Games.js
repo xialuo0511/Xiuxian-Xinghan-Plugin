@@ -724,7 +724,7 @@ export class Games extends plugin {
         //拒绝
         let couple = await redis.get('xiuxian:player:' + B + ':couple');
         if (couple != 0) {
-            e.reply('哎哟，你干嘛...');
+            e.reply('哎哟，你干嘛...(对方拒绝了双修）');
             return;
         }
         //对方游戏状态
