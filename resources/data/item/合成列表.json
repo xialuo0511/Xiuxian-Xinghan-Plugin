@@ -1,22 +1,5 @@
 [
   {
-    "name": "浓缩树脂",
-    "class": "道具",
-    "amount": 1,
-    "materials": [
-      {
-        "name": "树脂",
-        "class": "道具",
-        "amount": 40
-      },
-      {
-        "name": "晶核",
-        "class": "道具",
-        "amount": 1
-      }
-    ]
-  },
-  {
     "name": "生铁",
     "class": "材料",
     "amount": 1,

@@ -549,19 +549,17 @@ export class UserStart extends plugin {
         let Today = await shijianc(nowTime);
         let lastsign_time = await huodonggetLastsign(usr_qq);//获得上次签到日期
 
-        /*
         if (nowTime < 1681660800000) {
             e.reply(`「七日馈赠」活动暂未开启！`);
             return;
         }
-        */
         if (nowTime > 1682524799999) {
             e.reply(`「七日馈赠」已结束！`);
             return;
         }
 
         if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
-            e.reply(`今日已经签到过了`);
+            e.reply(`今日已经领取过了`);
             return;
         }
         await redis.set("xiuxian:player:" + usr_qq + ":huodonglastsign_time", nowTime);//redis设置签到时间
@@ -576,6 +574,60 @@ export class UserStart extends plugin {
 
         if (player.连续签到天数 = 1) {
             await Add_najie_thing(usr_qq, "2w", "道具", "5");
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${player.连续签到天数}天馈赠成功！获得[2w]*5`
+            ]
+            e.reply(msg);
+            return;
+        }
+        if (player.连续签到天数 = 2) {
+            await Add_najie_thing(usr_qq, "甜酿丹", "丹药", "10");
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${player.连续签到天数}天馈赠成功！获得[甜酿丹]*10`
+            ]
+            e.reply(msg);
+            return;
+        }
+        if (player.连续签到天数 = 3) {
+            await Add_najie_thing(usr_qq, "摘榜令", "道具", "3");
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${player.连续签到天数}天馈赠成功！获得[摘榜令]*3 `
+            ]
+            e.reply(msg);
+            return;
+        }
+        if (player.连续签到天数 = 4) {
+            await Add_najie_thing(usr_qq, "2w", "道具", "15");
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${player.连续签到天数}天馈赠成功！获得[2w]*15`
+            ]
+            e.reply(msg);
+            return;
+        }
+        if (player.连续签到天数 = 5) {
+            await Add_najie_thing(usr_qq, "八阶淬体丹", "丹药", "1");
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${player.连续签到天数}天馈赠成功！获得[八阶淬体丹]*1`
+            ]
+            e.reply(msg);
+            return;
+        }
+        if (player.连续签到天数 = 6) {
+            await Add_najie_thing(usr_qq, "西游记", "功法", "1);
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${player.连续签到天数}天馈赠成功！获得[西游记]*1`
+            ]
+            e.reply(msg);
+            return;
+        }
+        if (player.连续签到天数 = 7) {
+            await Add_najie_thing(usr_qq, "2w", "道具", "30");
             let msg = [
                 segment.at(usr_qq),
                 `领取第${player.连续签到天数}天馈赠成功！获得[2w]*5`
