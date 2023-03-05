@@ -562,15 +562,9 @@ export class UserStart extends plugin {
             e.reply(`今日已经签到过了`);
             return;
         }
-        let Sign_Yesterday;        //昨日日是否签到
-        if (Yesterday.Y == lastsign_time.Y && Yesterday.M == lastsign_time.M && Yesterday.D == lastsign_time.D) {
-            Sign_Yesterday = true;
-        } else {
-            Sign_Yesterday = false;
-        }
         await redis.set("xiuxian:player:" + usr_qq + ":huodonglastsign_time", nowTime);//redis设置签到时间
         let player = await data.getData("player", usr_qq);
-        if (player.连续签到天数 > 7 || !Sign_Yesterday) {//签到连续7天或者昨天没有签到,连续签到天数清零
+        if (player.连续签到天数 > 7) {//签到连续7天或者昨天没有签到,连续签到天数清零
             e.reply(`「七日馈赠」已领取完毕！`);
             return;
         }
@@ -578,8 +572,8 @@ export class UserStart extends plugin {
         player.连续签到天数 += 1;
         data.setData("player", usr_qq, player);
 
-        if (player.连续签到天数 = 1 || !Sign_Yesterday) {
-            await Add_najie_thing(usr_qq, "2w", "道具", "+5");
+        if (player.连续签到天数 = 1) {
+            await Add_najie_thing(usr_qq, "2w", "道具", "5");
             let msg = [
                 segment.at(usr_qq),
                 `领取第${player.连续签到天数}天馈赠成功！获得[2w]*5`
