@@ -2934,3 +2934,15 @@ export async function foundthing(thing_name) {
     }
     return false
 }
+
+/**
+ * 检测回收数据
+ */
+export async function foundhuishouthing(thing_name) {
+    for (var i = 0; i < data.huishou_list.length; i++) {
+        if (thing_name == data.huishou_list[i].name) {
+            return data.huishou_list[i];
+        }
+    }
+    return false
+}

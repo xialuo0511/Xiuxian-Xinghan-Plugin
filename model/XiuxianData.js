@@ -10,6 +10,10 @@ class XiuxianData {
     constructor() {
         //获取配置文件参数
         this.configData = Config.getdefSet("version", "version");
+        /**
+        * 回收数据
+        */
+        this.huishou_list = JSON.parse(fs.readFileSync(`${this.lib_path}/回收列表.json`));
 
         //文件路径参数
         //插件根目录
