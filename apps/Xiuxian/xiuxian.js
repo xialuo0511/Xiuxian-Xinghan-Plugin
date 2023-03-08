@@ -452,10 +452,11 @@ export async function player_efficiency(usr_qq) {
  * @param {*} thing_class 物品类别
  * @param {*} thing_pinji 可选参数，装备品阶，数字0-6等
  * @returns 物品数量或者false
+ *
+ * 要用await
+ * 检查纳戒内物品是否存在
+ * 判断物品
  */
-//检查纳戒内物品是否存在
-//判断物品
-//要用await
 export async function exist_najie_thing(usr_qq, thing_name, thing_class,thing_pinji=null) {
     let najie = await Read_najie(usr_qq);
     if (!isNotNull(najie.草药)) {

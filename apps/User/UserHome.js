@@ -68,7 +68,7 @@ export class UserHome extends plugin {
                 reg: '^#出售.*$',
                 fnc: 'Sell_comodities'
             }, {
-                reg: '^#回收.*$',
+                reg: '^#一键回收.*$',
                 fnc: 'huishou_comodities'
             }, {
                 reg: '^#哪里有(.*)$',
@@ -3509,10 +3509,9 @@ export class UserHome extends plugin {
         }
         //命令判断
         let thing = e.msg.replace("#", '');
-        thing = thing.replace("回收", '');
+        thing = thing.replace("一键回收", '');
         let code = thing.split("\*");
         let thing_name = code[0]; //物品
-        let thing_amount = code[1];//数量
         let thing_piji; //品级
         //判断列表中是否存在，不存在不能卖,并定位是什么物品
         let najie = await Read_najie(usr_qq);
@@ -3569,16 +3568,16 @@ export class UserHome extends plugin {
             return;
         }
         //判断戒指中的数量
-        if (x < thing_amount) {
+        if (x <= 0) {
             //不够
-            e.reply(`你目前只有[${thing_name}]*${x}`);
+            e.reply(`该物品数量不足`);
             return;
         }
         //数量够,数量减少,灵石增加
-        await Add_najie_thing(usr_qq, thing_name, thing_exist.class, -thing_amount, pj);
-        let commodities_price = thing_exist.回收价 * thing_amount;
+        await Add_najie_thing(usr_qq, thing_name, thing_exist.class, -x, pj);
+        let commodities_price = thing_exist.回收价 * x;
         await Add_灵石(usr_qq, commodities_price);
-        e.reply(`回收成功!  获得${commodities_price}灵石,还剩余${thing_name}*${x - thing_amount} `);
+        e.reply(`回收成功!  获得${commodities_price}灵石`);
         return;
     }
 }
