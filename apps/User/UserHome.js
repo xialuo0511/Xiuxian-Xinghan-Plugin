@@ -3512,6 +3512,7 @@ export class UserHome extends plugin {
         thing = thing.replace("一键回收", '');
         let code = thing.split("\*");
         let thing_name = code[0]; //物品
+        let thing_amount = code[1];//数量
         let thing_piji; //品级
         //判断列表中是否存在，不存在不能卖,并定位是什么物品
         let najie = await Read_najie(usr_qq);
