@@ -1,17 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\apps\\Battle",
-    "\\apps\\Occupation",
-    "\\apps\\SecretPlace",
-    "\\apps\\User",
+    "\\apps",
     "\\apps\\Xijie",
-    "\\defSet",
+    "\\apps\\Xiuxian",
     "\\defSet\\help",
+    "\\defSet\\xiuxian",
+    "\\model",
     "\\resources",
     "\\resources\\data",
     "\\resources\\data\\item"
   ],
-  "SelectedNode": "\\defSet\\help\\help.yaml",
+  "SelectedNode": "\\apps\\User\\UserHome.js",
   "PreviewInSolutionExplorer": false
 }
