@@ -4,6 +4,9 @@ import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Gaodenyuansulun, Add_najie_thing } from '../Xiuxian/xiuxian.js'
 import config from "../../model/Config.js"
+import Show from '../../model/show.js';
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+
 
 //本模块由(qq:1695037643)和jio佬完成
 let WorldBOSSBattleCD = [];//CD
@@ -584,13 +587,19 @@ export class BOSS2 extends plugin {
             WorldBossStatus.防御 = bfangyu
             CurrentPlayerAttributes.攻击 = aATK
             WorldBossStatus.攻击 = bATK
-            if (msg.length <= 60)
-                await ForwardMsg(e, msg);
-            else {
-                msg.length = 60;
-                await ForwardMsg(e, msg);
-                e.reply("战斗过长，仅展示部分内容");
-            }
+
+            /**
+             * 用图片展示结果
+             */
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+
             await sleep(1000);
             e.reply([`${CurrentPlayerAttributes.名号}攻击了天理，造成伤害${TotalDamage}，天理剩余血量${WorldBossStatus.当前血量}`]);
             await sleep(1000);

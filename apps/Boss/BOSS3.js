@@ -3,6 +3,10 @@ import { segment } from "oicq"
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Read_player, existplayer, isNotNull, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js'
+import Show from '../../model/show.js';
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+
+
 
 let WorldBOSSBattleCD = [];//CD
 let WorldBOSSBattleLock = 0;//BOSS战斗锁，防止打架频率过高造成奖励多发
@@ -441,13 +445,18 @@ export class BOSS3 extends plugin {
                 BattleFrame++;
             }
 
-            if (msg.length <= 30)
-                await ForwardMsg(e, msg);
-            else {
-                msg.length = 30;
-                await ForwardMsg(e, msg);
-                e.reply("战斗过长，仅展示部分内容");
-            }
+            /**
+             * 用图片展示结果
+             */
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+
             await sleep(1000);
             e.reply([`${CurrentPlayerAttributes.名号}攻击了雷电将军，造成伤害${TotalDamage}，雷电将军剩余血量${WorldBossStatus.Health}`]);
             await sleep(1000);

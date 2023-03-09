@@ -454,7 +454,7 @@ export class BOSS extends plugin {
                 ...data1,
             });
             e.reply(img);
-            return;
+
 
             await sleep(1000);
             e.reply([`${CurrentPlayerAttributes.名号}攻击了散兵，造成伤害${TotalDamage}，散兵剩余血量${WorldBossStatus.Health}`]);
@@ -575,7 +575,7 @@ async function InitWorldBoss(e) {
     let X = AverageDamage * 0.01;
     Bot.logger.mark(`[散兵] 化神玩家总数：${player_quantity}`);
     Bot.logger.mark(`[散兵] 生成基数:${X}`);
-    let Health = Math.trunc(X * 500 * player_quantity * 2);//血量要根据人数来
+    let Health = Math.trunc(X * 400 * player_quantity * 2);//血量要根据人数来
     let Attack = Math.trunc(X * 120);
     let Defence = Math.trunc(X);
     let Reward = Math.trunc(X * (fairyNums > 7 ? 2 : 4) * (player_quantity > 20 ? 20 : player_quantity));
