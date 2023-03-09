@@ -441,13 +441,19 @@ export class BOSS extends plugin {
                 BattleFrame++;
             }
 
-            if (msg.length <= 30)
-                await ForwardMsg(e, msg);
-            else {
-                msg.length = 30;
-                await ForwardMsg(e, msg);
-                e.reply("战斗过长，仅展示部分内容");
-            }
+            /**
+             * 用图片展示结果
+             */
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+            return;
+
             await sleep(1000);
             e.reply([`${CurrentPlayerAttributes.名号}攻击了散兵，造成伤害${TotalDamage}，散兵剩余血量${WorldBossStatus.Health}`]);
             await sleep(1000);
