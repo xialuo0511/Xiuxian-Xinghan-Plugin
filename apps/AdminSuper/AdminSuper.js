@@ -301,12 +301,17 @@ export class AdminSuper extends plugin {
       e.reply('你凑什么热闹');
       return;
     }
-    let a = await Read_player(e.user_id);
-    let b = await Read_player(3479823546);
-    a.法球倍率 = a.灵根.法球倍率;
-    b.法球倍率 = b.灵根.法球倍率;
-    let last = await TEXT_battle(a, b);
-    await ForwardMsg(e, last.msg);
+    let str = [];
+    str.push("测试文本");
+    let log_data = {
+        log: str,
+    };
+    const data1 = await new Show(e).get_logData(log_data);
+    let img = await puppeteer.screenshot('log', {
+        ...data1,
+    });
+    e.reply(img);
+    return;
   }
 
   //修为补偿
