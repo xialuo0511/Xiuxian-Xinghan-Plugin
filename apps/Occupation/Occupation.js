@@ -1109,7 +1109,7 @@ export class Occupation extends plugin {
             let player_A = {
                 id: player.id,
                 名号: player.名号,
-                攻击: parseInt(player.攻击 * buff),
+                攻击: parseInt(player.攻击 * buff * 1.5),
                 防御: parseInt(player.防御),
                 当前血量: parseInt(player.血量上限),
                 暴击率: player.暴击率,
