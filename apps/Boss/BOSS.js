@@ -3,6 +3,7 @@ import { segment } from "oicq"
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Read_player, existplayer, isNotNull, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js'
+import Show from '../../model/show.js';
 
 //本模块由(qq:1695037643)和jio佬完成
 let WorldBOSSBattleCD = [];//CD
