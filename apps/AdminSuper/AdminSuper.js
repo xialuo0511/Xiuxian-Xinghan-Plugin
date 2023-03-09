@@ -23,6 +23,8 @@ import {
 import { Read_Exchange, Write_Exchange } from '../Exchange/Exchange.js';
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
 import { Read_Forum, Write_Forum } from '../Help/Forum.js';
+
+//如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 
