@@ -1010,6 +1010,7 @@ export class Occupation extends plugin {
             }
         }
         let mubiao = [];
+        /*
         let i = 0;
         let File = fs.readdirSync(__PATH.player_path);
         File = File.filter(file => file.endsWith(".json"));
@@ -1018,6 +1019,7 @@ export class Occupation extends plugin {
             let this_qq = File[k].replace(".json", '');
             this_qq = parseInt(this_qq);
             let players = await Read_player(this_qq);
+            
             if (players.魔道值 > 999 && this_qq != usr_qq) {
                 mubiao[i] = {
                     名号: players.名号,
@@ -1026,6 +1028,7 @@ export class Occupation extends plugin {
                 }
                 i++;
             }
+            
         }
         while (i < 4) {
             let guaiwu = Math.random();
@@ -1046,6 +1049,25 @@ export class Occupation extends plugin {
             }
             
         }
+        */
+
+        let guaiwu = Math.random();
+        if (guaiwu == 0) {
+            mubiao[i] = {
+                名号: "仙路窃贼-屑洛",
+                赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                QQ: 1
+            }
+            i++;
+        } else {
+            mubiao[i] = {
+                名号: "仙路窃贼-藏宝鼬",
+                赏金: Math.trunc(1000000 * (1.5 + 0.08 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                QQ: 1
+            }
+            i++;
+        }
+
         for (var k = 0; k < 3; k++) {
             msg.push(mubiao[Math.trunc(Math.random() * i)]);
         }
