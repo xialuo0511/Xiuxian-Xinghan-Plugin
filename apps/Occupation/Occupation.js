@@ -1028,12 +1028,23 @@ export class Occupation extends plugin {
             }
         }
         while (i < 4) {
-            mubiao[i] = {
-                名号: "屑洛",
-                赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
-                QQ: 1
+            let guaiwu = Math.random();
+            if (guaiwu == 0) {
+                mubiao[i] = {
+                    名号: "仙路窃贼-屑洛",
+                    赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                    QQ: 1
+                }
+                i++;
+            } else {
+                mubiao[i] = {
+                    名号: "仙路窃贼-藏宝鼬",
+                    赏金: Math.trunc(1000000 * (1.5 + 0.08 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                    QQ: 1
+                }
+                i++;
             }
-            i++;
+            
         }
         for (var k = 0; k < 3; k++) {
             msg.push(mubiao[Math.trunc(Math.random() * i)]);
@@ -1100,7 +1111,7 @@ export class Occupation extends plugin {
             return
         }
         let last_msg = "";
-        if (qq != 1) {
+        /*if (qq != 1) {
             let player_B = await Read_player(qq);
             player_B.当前血量 = player_B.血量上限;
 
@@ -1155,10 +1166,17 @@ export class Occupation extends plugin {
             await Write_player(usr_qq, player);
             await Add_职业经验(usr_qq, 2255);
             last_msg = last_msg + "你惩戒了仙路窃贼,获得灵石" + action.arm[num].赏金;//直接获胜
-        }
+        }*/
+
+        player.灵石 += action.arm[num].赏金;
+        player.魔道值 -= 5;
+        await Write_player(usr_qq, player);
+        await Add_职业经验(usr_qq, 2255);
+        last_msg = last_msg + "你惩戒了【" + action.arm[num].名号 + "】,获得灵石" + action.arm[num].赏金;//直接获胜
+
         action.arm.splice(num, 1);
         await redis.set("xiuxian:player:" + usr_qq + ":shangjing", JSON.stringify(action));
-        if (last_msg == "你惩戒了仙路窃贼,获得灵石" + action.arm[num].赏金) {
+        if (last_msg == "你惩戒了【" + action.arm[num].名号 + "】,获得灵石" + action.arm[num].赏金) {
             e.reply(last_msg);
         }
         else {
@@ -1167,7 +1185,7 @@ export class Occupation extends plugin {
             }
         }
     }
-    
+
     async xuanshang_sb(e) {
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
