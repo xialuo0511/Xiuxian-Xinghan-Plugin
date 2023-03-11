@@ -10,10 +10,6 @@ import { ForwardMsg,Read_player,shijianc,Add_灵石,existplayer,Add_najie_thing,
 import { zd_battle} from "../Battle/Battle.js"
 import config from "../../model/Config.js"
 
-//如需截图必须引入以下两库
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
-import Show from '../../model/show.js';
-
 export class Tiandibang extends plugin {
     constructor() {
         super({
