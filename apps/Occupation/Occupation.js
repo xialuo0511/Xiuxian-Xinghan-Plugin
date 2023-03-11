@@ -1685,8 +1685,8 @@ export class Occupation extends plugin {
                     msg,
                     type
                 }
-                const data1 = await new Show(e).get_msg(msg_data);
-                let img = await puppeteer.screenshot("msg", {
+                const data1 = await new Show(e).get_msg2(msg_data);
+                let img = await puppeteer.screenshot("msg2", {
                     ...data1,
                 });
                 e.reply(img);
@@ -1738,15 +1738,15 @@ export class Occupation extends plugin {
         let guaiwu = Math.random();
         if (guaiwu == 0) {
             mubiao[i] = {
-                名号: "仙路窃贼-屑洛",
-                赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                名号: "村庄-稻妻",
+                赏金: Math.trunc(500 * (1.5 + 0.02 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
                 QQ: 1
             }
             i++;
         } else {
             mubiao[i] = {
-                名号: "仙路窃贼-藏宝鼬",
-                赏金: Math.trunc(1000000 * (1.5 + 0.08 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                名号: "村庄-蒙德",
+                赏金: Math.trunc(500 * (1.5 + 0.03 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
                 QQ: 1
             }
             i++;
@@ -1791,21 +1791,21 @@ export class Occupation extends plugin {
             }
         }
         let player = await Read_player(usr_qq);
-        if (player.occupation != "侠客") {
-            e.reply("侠客资质不足,需要进行训练")
+        if (player.occupation != "唤魔者") {
+            e.reply("唤魔者资质不足，建议锻炼锻炼再来")
             return
         }
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":shangjing");
+        let action = await redis.get("xiuxian:player:" + usr_qq + ":jiangjing");
         action = await JSON.parse(action);
         if (action == null) {
-            e.reply("还没有接取到悬赏,请查看后再来吧")//没接取悬赏
+            e.reply("村庄还在防御状态，请稍后再来吧")//没接取悬赏
             return
         }
         if (action.arm.length == 0) {
-            e.reply("每日限杀,请等待20小时后新的赏金目标")//悬赏做完了(20h后刷新)
+            e.reply("村庄还在防御状态,请等待20小时后再来")//悬赏做完了(20h后刷新)
             return
         }
-        var num = e.msg.replace("#讨伐目标", '');
+        var num = e.msg.replace("#劫掠村庄", '');
         num = num.trim() - 1;
         let qq;
         try {
@@ -1813,7 +1813,7 @@ export class Occupation extends plugin {
         }
         catch
         {
-            e.reply("不要伤及无辜")//输错了，没有该目标
+            e.reply("没找到这个地方")//输错了，没有该目标
             return
         }
         let last_msg = "";
@@ -1874,15 +1874,14 @@ export class Occupation extends plugin {
             last_msg = last_msg + "你惩戒了仙路窃贼,获得灵石" + action.arm[num].赏金;//直接获胜
         }*/
 
-        player.灵石 += action.arm[num].赏金;
-        player.魔道值 -= 5;
+        player.魔道值 += action.arm[num].赏金;
         await Write_player(usr_qq, player);
         await Add_职业经验(usr_qq, 2255);
-        last_msg = last_msg + "你惩戒了【" + action.arm[num].名号 + "】,获得灵石" + action.arm[num].赏金;//直接获胜
+        last_msg = last_msg + "你劫掠了【" + action.arm[num].名号 + "】,获得魔道值" + action.arm[num].赏金;//直接获胜
 
         action.arm.splice(num, 1);
         await redis.set("xiuxian:player:" + usr_qq + ":shangjing", JSON.stringify(action));
-        if (last_msg == "你惩戒了【" + action.arm[num].名号 + "】,获得灵石" + action.arm[num].赏金) {
+        if (last_msg == "你劫掠了【" + action.arm[num].名号 + "】,获得魔道值" + action.arm[num].赏金) {
             e.reply(last_msg);
         }
         else {

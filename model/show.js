@@ -196,6 +196,15 @@ export default class Game extends base {
       saveId: 'msg',
       ...myData,
     };
+    }
+  //村庄名单
+  async get_msg2(myData) {
+    this.model = 'msg2';
+    return {
+      ...this.screenData,
+      saveId: 'msg2',
+      ...myData,
+    };
   }
   //我的宗门
   async get_associationData(myData) {
