@@ -1764,8 +1764,8 @@ export class Occupation extends plugin {
             msg,
             type
         }
-        const data1 = await new Show(e).get_msg(msg_data);
-        let img = await puppeteer.screenshot("msg", {
+        const data1 = await new Show(e).get_msg2(msg_data);
+        let img = await puppeteer.screenshot("msg2", {
             ...data1,
         });
         e.reply(img);
