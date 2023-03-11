@@ -32,13 +32,15 @@ export class Battle extends plugin {
       event: 'message',
       priority: 600,
       rule: [
+          /*
         {
-          reg: '^打劫$',
-          fnc: 'Dajie',
+        reg: '^打劫$',
+        fnc: 'Dajie',
         },
+        */
         {
-          reg: '^(以武会友)$',
-          fnc: 'biwu',
+        reg: '^(以武会友)$',
+        fnc: 'biwu',
         },
       ],
     });

@@ -99,6 +99,14 @@ export class Occupation extends plugin {
                 {
                     reg: '^#清空赏金榜$',
                     fnc: 'qingchushangjinbang'
+                },
+                {
+                    reg: '^#村庄目标$',
+                    fnc: 'search_cz'
+                },
+                {
+                    reg: '^#劫掠村庄.*$',
+                    fnc: 'taofa_cz'
                 }
             ]
         });
@@ -1648,6 +1656,243 @@ export class Occupation extends plugin {
     
         return;
     }
+
+    /**
+     * 
+     * @param {any} e
+     * @returns
+     */
+
+    async search_cz(e) {
+        let usr_qq = e.user_id;
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let player = await Read_player(usr_qq);
+        if (player.occupation != "唤魔者") {
+            e.reply("不要随便对村庄干坏事啊喂")
+            return
+        }
+        let msg = [];
+        let action = await redis.get("xiuxian:player:" + usr_qq + ":jiangjing");
+        action = await JSON.parse(action);
+        let type = 0;
+        if (action != null) {
+            if (action.end_time > new Date().getTime()) {
+                msg = action.arm;
+                var msg_data = {
+                    msg,
+                    type
+                }
+                const data1 = await new Show(e).get_msg(msg_data);
+                let img = await puppeteer.screenshot("msg", {
+                    ...data1,
+                });
+                e.reply(img);
+                return;
+            }
+        }
+        let mubiao = [];
+        /*
+        let i = 0;
+        let File = fs.readdirSync(__PATH.player_path);
+        File = File.filter(file => file.endsWith(".json"));
+        let File_length = File.length;
+        for (var k = 0; k < File_length; k++) {
+            let this_qq = File[k].replace(".json", '');
+            this_qq = parseInt(this_qq);
+            let players = await Read_player(this_qq);
+            
+            if (players.魔道值 > 999 && this_qq != usr_qq) {
+                mubiao[i] = {
+                    名号: players.名号,
+                    赏金: Math.trunc(1000000 * (1.2 + 0.05 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                    QQ: this_qq
+                }
+                i++;
+            }
+            
+        }
+        while (i < 4) {
+            let guaiwu = Math.random();
+            if (guaiwu == 0) {
+                mubiao[i] = {
+                    名号: "仙路窃贼-屑洛",
+                    赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                    QQ: 1
+                }
+                i++;
+            } else {
+                mubiao[i] = {
+                    名号: "仙路窃贼-藏宝鼬",
+                    赏金: Math.trunc(1000000 * (1.5 + 0.08 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                    QQ: 1
+                }
+                i++;
+            }
+            
+        }
+        */
+
+        let guaiwu = Math.random();
+        if (guaiwu == 0) {
+            mubiao[i] = {
+                名号: "仙路窃贼-屑洛",
+                赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                QQ: 1
+            }
+            i++;
+        } else {
+            mubiao[i] = {
+                名号: "仙路窃贼-藏宝鼬",
+                赏金: Math.trunc(1000000 * (1.5 + 0.08 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
+                QQ: 1
+            }
+            i++;
+        }
+
+        for (var k = 0; k < 3; k++) {
+            msg.push(mubiao[Math.trunc(Math.random() * i)]);
+        }
+        let arr = {
+            "arm": msg,
+            "end_time": new Date().getTime() + 60000 * 60 * 20,//结束时间
+        };
+        await redis.set("xiuxian:player:" + usr_qq + ":jiangjing", JSON.stringify(arr));
+        var msg_data = {
+            msg,
+            type
+        }
+        const data1 = await new Show(e).get_msg(msg_data);
+        let img = await puppeteer.screenshot("msg", {
+            ...data1,
+        });
+        e.reply(img);
+        return;
+    }
+    async taofa_cz(e) {
+        let usr_qq = e.user_id;
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let A_action = await redis.get("xiuxian:player:" + usr_qq + ":action");
+        A_action = JSON.parse(A_action);
+        if (A_action != null) {
+            let now_time = new Date().getTime();
+            //人物任务的动作是否结束
+            let A_action_end_time = A_action.end_time;
+            if (now_time <= A_action_end_time) {
+                let m = parseInt((A_action_end_time - now_time) / 1000 / 60);
+                let s = parseInt(((A_action_end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + A_action.action + "中,剩余时间:" + m + "分" + s + "秒");
+                return;
+            }
+        }
+        let player = await Read_player(usr_qq);
+        if (player.occupation != "侠客") {
+            e.reply("侠客资质不足,需要进行训练")
+            return
+        }
+        let action = await redis.get("xiuxian:player:" + usr_qq + ":shangjing");
+        action = await JSON.parse(action);
+        if (action == null) {
+            e.reply("还没有接取到悬赏,请查看后再来吧")//没接取悬赏
+            return
+        }
+        if (action.arm.length == 0) {
+            e.reply("每日限杀,请等待20小时后新的赏金目标")//悬赏做完了(20h后刷新)
+            return
+        }
+        var num = e.msg.replace("#讨伐目标", '');
+        num = num.trim() - 1;
+        let qq;
+        try {
+            qq = action.arm[num].QQ;
+        }
+        catch
+        {
+            e.reply("不要伤及无辜")//输错了，没有该目标
+            return
+        }
+        let last_msg = "";
+        /*if (qq != 1) {
+            let player_B = await Read_player(qq);
+            player_B.当前血量 = player_B.血量上限;
+
+            player_B.法球倍率 = player_B.灵根.法球倍率;
+            let buff = 1 + player.occupation_level * 0.055;
+            let player_A = {
+                id: player.id,
+                名号: player.名号,
+                攻击: parseInt(player.攻击 * buff * 1.5),
+                防御: parseInt(player.防御),
+                当前血量: parseInt(player.血量上限),
+                暴击率: player.暴击率,
+                学习的功法: player.学习的功法,
+                魔道值: player.魔道值,
+                灵根: player.灵根,
+                法球倍率: player.灵根.法球倍率,
+                仙宠: player.仙宠,
+                神石: player.神石
+            }
+            let Data_battle = await zd_battle(player_A, player_B);
+            let msg = Data_battle.msg;
+            let A_win = `${player_A.名号}击败了${player_B.名号}`;
+            let B_win = `${player_B.名号}击败了${player_A.名号}`;
+            if (msg.find(item => item == A_win)) {
+                player_B.魔道值 -= 50;
+                player_B.灵石 -= 300000;
+                player_B.当前血量 = 0;
+                await Write_player(qq, player_B);
+                player.灵石 += action.arm[num].赏金;
+                player.魔道值 -= 5;
+                await Write_player(usr_qq, player);
+                await Add_职业经验(usr_qq, 2255);
+                last_msg += "【全服公告】" + player_B.名号 + "失去了300000灵石,罪恶得到了洗刷,魔道值-50,无名侠客获得了部分灵石,自己的正气提升了,同时获得了更多的悬赏加成";
+            }
+            else if (msg.find(item => item == B_win)) {
+                var shangjing = Math.trunc(action.arm[num].赏金 * 0.5);
+                player.当前血量 = 0;
+                player.灵石 += shangjing;
+                player.魔道值 -= 5;
+                await Write_player(usr_qq, player);
+                await Add_职业经验(usr_qq, 1100);
+                last_msg += "【全服公告】" + player_B.名号 + "反杀了无名侠客,无名侠客只获得了部分辛苦钱";
+            }
+            if (msg.length > 100) {
+            } else {
+                await ForwardMsg(e, msg);
+            }
+        }
+        else {
+            player.灵石 += action.arm[num].赏金;
+            player.魔道值 -= 5;
+            await Write_player(usr_qq, player);
+            await Add_职业经验(usr_qq, 2255);
+            last_msg = last_msg + "你惩戒了仙路窃贼,获得灵石" + action.arm[num].赏金;//直接获胜
+        }*/
+
+        player.灵石 += action.arm[num].赏金;
+        player.魔道值 -= 5;
+        await Write_player(usr_qq, player);
+        await Add_职业经验(usr_qq, 2255);
+        last_msg = last_msg + "你惩戒了【" + action.arm[num].名号 + "】,获得灵石" + action.arm[num].赏金;//直接获胜
+
+        action.arm.splice(num, 1);
+        await redis.set("xiuxian:player:" + usr_qq + ":shangjing", JSON.stringify(action));
+        if (last_msg == "你惩戒了【" + action.arm[num].名号 + "】,获得灵石" + action.arm[num].赏金) {
+            e.reply(last_msg);
+        }
+        else {
+            for (var i = 0; i < this.xiuxianConfigData.Group.length; i++) {
+                await this.pushInfo(this.xiuxianConfigData.Group[i], true, last_msg);
+            }
+        }
+    }
+
+
 
 
 
