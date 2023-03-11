@@ -455,10 +455,14 @@ export class Tiandibang extends plugin {
                     return;
                 }
                 await Add_灵石(usr_qq, lingshi);
-                if (msg.length > 50) {
-                } else {
-                    await ForwardMsg(e, msg);
-                }
+                let log_data = {
+                    log: msg,
+                };
+                const data1 = await new Show(e).get_logData(log_data);
+                let img = await puppeteer.screenshot('log', {
+                    ...data1,
+                });
+                e.reply(img);
                 e.reply(last_msg);
             }
             else{
@@ -516,7 +520,6 @@ export class Tiandibang extends plugin {
                     ...data1,
                 });
                 e.reply(img);
-                return;
                 e.reply(last_msg);
             }
             tiandibang=await Read_tiandibang();
