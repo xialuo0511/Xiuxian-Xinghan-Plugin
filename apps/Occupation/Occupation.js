@@ -101,7 +101,7 @@ export class Occupation extends plugin {
                     fnc: 'qingchushangjinbang'
                 },
                 {
-                    reg: '^#村庄目标$',
+                    reg: '^#村庄列表$',
                     fnc: 'search_cz'
                 },
                 {
@@ -1694,8 +1694,8 @@ export class Occupation extends plugin {
             }
         }
         let mubiao = [];
-        /*
         let i = 0;
+        /*
         let File = fs.readdirSync(__PATH.player_path);
         File = File.filter(file => file.endsWith(".json"));
         let File_length = File.length;
