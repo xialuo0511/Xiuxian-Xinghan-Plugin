@@ -516,11 +516,7 @@ export class SecretPlaceplusTask extends plugin {
               await Add_修为(player_id, xiuwei);
               await Add_HP(player_id, Data_battle.A_xue);
               //发送消息
-              if (is_group) {
-                await this.pushInfo(push_address, is_group, msg);
-              } else {
-                await this.pushInfo(player_id, is_group, msg);
-              }
+                await this.pushInfo(msg);
             }
           }
         }
@@ -534,7 +530,7 @@ export class SecretPlaceplusTask extends plugin {
    * @param is_group
    * @returns {Promise<void>}
    */
-  async pushInfo(id, is_group, msg) {
+  async pushInfo(msg) {
 
       let log_data = {
           log: msg,
