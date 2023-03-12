@@ -282,12 +282,13 @@ export class UserSellAll extends plugin {
                         console.log(quantity);*/
                         if (l.class == "装备") {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
+                            str.push(`【${l.name}（${l.pinji}）*${l.数量}】出售成功,共${money}灵石`);
                         } else {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
+                            str.push(`【${l.name}*${l.数量}】出售成功,共${money}灵石`);
                         }
                         commodities_price = commodities_price + l.出售价 * quantity;
                         let money = l.出售价 * quantity;
-                        str.push(`【${l.name}*${l.数量}】出售成功,共${money}灵石`);
                     }
                 }
             }
