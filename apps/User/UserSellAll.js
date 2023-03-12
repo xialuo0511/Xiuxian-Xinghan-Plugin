@@ -291,7 +291,7 @@ export class UserSellAll extends plugin {
                         }
                         commodities_price = commodities_price + l.出售价 * quantity;
                         let money = l.出售价 * quantity;
-                        t = t + `,共${money} 灵石`;
+                        t = t + `共${money} 灵石`;
                         str.push(t);
                     }
                 }
