@@ -246,37 +246,38 @@ export class UserSellAll extends plugin {
         if (!ifexistplay) {
             return;
         }
+        let str = [];
         let najie = await data.getData("najie", usr_qq);
         let commodities_price = 0
         let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子','仙宠','仙宠口粮','食材'];
         let wupin1 = []
         if (e.msg != '#一键出售') {
             let thing = e.msg.replace("#一键出售", '');
-            let str = [];
             for (var i of wupin) {
-                let thing_exist = await foundhuishouthing(thing.includes(i));
-                if (!thing_exist) {
-                    str.push(`[${thing_name}]只可回收，不可出售`);
-                    return;
-                }
                 if (thing.includes(i)) {
-                    wupin1.push(i)
-                    thing = thing.replace(i, "")
+                    let thing_exist = await foundhuishouthing(i);
+                    if (!thing_exist) {
+                        str.push(`[${i}]只可回收，不可出售`);
+                        return;
+                    } else {
+                        str.push(`[${ i}]出售成功`);
+                        wupin1.push(i)
+                    }
                 }
             }
-            //返回不可回收物品
-            let log_data = {
-                log: str,
-            };
-            const data1 = await new Show(e).get_logData(log_data);
-            let img = await puppeteer.screenshot('log', {
-                ...data1,
-            });
-            e.reply(img);
-
             if (thing.length == 0) {
                 wupin = wupin1
             } else {
+                str.push("没有要出售的物品");
+                //返回图片
+                let log_data = {
+                    log: str,
+                };
+                const data1 = await new Show(e).get_logData(log_data);
+                let img = await puppeteer.screenshot('log', {
+                    ...data1,
+                });
+                e.reply(img);
                 return
             }
         }
@@ -300,7 +301,17 @@ export class UserSellAll extends plugin {
             }
         }
         await Add_灵石(usr_qq, commodities_price);
-        e.reply(`出售成功!  获得${commodities_price}灵石 `);
+        str.push(`出售成功!  获得${commodities_price}灵石 `);
+
+        //返回图片
+        let log_data = {
+            log: str,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
         return;
     }
 
