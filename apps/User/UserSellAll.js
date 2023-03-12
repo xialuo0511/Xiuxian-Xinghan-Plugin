@@ -264,23 +264,14 @@ export class UserSellAll extends plugin {
                         wupin1.push(i)
                     }
                     */
-                    str.push(i);
+                    wupin1.push(i)
+                    thing = thing.replace(i, "")
                 }
             }
             if (thing.length == 0) {
                 wupin = wupin1
             } else {
-                str.push("没有要出售的物品");
-                //返回图片
-                let log_data = {
-                    log: str,
-                };
-                const data1 = await new Show(e).get_logData(log_data);
-                let img = await puppeteer.screenshot('log', {
-                    ...data1,
-                });
-                e.reply(img);
-                return
+                e.reply("没有要出售的物品");
             }
         }
         console.log(wupin);
@@ -288,17 +279,24 @@ export class UserSellAll extends plugin {
             console.log(najie[i]);
             for (let l of najie[i]) {
                 if (l && l.islockd == 0 && !(l.id >= 400991 && l.id <= 400999)) {
-                    //纳戒中的数量
-                    let quantity =l.数量;
-                    /*console.log(l);
-                    console.log(l.class);
-                    console.log(quantity);*/
-                    if (l.class == "装备") {
-                        await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
+                    //判断是否为回收物品
+                    let thing_exist = await foundhuishouthing(l);
+                    if (!thing_exist) {
+                        str.push(`[${l}]只可回收，不可出售`);
                     } else {
-                        await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
+                        str.push(`[${l}]出售成功`);
+                        //纳戒中的数量
+                        let quantity = l.数量;
+                        /*console.log(l);
+                        console.log(l.class);
+                        console.log(quantity);*/
+                        if (l.class == "装备") {
+                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
+                        } else {
+                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
+                        }
+                        commodities_price = commodities_price + l.出售价 * quantity;
                     }
-                    commodities_price = commodities_price + l.出售价 * quantity;
                 }
             }
         }
