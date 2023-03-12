@@ -271,7 +271,7 @@ export class UserSellAll extends plugin {
             if (thing.length == 0) {
                 wupin = wupin1
             } else {
-                e.reply("没有要出售的物品");
+                return;
             }
         }
         console.log(wupin);
@@ -296,7 +296,7 @@ export class UserSellAll extends plugin {
                         }
                         commodities_price = commodities_price + l.出售价 * quantity;
                         let money = l.出售价 * quantity;
-                        str.push(`【${l.name}】*${l.数量}出售成功,共${money}灵石`);
+                        str.push(`【${l.name}*${l.数量}】出售成功,共${money}灵石`);
                     }
                 }
             }
