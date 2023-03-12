@@ -5,6 +5,8 @@ import config from "../../model/Config.js"
 import { Read_player, existplayer, ForwardMsg, isNotNull, sleep,  exist_najie_thing,Add_najie_thing } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
 import { add_mingdang, add_time } from "../jiance/jiance.js"
+import Show from "../../model/show.js";
+import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
 /**
  * 秘境模块
