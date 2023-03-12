@@ -627,17 +627,16 @@ export async function get_huodongshop_img(e) {
     if (!ifexistplay) {
         return;
     }
-    let huodongshop_list = data.huodongshop_list;
-    let huodongshop_data = {
+    let commodities_list = data.huodongshop_list;
+    let ningmenghome_data = {
         user_id: usr_qq,
-        huodongshop_list: huodongshop_list
+        commodities_list: commodities_list
     }
-    const data1 = await new Show(e).get_huodongshopData(huodongshop_data);
+    const data1 = await new Show(e).get_huodongshopData(ningmenghome_data);
     let img = await puppeteer.screenshot("huodongshop", {
         ...data1,
     });
     return img;
-
 }
 
 export async function Goyiji(e, weizhi, addres) {
