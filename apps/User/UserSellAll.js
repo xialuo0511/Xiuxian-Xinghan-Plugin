@@ -255,6 +255,7 @@ export class UserSellAll extends plugin {
             let thing = e.msg.replace("#一键出售", '');
             for (var i of wupin) {
                 if (thing.includes(i)) {
+                    /*
                     let thing_exist = await foundhuishouthing(i);
                     if (!thing_exist) {
                         str.push(`[${i}]只可回收，不可出售`);
@@ -262,6 +263,8 @@ export class UserSellAll extends plugin {
                         str.push(`[${ i}]出售成功`);
                         wupin1.push(i)
                     }
+                    */
+                    str.push(i);
                 }
             }
             if (thing.length == 0) {
