@@ -53,6 +53,8 @@ class XiuxianData {
         this.monster_list_huodong = JSON.parse(fs.readFileSync(`${this.lib_path}/怪物/活动怪物列表.json`));
         //加载商品列表
         this.commodities_list = JSON.parse(fs.readFileSync(`${this.lib_path}/商店/商品列表.json`));
+        //加载活动商店商品
+        this.huodongshop_list = JSON.parse(fs.readFileSync(`${this.lib_path}/商店/活动商店.json`));
         //加载宗门藏宝阁列表
         this.cangbaoge_list = JSON.parse(fs.readFileSync(`${this.lib_path}/商店/宗门藏宝阁.json`));
         //练气境界

@@ -75,12 +75,27 @@ export class SecretPlace extends plugin {
                     fnc: 'Goyijiplace'
                 },
                 {
-                    reg: '^#逃离',
-                    fnc: 'Giveup'
+                    reg: '^#活动商店',
+                    fnc: 'huodongshop'
+                },
+                {
+                    reg: '^#代币兑换(.*)$',
+                    fnc: 'daibiduihuan'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+    
+    //活动
+    async huodongshop(e) {
+         //不开放私聊功能
+         if (!e.isGroup) {
+            return;
+        }
+        let img = await get_huodongshop_img(e);
+        e.reply(img);
+        return;
     }
 
     async Xiuxianstate(e) {
@@ -599,6 +614,28 @@ export class SecretPlace extends plugin {
         e.reply("开始探寻遗迹" + didian + "," + time + "分钟后归来!");
         return;
     }
+}
+
+/**
+ *活动商店
+ */
+export async function get_huodongshop_img(e) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let huodongshop_list = data.huodongshop_list;
+    let huodongshop_data = {
+        user_id: usr_qq,
+        huodongshop_list: huodongshop_list
+    }
+    const data1 = await new Show(e).get_huodongshopData(huodongshop_data);
+    let img = await puppeteer.screenshot("huodongshop", {
+        ...data1,
+    });
+    return img;
+
 }
 
 export async function Goyiji(e, weizhi, addres) {

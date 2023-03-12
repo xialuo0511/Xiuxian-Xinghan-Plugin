@@ -244,6 +244,16 @@ export default class Game extends base {
       ...myData,
     };
   }
+  
+  //活动商店
+  async get_huodongshopData(myData) {
+    this.model = 'huodongshop';
+    return {
+      ...this.screenData,
+      saveId: 'huodongshop',
+      ...myData,
+    };
+  }
 
   //万宝楼
   async get_valuablesData(myData) {
