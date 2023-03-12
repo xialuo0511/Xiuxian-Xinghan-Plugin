@@ -18,6 +18,10 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { mjzd_battle } from '../Battle/Battle.js';
 
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 /**
  * 定时任务
  */
@@ -503,11 +507,14 @@ export class SecretPlaceTask extends plugin {
             await Add_修为(player_id, xiuwei);
             await Add_HP(player_id, Data_battle.A_xue);
             //发送消息
-            if (is_group) {
-              await this.pushInfo(push_address, is_group, msg);
-            } else {
-              await this.pushInfo(player_id, is_group, msg);
-            }
+              let log_data = {
+                  log: msg,
+              };
+              const data1 = await new Show(e).get_logData(log_data);
+              let img = await puppeteer.screenshot('log', {
+                  ...data1,
+              });
+              e.reply(img);
           }
         }
       }
