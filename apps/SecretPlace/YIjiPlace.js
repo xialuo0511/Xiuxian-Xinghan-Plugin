@@ -14,7 +14,7 @@ let allaction = false;
 export class YijiPlace extends plugin {
     constructor() {
         super({
-            name: 'Yunzai_Bot_SecretPlace',
+            name: 'Yunzai_Bot_YijiPlace',
             dsc: '–ﬁœ…ƒ£øÈ',
             event: 'message',
             /**
@@ -25,11 +25,11 @@ export class YijiPlace extends plugin {
                 {
                     reg: '^#“≈º£$',
                     fnc: 'Yijiplace'
-                },/*
+                },
                 {
                     reg: '^#ÃΩ—∞“≈º£.*$',
                     fnc: 'Goyijiplace'
-                },*/
+                },
                 {
                     reg: '^#Ã”¿Î',
                     fnc: 'Giveup'
