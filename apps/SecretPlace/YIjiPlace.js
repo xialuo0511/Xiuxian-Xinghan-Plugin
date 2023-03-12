@@ -25,11 +25,11 @@ export class YijiPlace extends plugin {
                 {
                     reg: '^#遗迹$',
                     fnc: 'Yijiplace'
-                },
+                },/*
                 {
                     reg: '^#探寻遗迹.*$',
                     fnc: 'Goyijiplace'
-                },
+                },*/
                 {
                     reg: '^#逃离',
                     fnc: 'Giveup'
@@ -84,7 +84,7 @@ export class YijiPlace extends plugin {
         await add_time(usr_qq);
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
-        const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
+        const time = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
         let action_time = 60000 * time;//持续时间，单位毫秒
         let arr = {
             "action": "探寻遗迹",//动作
