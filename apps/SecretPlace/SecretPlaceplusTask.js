@@ -555,7 +555,7 @@ export class SecretPlaceplusTask extends plugin {
         });
     } else {
       await common.relpyPrivate(id, msg);
-    }
+    }*/
   }
-  */
+  
 }
