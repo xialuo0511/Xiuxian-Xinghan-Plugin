@@ -162,7 +162,16 @@ export class SecretPlaceTask extends plugin {
               monster_length = data.monster_list5.length;
               monster_index = Math.trunc(Math.random() * monster_length);
               monster = data.monster_list5[monster_index];
-            }
+              }
+            //活动怪物设置
+              if (
+                  weizhi.name == '赤王陵' ||
+              ) {
+                  monster_length = data.monster_list_huodong.length;
+                  monster_index = Math.trunc(Math.random() * monster_length);
+                  monster = data.monster_list_huodong[monster_index];
+              }
+
             if (
               weizhi.name == '蓬莱岛' ||
               weizhi.name == '昆仑山' ||

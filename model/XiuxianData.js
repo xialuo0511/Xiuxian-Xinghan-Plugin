@@ -53,6 +53,7 @@ class XiuxianData {
         this.monster_list6 = JSON.parse(fs.readFileSync(`${this.lib_path}/怪物列表地仙.json`));
         this.monster_list7 = JSON.parse(fs.readFileSync(`${this.lib_path}/怪物列表小千世界.json`));
         this.monster_list8 = JSON.parse(fs.readFileSync(`${this.lib_path}/怪物列表大千世界.json`));
+        this.monster_list_huodong = JSON.parse(fs.readFileSync(`${this.lib_path}/活动怪物列表.json`));
         //加载商品列表
         this.commodities_list = JSON.parse(fs.readFileSync(`${this.lib_path}/商品列表.json`));
         //加载宗门藏宝阁列表
