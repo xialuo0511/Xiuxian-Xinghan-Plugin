@@ -599,50 +599,6 @@ export class SecretPlace extends plugin {
         e.reply("开始探寻遗迹" + didian + "," + time + "分钟后归来!");
         return;
     }
-
-    //放弃
-    async Giveup(e) {
-        if (!e.isGroup) {
-            return;
-        }
-        let usr_qq = e.user_id;
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            e.reply("没存档你逃个锤子!");
-            return;
-        }
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
-            return;
-        }
-        //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        //不为空，有状态
-        if (action != null) {
-            //是在秘境状态
-            if (action.Place_action == "0" || action.Place_actionplus == "0" || action.mojie == "0") {
-                //把状态都关了
-                let arr = action;
-                arr.is_jiesuan = 1;//结算状态
-                arr.shutup = 1;//闭关状态
-                arr.working = 1;//降妖状态
-                arr.power_up = 1;//渡劫状态
-                arr.Place_action = 1;//秘境
-                arr.Place_actionplus = 1;//沉迷状态
-                arr.mojie = 1;
-                arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
-                delete arr.group_id;//结算完去除group_id
-                await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-                e.reply("你已逃离！");
-                return;
-            }
-        }
-        return;
-    }
 }
 
 export async function Goyiji(e, weizhi, addres) {
