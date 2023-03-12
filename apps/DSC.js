@@ -4,8 +4,8 @@ import data from '../model/XiuxianData.js'
 import fs from "fs"
 
 //如需截图必须引入以下两库
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
-import Show from '../../model/show.js';
+import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import Show from '../model/show.js';
 
 
 //本模块由(qq:1695037643)和jio佬完成
