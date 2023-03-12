@@ -280,11 +280,11 @@ export class UserSellAll extends plugin {
             for (let l of najie[i]) {
                 if (l && l.islockd == 0 && !(l.id >= 400991 && l.id <= 400999)) {
                     //判断是否为回收物品
-                    let thing_exist = await foundhuishouthing(l);
+                    let thing_exist = await foundhuishouthing(l.name);
                     if (!thing_exist) {
-                        str.push(`[${l}]只可回收，不可出售`);
+                        str.push(`[${l.name}]只可回收，不可出售`);
                     } else {
-                        str.push(`[${l}]出售成功`);
+                        str.push(`[${l.name}]出售成功`);
                         //纳戒中的数量
                         let quantity = l.数量;
                         /*console.log(l);
