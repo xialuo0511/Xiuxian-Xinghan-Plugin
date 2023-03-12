@@ -18,6 +18,10 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { mjzd_battle } from '../Battle/Battle.js';
 
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 /**
  * 定时任务
  */
@@ -531,7 +535,19 @@ export class SecretPlaceplusTask extends plugin {
    * @returns {Promise<void>}
    */
   async pushInfo(id, is_group, msg) {
-    if (is_group) {
+
+      let log_data = {
+          log: msg,
+      };
+      const data1 = await new Show(e).get_logData(log_data);
+      let img = await puppeteer.screenshot('log', {
+          ...data1,
+      });
+      e.reply(img);
+      return;
+
+      /*
+      if (is_group) {
       await Bot.pickGroup(id)
         .sendMsg(msg)
         .catch(err => {
@@ -541,4 +557,5 @@ export class SecretPlaceplusTask extends plugin {
       await common.relpyPrivate(id, msg);
     }
   }
+  */
 }
