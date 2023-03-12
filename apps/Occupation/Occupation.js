@@ -1018,8 +1018,8 @@ export class Occupation extends plugin {
             }
         }
         let mubiao1 = [];
-        /*
         let i = 0;
+        /*
         let File = fs.readdirSync(__PATH.player_path);
         File = File.filter(file => file.endsWith(".json"));
         let File_length = File.length;
