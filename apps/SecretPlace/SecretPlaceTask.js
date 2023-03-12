@@ -165,7 +165,7 @@ export class SecretPlaceTask extends plugin {
               }
             //活动怪物设置
               if (
-                  weizhi.name == '赤王陵' ||
+                  weizhi.name == '赤王陵'
               ) {
                   monster_length = data.monster_list_huodong.length;
                   monster_index = Math.trunc(Math.random() * monster_length);
