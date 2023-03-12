@@ -38,6 +38,9 @@ class XiuxianData {
         //活动列表
         this.huodong = JSON.parse(fs.readFileSync(`${this.lib_path}/活动列表.json`));
 
+        //加载遗迹列表
+        this.yiji_list = JSON.parse(fs.readFileSync(`${this.lib_path}/遗迹列表.json`));
+
         //加载灵根列表
         this.talent_list = JSON.parse(fs.readFileSync(`${this.lib_path}/灵根列表.json`));
         //加载怪物列表

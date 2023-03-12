@@ -3432,6 +3432,11 @@ export class UserHome extends plugin {
             e.reply(`这方世界没有[${thing_name}]`);
             return;
         }
+        let thing_exist1 = await foundhuishouthing(thing_name);
+        if (!thing_exist1) {
+            e.reply(`[${thing_name}]只可回收，不可出售`);
+            return;
+        }
         if (thing_exist.id >= 400991 && thing_exist.id <= 400999) {
             e.reply(`轮回功法${thing_name}禁止出售。`)
             return;

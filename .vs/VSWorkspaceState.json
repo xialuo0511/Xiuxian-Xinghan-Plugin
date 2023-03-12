@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\apps",
-    "\\apps\\Xijie",
-    "\\apps\\Xiuxian",
-    "\\defSet\\help",
-    "\\defSet\\xiuxian",
-    "\\model",
+    "\\apps\\xunbao",
+    "\\logs",
     "\\resources",
     "\\resources\\data",
-    "\\resources\\data\\item"
+    "\\resources\\data\\Level",
+    "\\resources\\html",
+    "\\resources\\html\\supermarket",
+    "\\resources\\html\\tuzhi"
   ],
-  "SelectedNode": "\\apps\\User\\UserHome.js",
+  "SelectedNode": "\\apps\\SecretPlace\\yiji.js",
   "PreviewInSolutionExplorer": false
 }

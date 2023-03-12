@@ -7,14 +7,19 @@ import {
     exist_najie_thing,
     instead_equipment,
     foundthing,
-    Write_najie, Read_najie, isNotNull
+    Write_najie, Read_najie, isNotNull,
+    foundhuishouthing
 } from '../Xiuxian/xiuxian.js'
 import {Add_灵石, Add_najie_thing, Add_修为, Add_player_学习功法, Add_血气,Locked_najie_thing,Check_thing} from '../Xiuxian/xiuxian.js'
 import {__PATH} from "../Xiuxian/xiuxian.js"
 import {get_equipment_img} from '../ShowImeg/showData.js'
 import {synchronization} from '../AdminSuper/AdminSuper.js'
 import {Pushforum_ASS} from '../Help/Forum.js'
-import {Synchronization_ASS} from '../Association/TreasureCabinet.js'
+import { Synchronization_ASS } from '../Association/TreasureCabinet.js'
+
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
 
 /**
  * 全局变量
@@ -247,12 +252,28 @@ export class UserSellAll extends plugin {
         let wupin1 = []
         if (e.msg != '#一键出售') {
             let thing = e.msg.replace("#一键出售", '');
+            let str = [];
             for (var i of wupin) {
+                let thing_exist = await foundhuishouthing(thing.includes(i));
+                if (!thing_exist) {
+                    str.push(`[${thing_name}]只可回收，不可出售`);
+                    return;
+                }
                 if (thing.includes(i)) {
                     wupin1.push(i)
                     thing = thing.replace(i, "")
                 }
             }
+            //返回不可回收物品
+            let log_data = {
+                log: str,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+
             if (thing.length == 0) {
                 wupin = wupin1
             } else {
