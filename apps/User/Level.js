@@ -273,9 +273,9 @@ export class Level extends plugin {
         if (rand > prob) {
             let bad_time = Math.random();//增加多种突破失败情况，顺滑突破丢失修为曲线
             if (bad_time > 0.9) {
-                await Add_修为(usr_qq, -1 * need_exp * 0.4);
+                await Add_修为(usr_qq, -1 * need_exp * 0.3);
                 await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);//获得上次的时间戳
-                e.reply(`突然听到一声鸡叫,鸡..鸡..鸡...鸡你太美！！！是翠翎恐蕈，此地不适合突破，快跑！险些走火入魔，丧失了` + (need_exp) * 0.4 + "修为");
+                e.reply(`突然听到一声鸡叫,鸡..鸡..鸡...鸡你太美！！！是翠翎恐蕈，此地不适合突破，快跑！险些走火入魔，丧失了` + (need_exp) * 0.3 + "修为");
                 return;
             } else if (bad_time > 0.8) {
                 await Add_修为(usr_qq, -1 * need_exp * 0.2);

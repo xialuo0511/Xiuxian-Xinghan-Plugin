@@ -1060,7 +1060,7 @@ export class Occupation extends plugin {
         */
 
         let guaiwu = Math.random();
-        if (guaiwu == 0) {
+        if (guaiwu > 0.6) {
             mubiao[i] = {
                 名号: "仙路窃贼-屑洛",
                 赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
@@ -1736,7 +1736,7 @@ export class Occupation extends plugin {
         */
 
         let guaiwu = Math.random();
-        if (guaiwu == 0) {
+        if (guaiwu > 0.6) {
             mubiao[i] = {
                 名号: "村庄-稻妻",
                 赏金: Math.trunc(500 * (1.2 + 0.02 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 7),
