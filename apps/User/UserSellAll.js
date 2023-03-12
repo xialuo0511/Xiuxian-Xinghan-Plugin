@@ -284,7 +284,6 @@ export class UserSellAll extends plugin {
                     if (thing_exist) {
                         str.push(`【${l.name}】只可回收，不可出售`);
                     } else {
-                        str.push(`【${l.name}】*${l.数量}出售成功`);
                         //纳戒中的数量
                         let quantity = l.数量;
                         /*console.log(l);
@@ -296,12 +295,14 @@ export class UserSellAll extends plugin {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
                         }
                         commodities_price = commodities_price + l.出售价 * quantity;
+                        let money = l.出售价 * quantity;
+                        str.push(`【${l.name}】*${l.数量}出售成功,共${money}灵石`);
                     }
                 }
             }
         }
         await Add_灵石(usr_qq, commodities_price);
-        str.push(`出售成功!  获得${commodities_price}灵石 `);
+        str.push(`出售成功!出售共获得${commodities_price}灵石 `);
 
         //返回图片
         let log_data = {
