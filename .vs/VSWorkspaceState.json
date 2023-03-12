@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\apps",
+    "\\apps\\User",
     "\\apps\\xunbao",
-    "\\logs",
-    "\\resources",
-    "\\resources\\data",
-    "\\resources\\data\\Level",
-    "\\resources\\html",
-    "\\resources\\html\\supermarket",
-    "\\resources\\html\\tuzhi"
+    "\\config",
+    "\\config\\xiuxian",
+    "\\defSet",
+    "\\defSet\\help",
+    "\\model",
+    "\\resources"
   ],
-  "SelectedNode": "\\apps\\SecretPlace\\yiji.js",
+  "SelectedNode": "\\resources\\data\\item\\遗迹列表.json",
   "PreviewInSolutionExplorer": false
 }
