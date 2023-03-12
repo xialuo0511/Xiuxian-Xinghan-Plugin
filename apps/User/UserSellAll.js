@@ -280,10 +280,11 @@ export class UserSellAll extends plugin {
                         /*console.log(l);
                         console.log(l.class);
                         console.log(quantity);*/
+                        let pinji = ['劣', '普', '优', '精', '极', '绝']
                         let t;
                         if (l.class == "装备") {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
-                            t = `【${l.name}（${l.pinji}）*${l.数量}】出售成功,`;
+                            t = `【${l.name}（`+ pinji[l.pinji] + `）*${l.数量}】出售成功,`;
                         } else {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
                             t = `【${l.name}*${l.数量}】出售成功`;
