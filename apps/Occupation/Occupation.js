@@ -1017,7 +1017,7 @@ export class Occupation extends plugin {
                 return;
             }
         }
-        let mubiao = [];
+        let mubiao1 = [];
         /*
         let i = 0;
         let File = fs.readdirSync(__PATH.player_path);
@@ -1061,14 +1061,14 @@ export class Occupation extends plugin {
 
         let guaiwu = Math.random();
         if (guaiwu > 0.6) {
-            mubiao[i] = {
+            mubiao1[i] = {
                 名号: "仙路窃贼-屑洛",
                 赏金: Math.trunc(1000000 * (1.5 + 0.06 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
                 QQ: 1
             }
             i++;
         } else {
-            mubiao[i] = {
+            mubiao1[i] = {
                 名号: "仙路窃贼-藏宝鼬",
                 赏金: Math.trunc(1000000 * (1.5 + 0.08 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 4),
                 QQ: 1
@@ -1077,7 +1077,7 @@ export class Occupation extends plugin {
         }
 
         for (var k = 0; k < 3; k++) {
-            msg.push(mubiao[Math.trunc(Math.random() * i)]);
+            msg.push(mubiao1[Math.trunc(Math.random() * i)]);
         }
         let arr = {
             "arm": msg,
