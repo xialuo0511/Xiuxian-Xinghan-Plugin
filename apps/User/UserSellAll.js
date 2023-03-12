@@ -258,7 +258,6 @@ export class UserSellAll extends plugin {
                     let thing_exist = await foundhuishouthing(i);
                     if (!thing_exist) {
                         str.push(`[${i}]只可回收，不可出售`);
-                        return;
                     } else {
                         str.push(`[${ i}]出售成功`);
                         wupin1.push(i)
