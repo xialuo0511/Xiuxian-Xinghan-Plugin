@@ -516,7 +516,11 @@ export class SecretPlaceplusTask extends plugin {
               await Add_修为(player_id, xiuwei);
               await Add_HP(player_id, Data_battle.A_xue);
               //发送消息
-                await this.pushInfo(msg);
+              if (is_group) {
+                await this.pushInfo(push_address, is_group, msg);
+              } else {
+                await this.pushInfo(player_id, is_group, msg);
+              }
             }
           }
         }
@@ -530,19 +534,7 @@ export class SecretPlaceplusTask extends plugin {
    * @param is_group
    * @returns {Promise<void>}
    */
-  async pushInfo(msg) {
-
-      let log_data = {
-          log: msg,
-      };
-      const data1 = await new Show(e).get_logData(log_data);
-      let img = await puppeteer.screenshot('log', {
-          ...data1,
-      });
-      e.reply(img);
-      return;
-
-      /*
+  async pushInfo(id, is_group, msg) {
       if (is_group) {
       await Bot.pickGroup(id)
         .sendMsg(msg)
@@ -551,7 +543,7 @@ export class SecretPlaceplusTask extends plugin {
         });
     } else {
       await common.relpyPrivate(id, msg);
-    }*/
+    }
   }
   
 }
