@@ -1739,14 +1739,14 @@ export class Occupation extends plugin {
         if (guaiwu == 0) {
             mubiao[i] = {
                 名号: "村庄-稻妻",
-                赏金: Math.trunc(500 * (1.3 + 0.02 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 6),
+                赏金: Math.trunc(500 * (1.2 + 0.02 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 7),
                 QQ: 1
             }
             i++;
         } else {
             mubiao[i] = {
                 名号: "村庄-蒙德",
-                赏金: Math.trunc(500 * (1.3 + 0.03 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 6),
+                赏金: Math.trunc(500 * (1.2 + 0.03 * player.occupation_level) * player.level_id * player.Physique_id / 42 / 42 / 7),
                 QQ: 1
             }
             i++;

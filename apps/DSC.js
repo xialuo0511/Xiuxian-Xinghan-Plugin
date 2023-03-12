@@ -3,6 +3,10 @@ import { segment } from "oicq"
 import data from '../model/XiuxianData.js'
 import fs from "fs"
 
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 
 //本模块由(qq:1695037643)和jio佬完成
 export class DSC extends plugin {
@@ -114,13 +118,15 @@ export class DSC extends plugin {
                 BattleFrame++;
             }
 
-            if (msg.length <= 30)
-                await ForwardMsg(e, msg);
-            else {
-                msg.length = 30;
-                await ForwardMsg(e, msg);
-                e.reply("战斗过长，仅展示部分内容");
-            }
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+
             await redis.set("xiuxian:player:" + usr_qq + "CD", now_Time);
             if (bosszt.Health == 0) {
                 CurrentPlayerAttributes.神魄段数 += 5;

@@ -20,6 +20,10 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { get_random_talent } from '../Xiuxian/xiuxian.js';
 
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 /**
  * 战斗类
  */
@@ -396,13 +400,17 @@ export class Battle extends plugin {
     B_player.当前血量 = B_player.血量上限;
     let Data_battle = await zd_battle(A_player, B_player);
     let msg = Data_battle.msg;
-    //战斗回合过长会导致转发失败报错，所以超过30回合的就不转发了
-    // if (msg.length > 30) {
-    //     e.reply("战斗过程超过30回合，略");
-    // } else {
-    await ForwardMsg(e, msg);
-    // }
-    //下面的战斗超过100回合会报错
+    
+      let log_data = {
+          log: msg,
+      };
+      const data1 = await new Show(e).get_logData(log_data);
+      let img = await puppeteer.screenshot('log', {
+          ...data1,
+      });
+      e.reply(img);
+      return;
+
     let A_win = `${A_player.名号}击败了${B_player.名号}`;
     let B_win = `${B_player.名号}击败了${A_player.名号}`;
     if (msg.find(item => item == A_win)) {
