@@ -639,7 +639,7 @@ export class SecretPlace extends plugin {
         let commodities_list = data.huodongshop_list;
         commodities_list = commodities_list.filter(name => thing_name);
         //搜索纳戒物品
-        let shu = await exist_najie_thing(usr_qq, commodities_list[0].name, "道具");
+        let shu = await exist_najie_thing(usr_qq, commodities_list[0].daibi, "道具");
         //转为整数
         let quantity = commodities_list[0].出售价 * shuliang
         quantity = await convert2integer(quantity);
