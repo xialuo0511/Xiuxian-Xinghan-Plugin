@@ -616,6 +616,19 @@ export class SecretPlace extends plugin {
         e.reply("开始探寻遗迹" + didian + "," + time + "分钟后归来!");
         return;
     }
+
+    async daibiduihuan(e){
+        if (!e.isGroup) {
+            return;
+        }
+        let usr_qq = e.user_id;
+        await Go(e);
+        let wupin = e.msg.replace("#代币兑换", '');
+        let commodities_list = data.huodongshop_list;
+        commodities_list = commodities_list.filter(name => wupin);
+        let shicai = await exist_najie_thing(usr_qq, thing_name, commodities_list.daibi);
+        
+    }
 }
 
 /**
