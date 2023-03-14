@@ -634,28 +634,28 @@ export class SecretPlace extends plugin {
         let code = msg.split("*");
         //获取物品名和数量
         let thing_name = code[0];
-        let quantity = code[1];
+        let shuliang = code[1];
         //获取活动商店数据
         let commodities_list = data.huodongshop_list;
         commodities_list = commodities_list.filter(name => thing_name);
-        e.reply(commodities_list[0].daibi)
         //搜索纳戒物品
         let shu = await exist_najie_thing(usr_qq, thing_name, commodities_list[0].daibi);
         //转为整数
+        let quantity = commodities_list[0].出售价 * shuliang
         quantity = await convert2integer(quantity);
 
         if (!shu) {//没有
-            e.reply(`【${commodities_list.daibi}】代币不足`);
+            e.reply(`你的纳戒中没有【${commodities_list[0].daibi}】`);
             return;
         }
         
         if (shu >= quantity) {
-            await Add_najie_thing(usr_qq, commodities_list.daibi, commodities_list.class, -commodities_list.出售价);
-            await Add_najie_thing(usr_qq, commodities_list.name, commodities_list.class, quantity)
-            e.reply(`服用成功,增加了${2 * quantity}点饱食度`)
+            await Add_najie_thing(usr_qq, commodities_list[0].daibi, commodities_list[0].class, -commodities_list[0].出售价);
+            await Add_najie_thing(usr_qq, commodities_list[0].name, commodities_list[0].class, quantity)
+            e.reply(`兑换${commodities_list[0].name}*${shuliang}成功，消耗${commodities_list[0].daibi}*${quantity}`)
             return;
         } else {
-            e.reply("你没有那么多的" + thing_name)
+            e.reply("购买需要[" + commodities_list[0].daibi + "]*" + quantity + "，你只有[" + commodities_list[0].daibi + "]*" + shu)
             return;
         }
         
