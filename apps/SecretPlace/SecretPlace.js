@@ -637,7 +637,7 @@ export class SecretPlace extends plugin {
         let quantity = code[1];
         //获取活动商店数据
         let commodities_list = data.huodongshop_list;
-        commodities_list = commodities_list.filter(name => wupin);
+        commodities_list = commodities_list.filter(name => thing_name);
         //搜索纳戒物品
         let shu = await exist_najie_thing(usr_qq, thing_name, commodities_list.daibi);
         //转为整数
