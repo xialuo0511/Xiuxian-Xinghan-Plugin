@@ -651,7 +651,7 @@ export class SecretPlace extends plugin {
         }
         
         if (shu >= quantity) {
-            await Add_najie_thing(usr_qq, commodities_list[0].daibi, commodities_list[0].class, -quantity);
+            await Add_najie_thing(usr_qq, commodities_list[0].daibi, "道具", -quantity);
             await Add_najie_thing(usr_qq, commodities_list[0].name, commodities_list[0].class, shuliang)
             e.reply(`兑换${commodities_list[0].name}*${shuliang}成功，消耗${commodities_list[0].daibi}*${quantity}`)
             return;
