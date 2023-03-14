@@ -629,12 +629,13 @@ export class SecretPlace extends plugin {
         await Go(e);
 
         //获取输入信息
-        let msg = e.msg.replace("#代币兑换", '');
+        let msg = e.msg.replace("#代币兑换", "");
         //分割文本变数组
         let code = msg.split("*");
         //获取物品名和数量
         let thing_name = code[0];
         let quantity = code[1];
+        e.reply(thing_name);
         //获取活动商店数据
         let commodities_list = data.huodongshop_list;
         commodities_list = commodities_list.filter(name => thing_name);
