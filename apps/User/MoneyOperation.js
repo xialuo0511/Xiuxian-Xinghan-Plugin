@@ -570,7 +570,7 @@ export class MoneyOperation extends plugin {
         File = File.filter(file => file.endsWith(".json"));
         let File_length = File.length;
         //金库
-        let Worldmoney = 114514141414;
+        let Worldmoney = 99999999999999999999;
         if (Worldmoney == null || Worldmoney == undefined || Worldmoney <= 0 || Worldmoney == NaN) {
             Worldmoney = 1;
         }
