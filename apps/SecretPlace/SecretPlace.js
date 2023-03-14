@@ -2,7 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { Read_player, existplayer, ForwardMsg, isNotNull, sleep,  exist_najie_thing,Add_najie_thing } from '../Xiuxian/xiuxian.js'
+import { Read_player, existplayer, ForwardMsg, isNotNull, sleep,  exist_najie_thing,Add_najie_thing,convert2integer } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
 import { add_mingdang, add_time } from "../jiance/jiance.js"
 import Show from "../../model/show.js";
@@ -81,7 +81,7 @@ export class SecretPlace extends plugin {
                     fnc: 'huodongshop'
                 },
                 {
-                    reg: '^#代币兑换(.*)$',
+                    reg: '^#代币兑换(.*)*(.*)$',
                     fnc: 'daibiduihuan'
                 }
             ]
@@ -617,13 +617,26 @@ export class SecretPlace extends plugin {
         return;
     }
 
+/**
+ * 兑换
+ */
+
     async daibiduihuan(e){
         if (!e.isGroup) {
             return;
         }
         let usr_qq = e.user_id;
         await Go(e);
-        let wupin = e.msg.replace("#代币兑换", '');
+
+        //获取输入信息
+        let msg = e.msg.replace(reg, '');
+        msg = msg.replace("#", '');
+        //分割文本变数组
+        let code = msg.split("\*");
+        //获取物品名和数量
+        let thing_name = code[0];
+        let quantity = code[1];
+
         let commodities_list = data.huodongshop_list;
         commodities_list = commodities_list.filter(name => wupin);
         let shicai = await exist_najie_thing(usr_qq, thing_name, commodities_list.daibi);
