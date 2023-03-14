@@ -643,6 +643,7 @@ export class SecretPlace extends plugin {
         //转为整数
         let quantity = commodities_list[0].出售价 * shuliang
         quantity = await convert2integer(quantity);
+        shuliang = await convert2integer(shuliang);
 
         if (!shu) {//没有
             e.reply(`你的纳戒中没有【${commodities_list[0].daibi}】`);
@@ -650,8 +651,8 @@ export class SecretPlace extends plugin {
         }
         
         if (shu >= quantity) {
-            await Add_najie_thing(usr_qq, commodities_list[0].daibi, commodities_list[0].class, -commodities_list[0].出售价);
-            await Add_najie_thing(usr_qq, commodities_list[0].name, commodities_list[0].class, quantity)
+            await Add_najie_thing(usr_qq, commodities_list[0].daibi, commodities_list[0].class, -quantity);
+            await Add_najie_thing(usr_qq, commodities_list[0].name, commodities_list[0].class, shuliang)
             e.reply(`兑换${commodities_list[0].name}*${shuliang}成功，消耗${commodities_list[0].daibi}*${quantity}`)
             return;
         } else {
