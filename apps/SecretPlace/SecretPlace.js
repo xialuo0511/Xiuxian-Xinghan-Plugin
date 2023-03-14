@@ -636,10 +636,28 @@ export class SecretPlace extends plugin {
         //获取物品名和数量
         let thing_name = code[0];
         let quantity = code[1];
-
+        //获取活动商店数据
         let commodities_list = data.huodongshop_list;
         commodities_list = commodities_list.filter(name => wupin);
-        let shicai = await exist_najie_thing(usr_qq, thing_name, commodities_list.daibi);
+        //搜索纳戒物品
+        let shu = await exist_najie_thing(usr_qq, thing_name, commodities_list.daibi);
+        //转为整数
+        quantity = await convert2integer(quantity);
+
+        if (!x) {//没有
+            e.reply(`【${commodities_list.daibi}】代币不足`);
+            return;
+        }
+        
+        if (shu >= quantity) {
+            await Add_najie_thing(usr_qq, thing_name, "食材", -quantity);
+            await Add_饱食度(usr_qq, 2 * quantity)
+            e.reply(`服用成功,增加了${2 * quantity}点饱食度`)
+            return;
+        } else {
+            e.reply("你没有那么多的" + thing_name)
+            return;
+        }
         
     }
 }
