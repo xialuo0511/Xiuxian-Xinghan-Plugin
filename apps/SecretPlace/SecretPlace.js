@@ -643,7 +643,7 @@ export class SecretPlace extends plugin {
         //转为整数
         quantity = await convert2integer(quantity);
 
-        if (!x) {//没有
+        if (!shu) {//没有
             e.reply(`【${commodities_list.daibi}】代币不足`);
             return;
         }
