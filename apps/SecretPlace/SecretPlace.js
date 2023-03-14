@@ -635,12 +635,12 @@ export class SecretPlace extends plugin {
         //获取物品名和数量
         let thing_name = code[0];
         let quantity = code[1];
-        e.reply(thing_name);
         //获取活动商店数据
         let commodities_list = data.huodongshop_list;
         commodities_list = commodities_list.filter(name => thing_name);
+        e.reply(commodities_list[0].daibi)
         //搜索纳戒物品
-        let shu = await exist_najie_thing(usr_qq, thing_name, commodities_list.daibi);
+        let shu = await exist_najie_thing(usr_qq, thing_name, commodities_list[0].daibi);
         //转为整数
         quantity = await convert2integer(quantity);
 
