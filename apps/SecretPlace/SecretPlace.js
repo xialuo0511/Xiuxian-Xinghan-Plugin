@@ -650,8 +650,8 @@ export class SecretPlace extends plugin {
         }
         
         if (shu >= quantity) {
-            await Add_najie_thing(usr_qq, thing_name, "食材", -quantity);
-            await Add_饱食度(usr_qq, 2 * quantity)
+            await Add_najie_thing(usr_qq, commodities_list.daibi, commodities_list.class, -commodities_list.出售价);
+            await Add_najie_thing(usr_qq, commodities_list.name, commodities_list.class, quantity)
             e.reply(`服用成功,增加了${2 * quantity}点饱食度`)
             return;
         } else {
