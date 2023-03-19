@@ -251,11 +251,11 @@ export async function get_daoju_img(e) {
     }
     for (i = 0; i < daoju_list.length; i++) {
         if (najie.道具.find(item => item.name == daoju_list[i].name)) {
-            if(daoju_list[i].type!="练气幻影卡面" && daoju_list[i].type!="装备幻影卡面"){
+            if(daoju_list[i].type!="幻影卡面_练气" && daoju_list[i].type!="幻影卡面_装备"){
                 daoju_have.push(daoju_list[i])
             }
         } else {
-            if(daoju_list[i].type!="练气幻影卡面" && daoju_list[i].type!="装备幻影卡面"){
+            if(daoju_list[i].type!="幻影卡面_练气" && daoju_list[i].type!="幻影卡面_装备"){
                 daoju_need.push(daoju_list[i])
             }
         }
@@ -307,11 +307,11 @@ export async function get_daoju_img(e) {
     }
     for (var i = 0; i < daoju_list.length; i++) {
         if (najie.道具.find(item => item.name == daoju_list[i].name)) {
-            if(daoju_list[i].type=="练气幻影卡面"|| daoju_list[i].type=="装备幻影卡面"){
+            if(daoju_list[i].type=="幻影卡面_练气"|| daoju_list[i].type=="幻影卡面_装备"){
                 daoju_have.push(daoju_list[i])
             }
         } else {
-            if(daoju_list[i].type=="练气幻影卡面"|| daoju_list[i].type=="装备幻影卡面"){
+            if(daoju_list[i].type=="幻影卡面_练气"|| daoju_list[i].type=="幻影卡面_装备"){
                 daoju_need.push(daoju_list[i])
             }
         }
