@@ -2,16 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\apps",
-    "\\apps\\Battle",
-    "\\config",
-    "\\config\\xiuxian",
-    "\\defSet",
-    "\\defSet\\help",
-    "\\model",
+    "\\apps\\AdminSuper",
+    "\\apps\\Association",
+    "\\apps\\Auction",
+    "\\apps\\Tiandibang",
+    "\\apps\\xunbao",
     "\\resources",
     "\\resources\\data",
     "\\resources\\data\\item"
   ],
-  "SelectedNode": "\\补丁日志.txt",
+  "SelectedNode": "\\apps\\AdminSuper",
   "PreviewInSolutionExplorer": false
 }
