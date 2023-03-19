@@ -44,6 +44,10 @@ export class showData extends plugin {
                     fnc: "show_power",
                 },
                 {
+                    reg: "^#我的幻影$",
+                    fnc: "show_huanying",
+                }
+                {
                     reg: "^#练气境界$",
                     fnc: "show_Level",
                 },
@@ -90,6 +94,15 @@ export class showData extends plugin {
             return;
         }
         let img = await get_power_img(e);
+        e.reply(img);
+        return;
+    }
+
+    async show_huanying(e) {
+        if (!e.isGroup) {
+            return;
+        }
+        let img = await get_huanying_img(e);
         e.reply(img);
         return;
     }
