@@ -2,14 +2,16 @@
   "ExpandedNodes": [
     "",
     "\\apps",
-    "\\apps\\User",
-    "\\apps\\xunbao",
+    "\\apps\\Battle",
     "\\config",
     "\\config\\xiuxian",
     "\\defSet",
     "\\defSet\\help",
     "\\model",
-    "\\resources"
+    "\\resources",
+    "\\resources\\data",
+    "\\resources\\data\\item"
   ],
+  "SelectedNode": "\\补丁日志.txt",
   "PreviewInSolutionExplorer": false
 }

@@ -46,7 +46,7 @@ export class showData extends plugin {
                 {
                     reg: "^#我的幻影$",
                     fnc: "show_huanying",
-                }
+                },
                 {
                     reg: "^#练气境界$",
                     fnc: "show_Level",
