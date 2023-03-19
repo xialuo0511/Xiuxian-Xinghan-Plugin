@@ -2,9 +2,11 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { Read_player, existplayer, ForwardMsg, isNotNull, sleep,  exist_najie_thing,Add_najie_thing } from '../Xiuxian/xiuxian.js'
+import { Read_player, existplayer, ForwardMsg, isNotNull, sleep,  exist_najie_thing,Add_najie_thing,convert2integer } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
 import { add_mingdang, add_time } from "../jiance/jiance.js"
+import Show from "../../model/show.js";
+import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
 /**
  * 秘境模块
@@ -75,12 +77,27 @@ export class SecretPlace extends plugin {
                     fnc: 'Goyijiplace'
                 },
                 {
-                    reg: '^#逃离',
-                    fnc: 'Giveup'
+                    reg: '^#活动商店',
+                    fnc: 'huodongshop'
+                },
+                {
+                    reg: '^#代币兑换(.*)*(.*)$',
+                    fnc: 'daibiduihuan'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+    
+    //活动
+    async huodongshop(e) {
+         //不开放私聊功能
+         if (!e.isGroup) {
+            return;
+        }
+        let img = await get_huodongshop_img(e);
+        e.reply(img);
+        return;
     }
 
     async Xiuxianstate(e) {
@@ -599,6 +616,72 @@ export class SecretPlace extends plugin {
         e.reply("开始探寻遗迹" + didian + "," + time + "分钟后归来!");
         return;
     }
+
+/**
+ * 兑换
+ */
+
+    async daibiduihuan(e){
+        if (!e.isGroup) {
+            return;
+        }
+        let usr_qq = e.user_id;
+        await Go(e);
+
+        //获取输入信息
+        let msg = e.msg.replace("#代币兑换", "");
+        //分割文本变数组
+        let code = msg.split("*");
+        //获取物品名和数量
+        let thing_name = code[0];
+        let shuliang = code[1];
+        //获取活动商店数据
+        let commodities_list = data.huodongshop_list;
+        commodities_list = commodities_list.filter(name => thing_name);
+        //搜索纳戒物品
+        let shu = await exist_najie_thing(usr_qq, commodities_list[0].daibi, "道具");
+        //转为整数
+        let quantity = commodities_list[0].出售价 * shuliang
+        quantity = await convert2integer(quantity);
+        shuliang = await convert2integer(shuliang);
+
+        if (!shu) {//没有
+            e.reply(`你的纳戒中没有【${commodities_list[0].daibi}】`);
+            return;
+        }
+        
+        if (shu >= quantity) {
+            await Add_najie_thing(usr_qq, commodities_list[0].daibi, "道具", -quantity);
+            await Add_najie_thing(usr_qq, commodities_list[0].name, commodities_list[0].class, shuliang)
+            e.reply(`兑换${commodities_list[0].name}*${shuliang}成功，消耗${commodities_list[0].daibi}*${quantity}`)
+            return;
+        } else {
+            e.reply("购买需要[" + commodities_list[0].daibi + "]*" + quantity + "，你只有[" + commodities_list[0].daibi + "]*" + shu)
+            return;
+        }
+        
+    }
+}
+
+/**
+ *活动商店
+ */
+export async function get_huodongshop_img(e) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let commodities_list = data.huodongshop_list;
+    let ningmenghome_data = {
+        user_id: usr_qq,
+        commodities_list: commodities_list
+    }
+    const data1 = await new Show(e).get_huodongshopData(ningmenghome_data);
+    let img = await puppeteer.screenshot("huodongshop", {
+        ...data1,
+    });
+    return img;
 }
 
 export async function Goyiji(e, weizhi, addres) {

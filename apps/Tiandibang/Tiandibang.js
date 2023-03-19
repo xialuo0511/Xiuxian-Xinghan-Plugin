@@ -48,8 +48,7 @@ export class Tiandibang extends plugin {
                 {
                     reg: '^#积分兑换(.*)$',
                     fnc: 'duihuan'
-                },
-
+                }
             ]
         });
         this.set = config.getdefSet('task', 'task')
