@@ -92,7 +92,7 @@ export class UserHome extends plugin {
                 reg: '^#兑换码兑换.*$',
                 fnc: 'huodong'
             }, {
-                reg: '^#幻影装备.*$',
+                reg: '^#幻影牌面.*$',
                 fnc:'zbhuanying'
             }]
         })
@@ -840,13 +840,16 @@ export class UserHome extends plugin {
         }
         if (thing_exist.type == "幻影卡面_练气") {
             let photo = thing_exist.id
-            if (player.练气皮肤 == photo) {
+            let pifu = redis.get("xiuxian:player:" + usr_qq + ":lianqipifu")
+            if (pifu == 'null') {
+                pifu = 0
+            }
+            if (pifu == photo) {
                 e.reply("您的卡面已经是" + thing_exist.name)
                 return
             }
+            await redis.set("xiuxian:player:" + usr_qq + ":lianqipifu", photo)
             let old = data.daoju_list.find(item => item.id == player.练气皮肤)
-            player.练气皮肤 = photo
-            await Write_player(usr_qq, player)
             await Add_najie_thing(usr_qq, thing_name, "道具", -1)
             await Add_najie_thing(usr_qq, old.name, "道具", 1)
             e.reply("更换" + thing_exist.type + "【" + thing_exist.name + "】成功")
@@ -854,13 +857,16 @@ export class UserHome extends plugin {
         }
         if (thing_exist.type == "幻影卡面_装备") {
             let photo = thing_exist.id
-            if (player.装备皮肤 == photo) {
+            let pifu = redis.get("xiuxian:player:" + usr_qq + ":zhuangbeipifu")
+            if (pifu == 'null') {
+                pifu = 0
+            }
+            if (pifu == photo) {
                 e.reply("您的卡面已经是" + thing_exist.name)
                 return
             }
             let old = data.kamian.find(item => item.id == player.装备皮肤)
-            player.装备皮肤 = photo
-            await Write_player(usr_qq, player)
+            await redis.set("xiuxian:player:" + usr_qq + ":zhuangbeipifu", photo)
             await Add_najie_thing(usr_qq, thing_name, "道具", -1)
             await Add_najie_thing(usr_qq, old.name, "道具", 1)
             e.reply("更换" + thing_exist.type + "【" + thing_exist.name + "】成功")

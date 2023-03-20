@@ -1328,6 +1328,10 @@ export async function get_equipment_img2(e) {
     }
     var bao = Math.trunc(parseInt(player.暴击率 * 100))
     let equipment = await data.getData("equipment", usr_qq);
+    let pifu = redis.get("xiuxian:player:" + usr_qq + ":zhuangbeipifu")
+    if (pifu == 'null') {
+        pifu = 0
+    }
     let player_data = {
         user_id: usr_qq,
         mdz: player.魔道值,
@@ -1338,7 +1342,7 @@ export async function get_equipment_img2(e) {
         player_bao: bao,
         player_maxHP: player.血量上限,
         player_nowHP: player.当前血量,
-        pifu:Number(player.装备皮肤)
+        pifu:Number(pifu)
     }
     const data1 = await new Show(e).get_equipmnetData2(player_data);
     let img = await puppeteer.screenshot("equipment2", {
@@ -1362,6 +1366,10 @@ export async function get_najie_img(e) {
     const lingshi2 = Math.trunc(najie.灵石上限);
     let strand_hp = Strand(player.当前血量, player.血量上限)
     let strand_lingshi = Strand(najie.灵石, najie.灵石上限)
+    let pifu = redis.get("xiuxian:player:" + usr_qq + ":lianqipifu")
+    if (pifu == 'null') {
+        pifu = 0
+    }
     let player_data = {
         user_id: usr_qq,
         player: player,
@@ -1384,7 +1392,7 @@ export async function get_najie_img(e) {
         strand_hp: strand_hp,
         strand_lingshi: strand_lingshi,
         修仙版本: versionData,
-        pifu:player.练气皮肤
+        pifu:Number(pifu)
     }
     const data1 = await new Show(e).get_najieData(player_data);
     return await puppeteer.screenshot("najie", {
