@@ -45,7 +45,7 @@ export class UserSellAll extends plugin {
                     fnc: 'Sell_all_comodities'
                 },
                 {
-                    reg: '#一键回收(.*)$',
+                    reg: '#一键回收$',
                     fnc: 'huishou'
                 },
                 {
@@ -258,21 +258,6 @@ export class UserSellAll extends plugin {
         let najie = await data.getData("najie", usr_qq);
         let commodities_price = 0
         let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子','仙宠','仙宠口粮','食材'];
-        let wupin1 = []
-        if (e.msg != '#一键回收') {
-            let thing = e.msg.replace("#一键回收", '');
-            for (var i of wupin) {
-                if (thing.includes(i)) {
-                    wupin1.push(i)
-                    thing = thing.replace(i, "")
-                }
-            }
-            if (thing.length == 0) {
-                wupin = wupin1
-            } else {
-                return;
-            }
-        }
         console.log(wupin);
         for (var i of wupin) {
             console.log(najie[i]);
@@ -293,7 +278,7 @@ export class UserSellAll extends plugin {
                             t = `【${l.name}（`+ pinji[l.pinji] + `）*${l.数量}】回收成功,`;
                         } else {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
-                            t = `【${l.name}*${l.数量}】回收成功`;
+                            t = `【${l.name}*${l.数量}】回收成功,`;
                         }
                         commodities_price = commodities_price + thing_exist.回收价 * quantity;
                         let money = thing_exist.回收价 * quantity;
@@ -371,7 +356,7 @@ export class UserSellAll extends plugin {
                             t = `【${l.name}（`+ pinji[l.pinji] + `）*${l.数量}】出售成功,`;
                         } else {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
-                            t = `【${l.name}*${l.数量}】出售成功`;
+                            t = `【${l.name}*${l.数量}】出售成功,`;
                         }
                         commodities_price = commodities_price + l.出售价 * quantity;
                         let money = l.出售价 * quantity;
