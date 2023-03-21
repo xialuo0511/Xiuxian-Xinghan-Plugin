@@ -841,7 +841,7 @@ export class UserHome extends plugin {
         if (thing_exist.type == "幻影卡面_练气") {
             let photo = thing_exist.id
             let pifu = redis.get("xiuxian:player:" + usr_qq + ":lianqipifu")
-            if (pifu == null) {
+            if (pifu === null) {
                 pifu = 0
             }
             if (pifu == photo) {
@@ -858,7 +858,7 @@ export class UserHome extends plugin {
         if (thing_exist.type == "幻影卡面_装备") {
             let photo = thing_exist.id
             let pifu = redis.get("xiuxian:player:" + usr_qq + ":zhuangbeipifu")
-            if (pifu == null) {
+            if (pifu === null) {
                 pifu = 0
             }
             if (pifu == photo) {

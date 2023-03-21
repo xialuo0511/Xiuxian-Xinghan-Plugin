@@ -1297,6 +1297,9 @@ export async function get_equipment_img(e) {
     if (!ifexistplay) {
         return;
     }
+    if (pifu === 'null') {
+        pifu = 0
+    }
     const bao = Math.trunc(parseInt(player.暴击率 * 100));
     let equipment = await data.getData("equipment", usr_qq);
     let player_data = {
@@ -1312,7 +1315,7 @@ export async function get_equipment_img(e) {
         player_bao: bao,
         player_maxHP: player.血量上限,
         player_nowHP: player.当前血量,
-        pifu:Number(player.装备皮肤)
+        pifu:Number(pifu)
     }
     const data1 = await new Show(e).get_equipmnetData(player_data);
     return await puppeteer.screenshot("equipment", {
@@ -1367,7 +1370,7 @@ export async function get_najie_img(e) {
     let strand_hp = Strand(player.当前血量, player.血量上限)
     let strand_lingshi = Strand(najie.灵石, najie.灵石上限)
     let pifu = redis.get("xiuxian:player:" + usr_qq + ":lianqipifu")
-    if (pifu == 'null') {
+    if (pifu === 'null') {
         pifu = 0
     }
     let player_data = {
