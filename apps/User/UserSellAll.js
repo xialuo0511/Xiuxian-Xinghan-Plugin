@@ -45,6 +45,10 @@ export class UserSellAll extends plugin {
                     fnc: 'Sell_all_comodities'
                 },
                 {
+                    reg: '#一键回收(.*)$',
+                    fnc: 'huishou'
+                },
+                {
                     reg: '^#一键服用修为丹$',
                     fnc: 'all_xiuweidan'
                 },
@@ -234,6 +238,86 @@ export class UserSellAll extends plugin {
         await Synchronization_ASS(e);
         return;
     }
+
+    /**
+     * 回收物品
+     */
+
+    async huishou(e){
+        //不开放私聊功能
+        if (!e.isGroup) {
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let str = [];
+        let najie = await data.getData("najie", usr_qq);
+        let commodities_price = 0
+        let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子','仙宠','仙宠口粮','食材'];
+        let wupin1 = []
+        if (e.msg != '#一键回收') {
+            let thing = e.msg.replace("#一键回收", '');
+            for (var i of wupin) {
+                if (thing.includes(i)) {
+                    wupin1.push(i)
+                    thing = thing.replace(i, "")
+                }
+            }
+            if (thing.length == 0) {
+                wupin = wupin1
+            } else {
+                return;
+            }
+        }
+        console.log(wupin);
+        for (var i of wupin) {
+            console.log(najie[i]);
+            for (let l of najie[i]) {
+                if (l && l.islockd == 0 && !(l.id >= 400991 && l.id <= 400999)) {
+                    //判断是否为回收物品
+                    let thing_exist = await foundhuishouthing(l.name);
+                    if (thing_exist) {
+                        //纳戒中的数量
+                        let quantity = l.数量;
+                        /*console.log(l);
+                        console.log(l.class);
+                        console.log(quantity);*/
+                        let pinji = ['劣', '普', '优', '精', '极', '绝']
+                        let t;
+                        if (l.class == "装备") {
+                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
+                            t = `【${l.name}（`+ pinji[l.pinji] + `）*${l.数量}】回收成功,`;
+                        } else {
+                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
+                            t = `【${l.name}*${l.数量}】回收成功`;
+                        }
+                        commodities_price = commodities_price + thing_exist.回收价 * quantity;
+                        let money = thing_exist.回收价 * quantity;
+                        t = t + `共${money} 灵石`;
+                        str.push(t);
+                    }
+                }
+            }
+        }
+        await Add_灵石(usr_qq, commodities_price);
+        str.push(`回收成功!出售共获得${commodities_price}灵石 `);
+
+        //返回图片
+        let log_data = {
+            log: str,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
+        return;
+    }
+
     //一键出售
     async Sell_all_comodities(e) {
         //不开放私聊功能
