@@ -1332,7 +1332,7 @@ export async function get_equipment_img2(e) {
     var bao = Math.trunc(parseInt(player.暴击率 * 100))
     let equipment = await data.getData("equipment", usr_qq);
     let pifu = redis.get("xiuxian:player:" + usr_qq + ":zhuangbeipifu")
-    if (pifu == 'null') {
+    if (pifu === 'null') {
         pifu = 0
     }
     let player_data = {
