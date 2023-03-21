@@ -1369,7 +1369,7 @@ export async function get_najie_img(e) {
     const lingshi2 = Math.trunc(najie.灵石上限);
     let strand_hp = Strand(player.当前血量, player.血量上限)
     let strand_lingshi = Strand(najie.灵石, najie.灵石上限)
-    let pifu = await redis.get("xiuxian:player:" + usr_qq + ":lianqipifu");
+    let pifu = await redis.get("xiuxian:player:" + usr_qq + ":najiepifu");
     e.reply(pifu);
     if (!pifu) {
         pifu = 0
