@@ -40,7 +40,6 @@ import {
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Add_仙宠 } from "../Pokemon/Pokemon.js"
 import { get_equipment_img } from '../ShowImeg/showData.js'
-import {Go } from "/UserAction.js"
 
 /**
  * 全局变量
