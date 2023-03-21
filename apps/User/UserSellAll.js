@@ -242,7 +242,6 @@ export class UserSellAll extends plugin {
     /**
      * 回收物品
      */
-    /*
     async huishou(e){
         //不开放私聊功能
         if (!e.isGroup) {
@@ -270,7 +269,7 @@ export class UserSellAll extends plugin {
                         let quantity = l.数量;
                         /*console.log(l);
                         console.log(l.class);
-                        console.log(quantity);*//*
+                        console.log(quantity);*/
                         let pinji = ['劣', '普', '优', '精', '极', '绝']
                         let t;
                         if (l.class == "装备") {
@@ -301,7 +300,7 @@ export class UserSellAll extends plugin {
         });
         e.reply(img);
         return;
-    }*/
+    }
 
     //一键出售
     async Sell_all_comodities(e) {

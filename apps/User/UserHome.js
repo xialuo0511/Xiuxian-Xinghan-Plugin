@@ -40,6 +40,7 @@ import {
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Add_仙宠 } from "../Pokemon/Pokemon.js"
 import { get_equipment_img } from '../ShowImeg/showData.js'
+import {Go } from "/UserAction.js"
 
 /**
  * 全局变量
@@ -67,7 +68,7 @@ export class UserHome extends plugin {
             }, {
                 reg: '^#出售.*$',
                 fnc: 'Sell_comodities'
-            },  {
+            }, {
                 reg: '^#哪里有(.*)$',
                 fnc: 'find_thing'
             }, {
@@ -90,7 +91,7 @@ export class UserHome extends plugin {
                 fnc: 'huodong'
             }, {
                 reg: '^#幻影牌面.*$',
-                fnc:'zbhuanying'
+                fnc: 'zbhuanying'
             }]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
@@ -157,7 +158,7 @@ export class UserHome extends plugin {
         }
         e.reply("恭喜获得:" + msg);
         return;
-        
+
     }
 
     async check_player(e) {
@@ -1182,8 +1183,7 @@ export class UserHome extends plugin {
                         action[i].biguanxl += this_danyao.biguan;
                         player.修炼效率提升 += action[i].biguanxl;
                         e.reply(
-                            `${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${
-                            action[i].biguanxl * 100
+                            `${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100
                             }%`
                         );
                     }
@@ -1275,8 +1275,7 @@ export class UserHome extends plugin {
                                 JSON.stringify(action)
                             );
                             e.reply(
-                                `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${
-                                this_danyao.lianshen * 100
+                                `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${this_danyao.lianshen * 100
                                 }%`
                             );
                             return;
@@ -3564,6 +3563,7 @@ export class UserHome extends plugin {
         e.reply(`出售成功!  获得${commodities_price}灵石,还剩余${thing_name}*${x - thing_amount} `);
         return;
     }
+}
 
 /**
  * 状态
@@ -3595,6 +3595,11 @@ export async function Go(e) {
             e.reply("正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
             return;
         }
+    }
+    let player = await Read_player(usr_qq);
+    if (player.当前血量 < 200) {
+        e.reply("你都伤成这样了,就不要出去浪了");
+        return;
     }
     allaction = true;
     return;
