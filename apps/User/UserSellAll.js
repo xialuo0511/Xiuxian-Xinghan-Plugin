@@ -289,7 +289,7 @@ export class UserSellAll extends plugin {
             }
         }
         await Add_灵石(usr_qq, commodities_price);
-        str.push(`回收成功!出售共获得${commodities_price}灵石 `);
+        str.push(`回收成功!回收共获得${commodities_price}灵石 `);
 
         //返回图片
         let log_data = {
