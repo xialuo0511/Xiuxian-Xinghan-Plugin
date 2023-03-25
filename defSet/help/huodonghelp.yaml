@@ -6,3 +6,12 @@
     - icon: help-icon_14
       title: "「遗迹寻宝」- 遗迹寻宝兑奖励"
       desc: "活动时间：4/24 00：00 - 5/10 23：59"
+
+- group: 活动指令
+  list:
+    - icon: help-icon_14
+      title: "#领取七日馈赠"
+      desc: "「七日馈赠」活动开启期间可领取七日馈赠"
+    - icon: help-icon_14
+      title: "#探寻遗迹xxx"
+      desc: "「遗迹寻宝」活动开启期间可前往探索遗迹"
