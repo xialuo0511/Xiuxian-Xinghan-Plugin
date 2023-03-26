@@ -51,9 +51,9 @@ export class PlayerControl extends plugin {
 
         //不开放私聊
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }urn;
     }
 
 
@@ -142,9 +142,9 @@ export class PlayerControl extends plugin {
     //降妖
     async Dagong(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }eply('修仙游戏请在群聊中游玩');
       return;
     }
         let usr_qq = e.user_id;//用户qq
@@ -237,9 +237,9 @@ export class PlayerControl extends plugin {
      */
     async chuGuan(e) {
 if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }f (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }f (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }
@@ -316,13 +316,13 @@ if (!e.isGroup) {
      * @param e
      * @returns {Promise<void>}
      */if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }/不开放私聊功能
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }/不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let action = await this.getPlayerAction(e.user_id);
         let state = await this.getPlayerState(action);
         if (state == "空闲") {

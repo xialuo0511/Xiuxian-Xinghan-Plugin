@@ -82,9 +82,9 @@ export class showData extends plugin {
             return;
         }
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }urn;
     }
         let img = await get_adminset_img(e);
         e.reply(img);
@@ -92,9 +92,9 @@ export class showData extends plugin {
     }
 
     asynif (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }eply('修仙游戏请在群聊中游玩');
       return;
     }
         let img = await get_power_img(e);
@@ -102,9 +102,9 @@ export class showData extends plugin {
         return;
     }
 if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }f (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }f (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }
@@ -113,76 +113,76 @@ if (!e.isGroup) {
         return;
     }
 if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }/不开放私聊功能
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }/不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_equipment_img2(e);
         e.reply(img);
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    } show_equipment(e) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        } show_equipment(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_equipment_img(e);
         e.reply(img);
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
     async show_Levelzhiye(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_statezhiye_img(e);
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
 
     async show_Level(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eturn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }eturn;
     }
 
     async show_LevelMax(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eturn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }eturn;
     }
 
     //我的宗门
     async show_association(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }.reply(img);
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }.reply(img);
         return;
     }
 
@@ -190,9 +190,9 @@ if (!e.isGroup) {
     async show_updata(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_updata_img(e);
         e.reply(img);
         return;

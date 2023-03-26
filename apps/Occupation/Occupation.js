@@ -242,9 +242,9 @@ e.reply('修仙游戏请在群聊中游玩');
       e.reply('修仙游戏请在群聊中游玩');
   //不开放私聊
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
         //防止继续其他娱乐行为
@@ -344,9 +344,9 @@ e.reply('修仙游戏请在群聊中游玩');
 ync plant_back(e) {
     //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         let action = await this.getPlayerAction(e.user_id);
         let state = await this.getPlayerState(action);
         if (state == "空闲") {
@@ -418,9 +418,9 @@ ync plant_back(e) {
     }
         //不开放私聊
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
         //防止继续其他娱乐行为
@@ -503,9 +503,9 @@ e.reply('修仙游戏请在群聊中游玩');
     async mine_back(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         let action = await this.getPlayerAction(e.user_id);
         let state = await this.getPlayerState(action);
         if (state == "空闲") {
@@ -726,9 +726,9 @@ e.reply('修仙游戏请在群聊中游玩');
 
     async show_danfang(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
       e.reply('修仙游戏请在群聊中游玩');
   let img = await get_danfang_img(e);
     e.reply(img);
@@ -737,9 +737,9 @@ e.reply('修仙游戏请在群聊中游玩');
     async yaoxiao(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         let action = await redis.get('xiuxian:player:' + 10 + ':biguang');
         action = await JSON.parse(action);
         let usr_qq = e.user_id;
@@ -779,9 +779,9 @@ e.reply('修仙游戏请在群聊中游玩');
         if (player.islucky > 0) {
             m += `\n福源丹药力${player.addluckyNo * 100}%药效${player.islucky}次`;
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }   m += `\n破境丹生效中`;
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }   m += `\n破境丹生效中`;
         }
         return;
     }
@@ -790,9 +790,9 @@ e.reply('修仙游戏请在群聊中游玩');
         if (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       reif (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }et img = await get_tuzhi_img(e);
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }et img = await get_tuzhi_img(e);
         e.reply(img);
         return;
     }
@@ -800,9 +800,9 @@ e.reply('修仙游戏请在群聊中游玩');
 
     async liandan(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -900,9 +900,9 @@ e.reply('修仙游戏请在群聊中游玩');
                 } else {
                     await Add_najie_thing(usr_qq, "仙品" + danyao, "丹药", res_n);
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }   }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }   }
         }
         await Add_职业经验(usr_qq, total_exp * m);
     }
@@ -911,9 +911,9 @@ e.reply('修仙游戏请在群聊中游玩');
 
     async lianqi(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -1289,9 +1289,9 @@ e.reply('修仙游戏请在群聊中游玩');
         player.灵石 -= money;
         await Write_player(usr_qq, player);
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }sg += "【全服公告】" + player_B.名号 + "被悬赏了" + money + "灵石";
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }sg += "【全服公告】" + player_B.名号 + "被悬赏了" + money + "灵石";
         for (var i = 0; i < this.xiuxianConfigData.Group.length; i++) {
             await this.pushInfo(this.xiuxianConfigData.Group[i], true, msg);
         }
@@ -1301,9 +1301,9 @@ e.reply('修仙游戏请在群聊中游玩');
     async shangjingbang(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -1333,9 +1333,9 @@ e.reply('修仙游戏请在群聊中游玩');
         let type = 1;
         var msg_data = {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         const data1 = await new Show(e).get_msg(msg_data);
         let img = await puppeteer.screenshot("msg", {
             ...data1,
@@ -1346,9 +1346,9 @@ e.reply('修仙游戏请在群聊中游玩');
     async cisha_sb(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -1453,9 +1453,9 @@ e.reply('修仙游戏请在群聊中游玩');
             await ForwardMsg(e, msg);
         }
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         return;
     }
     async shoulie(e) {
@@ -1467,9 +1467,9 @@ e.reply('修仙游戏请在群聊中游玩');
     
         //不开放私聊
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     
     
         //获取游戏状态
@@ -1535,9 +1535,9 @@ e.reply('修仙游戏请在群聊中游玩');
             "working": "1",//降妖状态-关闭
             "Place_action": "1",//秘境状态---关闭
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    };
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   };
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
@@ -1550,9 +1550,9 @@ e.reply('修仙游戏请在群聊中游玩');
     async shoulie_back(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let action = await this.getPlayerAction(e.user_id);
         let state = await this.getPlayerState(action);
         if (state == "空闲") {

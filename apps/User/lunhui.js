@@ -42,9 +42,9 @@ export class lunhui extends plugin {
     async lunhui(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }urn;
     }
         let usr_qq = e.user_id;
         //有无存档
@@ -476,9 +476,9 @@ export class lunhui extends plugin {
 
     async yeslunhui(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }eply('修仙游戏请在群聊中游玩');
       return;
     }
         /** 内容 */

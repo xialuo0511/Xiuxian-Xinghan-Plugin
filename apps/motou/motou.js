@@ -40,9 +40,9 @@ export class motou extends plugin {
 
     async add_lingeng(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }urn;
     }
         //固定写法
         let usr_qq = e.user_id;
@@ -277,9 +277,9 @@ export class motou extends plugin {
     }
     async RE_lingeng(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }eply('修仙游戏请在群聊中游玩');
       return;
     }
         let usr_qq = e.user_id;
@@ -320,9 +320,9 @@ export class motou extends plugin {
         }
     }
 if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }f (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }f (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }
@@ -388,13 +388,13 @@ if (!e.isGroup) {
         e.reply("开始进入魔界," + time + "分钟后归来!");
         return;
     }if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    } xianji(e) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   } xianji(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);

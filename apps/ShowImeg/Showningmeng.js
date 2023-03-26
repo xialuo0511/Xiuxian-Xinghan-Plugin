@@ -91,9 +91,9 @@ export class Showningmeng extends plugin {
     async show_ningmenghome(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
 		let thing_type = e.msg.replace("#柠檬堂","");
         let img = await get_ningmenghome_img(e,thing_type);
         e.reply(img);
@@ -113,9 +113,9 @@ export class Showningmeng extends plugin {
     async show_valuables(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_valuables_img(e);
         e.reply(img);
         return;
@@ -156,9 +156,9 @@ export class Showningmeng extends plugin {
    async Show_HuJu(e) {
 
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
     let img = await get_huju_img(e);
     e.reply(img);
     return;
@@ -241,9 +241,9 @@ export class Showningmeng extends plugin {
     //丹药楼
     async show_valuables_drug(e) {
          if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_valuables_drug_img(e);
         e.reply(img);
         return;
@@ -252,9 +252,9 @@ export class Showningmeng extends plugin {
     async show_valuables_skill(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_valuables_skill_img(e);
         e.reply(img);
         return;

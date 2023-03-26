@@ -28,9 +28,9 @@ export class tzzyt extends plugin {
     async WorldBossBattle(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         if (await data.existData("player", e.user_id)) {
             let CurrentPlayerAttributes = await data.getData("player", e.user_id);
     let usr_qq = e.user_id;

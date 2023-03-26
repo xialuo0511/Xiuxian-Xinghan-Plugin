@@ -45,9 +45,9 @@ export class WDT extends plugin {
   async biwu(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
     //得到主动方qq
     let A = e.user_id;
 

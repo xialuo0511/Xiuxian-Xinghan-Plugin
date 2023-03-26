@@ -223,9 +223,9 @@ export class UserStart extends plugin {
     async reCreate_player(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }urn;
     }
         let usr_qq = e.user_id;
         //有无存档
@@ -276,9 +276,9 @@ export class UserStart extends plugin {
     //重生方法
     async RE_xiuxian(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }eply('修仙游戏请在群聊中游玩');
       return;
     }
         let usr_qq = e.user_id;
@@ -376,9 +376,9 @@ export class UserStart extends plugin {
     }
 
     asynif (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }f (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }f (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }
@@ -405,13 +405,13 @@ export class UserStart extends plugin {
     }
 
     //改名if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }/不开放私聊功能
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }/不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -493,14 +493,14 @@ export class UserStart extends plugin {
         }
     }
 if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    } daily_gift(e) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   } daily_gift(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
@@ -540,15 +540,15 @@ if (!e.isGroup) {
         e.reply(msg);
         return;
     }if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     async huodong_gift(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         //有无账号
         let ifexistplay = await existplayer(usr_qq);

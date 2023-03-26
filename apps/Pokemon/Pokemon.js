@@ -48,9 +48,9 @@ export class Pokemon extends plugin {
         }
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }urn;
     }
         let player = data.getData('player', usr_qq);
         let name = e.msg.replace('#', '');
@@ -123,9 +123,9 @@ export class Pokemon extends plugin {
             return;
         }
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }eply('修仙游戏请在群聊中游玩');
       return;
     }
         let player = data.getData('player', usr_qq);
@@ -175,9 +175,9 @@ export class Pokemon extends plugin {
     }
 
     asynif (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }f (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }f (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }

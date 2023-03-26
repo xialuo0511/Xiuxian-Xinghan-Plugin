@@ -55,9 +55,9 @@ export class SecretPlaceplus extends plugin {
     async Xiuxianstate(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }urn;
     }
         await Go(e);
         allaction = false;
@@ -67,9 +67,9 @@ export class SecretPlaceplus extends plugin {
     //秘境地点
     async Secretplace(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }eply('修仙游戏请在群聊中游玩');
       return;
     }
         let addres = "秘境";
@@ -79,9 +79,9 @@ export class SecretPlaceplus extends plugin {
 
     //禁地
     asynif (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }f (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }f (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }
@@ -91,36 +91,36 @@ export class SecretPlaceplus extends plugin {
     }
 
     //限定if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }/不开放私聊功能
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }/不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         e.reply("仙府乃民间传说之地,请自行探索")
     }
 if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    } Fairyrealm(e) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   } Fairyrealm(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let addres = "仙境";
         let weizhi = data.Fairyrealm_list;
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     //沉迷秘境
     async Gosecretplace(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -211,16 +211,16 @@ if (!e.isGroup) {
         }
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
 
     //沉迷禁地
     async Goforbiddenarea(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -322,17 +322,17 @@ if (!e.isGroup) {
             arr.group_id = e.group_id
         }
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eturn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }eturn;
     }
 
     //探索仙府
     async GoTimeplace(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -410,18 +410,18 @@ if (!e.isGroup) {
             e.reply("你买下了那份地图,历经九九八十一天,终于到达了地图上的仙府,洞府上模糊得刻着[" + weizhi.name + "仙府]你兴奋地冲进去探索机缘,被强大的仙气压制，消耗了1000000修为成功突破封锁闯了进去" + time + "分钟后归来!");
         }
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         return;
     }
 
     //前往仙境
     async Gofairyrealm(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {

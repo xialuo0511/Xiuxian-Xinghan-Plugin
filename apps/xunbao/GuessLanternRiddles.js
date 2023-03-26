@@ -40,9 +40,9 @@ export class GuessLanternRiddles extends plugin {
     //换肤
     async cundan_pifu(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let usr_qq = e.user_id;
         var didian = e.msg.replace('#自选存档皮肤', '');
         //命令判断
@@ -111,9 +111,9 @@ export class GuessLanternRiddles extends plugin {
     }
     async skten(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -239,9 +239,9 @@ export class GuessLanternRiddles extends plugin {
 
     async sk(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档

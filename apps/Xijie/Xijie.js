@@ -36,9 +36,9 @@ export class Xijie extends plugin {
 
     async xijie(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }urn;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }urn;
     }
         let usr_qq = e.user_id;
         //查看存档
@@ -160,9 +160,9 @@ export class Xijie extends plugin {
     }
 
     asynif (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }eply('修仙游戏请在群聊中游玩');
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }eply('修仙游戏请在群聊中游玩');
       return;
     }
         let usr_qq = e.user_id;

@@ -54,9 +54,9 @@ export class Battle extends plugin {
   async Dajie(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     // 判断是否在开启时间
 
     const nowDate = new Date();
@@ -362,9 +362,9 @@ export class Battle extends plugin {
   async biwu(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     let A = e.user_id;
 
     //先判断

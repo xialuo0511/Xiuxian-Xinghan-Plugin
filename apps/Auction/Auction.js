@@ -76,9 +76,9 @@ export class Auction extends plugin {
 
     async xingGE(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -192,9 +192,9 @@ export class Auction extends plugin {
     /*竞价10000 */
     async offer_priceXINGGE(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -258,9 +258,9 @@ export class Auction extends plugin {
 
     async show_auction(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -295,9 +295,9 @@ export class Auction extends plugin {
     /* 1000灵石=10把 */
     async onsell_auction(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -423,9 +423,9 @@ export class Auction extends plugin {
     /*竞价10000 */
     async offer_price(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档

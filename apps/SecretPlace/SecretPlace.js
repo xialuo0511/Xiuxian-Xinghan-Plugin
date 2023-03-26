@@ -93,9 +93,9 @@ export class SecretPlace extends plugin {
     async huodongshop(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         let img = await get_huodongshop_img(e);
         e.reply(img);
         return;
@@ -104,9 +104,9 @@ export class SecretPlace extends plugin {
     async Xiuxianstate(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         await Go(e);
         allaction = false;
         return;
@@ -116,9 +116,9 @@ export class SecretPlace extends plugin {
     async Secretplace(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         let addres = "秘境";
         let weizhi = data.didian_list;
         await Goweizhi(e, weizhi, addres);
@@ -128,9 +128,9 @@ export class SecretPlace extends plugin {
     async Forbiddenarea(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         let addres = "禁地";
         let weizhi = data.forbiddenarea_list;
         await jindi(e, weizhi, addres);
@@ -140,17 +140,17 @@ export class SecretPlace extends plugin {
     async Timeplace(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+                  e.reply('修仙游戏请在群聊中游玩');
+                  return;
+            }
         e.reply("仙府乃民间传说之地,请自行探索")
     }
     async xunbao(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let addres = "寻宝";
         let weizhi = data.xunbao_list;
         await Goweizhi(e, weizhi, addres);
@@ -160,9 +160,9 @@ export class SecretPlace extends plugin {
     async Fairyrealm(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let addres = "仙境";
         let weizhi = data.Fairyrealm_list;
         await Goweizhi(e, weizhi, addres);
@@ -171,9 +171,9 @@ export class SecretPlace extends plugin {
     //降临秘境
     async Gosecretplace(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -245,9 +245,9 @@ export class SecretPlace extends plugin {
     //前往禁地
     async Goforbiddenarea(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -334,9 +334,9 @@ export class SecretPlace extends plugin {
     //探索仙府
     async GoTimeplace(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -427,9 +427,9 @@ export class SecretPlace extends plugin {
     //前往仙境
     async Gofairyrealm(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -512,9 +512,9 @@ export class SecretPlace extends plugin {
 
     async Giveup(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -562,9 +562,9 @@ export class SecretPlace extends plugin {
     async Yijiplace(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let addres = "遗迹";
         let weizhi = data.yiji_list;
         await Goyiji(e, weizhi, addres);
@@ -573,9 +573,9 @@ export class SecretPlace extends plugin {
     //探寻遗迹
     async Goyijiplace(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -637,9 +637,9 @@ export class SecretPlace extends plugin {
 
     async daibiduihuan(e){
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         await Go(e);
 

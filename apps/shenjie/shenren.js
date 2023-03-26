@@ -36,9 +36,9 @@ export class shenren extends plugin {
 
   async add_lingeng(e) {
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     let usr_qq = e.user_id;
     //查看存档
     let ifexistplay = await existplayer(usr_qq);
@@ -84,9 +84,9 @@ export class shenren extends plugin {
   }
   async open_shitou(e) {
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     let usr_qq = e.user_id;
     //查看存档
     let ifexistplay = await existplayer(usr_qq);
@@ -137,9 +137,9 @@ export class shenren extends plugin {
 
   async shenjie(e) {
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     let usr_qq = e.user_id;
     //查看存档
     let ifexistplay = await existplayer(usr_qq);
@@ -237,9 +237,9 @@ export class shenren extends plugin {
 
   async canwu(e) {
     if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
     let usr_qq = e.user_id;
     //查看存档
     let ifexistplay = await existplayer(usr_qq);

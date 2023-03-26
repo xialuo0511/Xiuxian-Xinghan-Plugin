@@ -60,9 +60,9 @@ export class Association extends plugin {
         }
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let player = data.getData("player", usr_qq);
         if (!isNotNull(player.宗门)) {
             return;
@@ -130,9 +130,9 @@ export class Association extends plugin {
         }
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let player = data.getData("player", usr_qq);
         if (isNotNull(player.宗门)) {
             return;
@@ -198,9 +198,9 @@ export class Association extends plugin {
         }
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let player = data.getData("player", usr_qq);
         if (!isNotNull(player.宗门)) {
             return;
@@ -276,9 +276,9 @@ export class Association extends plugin {
         }
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let player = data.getData("player", usr_qq);
         if (!isNotNull(player.宗门)) {
             return;
@@ -331,9 +331,9 @@ export class Association extends plugin {
         }
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let player = data.getData("player", usr_qq);
         if (!isNotNull(player.宗门)) {
             return;
@@ -364,9 +364,9 @@ export class Association extends plugin {
     async List_appointment(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }   }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
