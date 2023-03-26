@@ -47,7 +47,7 @@ export class BotHelp extends plugin {
           fnc: 'xunbaohelp',
         },
         {
-          reg: '^#版本活动$',
+          reg: '^#(版本活动|活动帮助)$',
           fnc: 'huodonghelp',
         },
         {
