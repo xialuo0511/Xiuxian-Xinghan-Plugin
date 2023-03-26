@@ -57,8 +57,9 @@ export class Exchange extends plugin {
     }
     async Offsell(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -196,8 +197,9 @@ export class Exchange extends plugin {
         //上架
     async onsell(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -338,8 +340,9 @@ export class Exchange extends plugin {
     async show_supermarket(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let img = await get_supermarket_img(e);
         e.reply(img);
         return;
@@ -348,8 +351,9 @@ export class Exchange extends plugin {
     async yuansu(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let img = await get_yuansu_img(e);
         e.reply(img);
         return;

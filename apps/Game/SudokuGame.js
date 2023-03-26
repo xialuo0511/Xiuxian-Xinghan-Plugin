@@ -53,8 +53,9 @@ export class SudokuGame extends plugin {
     async CreateSudoku(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
          //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
@@ -77,8 +78,9 @@ export class SudokuGame extends plugin {
     async Getsudokuboard(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         var reg = new RegExp(/简单|中等|困难/);
         let new_msg = this.e.msg;
         let difficulty = reg.exec(new_msg);
@@ -140,8 +142,9 @@ export class SudokuGame extends plugin {
     async setnumber(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
 
         if (board == undefined || board == null) {
             e.reply(`棋局尚未开启`);
@@ -190,8 +193,9 @@ export class SudokuGame extends plugin {
     async CheckSudoku(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (board == undefined || board == null) {
             e.reply(`棋局尚未开启`);
             return;
@@ -223,8 +227,9 @@ export class SudokuGame extends plugin {
     async ifCloseSudoku(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (board == undefined || board == null) {
             e.reply(`棋局尚未开启`);
             return;
@@ -240,8 +245,9 @@ export class SudokuGame extends plugin {
     async CloseSudoku(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (this.e.msg == "关闭") {
             e.reply(`棋局已经关闭`);
             board = null;
@@ -259,8 +265,9 @@ export class SudokuGame extends plugin {
     async nowSudoku(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (board == undefined || board == null) {
             e.reply(`棋局尚未开启`);
             return;

@@ -80,8 +80,9 @@ export class AssociationAdmin extends plugin {
         }
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let player = data.getData("player", usr_qq);
 
         let now_level_id;
@@ -129,8 +130,9 @@ export class AssociationAdmin extends plugin {
         /** 内容 */
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let new_msg = this.e.message;
         if (new_msg[0].type != "text") {
             this.setContext('Get_association_name');
@@ -184,8 +186,9 @@ export class AssociationAdmin extends plugin {
     async huz(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -203,8 +206,9 @@ export class AssociationAdmin extends plugin {
     async weihu(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -258,8 +262,9 @@ export class AssociationAdmin extends plugin {
     async lvup_association(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -313,8 +318,9 @@ export class AssociationAdmin extends plugin {
     async Set_appointment(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let isat = e.message.some((item) => item.type === "at");
         if (!isat) { return; }//没有at信息直接返回,不执行
@@ -379,8 +385,9 @@ export class AssociationAdmin extends plugin {
     async Maintenance(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) { return; }
@@ -420,8 +427,9 @@ export class AssociationAdmin extends plugin {
     async jiaru(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let player = await data.getData("player", usr_qq);
         if (!isNotNull(player.宗门)) {
@@ -456,8 +464,9 @@ export class AssociationAdmin extends plugin {
 
     async Deleteusermax(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -548,8 +557,9 @@ export class AssociationAdmin extends plugin {
 
     async Deleteuser(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {

@@ -65,8 +65,9 @@ export class TreasureCabinet extends plugin {
     //收回
     async qh(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -172,8 +173,9 @@ export class TreasureCabinet extends plugin {
     //放入
     async fr(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -350,8 +352,9 @@ export class TreasureCabinet extends plugin {
     //藏宝阁
     async List_treasureCabinet(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let player = data.getData("player", usr_qq);
         //无宗门
@@ -503,8 +506,9 @@ export class TreasureCabinet extends plugin {
     async gonxian(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //用户不存在
         let ifexistplay = data.existData("player", usr_qq);
@@ -534,8 +538,9 @@ export class TreasureCabinet extends plugin {
         //8级宗门，有驻地，灵石200w
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //用户不存在
         let ifexistplay = data.existData("player", usr_qq);
@@ -604,8 +609,9 @@ export class TreasureCabinet extends plugin {
     async Beast_Bonus(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //用户不存在
         let ifexistplay = data.existData("player", usr_qq);
@@ -775,8 +781,9 @@ export class TreasureCabinet extends plugin {
     async Feed_Beast(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //用户不存在
         let ifexistplay = data.existData("player", usr_qq);

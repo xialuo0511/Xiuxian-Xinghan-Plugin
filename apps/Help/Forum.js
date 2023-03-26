@@ -178,8 +178,9 @@ export class Forum extends plugin {
 
     async off(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         if (usr_qq == 80000000) {
             return;
@@ -238,8 +239,9 @@ export class Forum extends plugin {
         //固定写法
         let usr_qq = e.user_id;
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (usr_qq == 80000000) {
             return;
         }
@@ -296,8 +298,9 @@ export class Forum extends plugin {
     async Searchforum(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let Forum;
         try {
             Forum = await Read_Forum();
@@ -321,8 +324,9 @@ export class Forum extends plugin {
 
     async Pushforum(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         if (usr_qq == 80000000) {
             return;

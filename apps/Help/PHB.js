@@ -34,8 +34,9 @@ export class PHB extends plugin {
     //封神榜
     async TOP_Immortal(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { 
@@ -95,8 +96,9 @@ export class PHB extends plugin {
     //#至尊榜
     async TOP_genius(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { 

@@ -53,8 +53,9 @@ export class BossAll extends plugin {
     async Bosstate(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let bossMaxplus = await redis.get("BossMaxplus");
         let msg = [
             "《怪物时间》\n11:30——12:30\n18:30——19:30\n指令：#讨伐+怪物名"
@@ -130,8 +131,9 @@ export class BossAll extends plugin {
     async BossMaxplus(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //看状态
         await Go(e);
@@ -214,8 +216,9 @@ export class BossAll extends plugin {
     async BossMax(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //看状态
         await Go(e);
@@ -306,8 +309,9 @@ export class BossAll extends plugin {
     async BossMini(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //看状态
         await Go(e);

@@ -61,8 +61,10 @@ export class Tiandibang extends plugin {
 
     async duihuan(e){
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }urn;
+    }
         let date=new Date();
         let n=date.getDay();
         if (n!=0)
@@ -119,10 +121,12 @@ export class Tiandibang extends plugin {
         return;
     }
 
-    async tianditang(e) {
-        if (!e.isGroup) {
-            return;
-        }
+    asynif (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }eply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);
@@ -147,11 +151,13 @@ export class Tiandibang extends plugin {
         return;
     }
 
-
-    async cansai(e) {
-        if (!e.isGroup) {
-            return;
-        }
+if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }f (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);
@@ -198,12 +204,14 @@ export class Tiandibang extends plugin {
         }
     }
 
-
-    
-    async my_point(e) {
+if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    } my_point(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);
@@ -263,13 +271,15 @@ export class Tiandibang extends plugin {
         return;
     }
 
-    async pk(e){
-            let usr_qq = e.user_id;
-
+    asynif (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //不开放私聊
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
 
         //有无存档
         let ifexistplay = await existplayer(usr_qq);

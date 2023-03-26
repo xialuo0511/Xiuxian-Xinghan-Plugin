@@ -94,8 +94,9 @@ export class Games extends plugin {
         let usr_qq = e.user_id;
         //不开放私聊
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //全局状态判断
         await Go(e);
         if (allaction) {
@@ -114,8 +115,9 @@ export class Games extends plugin {
         let usr_qq = e.user_id;
         //不开放私聊
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //全局状态判断
         await Go(e);
         if (allaction) {
@@ -133,8 +135,9 @@ export class Games extends plugin {
     async Xiuianplay(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let switchgame = this.xiuxianConfigData.switch.play;
         if (switchgame != true) {
             return;
@@ -234,8 +237,9 @@ export class Games extends plugin {
         let usr_qq = e.user_id;
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //全局状态判断
         await Go(e);
         if (allaction) {
@@ -311,8 +315,9 @@ export class Games extends plugin {
     async Moneycheck(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //统一用户ID名
         let usr_qq = e.user_id;
         //获取当前时间戳
@@ -382,8 +387,9 @@ export class Games extends plugin {
     async Moneycheckguess(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //统一用户ID名
         let usr_qq = e.user_id;
         //获取当前时间戳
@@ -550,8 +556,9 @@ export class Games extends plugin {
         let qq = e.user_id;
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //全局状态判断
         await Go(e);
         if (allaction) {
@@ -596,8 +603,9 @@ export class Games extends plugin {
     async getOneCard(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let template_path = await common.getTemplatePath();
         let cards = [
             'A',
@@ -654,8 +662,9 @@ export class Games extends plugin {
     async Couple(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //双修开关
         let gameswitch = this.xiuxianConfigData.switch.couple;
         if (gameswitch != true) {

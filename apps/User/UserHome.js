@@ -98,8 +98,10 @@ export class UserHome extends plugin {
 
     async huodong(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+e.reply('修仙游戏请在群聊中游玩');
+  return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
@@ -214,9 +216,11 @@ export class UserHome extends plugin {
     }
 
     async Add_lhd(e) {
-        if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+  if (!e.isGroup) {
+  e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -255,10 +259,12 @@ export class UserHome extends plugin {
         return;
     }
 
-    async sk(e) {
-        if (!e.isGroup) {
-            return;
-        }
+    ase.reply('修仙游戏请在群聊中游玩');
+ync sk(e) {
+    if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -324,11 +330,13 @@ export class UserHome extends plugin {
             e.reply("恭喜获得" + data.changzhuxianchon[tianluoRandom].name)
         }
     }
+e.reply('修仙游戏请在群聊中游玩');
 
-    async refining(e) {
+async refining(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -391,12 +399,14 @@ export class UserHome extends plugin {
         await Add_najie_thing(usr_qq, thing, "装备", 1, pinji_number + 1)
         e.reply("精炼成功获得" + thing + "【" + pinji[pinji_number + 1] + "】*1")
         return
-    }
+    }e.reply('修仙游戏请在群聊中游玩');
+
 
     async find_thing(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         var reg = new RegExp(/哪里有/);
         let msg = e.msg.replace(reg, '');
@@ -694,13 +704,15 @@ export class UserHome extends plugin {
         }
         await Add_najie_thing(usr_qq, "寻物纸", "道具", -1);
         return;
-    }
+    }e.reply('修仙游戏请在群聊中游玩');
+
 
     async heavenly(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -724,14 +736,16 @@ export class UserHome extends plugin {
             e.reply("天理没有回应.....")
             return
         }
-    }
+    }e.reply('修仙游戏请在群聊中游玩');
+
 
     //存取灵石
     async Take_lingshi(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -800,15 +814,17 @@ export class UserHome extends plugin {
             await Add_灵石(usr_qq, lingshi);
             e.reply([segment.at(usr_qq), `本次取出灵石${lingshi},你的纳戒还剩余${najie.灵石 - lingshi}灵石`]);
             return;
-        }
-        return;
+      e.reply('修仙游戏请在群聊中游玩');
+  }
+    return;
     }
 
     async zbhuanying(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -867,16 +883,18 @@ export class UserHome extends plugin {
             await Add_najie_thing(usr_qq, thing_name, "道具", -1)
             await Add_najie_thing(usr_qq, old.name, "道具", 1)
             e.reply("更换" + thing_exist.type + "【" + thing_exist.name + "】成功")
-            return
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return
+    }
     }
 
     //#(装备|服用|消耗)物品*数量
     async Player_use(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -3308,8 +3326,9 @@ export class UserHome extends plugin {
                 await Write_equipment(usr_qq, equipment);
                 return;
             } else {
-                e.reply('你没有该附魔书')
-                return;
+      e.reply('修仙游戏请在群聊中游玩');
+          e.reply('你没有该附魔书')
+            return;
             }
         }
     }
@@ -3317,8 +3336,9 @@ export class UserHome extends plugin {
     async yesxigen(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         /** 内容 */
         let usr_qq = e.user_id;
         let new_msg = this.e.message;
@@ -3353,9 +3373,10 @@ export class UserHome extends plugin {
             this.finish('yesxigen');
             return;
         } else {
-            this.setContext('yesxigen');
-            await this.reply("使用【洗根水】【补天丹】【补根丹】【神心丹】进行洗髓将清除轮回状态！\n请正确回复进行选择");
-            return;
+        if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }   return;
         }
         /** 结束上下文 */
     }
@@ -3364,8 +3385,9 @@ export class UserHome extends plugin {
     async DUIHUAN(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         /** 内容 */
         let new_msg = this.e.message;
@@ -3386,9 +3408,10 @@ export class UserHome extends plugin {
                 await this.reply('兑换' + gonfa + "成功");
                 this.finish('DUIHUAN');
                 return;
-            } else {
-                await this.reply('残卷无法兑换该功法');
-                this.finish('DUIHUAN');
+        if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }       this.finish('DUIHUAN');
                 return;
             }
         }
@@ -3398,8 +3421,9 @@ export class UserHome extends plugin {
     async Buy_comodities(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -3462,9 +3486,10 @@ export class UserHome extends plugin {
         Worldmoney = Number(Worldmoney);
         Worldmoney = Worldmoney + addWorldmoney;
         Worldmoney = Number(Worldmoney);
-        await redis.set("Xiuxian:Worldmoney", Worldmoney);
-        //符合就往戒指加
-        await Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
+        if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }wait Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
         await Add_灵石(usr_qq, -commodities_price);
         //发送消息
         e.reply([`购买成功!  获得[${thing_name}]*${quantity},花[${commodities_price}]灵石,剩余[${lingshi - commodities_price}]灵石  `, '\n可以在【我的纳戒】中查看']);
@@ -3475,8 +3500,9 @@ export class UserHome extends plugin {
     async Sell_comodities(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);

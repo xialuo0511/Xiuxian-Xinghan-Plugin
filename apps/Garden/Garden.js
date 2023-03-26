@@ -49,8 +49,9 @@ export class Garden extends plugin {
     async Vegetable(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         
@@ -105,8 +106,9 @@ export class Garden extends plugin {
     async Get_vegetable(e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -180,8 +182,9 @@ export class Garden extends plugin {
     async Silencing (e) {
          //不开放私聊功能
          if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;//使用者QQ
         let qq = null;
 

@@ -167,8 +167,9 @@ export class MoneyOperation extends plugin {
 
     async MoneyWord(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //这是自己的
         let usr_qq = e.user_id;
         //自己没存档
@@ -213,8 +214,9 @@ export class MoneyOperation extends plugin {
 
     async Deduction(e) {
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (!e.isMaster) {
             e.reply("你小子")
             return;
@@ -254,8 +256,9 @@ export class MoneyOperation extends plugin {
     async Give(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //这是自己的
         let A_qq = e.user_id;
         //自己没存档
@@ -396,8 +399,9 @@ export class MoneyOperation extends plugin {
     async Give_honbao(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         //这是自己的
         let usr_qq = e.user_id;
         //自己没存档
@@ -483,8 +487,9 @@ export class MoneyOperation extends plugin {
     async uer_honbao(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //自己没存档
         let ifexistplay = await existplayer(usr_qq);
@@ -546,8 +551,9 @@ export class MoneyOperation extends plugin {
     async Allfuli(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (!e.isMaster && e.user_id != 3196383818) {
             e.reply("你小子")
             return;
@@ -598,8 +604,9 @@ export class MoneyOperation extends plugin {
     async Fuli(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         if (!e.isMaster && e.user_id != 3479823546) {
             e.reply("你小子")
             return;
@@ -656,8 +663,9 @@ export class MoneyOperation extends plugin {
     async openwallet(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
