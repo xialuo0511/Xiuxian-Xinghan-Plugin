@@ -1221,6 +1221,19 @@ ${B_player.名号}攻击了${A_player.名号}，${ifbaoji(baoji)}造成伤害${�
     return Data_nattle;
 }
 
+/**
+ * 
+ * @param {*} A_player 
+ * @param {*} B_player 
+ * @param {*} last_att 
+ * @param {*} msg 
+ * @param {*} cnt 
+ * @param {*} Agandianhuihe 
+ * @param {*} chaodaohuihe 
+ * @returns 
+ * 高等元素论
+ */
+
 export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Agandianhuihe, chaodaohuihe) {
     let yuansu = ["仙之心·火", "仙之心·水", "仙之心·雷", "仙之心·岩", "仙之心·冰", "仙之心·风", "仙之心·木"]
     let att = last_att;//最终伤害,last_att为原伤害
