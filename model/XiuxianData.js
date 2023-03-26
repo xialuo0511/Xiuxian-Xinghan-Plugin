@@ -170,8 +170,8 @@ class XiuxianData {
         //神界
         this.shenjie = JSON.parse(fs.readFileSync(`${this.lib_path}/神界列表.json`));
         //加载卡池
-        this.xianding = JSON.parse(fs.readFileSync(`${this.lib_path}/限定up.json`));
-        this.changzhu = JSON.parse(fs.readFileSync(`${this.lib_path}/常驻.json`));
+        this.xianding = JSON.parse(fs.readFileSync(`${this.lib_path}/寻宝抽奖/限定up.json`));
+        this.changzhu = JSON.parse(fs.readFileSync(`${this.lib_path}/寻宝抽奖/常驻.json`));
         //加载卡面列表
         this.kamian = JSON.parse(fs.readFileSync(`${this.lib_path}/影幻牌面列表.json`));
         //加载技能列表
