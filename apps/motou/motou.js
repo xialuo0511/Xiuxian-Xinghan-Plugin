@@ -42,8 +42,7 @@ export class motou extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }urn;
-    }
+        }
         //固定写法
         let usr_qq = e.user_id;
         //有无存档
@@ -276,12 +275,11 @@ export class motou extends plugin {
         return;
     }
     async RE_lingeng(e) {
+        //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }eply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let usr_qq = e.user_id;
         let player = await Read_player(usr_qq);
         /** 内容 */
@@ -319,13 +317,12 @@ export class motou extends plugin {
             return;
         }
     }
-if (!e.isGroup) {
+
+    async mojie(e) {
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }f (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);
@@ -387,14 +384,13 @@ if (!e.isGroup) {
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
         e.reply("开始进入魔界," + time + "分钟后归来!");
         return;
-    }if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }   } xianji(e) {
+    }
+
+    async xianji(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);

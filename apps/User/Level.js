@@ -66,7 +66,7 @@ export class Level extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -177,7 +177,7 @@ export class Level extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
@@ -340,7 +340,7 @@ export class Level extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         /** 内容 */
         let usr_qq = e.user_id;
         let new_msg = this.e.message;
@@ -405,7 +405,7 @@ export class Level extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
         //防止继续其他娱乐行为
@@ -549,7 +549,7 @@ export class Level extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
         //防止继续其他娱乐行为

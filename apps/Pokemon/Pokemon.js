@@ -50,8 +50,7 @@ export class Pokemon extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }urn;
-    }
+        }
         let player = data.getData('player', usr_qq);
         let name = e.msg.replace('#', '');
         name = name.replace('出战仙宠', '');
@@ -125,9 +124,7 @@ export class Pokemon extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }eply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let player = data.getData('player', usr_qq);
         let list = ['仙胎', '仙仔', '仙兽', '仙道', '仙灵'];
         let list_level = [20, 40, 60, 80, 100];
@@ -174,13 +171,11 @@ export class Pokemon extends plugin {
         }
     }
 
-    asynif (!e.isGroup) {
+    async feed(e) {
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }f (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let usr_qq = e.user_id;
         //用户不存在
         let ifexistplay = data.existData('player', usr_qq);

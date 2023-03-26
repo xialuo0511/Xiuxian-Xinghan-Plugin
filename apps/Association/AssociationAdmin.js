@@ -82,7 +82,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let player = data.getData("player", usr_qq);
 
         let now_level_id;
@@ -132,7 +132,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let new_msg = this.e.message;
         if (new_msg[0].type != "text") {
             this.setContext('Get_association_name');
@@ -188,7 +188,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -208,7 +208,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -264,7 +264,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -320,7 +320,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let isat = e.message.some((item) => item.type === "at");
         if (!isat) { return; }//没有at信息直接返回,不执行
@@ -387,7 +387,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) { return; }
@@ -429,7 +429,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let player = await data.getData("player", usr_qq);
         if (!isNotNull(player.宗门)) {
@@ -466,7 +466,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
@@ -559,7 +559,7 @@ export class AssociationAdmin extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {

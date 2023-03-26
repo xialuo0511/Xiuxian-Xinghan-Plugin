@@ -69,7 +69,7 @@ export class BlessPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let addres="洞天福地";
         let weizhi = data.bless_list;
         GoBlessPlace(e,weizhi,addres);
@@ -81,7 +81,7 @@ export class BlessPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let addres="宗门秘境";
         let weizhi = data.guildSecrets_list;
         Goweizhi(e,weizhi,addres);
@@ -93,7 +93,7 @@ export class BlessPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         //用户不存在
         let ifexistplay = data.existData("player", usr_qq);
@@ -240,7 +240,7 @@ export class BlessPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let player = data.getData("player", usr_qq);
         if (!isNotNull(player.宗门)) {
             return;
@@ -309,7 +309,7 @@ export class BlessPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         await Go(e);
         if(!allaction){
@@ -635,7 +635,7 @@ async Go_Guild_Secretsplus(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         //用户不存在
         let ifexistplay = data.existData("player", usr_qq);

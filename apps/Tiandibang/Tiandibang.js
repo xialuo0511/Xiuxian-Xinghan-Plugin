@@ -63,8 +63,7 @@ export class Tiandibang extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }urn;
-    }
+        }
         let date=new Date();
         let n=date.getDay();
         if (n!=0)
@@ -121,12 +120,11 @@ export class Tiandibang extends plugin {
         return;
     }
 
-    asynif (!e.isGroup) {
+    async tianditang(e){
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }eply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);
@@ -151,13 +149,11 @@ export class Tiandibang extends plugin {
         return;
     }
 
-if (!e.isGroup) {
+    async cansai(e){
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }f (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let usr_qq = e.user_id;
         //查看存档
         let ifexistplay = await existplayer(usr_qq);
@@ -204,10 +200,7 @@ if (!e.isGroup) {
         }
     }
 
-if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        } my_point(e) {
+    async my_point(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -271,10 +264,7 @@ if (!e.isGroup) {
         return;
     }
 
-    asynif (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+    async pk(e){
         //不开放私聊
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
@@ -328,9 +318,9 @@ if (!e.isGroup) {
             let now = new Date();
             let nowTime = now.getTime(); //获取当前日期的时间戳
             let Today = await shijianc(nowTime);
-            let lastbisai_time = await getLastbisai(usr_qq);//获得上次签到日期
+            let lastbisai_time = await getLastbisai(usr_qq);//获得上次pk日期
             if (Today.Y != lastbisai_time.Y || Today.M != lastbisai_time.M || Today.D != lastbisai_time.D) {
-                await redis.set("xiuxian:player:" + usr_qq + ":lastbisai_time", nowTime);//redis设置签到时间
+                await redis.set("xiuxian:player:" + usr_qq + ":lastbisai_time", nowTime);//redis设置pk时间
                 tiandibang[x].次数=3;
             }
             if (Today.Y == lastbisai_time.Y && Today.M == lastbisai_time.M && Today.D == lastbisai_time.D && tiandibang[x].次数<1) {

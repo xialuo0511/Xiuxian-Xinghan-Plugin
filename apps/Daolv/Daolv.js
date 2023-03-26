@@ -51,7 +51,7 @@ export class Daolv extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let A = e.user_id;
         let ifexistplay_A = await existplayer(A);
         if (!ifexistplay_A || e.isPrivate) { return; }
@@ -140,7 +140,7 @@ export class Daolv extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         if (e.user_id!=user_B)
         {
             return;
@@ -174,7 +174,7 @@ export class Daolv extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let A = e.user_id;
         let ifexistplay_A = await existplayer(A);
         if (!ifexistplay_A || e.isPrivate) { return; }
@@ -260,7 +260,7 @@ export class Daolv extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         if (e.user_id!=user_B)
         {
             return;
@@ -291,12 +291,11 @@ export class Daolv extends plugin {
         }
     }
 
-    async get_dift(e)
-    {
+    async get_dift(e){
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let isat = e.message.some((item) => item.type === "at");
         if (!isat) {
             return;

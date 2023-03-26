@@ -150,7 +150,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let addres = "寻宝";
         let weizhi = data.xunbao_list;
         await Goweizhi(e, weizhi, addres);
@@ -162,7 +162,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let addres = "仙境";
         let weizhi = data.Fairyrealm_list;
         await Goweizhi(e, weizhi, addres);
@@ -173,7 +173,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -247,7 +247,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -336,7 +336,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -429,7 +429,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -514,7 +514,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -564,7 +564,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let addres = "遗迹";
         let weizhi = data.yiji_list;
         await Goyiji(e, weizhi, addres);
@@ -575,7 +575,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         await Go(e);
         if (allaction) {
@@ -639,7 +639,7 @@ export class SecretPlace extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         await Go(e);
 

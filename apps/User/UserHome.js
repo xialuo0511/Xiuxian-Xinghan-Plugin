@@ -259,8 +259,7 @@ e.reply('修仙游戏请在群聊中游玩');
         return;
     }
 
-    ase.reply('修仙游戏请在群聊中游玩');
-ync sk(e) {
+    async sk(e) {
     if (!e.isGroup) {
                   e.reply('修仙游戏请在群聊中游玩');
                   return;
@@ -330,7 +329,6 @@ ync sk(e) {
             e.reply("恭喜获得" + data.changzhuxianchon[tianluoRandom].name)
         }
     }
-e.reply('修仙游戏请在群聊中游玩');
 
 async refining(e) {
         if (!e.isGroup) {
@@ -399,7 +397,7 @@ async refining(e) {
         await Add_najie_thing(usr_qq, thing, "装备", 1, pinji_number + 1)
         e.reply("精炼成功获得" + thing + "【" + pinji[pinji_number + 1] + "】*1")
         return
-    }e.reply('修仙游戏请在群聊中游玩');
+    }
 
 
     async find_thing(e) {
@@ -704,7 +702,7 @@ async refining(e) {
         }
         await Add_najie_thing(usr_qq, "寻物纸", "道具", -1);
         return;
-    }e.reply('修仙游戏请在群聊中游玩');
+    }
 
 
     async heavenly(e) {
@@ -736,7 +734,7 @@ async refining(e) {
             e.reply("天理没有回应.....")
             return
         }
-    }e.reply('修仙游戏请在群聊中游玩');
+    }
 
 
     //存取灵石
@@ -3338,7 +3336,7 @@ async refining(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         /** 内容 */
         let usr_qq = e.user_id;
         let new_msg = this.e.message;
@@ -3376,7 +3374,7 @@ async refining(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }   return;
+        }eturn;
         }
         /** 结束上下文 */
     }
@@ -3387,7 +3385,7 @@ async refining(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         /** 内容 */
         let new_msg = this.e.message;
@@ -3411,7 +3409,7 @@ async refining(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }       this.finish('DUIHUAN');
+        }   this.finish('DUIHUAN');
                 return;
             }
         }
@@ -3423,7 +3421,7 @@ async refining(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -3489,7 +3487,7 @@ async refining(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }wait Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
+        } Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
         await Add_灵石(usr_qq, -commodities_price);
         //发送消息
         e.reply([`购买成功!  获得[${thing_name}]*${quantity},花[${commodities_price}]灵石,剩余[${lingshi - commodities_price}]灵石  `, '\n可以在【我的纳戒】中查看']);
@@ -3502,7 +3500,7 @@ async refining(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);

@@ -425,7 +425,7 @@ export class shituxitong extends plugin {
     if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
     //判断对方有没有存档
     if (shifu == 0 && tudi == 0) {
       e.reply('你还没拜师&收徒过！');
@@ -495,7 +495,7 @@ for(i = 0 ;i<shitu.length;i++){
     if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
     //无存档
     let ifexistplay = data.existData('player', usr_qq);
     if (!ifexistplay) {
@@ -510,7 +510,7 @@ for(i = 0 ;i<shitu.length;i++){
     if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
     let usr_qq = e.user_id;
     //查看存档
     let ifexistplay = await existplayer(usr_qq);
@@ -571,7 +571,7 @@ async jijian(e) {
     if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
     //判断对方有没有存档
     if (shifu == 0 && tudi == 0) {
       e.reply('你还没拜师&收徒过！');

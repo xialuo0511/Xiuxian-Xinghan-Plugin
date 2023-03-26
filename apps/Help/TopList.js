@@ -44,8 +44,7 @@ export class TopList extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }urn;
-    }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { 
@@ -107,12 +106,11 @@ export class TopList extends plugin {
     }
 
     //#至尊榜
-    asynif (!e.isGroup) {
+    async TOP_genius(e) {
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }eply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { 
@@ -172,13 +170,12 @@ export class TopList extends plugin {
         await ForwardMsg(e, msg);
         return;
     }
-if (!e.isGroup) {
+
+    async TOP_xiuwei(e) {
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }f (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { return; }
@@ -223,14 +220,13 @@ if (!e.isGroup) {
 
 
 
-    //TOif (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }   }/不开放私聊功能
+    //TOP_lingshi
+    async TOP_lingshi(e) {
+        //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }   }
+        }
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { return; }

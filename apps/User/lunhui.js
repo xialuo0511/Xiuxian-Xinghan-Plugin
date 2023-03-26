@@ -44,8 +44,7 @@ export class lunhui extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }urn;
-    }
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -478,9 +477,7 @@ export class lunhui extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }eply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        }
         /** 内容 */
         let usr_qq = e.user_id;
         let new_msg = this.e.message;
