@@ -4,7 +4,6 @@ import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import { Read_player, existplayer, ForwardMsg, isNotNull, sleep,  exist_najie_thing,Add_najie_thing,convert2integer } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
-import { add_mingdang, add_time } from "../jiance/jiance.js"
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
@@ -212,8 +211,6 @@ export class SecretPlace extends plugin {
             return
         }
         //记录时间
-        await add_mingdang(usr_qq);
-        await add_time(usr_qq);
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
@@ -467,10 +464,6 @@ export class SecretPlace extends plugin {
             }
         }
         //记录时间
-        if (didian == "仙界矿场") {
-            await add_mingdang(usr_qq);
-            await add_time(usr_qq);
-        }
         let dazhe=1;
         if (await exist_najie_thing(usr_qq, "杀神崖通行证", "道具") && player.魔道值<1 && (player.灵根.type == "转生" || player.level_id >41) && didian=="杀神崖") {
             dazhe=0;
@@ -600,9 +593,6 @@ export class SecretPlace extends plugin {
             return;
         }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        //记录时间
-        await add_mingdang(usr_qq);
-        await add_time(usr_qq);
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
