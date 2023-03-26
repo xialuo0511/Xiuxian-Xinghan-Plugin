@@ -60,6 +60,7 @@ export class BotHelp extends plugin {
   
   async huodonghelp(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let data = await Help3.huodonghelp(e);
@@ -70,6 +71,7 @@ export class BotHelp extends plugin {
   
   async xunbaohelp(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let data = await Help1.xunbaohelp(e);
@@ -80,6 +82,7 @@ export class BotHelp extends plugin {
 
   async Xiuxianhelpcopy(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let data = await Help.gethelpcopy(e);
@@ -94,6 +97,7 @@ export class BotHelp extends plugin {
    */
   async Xiuxianhelp(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let data = await Help.get(e);
@@ -104,6 +108,7 @@ export class BotHelp extends plugin {
 
   async adminsuper(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let data = await Help.setup(e);
@@ -114,6 +119,7 @@ export class BotHelp extends plugin {
 
   async AssociationAdmin(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let data = await Help.Association(e);
@@ -124,6 +130,7 @@ export class BotHelp extends plugin {
 
   async shituhelp(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let data = await Help2.shituhelp(e);

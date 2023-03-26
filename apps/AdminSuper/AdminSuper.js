@@ -123,6 +123,7 @@ export class AdminSuper extends plugin {
   async off_xiuwei(e) {
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let usr_qq = e.user_id;
@@ -162,6 +163,7 @@ export class AdminSuper extends plugin {
   async off_level(e) {
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let usr_qq = e.user_id;
@@ -320,6 +322,7 @@ export class AdminSuper extends plugin {
   async xiuweiFuli(e) {
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     if (!e.isMaster) {
@@ -366,6 +369,7 @@ export class AdminSuper extends plugin {
   async xiuweiDeduction(e) {
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     if (!e.isMaster) {
@@ -409,6 +413,7 @@ export class AdminSuper extends plugin {
   async xueqiFuli(e) {
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     if (!e.isMaster) {
@@ -455,6 +460,7 @@ export class AdminSuper extends plugin {
   async xueqiDeduction(e) {
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     if (!e.isMaster) {
@@ -496,6 +502,7 @@ export class AdminSuper extends plugin {
 
   async Worldstatistics(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     if (!e.isMaster) {
@@ -625,6 +632,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let Forum;
@@ -648,6 +656,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let Forum;
@@ -671,6 +680,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     //boss分为金角大王、银角大王、魔王
@@ -693,6 +703,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let User_maxplus = 1; //所有仙人数
@@ -807,6 +818,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let thingqq = e.msg.replace('#', '');
@@ -851,6 +863,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     e.reply('开始清除！');
@@ -909,6 +922,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     e.reply('开始行动！');
@@ -955,6 +969,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     //没有at信息直接返回,不执行
@@ -1004,6 +1019,7 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     //没有at信息直接返回,不执行

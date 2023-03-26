@@ -95,6 +95,7 @@ export class shituxitong extends plugin {
   async okshoutu(e) {
     //禁止私聊
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let usr_qq = e.user_id;
@@ -166,6 +167,7 @@ export class shituxitong extends plugin {
   async noshoutu(e) {
     //禁止私聊
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let usr_qq = e.user_id;
@@ -207,6 +209,7 @@ export class shituxitong extends plugin {
   async rendie(e) {
     //禁止私聊
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let usr_qq = e.user_id;
@@ -294,6 +297,7 @@ export class shituxitong extends plugin {
   async buzairendie(e) {
     //禁止私聊
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let usr_qq = e.user_id;
@@ -374,6 +378,7 @@ export class shituxitong extends plugin {
     let tudi = await find_tudi(A);
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     if (tudi != 0) {
@@ -391,6 +396,7 @@ export class shituxitong extends plugin {
     let tudi = await find_tudi(A);
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     if (tudi == 0) {
@@ -417,6 +423,7 @@ export class shituxitong extends plugin {
     let tudi = await find_tudi(A);
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     //判断对方有没有存档
@@ -486,6 +493,7 @@ for(i = 0 ;i<shitu.length;i++){
   async looklookshop(e) {
     let usr_qq = e.user_id;
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     //无存档
@@ -500,6 +508,7 @@ for(i = 0 ;i<shitu.length;i++){
   //兑换物品
   async duihuan(e) {
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let usr_qq = e.user_id;
@@ -560,6 +569,7 @@ async jijian(e) {
     let gaoji
     //不开放私聊功能
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     //判断对方有没有存档

@@ -154,6 +154,7 @@ export class Showningmeng extends plugin {
    async Show_HuJu(e) {
 
     if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
       return;
     }
     let img = await get_huju_img(e);
