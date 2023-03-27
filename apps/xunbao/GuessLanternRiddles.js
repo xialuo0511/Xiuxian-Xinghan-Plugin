@@ -202,6 +202,7 @@ export class GuessLanternRiddles extends plugin {
                 for (var i = 0; 10 > i; i++) {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
                     let a = data.changzhufumoshu_list[tianluoRandom].name
+                    e.reply(a)
                     msg.push("一道金光掉落在地上，走近一看是【" + a + "】")
                     await Add_najie_thing(usr_qq, a, '道具', 1)
                     all.push("【" + a + "】")
