@@ -140,7 +140,7 @@ export class GuessLanternRiddles extends plugin {
             e.reply("十道金光从天而降")
             let msg = []
             let all = []
-            await sleep(5000)
+            await sleep(2000)
             for (var i = 0; 10 > i; i++) {
                 let tianluoRandom = Math.floor(Math.random() * (data.changzhu.length));
 
@@ -165,7 +165,7 @@ export class GuessLanternRiddles extends plugin {
             e.reply("十道金光从天而降")
             let msg = []
             let all = []
-            await sleep(5000)
+            await sleep(2000)
             for (var i = 0; 10 > i; i++) {
                 let tianluoRandom = Math.floor(Math.random() * (data.xianding.length));
 
@@ -184,42 +184,18 @@ export class GuessLanternRiddles extends plugin {
             }
             if (player.书架 < 50) {
                 let x = await exist_najie_thing(usr_qq, "青金石", "材料")
-                if (!x && x < 10) {
+                if (!x && x<10) {
                     e.reply("你没有足够的【青金石】")
+                    return;
+                }
+                let y = await exist_najie_thing(usr_qq, "书本", "材料")
+                if (!y && y<10) {
+                    e.reply("你没有足够的【书本】")
                     return;
                 }
                 await Add_najie_thing(usr_qq, "青金石", "材料", -10)
-                let y = await exist_najie_thing(usr_qq, "书本", "材料")
-                if (!y && y < 10) {
-                    e.reply("你没有足够的【书本】")
-                    return;
-                }
                 await Add_najie_thing(usr_qq, "书本", "材料", -10)
-                let msg = []
-                let all = []
-                await sleep(5000)
-                for (var i = 0; 10 > i; i++) {
-                    let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
-
-                    msg.push("一道金光掉落在地上，走近一看是【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
-                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
-                    all.push("【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
-                }
-                await ForwardMsg(e, msg)
-                e.reply("恭喜获得\n" + all)
-            } else {
-                let x = await exist_najie_thing(usr_qq, "青金石", "材料")
-                if (!x && x < 30) {
-                    e.reply("你没有足够的【青金石】")
-                    return;
-                }
-                await Add_najie_thing(usr_qq, "青金石", "材料", -30)
-                let y = await exist_najie_thing(usr_qq, "书本", "材料")
-                if (!y&& y < 10) {
-                    e.reply("你没有足够的【书本】")
-                    return;
-                }
-                await Add_najie_thing(usr_qq, "书本", "材料", -10)
+                e.reply("附魔书亮起来了")
                 let msg = []
                 let all = []
                 await sleep(2000)
@@ -227,16 +203,36 @@ export class GuessLanternRiddles extends plugin {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
 
                     msg.push("一道金光掉落在地上，走近一看是【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
-                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
+                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, data.changzhufumoshu_list[tianluoRandom].class, 1)
                     all.push("【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
                 }
-                await ForwardMsg(e, msg)
                 e.reply("恭喜获得\n" + all)
+                return;
+            } else {
+                let x = await exist_najie_thing(usr_qq, "青金石", "材料")
+                if (!x && x < 3) {
+                    e.reply("你没有足够的【青金石】")
+                    return;
+                }
+                await Add_najie_thing(usr_qq, "青金石", "材料", -1)
+                let y = await exist_najie_thing(usr_qq, "书本", "材料")
+                if (!y) {
+                    e.reply("你没有【书本】")
+                    return;
+                }
+                await Add_najie_thing(usr_qq, "书本", "材料", -1)
+                let tianluoRandom = Math.floor(Math.random() * data.changzhufumoshu_list.length);
+                console.log(tianluoRandom);
+                e.reply("附魔书亮起来了")
+                await sleep(2000)
+                e.reply(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
+                await sleep(1000)
+                await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
+                e.reply("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
+                return;
             }
-
         }
     }
-    /*
 
     async sk(e) {
         if (!e.isGroup) {
@@ -337,8 +333,6 @@ export class GuessLanternRiddles extends plugin {
             }
         }
     }
-   
-*/
 
 
     
