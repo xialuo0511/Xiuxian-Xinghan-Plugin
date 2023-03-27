@@ -200,7 +200,7 @@ export class GuessLanternRiddles extends plugin {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
 
                     msg.push("一道金光掉落在地上，走近一看是【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
-                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, data.changzhufumoshu_list[tianluoRandom].class, 1)
+                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
                     all.push("【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
                 }
                 await ForwardMsg(e, msg)
@@ -225,7 +225,7 @@ export class GuessLanternRiddles extends plugin {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
 
                     msg.push("一道金光掉落在地上，走近一看是【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
-                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, data.changzhufumoshu_list[tianluoRandom].class, 1)
+                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
                     all.push("【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
                 }
                 await ForwardMsg(e, msg)
@@ -306,7 +306,7 @@ export class GuessLanternRiddles extends plugin {
                     await sleep(5000)
                     e.reply(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
                     await sleep(1000)
-                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, data.changzhufumoshu_list[tianluoRandom].class, 1)
+                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
                     e.reply("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
                     return;
                 } else {
@@ -328,7 +328,7 @@ export class GuessLanternRiddles extends plugin {
                     await sleep(5000)
                     e.reply(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
                     await sleep(1000)
-                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, data.changzhufumoshu_list[tianluoRandom].class, 1)
+                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
                     e.reply("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
                     return;
                 }
