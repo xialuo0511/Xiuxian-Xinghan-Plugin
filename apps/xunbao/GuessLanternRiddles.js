@@ -202,7 +202,7 @@ export class GuessLanternRiddles extends plugin {
                 for (var i = 0; 10 > i; i++) {
                     let obj = data.changzhufumoshu_list
                     let tianluoRandom = Math.floor(Math.random() * (obj.length));
-                    let b = obj[tianluoRandom].name
+                    let b = obj[tianluoRandom].name + ""
                     e.reply(b)
                     await Add_najie_thing(usr_qq, b, '道具', 1)
                     all.push("【" + b + "】")
