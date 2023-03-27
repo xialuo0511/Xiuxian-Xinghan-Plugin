@@ -5,6 +5,10 @@ import fs from "fs"
 import { Add_najie_thing, isNotNull, ForwardMsg, Write_player, sleep, exist_najie_thing, Read_player, existplayer } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 
 export class GuessLanternRiddles extends plugin {
     constructor() {
@@ -182,56 +186,47 @@ export class GuessLanternRiddles extends plugin {
                 e.reply('你没有附魔台')
                 return;
             }
-            if (player.书架 < 50) {
-                let x = await exist_najie_thing(usr_qq, "青金石", "材料")
-                if (!x && x<10) {
-                    e.reply("你没有足够的【青金石】")
-                    return;
-                }
-                let y = await exist_najie_thing(usr_qq, "书本", "材料")
-                if (!y && y<10) {
-                    e.reply("你没有足够的【书本】")
-                    return;
-                }
-                await Add_najie_thing(usr_qq, "青金石", "材料", -10)
-                await Add_najie_thing(usr_qq, "书本", "材料", -10)
-                e.reply("附魔书亮起来了")
-                let msg = []
-                let all = []
-                await sleep(2000)
-                for (var i = 0; 10 > i; i++) {
-                    let obj = data.changzhufumoshu_list
-                    let tianluoRandom = Math.floor(Math.random() * (obj.length));
-                    let b = obj[tianluoRandom].name + ""
-                    e.reply(b)
-                    await Add_najie_thing(usr_qq, b, '道具', 1)
-                    all.push("【" + b + "】")
-                }
-                e.reply("恭喜获得\n" + all)
-                return;
-            } else {
-                let x = await exist_najie_thing(usr_qq, "青金石", "材料")
-                if (!x && x < 3) {
-                    e.reply("你没有足够的【青金石】")
-                    return;
-                }
-                await Add_najie_thing(usr_qq, "青金石", "材料", -1)
-                let y = await exist_najie_thing(usr_qq, "书本", "材料")
-                if (!y) {
-                    e.reply("你没有【书本】")
-                    return;
-                }
-                await Add_najie_thing(usr_qq, "书本", "材料", -1)
-                let tianluoRandom = Math.floor(Math.random() * data.changzhufumoshu_list.length);
-                console.log(tianluoRandom);
-                e.reply("附魔书亮起来了")
-                await sleep(2000)
-                e.reply(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
-                await sleep(1000)
-                await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
-                e.reply("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
+            let x = await exist_najie_thing(usr_qq, "青金石", "材料")
+            if (!x && x<10) {
+                e.reply("你没有足够的【青金石】")
                 return;
             }
+            let y = await exist_najie_thing(usr_qq, "书本", "材料")
+            if (!y&&y<10) {
+                e.reply("你没有足够的【书本】")
+                return;
+            }
+            await Add_najie_thing(usr_qq, "青金石", "材料", -10)
+            await Add_najie_thing(usr_qq, "书本", "材料", -10)
+            e.reply("附魔书亮起来了")
+            let msg  = []
+            for (var i = 0; 10>i;i++){
+                if (player.书架 < 50) {
+                    let tianluoRandom = Math.floor(Math.random() * data.changzhufumoshu_list.length);
+                    tianluoRandom = (Math.ceil((tianluoRandom + 1) / 5) - 1) * 5;
+                    console.log(tianluoRandom);
+                    msg.push(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
+                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
+                    msg.push("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
+                } else {
+                    await Add_najie_thing(usr_qq, "书本", "材料", -1)
+                    let tianluoRandom = Math.floor(Math.random() * data.changzhufumoshu_list.length);
+                    console.log(tianluoRandom);
+                    msg.push(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
+                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
+                    msg.push("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
+                }
+            }
+            await sleep(1000);
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+            return;
         }
     }
 
