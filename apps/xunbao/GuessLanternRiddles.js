@@ -200,7 +200,7 @@ export class GuessLanternRiddles extends plugin {
                 let all = []
                 await sleep(2000)
                 for (var i = 0; 10 > i; i++) {
-                    let obj = this.data.changzhufumoshu_list
+                    let obj = data.changzhufumoshu_list
                     let tianluoRandom = Math.floor(Math.random() * (obj.length));
                     let b = obj[tianluoRandom].name
                     e.reply(b)
