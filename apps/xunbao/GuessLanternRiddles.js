@@ -201,10 +201,10 @@ export class GuessLanternRiddles extends plugin {
                 await sleep(2000)
                 for (var i = 0; 10 > i; i++) {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
-
-                    msg.push("一道金光掉落在地上，走近一看是【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
-                    await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
-                    all.push("【" + data.changzhufumoshu_list[tianluoRandom].name + "】")
+                    let a = data.changzhufumoshu_list[tianluoRandom].name
+                    msg.push("一道金光掉落在地上，走近一看是【" + a + "】")
+                    await Add_najie_thing(usr_qq, a, '道具', 1)
+                    all.push("【" + a + "】")
                 }
                 e.reply("恭喜获得\n" + all)
                 return;
