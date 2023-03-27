@@ -204,9 +204,8 @@ export class GuessLanternRiddles extends plugin {
                     let tianluoRandom = Math.floor(Math.random() * (obj.length));
                     let b = obj[tianluoRandom].name
                     e.reply(b)
-                    msg.push("一道金光掉落在地上，走近一看是【" + a + "】")
                     await Add_najie_thing(usr_qq, b, '道具', 1)
-                    all.push("【" + a + "】")
+                    all.push("【" + b + "】")
                 }
                 e.reply("恭喜获得\n" + all)
                 return;
