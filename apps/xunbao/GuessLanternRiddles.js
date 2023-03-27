@@ -118,6 +118,7 @@ export class GuessLanternRiddles extends plugin {
         if (usr_qq == 80000000) {
             return;
         }
+        let player = await Read_player(usr_qq);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -250,6 +251,7 @@ export class GuessLanternRiddles extends plugin {
         if (!ifexistplay) {
             return;
         }
+        let player = await Read_player(usr_qq);
         let thing = e.msg.replace("#", '');
         thing = thing.replace("单抽", '');
         if (thing == "寻宝常驻祈愿") {
