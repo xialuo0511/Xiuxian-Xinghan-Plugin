@@ -204,7 +204,7 @@ export class GuessLanternRiddles extends plugin {
                 if (player.书架 < 50) {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
                     tianluoRandom = (Math.ceil((tianluoRandom + 1) / 5) - 1) * 5;
-                    msg.push(tianluoRandom + `金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
+                    msg.push(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
                     await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
                     msg.push("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
                 } else {
