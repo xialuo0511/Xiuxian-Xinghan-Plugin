@@ -201,7 +201,6 @@ export class GuessLanternRiddles extends plugin {
             e.reply("附魔书亮起来了")
             let msg  = []
             for (var i = 0; 10>i;i++){
-                console.log(tianluoRandom);
                 if (player.书架 < 50) {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
                     tianluoRandom = (Math.ceil((tianluoRandom + 1) / 5) - 1) * 5;
