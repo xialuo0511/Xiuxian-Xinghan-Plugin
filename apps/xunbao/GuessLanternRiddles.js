@@ -209,10 +209,13 @@ export class GuessLanternRiddles extends plugin {
                     msg.push("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
                 } else {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
+                    e.reply(tianluoRandom)
                     //tianluoRandom = (Math.ceil((tianluoRandom + 1) / 5) - 1) * 5;
+                    /*
                     msg.push(`金光掉落在地上，走近一看是 ${data.changzhufumoshu_list[tianluoRandom].name}`)
                     await Add_najie_thing(usr_qq, data.changzhufumoshu_list[tianluoRandom].name, '道具', 1)
                     msg.push("恭喜获得" + data.changzhufumoshu_list[tianluoRandom].name)
+                    */
                 }
             }
             await sleep(1000);
