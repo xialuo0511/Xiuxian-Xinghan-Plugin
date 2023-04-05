@@ -2,13 +2,13 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
-import { Read_player, existplayer, get_random_talent, getLastsign, huodonggetLastsign, Read_equipment} from '../Xiuxian/xiuxian.js'
-import {Write_equipment, Write_player, Write_najie} from '../Xiuxian/xiuxian.js'
-import {shijianc, get_random_fromARR, isNotNull} from '../Xiuxian/xiuxian.js'
-import {Add_灵石, Add_HP, Add_修为, Add_najie_thing} from '../Xiuxian/xiuxian.js'
-import {get_player_img, get_gongfa_img} from '../ShowImeg/showData.js'
-import {segment} from "oicq"
-import {__PATH} from "../Xiuxian/xiuxian.js"
+import { Read_player, existplayer, get_random_talent, getLastsign, huodonggetLastsign, Read_equipment } from '../Xiuxian/xiuxian.js'
+import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.js'
+import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
+import { Add_灵石, Add_HP, Add_修为, Add_najie_thing } from '../Xiuxian/xiuxian.js'
+import { get_player_img, get_gongfa_img } from '../ShowImeg/showData.js'
+import { segment } from "oicq"
+import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**
  * 全局
@@ -100,7 +100,7 @@ export class UserStart extends plugin {
             return;
         }
         //判断是否为黑名单
-        if (usr_qq == 392852264 || usr_qq==1027447951 || usr_qq==1825945633 || usr_qq==3478593180 || usr_qq==1259766981) {
+        if (usr_qq == 392852264 || usr_qq == 1027447951 || usr_qq == 1825945633 || usr_qq == 3478593180 || usr_qq == 1259766981) {
             e.reply("您已被作者拉至黑名单")
             return;
         }
@@ -120,7 +120,7 @@ export class UserStart extends plugin {
             "血气": 1,//练体经验
             "灵石": 1000,
             "灵根": talent,
-            "神石":0,
+            "神石": 0,
             "favorability": 0,
             "breakthrough": false,
             "linggen": [],
@@ -141,22 +141,22 @@ export class UserStart extends plugin {
             "镇妖塔层数": 0,
             "神魄段数": 0,
             "魔道值": 0,
-            "饱食度":0,
-            "热量":0,
+            "饱食度": 0,
+            "热量": 0,
             "仙宠": [],
-            "练气皮肤":0,
-            "装备皮肤":0,
+            "练气皮肤": 0,
+            "装备皮肤": 0,
             "幸运": data.necklace_list.find(item => item.name == "幸运儿").加成,
-            "熔炉":0,
-            "附魔台":0,
-            "书架":0,
-            "师徒任务阶段":0,
-            "师徒积分":0,
+            "熔炉": 0,
+            "附魔台": 0,
+            "书架": 0,
+            "师徒任务阶段": 0,
+            "师徒积分": 0,
             "副职": {
-		"职业名": [],
-		"职业经验": 0,
-		"职业等级": 1
-	}
+                "职业名": [],
+                "职业经验": 0,
+                "职业等级": 1
+            }
         }
         await Write_player(usr_qq, new_player);
         //初始化装备
@@ -268,7 +268,7 @@ export class UserStart extends plugin {
         /** 设置上下文 */
         this.setContext('RE_xiuxian');
         /** 回复 */
-        await e.reply('一旦转世一切当世与你无缘,你真的要重生吗?回复:【断绝此生】或者【再继仙缘】进行选择', false, {at: true});
+        await e.reply('一旦转世一切当世与你无缘,你真的要重生吗?回复:【断绝此生】或者【再继仙缘】进行选择', false, { at: true });
         return;
     }
 
@@ -343,7 +343,7 @@ export class UserStart extends plugin {
             await redis.set("xiuxian:player:" + usr_qq + ":reCreate_acount", acount);
         } else {
             this.setContext('RE_xiuxian');
-            await this.reply('请回复:【断绝此生】或者【再继仙缘】进行选择', false, {at: true});
+            await this.reply('请回复:【断绝此生】或者【再继仙缘】进行选择', false, { at: true });
             return;
         }
         /** 结束上下文 */
@@ -360,19 +360,12 @@ export class UserStart extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let player=await Read_player(usr_qq)
-        
-        //判断是否为黑名单
-        if (usr_qq == 392852264 || usr_qq==1027447951 || usr_qq==1825945633 || usr_qq==3478593180 || usr_qq==1259766981) {
-            e.reply("您已被作者拉至黑名单")
-            return;
-        }
         let img = await get_player_img(e);
         e.reply(img);
         return;
     }
 
-    async Set_sex (e) {
+    async Set_sex(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -400,7 +393,7 @@ export class UserStart extends plugin {
     }
 
     //改名
-    async Change_player_name(e){
+    async Change_player_name(e) {
         //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');

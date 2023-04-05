@@ -90,7 +90,7 @@ export class showData extends plugin {
         return;
     }
 
-    async show_power(e){
+    async show_power(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -100,17 +100,17 @@ export class showData extends plugin {
         return;
     }
 
-    async show_huanying(e){
+    async show_huanying(e) {
         if (!e.isGroup) {
-        e.reply('修仙游戏请在群聊中游玩');
-        return;
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
         }
         let img = await get_huanying_img(e);
         e.reply(img);
         return;
     }
 
-    async show_equipment(e){
+    async show_equipment(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -120,7 +120,7 @@ export class showData extends plugin {
         return;
     }
 
-    async show_equipment(e){
+    async show_equipment(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -273,11 +273,11 @@ export async function get_daoju_img(e) {
     }
     for (i = 0; i < daoju_list.length; i++) {
         if (najie.道具.find(item => item.name == daoju_list[i].name)) {
-            if(daoju_list[i].type!="幻影卡面_练气" && daoju_list[i].type!="幻影卡面_装备"){
+            if (daoju_list[i].type != "幻影卡面_练气" && daoju_list[i].type != "幻影卡面_装备") {
                 daoju_have.push(daoju_list[i])
             }
         } else {
-            if(daoju_list[i].type!="幻影卡面_练气" && daoju_list[i].type!="幻影卡面_装备"){
+            if (daoju_list[i].type != "幻影卡面_练气" && daoju_list[i].type != "幻影卡面_装备") {
                 daoju_need.push(daoju_list[i])
             }
         }
@@ -297,7 +297,7 @@ export async function get_daoju_img(e) {
  * 返回该玩家的幻影图片
  * @return image
  */
- export async function get_huanying_img(e) {
+export async function get_huanying_img(e) {
     let usr_qq = e.user_id;
     let ifexistplay = data.existData('player', usr_qq)
     if (!ifexistplay) {
@@ -329,11 +329,11 @@ export async function get_daoju_img(e) {
     }
     for (var i = 0; i < daoju_list.length; i++) {
         if (najie.道具.find(item => item.name == daoju_list[i].name)) {
-            if(daoju_list[i].type=="幻影卡面_练气"|| daoju_list[i].type=="幻影卡面_装备"){
+            if (daoju_list[i].type == "幻影卡面_练气" || daoju_list[i].type == "幻影卡面_装备") {
                 daoju_have.push(daoju_list[i])
             }
         } else {
-            if(daoju_list[i].type=="幻影卡面_练气"|| daoju_list[i].type=="幻影卡面_装备"){
+            if (daoju_list[i].type == "幻影卡面_练气" || daoju_list[i].type == "幻影卡面_装备") {
                 daoju_need.push(daoju_list[i])
             }
         }
@@ -954,164 +954,210 @@ export async function get_player_img(e) {
     let 法宝评级;
     let 护具评级;
     let 武器评级;
-    let usr_qq = e.user_id
-    let ifexistplay = data.existData('player', usr_qq)
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData('player', usr_qq);
     if (!ifexistplay) {
-        return
+        return;
     }
-    let player = await data.getData('player', usr_qq)
-    let equipment = await data.getData('equipment', usr_qq)
-    let player_status = await getPlayerAction(usr_qq)
-    let status = '空闲'
+    let player = await data.getData('player', usr_qq);
+    let equipment = await data.getData('equipment', usr_qq);
+    let player_status = await getPlayerAction(usr_qq);
+    let status = '空闲';
     if (player_status.time != null) {
-        status = player_status.action + '(剩余时间:' + player_status.time + ')'
+        status = player_status.action + '(剩余时间:' + player_status.time + ')';
     }
     let lingshi = Math.trunc(player.灵石);
     if (player.灵石 > 999999999999) {
         lingshi = 999999999999;
     }
     if (player.宣言 == null || player.宣言 == undefined) {
-        player.宣言 = '这个人很懒什么都没写'
+        player.宣言 = '这个人很懒什么都没写';
     }
     if (player.灵根 == null || player.灵根 == undefined) {
-        player.灵根 = await get_random_talent()
+        player.灵根 = await get_random_talent();
     }
-    data.setData('player', usr_qq, player)
-    await player_efficiency(usr_qq) // 注意这里刷新了修炼效率提升
-    if (await player.linggenshow != 0) {
-        player.灵根.type = '无'
-        player.灵根.name = '未知'
-        player.灵根.法球倍率 = '0'
-        player.修炼效率提升 = '0'
+    data.setData('player', usr_qq, player);
+    await player_efficiency(usr_qq); // 注意这里刷新了修炼效率提升
+    if ((await player.linggenshow) != 0) {
+        player.灵根.type = '无';
+        player.灵根.name = '未知';
+        player.灵根.法球倍率 = '0';
+        player.修炼效率提升 = '0';
     }
     if (!isNotNull(player.level_id)) {
-        e.reply("请先#一键同步");
+        e.reply('请先#一键同步');
         return;
     }
     if (!isNotNull(player.sex)) {
-        e.reply("请先#一键同步");
+        e.reply('请先#一键同步');
         return;
     }
+    let nd = '无';
+    if (player.隐藏灵根) nd = player.隐藏灵根.name;
+    let zd = ['攻击', '防御', '生命加成', '防御加成', '攻击加成'];
+    let num = [];
+    let p = [];
+    let kxjs = [];
+    let count = 0;
+    for (let j of zd) {
+        if (player[j] == 0) {
+            p[count] = '';
+            kxjs[count] = 0;
+            count++;
+            continue;
+        }
+        p[count] = Math.floor(Math.log(player[j]) / Math.LN10);
+        num[count] = player[j] * 10 ** -p[count];
+        kxjs[count] = `${num[count].toFixed(2)} x 10`;
+        count++;
+    }
     //境界名字需要查找境界名
-    let level = data.Level_list.find(item => item.level_id == player.level_id).level;
-    let power = (((player.攻击 * 0.9 + player.防御 * 1.1 + player.血量上限 * 0.6) + (player.暴击率 * player.攻击 * 0.5) + (player.灵根.法球倍率 * player.攻击)) / 10000);
-    power = Number(power)
-    power = power.toFixed(2)
-    let power2 = (((player.攻击 + player.防御 * 1.1 + player.血量上限 * 0.5)) / 10000);
-    power2 = Number(power2)
-    power2 = power2.toFixed(2)
-    let level2 = data.LevelMax_list.find(item => item.level_id == player.Physique_id).level;
-    let need_exp = data.Level_list.find(item => item.level_id == player.level_id).exp;
-    let need_exp2 = data.LevelMax_list.find(item => item.level_id == player.Physique_id).exp;
+    let level = data.Level_list.find(
+        item => item.level_id == player.level_id
+    ).level;
+    let power =
+        (player.攻击 * 0.9 +
+            player.防御 * 1.1 +
+            player.血量上限 * 0.6 +
+            player.暴击率 * player.攻击 * 0.5 +
+            player.灵根.法球倍率 * player.攻击) /
+        10000;
+    power = Number(power);
+    power = power.toFixed(2);
+    let power2 =
+        (player.攻击 + player.防御 * 1.1 + player.血量上限 * 0.5) / 10000;
+    power2 = Number(power2);
+    power2 = power2.toFixed(2);
+    let level2 = data.LevelMax_list.find(
+        item => item.level_id == player.Physique_id
+    ).level;
+    let need_exp = data.Level_list.find(
+        item => item.level_id == player.level_id
+    ).exp;
+    let need_exp2 = data.LevelMax_list.find(
+        item => item.level_id == player.Physique_id
+    ).exp;
     let occupation = player.occupation;
     let occupation_level;
     let occupation_level_name;
     let occupation_exp;
     let occupation_need_exp;
     if (!isNotNull(player.occupation)) {
-        occupation = "无";
-        occupation_level_name = "-";
-        occupation_exp = "-";
-        occupation_need_exp = "-";
+        occupation = '无';
+        occupation_level_name = '-';
+        occupation_exp = '-';
+        occupation_need_exp = '-';
     } else {
         occupation_level = player.occupation_level;
-        occupation_level_name = data.occupation_exp_list.find(item => item.id == occupation_level).name;
+        occupation_level_name = data.occupation_exp_list.find(
+            item => item.id == occupation_level
+        ).name;
         occupation_exp = player.occupation_exp;
-        occupation_need_exp = data.occupation_exp_list.find(item => item.id == occupation_level).experience;
+        occupation_need_exp = data.occupation_exp_list.find(
+            item => item.id == occupation_level
+        ).experience;
     }
     let this_association;
     if (!isNotNull(player.宗门)) {
         this_association = {
             宗门名称: '无',
-            职位: '无'
-        }
+            职位: '无',
+        };
     } else {
-        this_association = player.宗门
+        this_association = player.宗门;
     }
-    let pinji = ['劣', '普', '优', '精', '极', '绝', '顶']
+    let pinji = ['劣', '普', '优', '精', '极', '绝', '顶'];
     if (!isNotNull(equipment.武器.pinji)) {
-        武器评级 = "无";
+        武器评级 = '无';
     } else {
         武器评级 = pinji[equipment.武器.pinji];
     }
     if (!isNotNull(equipment.护具.pinji)) {
-        护具评级 = "无";
+        护具评级 = '无';
     } else {
         护具评级 = pinji[equipment.护具.pinji];
     }
     if (!isNotNull(equipment.法宝.pinji)) {
-        法宝评级 = "无";
+        法宝评级 = '无';
     } else {
         法宝评级 = pinji[equipment.法宝.pinji];
     }
-    if (!isNotNull(equipment.项链.pinji)) {
-        var 项链评级 = "无"
-    } else {
-        var 项链评级 = pinji[equipment.项链.pinji]
-    }
-    let rank_lianqi = data.Level_list.find(item => item.level_id == player.level_id).level
-    let expmax_lianqi = data.Level_list.find(item => item.level_id == player.level_id).exp
-    let rank_llianti = data.LevelMax_list.find(item => item.level_id == player.Physique_id).level
-    let expmax_llianti = need_exp2
-    let rank_liandan = occupation_level_name
-    let expmax_liandan = occupation_need_exp
-    let strand_hp = Strand(player.当前血量, player.血量上限)
-    let strand_lianqi = Strand(player.修为, expmax_lianqi)
-    let strand_llianti = Strand(player.血气, expmax_llianti)
-    let strand_liandan = Strand(occupation_exp, expmax_liandan)
-    let Power = GetPower(player.攻击, player.防御, player.血量上限, player.暴击率);
+    let rank_lianqi = data.Level_list.find(
+        item => item.level_id == player.level_id
+    ).level;
+    let expmax_lianqi = data.Level_list.find(
+        item => item.level_id == player.level_id
+    ).exp;
+    let rank_llianti = data.LevelMax_list.find(
+        item => item.level_id == player.Physique_id
+    ).level;
+    let expmax_llianti = need_exp2;
+    let rank_liandan = occupation_level_name;
+    let expmax_liandan = occupation_need_exp;
+    let strand_hp = Strand(player.当前血量, player.血量上限);
+    let strand_lianqi = Strand(player.修为, expmax_lianqi);
+    let strand_llianti = Strand(player.血气, expmax_llianti);
+    let strand_liandan = Strand(occupation_exp, expmax_liandan);
+    let Power = GetPower(
+        player.攻击,
+        player.防御,
+        player.血量上限,
+        player.暴击率
+    );
     let PowerMini = bigNumberTransform(Power);
-    let ArmsPower = GetPower(equipment.武器.atk, equipment.武器.def, equipment.武器.HP, equipment.武器.bao)
-    let ArmorPower = GetPower(equipment.护具.atk, equipment.护具.def, equipment.护具.HP, equipment.护具.bao)
-    let MagicPower = GetPower(equipment.法宝.atk, equipment.法宝.def, equipment.法宝.HP, equipment.法宝.bao)
-    let bao = parseInt(player.暴击率 * 100) + "%"
-    equipment.武器.bao = parseInt(equipment.武器.bao * 100) + "%"
-    equipment.护具.bao = parseInt(equipment.护具.bao * 100) + "%"
-    equipment.法宝.bao = parseInt(equipment.法宝.bao * 100) + "%"
-    lingshi = bigNumberTransform(lingshi)
-    let hunyin = "未知";
-    let A = usr_qq
-    let qinmidu = await Read_qinmidu();
+    let bao = parseInt(player.暴击率 * 100) + '%';
+    equipment.武器.bao = parseInt(equipment.武器.bao * 100) + '%';
+    equipment.护具.bao = parseInt(equipment.护具.bao * 100) + '%';
+    equipment.法宝.bao = parseInt(equipment.法宝.bao * 100) + '%';
+    lingshi = bigNumberTransform(lingshi);
+    let hunyin = '未知';
+    let A = usr_qq;
+    let qinmidu;
+    try {
+        qinmidu = await Read_qinmidu();
+    } catch {
+        //没有建立一个
+        await Write_qinmidu([]);
+        qinmidu = await Read_qinmidu();
+    }
     for (let i = 0; i < qinmidu.length; i++) {
-        if ((qinmidu[i].QQ_A == A) || (qinmidu[i].QQ_B == A)) {
+        if (qinmidu[i].QQ_A == A || qinmidu[i].QQ_B == A) {
             if (qinmidu[i].婚姻 > 0) {
                 if (qinmidu[i].QQ_A == A) {
-                    let B = await Read_player(qinmidu[i].QQ_B)
-                    hunyin = B.名号
+                    let B = await Read_player(qinmidu[i].QQ_B);
+                    hunyin = B.名号;
                 } else {
-                    let A = await Read_player(qinmidu[i].QQ_A)
-                    hunyin = A.名号
+                    let A = await Read_player(qinmidu[i].QQ_A);
+                    hunyin = A.名号;
                 }
                 break;
             }
         }
     }
-    let action = player.练气皮肤
+    let action = player.练气皮肤;
     let player_data = {
-        pifu:action,
+        neidan: nd,
+        pifu: action,
         user_id: usr_qq,
-        player,  // 玩家数据
-        rank_lianqi,  // 练气境界
-        expmax_lianqi,  // 练气需求经验
-        rank_llianti,  // 炼体境界
-        expmax_llianti,  // 炼体需求经验
-        rank_liandan,  // 炼丹境界
-        expmax_liandan,  // 炼丹需求经验
-        equipment,  // 装备数据
+        player, // 玩家数据
+        rank_lianqi, // 练气境界
+        expmax_lianqi, // 练气需求经验
+        rank_llianti, // 炼体境界
+        expmax_llianti, // 炼体需求经验
+        rank_liandan, // 炼丹境界
+        expmax_liandan, // 炼丹需求经验
+        equipment, // 装备数据
         talent: parseInt(player.修炼效率提升 * 100), //
-        player_action: status,  // 当前状态
-        this_association,  // 宗门信息
+        player_action: status, // 当前状态
+        this_association, // 宗门信息
         strand_hp,
         strand_lianqi,
         strand_llianti,
         strand_liandan,
-        PowerMini,  // 玩家战力
-        ArmsPower,  // 武器战力
-        ArmorPower,  // 护具战力
-        MagicPower,  // 法宝战力
+        PowerMini, // 玩家战力
         bao,
         nickname: player.名号,
-        linggen: player.灵根,//
+        linggen: player.灵根, //
         declaration: player.宣言,
         need_exp: need_exp,
         need_exp2: need_exp2,
@@ -1128,10 +1174,18 @@ export async function get_player_img(e) {
         lingshi: lingshi,
         player_maxHP: player.血量上限,
         player_nowHP: player.当前血量,
-        player_atk: player.攻击,
-        player_def: player.防御,
+        player_atk: kxjs[0],
+        player_atk2: p[0],
+        player_def: kxjs[1],
+        player_def2: p[1],
+        生命加成: kxjs[2],
+        生命加成_t: p[2],
+        防御加成: kxjs[3],
+        防御加成_t: p[3],
+        攻击加成: kxjs[4],
+        攻击加成_t: p[4],
         player_bao: player.暴击率,
-         player_bao2: player.暴击伤害,
+        player_bao2: player.暴击伤害,
         occupation: occupation,
         occupation_level: occupation_level_name,
         occupation_exp: occupation_exp,
@@ -1145,11 +1199,10 @@ export async function get_player_img(e) {
         武器评级: 武器评级,
         护具评级: 护具评级,
         法宝评级: 法宝评级,
-        项链评级:项链评级,
-        修仙版本: versionData
-    }
+        修仙版本: versionData,
+    };
     const data1 = await new Show(e).get_playerData(player_data);
-    return await puppeteer.screenshot("player", {
+    return await puppeteer.screenshot('player', {
         ...data1,
     });
 }
@@ -1318,13 +1371,13 @@ export async function get_equipment_img(e) {
         arms: equipment.武器,
         armor: equipment.护具,
         treasure: equipment.法宝,
-        necklace:equipment.项链,
+        necklace: equipment.项链,
         player_atk: player.攻击,
         player_def: player.防御,
         player_bao: bao,
         player_maxHP: player.血量上限,
         player_nowHP: player.当前血量,
-        pifu:Number(pifu)
+        pifu: Number(pifu)
     }
     const data1 = await new Show(e).get_equipmnetData(player_data);
     return await puppeteer.screenshot("equipment", {
@@ -1348,13 +1401,13 @@ export async function get_equipment_img2(e) {
         user_id: usr_qq,
         mdz: player.魔道值,
         nickname: player.名号,
-        necklace:equipment.项链,
+        necklace: equipment.项链,
         player_atk: player.攻击,
         player_def: player.防御,
         player_bao: bao,
         player_maxHP: player.血量上限,
         player_nowHP: player.当前血量,
-        pifu:Number(pifu)
+        pifu: Number(pifu)
     }
     const data1 = await new Show(e).get_equipmnetData2(player_data);
     let img = await puppeteer.screenshot("equipment2", {
@@ -1400,12 +1453,12 @@ export async function get_najie_img(e) {
         najie_gongfa: najie.功法,
         najie_caoyao: najie.草药,
         najie_cailiao: najie.材料,
-        najie_shicai:najie.食材,
+        najie_shicai: najie.食材,
         najie_hezi: najie.盒子,
         strand_hp: strand_hp,
         strand_lingshi: strand_lingshi,
         修仙版本: versionData,
-        pifu:Number(pifu)
+        pifu: Number(pifu)
     }
     const data1 = await new Show(e).get_najieData(player_data);
     return await puppeteer.screenshot("najie", {
