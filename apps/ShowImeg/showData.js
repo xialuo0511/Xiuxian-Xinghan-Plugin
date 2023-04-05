@@ -110,7 +110,7 @@ export class showData extends plugin {
         return;
     }
 
-    async show_equipment(e) {
+    async show_equipment2(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -1359,9 +1359,7 @@ export async function get_equipment_img(e) {
     if (!ifexistplay) {
         return;
     }
-    if (pifu === 'null') {
-        pifu = 0
-    }
+    let action = player.装备皮肤;
     const bao = Math.trunc(parseInt(player.暴击率 * 100));
     let equipment = await data.getData("equipment", usr_qq);
     let player_data = {
@@ -1377,7 +1375,7 @@ export async function get_equipment_img(e) {
         player_bao: bao,
         player_maxHP: player.血量上限,
         player_nowHP: player.当前血量,
-        pifu: Number(pifu)
+        pifu: action
     }
     const data1 = await new Show(e).get_equipmnetData(player_data);
     return await puppeteer.screenshot("equipment", {
