@@ -1140,7 +1140,7 @@ export class UserHome extends plugin {
             }
             await Add_najie_thing(usr_qq, thing_name, "丹药", -quantity);
             if (this_danyao.type == "血量") {
-                //await Go(e);
+                await Go(e);
                 if (allaction) {
                     console.log(allaction);
                 } else {
