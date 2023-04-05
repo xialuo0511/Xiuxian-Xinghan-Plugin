@@ -167,7 +167,9 @@
                     <div class="item_title2">{{equipment.武器.name}}</div>
                     {{if equipment.武器.atk>10 || equipment.武器.def>10 ||
                     equipment.武器.HP>10}}
-                    <div class="item_int2">属性:无</div>
+                    <div class="item_int2">
+                        属性:{{equipment.武器.fumo}}
+                    </div>
                     <div class="item_int2">
                         攻击：{{(equipment.武器.atk).toFixed(0)}}
                     </div>
@@ -198,7 +200,9 @@
                     <div class="item_title2">{{equipment.护具.name}}</div>
                     {{if equipment.护具.atk>10 || equipment.护具.def>10 ||
                     equipment.护具.HP>10}}
-                    <div class="item_int2">属性:无</div>
+                    <div class="item_int2">
+                        属性:{{equipment.护具.fumo}}
+                    </div>
                     <div class="item_int2">
                         攻击：{{(equipment.护具.atk).toFixed(0)}}
                     </div>
@@ -229,7 +233,9 @@
                     <div class="item_title2">{{equipment.法宝.name}}</div>
                     {{if equipment.法宝.atk>10 || equipment.法宝.def>10 ||
                     equipment.法宝.HP>10}}
-                    <div class="item_int2">属性:无</div>
+                    <div class="item_int2">
+                        属性:{{equipment.法宝.fumo}}
+                    </div>
                     <div class="item_int2">
                         攻击：{{(equipment.法宝.atk).toFixed(0)}}
                     </div>
