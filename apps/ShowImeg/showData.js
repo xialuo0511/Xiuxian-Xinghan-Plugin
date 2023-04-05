@@ -1431,11 +1431,12 @@ export async function get_najie_img(e) {
     const lingshi2 = Math.trunc(najie.灵石上限);
     let strand_hp = Strand(player.当前血量, player.血量上限)
     let strand_lingshi = Strand(najie.灵石, najie.灵石上限)
-    let pifu = await redis.get("xiuxian:player:" + usr_qq + ":najiepifu");
-    e.reply(pifu);
-    if (!pifu) {
-        pifu = 0
-    }
+    // let pifu = await redis.get("xiuxian:player:" + usr_qq + ":najiepifu");
+    // e.reply(pifu);
+    // if (!pifu) {
+    //     pifu = 0
+    // }
+    let action = player.练气皮肤;
     let player_data = {
         user_id: usr_qq,
         player: player,
@@ -1458,7 +1459,7 @@ export async function get_najie_img(e) {
         strand_hp: strand_hp,
         strand_lingshi: strand_lingshi,
         修仙版本: versionData,
-        pifu: Number(pifu)
+        pifu: action
     }
     const data1 = await new Show(e).get_najieData(player_data);
     return await puppeteer.screenshot("najie", {
