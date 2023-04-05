@@ -567,6 +567,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        let now = new Date();
+        let nowTime = now.getTime(); //获取当前日期的时间戳
         if (nowTime < 1682265600000) {
             e.reply(`「遗迹寻宝」活动暂未开启！`);
             return;
@@ -586,6 +588,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        let now = new Date();
+        let nowTime = now.getTime(); //获取当前日期的时间戳
         if (nowTime < 1682265600000) {
             e.reply(`「遗迹寻宝」活动暂未开启！`);
             return;
@@ -655,6 +659,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        let now = new Date();
+        let nowTime = now.getTime(); //获取当前日期的时间戳
         if (nowTime < 1682265600000) {
             e.reply(`「遗迹寻宝」活动暂未开启！`);
             return;
