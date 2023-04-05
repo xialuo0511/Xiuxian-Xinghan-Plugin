@@ -98,10 +98,9 @@ export class UserHome extends plugin {
 
     async huodong(e) {
         if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-e.reply('修仙游戏请在群聊中游玩');
-  return;
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         let ifexistplay = await existplayer(usr_qq);
@@ -132,7 +131,7 @@ e.reply('修仙游戏请在群聊中游玩');
             }
         }
         //特殊兑换码调整
-        if (data.duihuan[i].name == "1.3版本参与测试") {
+        if (data.duihuan[i].name == "1.4版本参与测试") {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
                 if (usr_qq == data.duihuan[i].qq[o].name) {
                     action.push(name);
@@ -216,11 +215,11 @@ e.reply('修仙游戏请在群聊中游玩');
     }
 
     async Add_lhd(e) {
-      e.reply('修仙游戏请在群聊中游玩');
-  if (!e.isGroup) {
-  e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
+        e.reply('修仙游戏请在群聊中游玩');
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -260,10 +259,10 @@ e.reply('修仙游戏请在群聊中游玩');
     }
 
     async sk(e) {
-    if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -330,11 +329,11 @@ e.reply('修仙游戏请在群聊中游玩');
         }
     }
 
-async refining(e) {
+    async refining(e) {
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         //固定写法
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
@@ -402,9 +401,9 @@ async refining(e) {
 
     async find_thing(e) {
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let usr_qq = e.user_id;
         var reg = new RegExp(/哪里有/);
         let msg = e.msg.replace(reg, '');
@@ -708,9 +707,9 @@ async refining(e) {
     async heavenly(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -741,9 +740,9 @@ async refining(e) {
     async Take_lingshi(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -812,17 +811,17 @@ async refining(e) {
             await Add_灵石(usr_qq, lingshi);
             e.reply([segment.at(usr_qq), `本次取出灵石${lingshi},你的纳戒还剩余${najie.灵石 - lingshi}灵石`]);
             return;
-      e.reply('修仙游戏请在群聊中游玩');
-  }
-    return;
+            e.reply('修仙游戏请在群聊中游玩');
+        }
+        return;
     }
 
     async zbhuanying(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -881,18 +880,18 @@ async refining(e) {
             await Add_najie_thing(usr_qq, thing_name, "道具", -1)
             await Add_najie_thing(usr_qq, old.name, "道具", 1)
             e.reply("更换" + thing_exist.type + "【" + thing_exist.name + "】成功")
-      e.reply('修仙游戏请在群聊中游玩');
-      return
-    }
+            e.reply('修仙游戏请在群聊中游玩');
+            return
+        }
     }
 
     //#(装备|服用|消耗)物品*数量
     async Player_use(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -3323,9 +3322,9 @@ async refining(e) {
                 await Write_equipment(usr_qq, equipment);
                 return;
             } else {
-      e.reply('修仙游戏请在群聊中游玩');
-          e.reply('你没有该附魔书')
-            return;
+                e.reply('修仙游戏请在群聊中游玩');
+                e.reply('你没有该附魔书')
+                return;
             }
         }
     }
@@ -3370,10 +3369,10 @@ async refining(e) {
             this.finish('yesxigen');
             return;
         } else {
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }eturn;
+            if (!e.isGroup) {
+                e.reply('修仙游戏请在群聊中游玩');
+                return;
+            } eturn;
         }
         /** 结束上下文 */
     }
@@ -3405,10 +3404,10 @@ async refining(e) {
                 await this.reply('兑换' + gonfa + "成功");
                 this.finish('DUIHUAN');
                 return;
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }   this.finish('DUIHUAN');
+                if (!e.isGroup) {
+                    e.reply('修仙游戏请在群聊中游玩');
+                    return;
+                } this.finish('DUIHUAN');
                 return;
             }
         }
