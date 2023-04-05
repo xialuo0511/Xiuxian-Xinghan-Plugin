@@ -1391,10 +1391,7 @@ export async function get_equipment_img2(e) {
     }
     var bao = Math.trunc(parseInt(player.暴击率 * 100))
     let equipment = await data.getData("equipment", usr_qq);
-    let pifu = redis.get("xiuxian:player:" + usr_qq + ":zhuangbeipifu")
-    if (pifu === 'null') {
-        pifu = 0
-    }
+    let action = player.装备皮肤;
     let player_data = {
         user_id: usr_qq,
         mdz: player.魔道值,
@@ -1405,7 +1402,7 @@ export async function get_equipment_img2(e) {
         player_bao: bao,
         player_maxHP: player.血量上限,
         player_nowHP: player.当前血量,
-        pifu: Number(pifu)
+        pifu: action
     }
     const data1 = await new Show(e).get_equipmnetData2(player_data);
     let img = await puppeteer.screenshot("equipment2", {
