@@ -1136,7 +1136,7 @@ export async function get_player_img(e) {
     }
     let action = player.练气皮肤;
     let player_data = {
-        neidan: nd,
+
         pifu: action,
         user_id: usr_qq,
         player, // 玩家数据
