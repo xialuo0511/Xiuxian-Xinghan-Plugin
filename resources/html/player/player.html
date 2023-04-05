@@ -165,8 +165,6 @@
             <div class="user_font wupin">
                 <div class="item">
                     <div class="item_title2">{{equipment.武器.name}}</div>
-                    {{if equipment.武器.atk>10 || equipment.武器.def>10 ||
-                    equipment.武器.HP>10}}
                     <div class="item_int2">
                         属性:{{equipment.武器.fumo}}
                     </div>
@@ -179,30 +177,14 @@
                     <div class="item_int2">
                         血量：{{(equipment.武器.HP).toFixed(0)}}
                     </div>
-                    {{else}}
-                    <div class="item_int2">
-                        属性:{{['金','木','土','水','火'][equipment.武器.id-1]}}
-                    </div>
-                    <div class="item_int2">
-                        攻击:{{(equipment.武器.atk*100).toFixed(0)}}%
-                    </div>
-                    <div class="item_int2">
-                        防御:{{(equipment.武器.def*100).toFixed(0)}}%
-                    </div>
-                    <div class="item_int2">
-                        血量:{{(equipment.武器.HP*100).toFixed(0)}}%
-                    </div>
-                    {{/if}}
                     <div class="item_int2">暴击：{{equipment.武器.bao}}</div>
+                    <div class="item_int2">
+                        附魔:{{equipment.武器.fumo}}
+                    </div>
                     <div class="item_int2">评级：【{{武器评级}}】</div>
                 </div>
                 <div class="item">
                     <div class="item_title2">{{equipment.护具.name}}</div>
-                    {{if equipment.护具.atk>10 || equipment.护具.def>10 ||
-                    equipment.护具.HP>10}}
-                    <div class="item_int2">
-                        属性:{{equipment.护具.fumo}}
-                    </div>
                     <div class="item_int2">
                         攻击：{{(equipment.护具.atk).toFixed(0)}}
                     </div>
@@ -212,30 +194,14 @@
                     <div class="item_int2">
                         血量：{{(equipment.护具.HP).toFixed(0)}}
                     </div>
-                    {{else}}
-                    <div class="item_int2">
-                        属性:{{['金','木','土','水','火'][equipment.护具.id-1]}}
-                    </div>
-                    <div class="item_int2">
-                        攻击:{{(equipment.护具.atk*100).toFixed(0)}}%
-                    </div>
-                    <div class="item_int2">
-                        防御:{{(equipment.护具.def*100).toFixed(0)}}%
-                    </div>
-                    <div class="item_int2">
-                        血量:{{(equipment.护具.HP*100).toFixed(0)}}%
-                    </div>
-                    {{/if}}
                     <div class="item_int2">暴击：{{equipment.护具.bao}}</div>
+                    <div class="item_int2">
+                        附魔:{{equipment.护具.fumo}}
+                    </div>
                     <div class="item_int2">评级：【{{护具评级}}】</div>
                 </div>
                 <div class="item">
                     <div class="item_title2">{{equipment.法宝.name}}</div>
-                    {{if equipment.法宝.atk>10 || equipment.法宝.def>10 ||
-                    equipment.法宝.HP>10}}
-                    <div class="item_int2">
-                        属性:{{equipment.法宝.fumo}}
-                    </div>
                     <div class="item_int2">
                         攻击：{{(equipment.法宝.atk).toFixed(0)}}
                     </div>
@@ -245,21 +211,10 @@
                     <div class="item_int2">
                         血量：{{(equipment.法宝.HP).toFixed(0)}}
                     </div>
-                    {{else}}
-                    <div class="item_int2">
-                        属性:{{['金','木','土','水','火'][equipment.法宝.id-1]}}
-                    </div>
-                    <div class="item_int2">
-                        攻击:{{(equipment.法宝.atk*100).toFixed(0)}}%
-                    </div>
-                    <div class="item_int2">
-                        防御:{{(equipment.法宝.def*100).toFixed(0)}}%
-                    </div>
-                    <div class="item_int2">
-                        血量:{{(equipment.法宝.HP*100).toFixed(0)}}%
-                    </div>
-                    {{/if}}
                     <div class="item_int2">暴击：{{equipment.法宝.bao}}</div>
+                    <div class="item_int2">
+                        附魔:{{equipment.法宝.fumo}}
+                    </div>
                     <div class="item_int2">评级：【{{法宝评级}}】</div>
                 </div>
                 <div class="item">
