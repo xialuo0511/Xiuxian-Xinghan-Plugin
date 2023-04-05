@@ -3520,7 +3520,7 @@ export class UserHome extends plugin {
             return;
         }
         let thing_exist1 = await foundhuishouthing(thing_name);
-        if (!thing_exist1) {
+        if (thing_exist1) {
             e.reply(`[${thing_name}]只可回收，不可出售`);
             return;
         }
