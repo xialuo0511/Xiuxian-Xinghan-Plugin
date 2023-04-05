@@ -10,11 +10,11 @@ import {
     Write_najie, Read_najie, isNotNull,
     foundhuishouthing
 } from '../Xiuxian/xiuxian.js'
-import {Add_灵石, Add_najie_thing, Add_修为, Add_player_学习功法, Add_血气,Locked_najie_thing,Check_thing} from '../Xiuxian/xiuxian.js'
-import {__PATH} from "../Xiuxian/xiuxian.js"
-import {get_equipment_img} from '../ShowImeg/showData.js'
-import {synchronization} from '../AdminSuper/AdminSuper.js'
-import {Pushforum_ASS} from '../Help/Forum.js'
+import { Add_灵石, Add_najie_thing, Add_修为, Add_player_学习功法, Add_血气, Locked_najie_thing, Check_thing } from '../Xiuxian/xiuxian.js'
+import { __PATH } from "../Xiuxian/xiuxian.js"
+import { get_equipment_img } from '../ShowImeg/showData.js'
+import { synchronization } from '../AdminSuper/AdminSuper.js'
+import { Pushforum_ASS } from '../Help/Forum.js'
 import { Synchronization_ASS } from '../Association/TreasureCabinet.js'
 
 //如需截图必须引入以下两库
@@ -31,7 +31,7 @@ import Show from '../../model/show.js';
  * 一键装备
  * 一键学习功法
  */
-let allaction=false;
+let allaction = false;
 export class UserSellAll extends plugin {
     constructor() {
         super({
@@ -83,7 +83,7 @@ export class UserSellAll extends plugin {
             ]
         })
     }
-    async all_give(e){
+    async all_give(e) {
         //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
@@ -112,18 +112,18 @@ export class UserSellAll extends plugin {
         let A_najie = await data.getData("najie", A_qq);
         let B_najie = await data.getData("najie", B_qq);
         //命令判断
-        let code=e.msg.replace("#一键赠送","");
-        let thing_class=code;
+        let code = e.msg.replace("#一键赠送", "");
+        let thing_class = code;
         for (let index = 0; index < A_najie[thing_class].length; index++) {
             const element = A_najie[thing_class][index];
-            if (await Locked_najie_thing(A_qq, element.name, element.class,element.pinji) == 1) {
+            if (await Locked_najie_thing(A_qq, element.name, element.class, element.pinji) == 1) {
                 continue;
             }
-            if(await Check_thing(element)==1){
+            if (await Check_thing(element) == 1) {
                 continue;
             }
-            let number=await exist_najie_thing(A_qq,element.name,element.class,element.pinji);
-            await Add_najie_thing(A_qq, element.name,element.class, -number, element.pinji);
+            let number = await exist_najie_thing(A_qq, element.name, element.class, element.pinji);
+            await Add_najie_thing(A_qq, element.name, element.class, -number, element.pinji);
             await Add_najie_thing(B_qq, element.name, element.class, number, element.pinji);
         }
         e.reply(`一键赠送${thing_class}完成`);
@@ -243,8 +243,8 @@ export class UserSellAll extends plugin {
     /**
      * 回收物品
      */
-    async huishou(e){
-        if(e.isGroup) {
+    async huishou(e) {
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -257,7 +257,7 @@ export class UserSellAll extends plugin {
         let str = [];
         let najie = await data.getData("najie", usr_qq);
         let commodities_price = 0
-        let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子','仙宠','仙宠口粮','食材'];
+        let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子', '仙宠', '仙宠口粮', '食材'];
         console.log(wupin);
         for (var i of wupin) {
             console.log(najie[i]);
@@ -275,7 +275,7 @@ export class UserSellAll extends plugin {
                         let t;
                         if (l.class == "装备") {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
-                            t = `【${l.name}（`+ pinji[l.pinji] + `）*${l.数量}】回收成功,`;
+                            t = `【${l.name}（` + pinji[l.pinji] + `）*${l.数量}】回收成功,`;
                         } else {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
                             t = `【${l.name}*${l.数量}】回收成功,`;
@@ -303,7 +303,7 @@ export class UserSellAll extends plugin {
         return;
     }
 
-    async Sell_all_comodities(e){
+    async Sell_all_comodities(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -317,7 +317,7 @@ export class UserSellAll extends plugin {
         let str = [];
         let najie = await data.getData("najie", usr_qq);
         let commodities_price = 0
-        let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子','仙宠','仙宠口粮','食材'];
+        let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子', '仙宠', '仙宠口粮', '食材'];
         let wupin1 = []
         if (e.msg != '#一键出售') {
             let thing = e.msg.replace("#一键出售", '');
@@ -352,7 +352,7 @@ export class UserSellAll extends plugin {
                         let t;
                         if (l.class == "装备") {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
-                            t = `【${l.name}（`+ pinji[l.pinji] + `）*${l.数量}】出售成功,`;
+                            t = `【${l.name}（` + pinji[l.pinji] + `）*${l.数量}】出售成功,`;
                         } else {
                             await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
                             t = `【${l.name}*${l.数量}】出售成功,`;
@@ -420,7 +420,7 @@ export class UserSellAll extends plugin {
         if (!ifexistplay) {
             return;
         }
-        
+
         //检索方法
         let najie = await data.getData("najie", usr_qq);
         let xueqi = 0
@@ -457,7 +457,7 @@ export class UserSellAll extends plugin {
         let wuqi = equipment.武器;
         let fabao = equipment.法宝;
         let huju = equipment.护具;
-//选择最高攻击武器,最高暴击法宝,最高防御护具
+        //选择最高攻击武器,最高暴击法宝,最高防御护具
         for (var i = 0; i < najie.装备.length; i++) {
             if (najie.装备[i].type == "武器") {
                 if (wuqi.atk < najie.装备[i].atk) {
@@ -500,7 +500,7 @@ export class UserSellAll extends plugin {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
-        }n;
+        } n;
     }
 
     async all_learn(e) {

@@ -90,9 +90,18 @@ export class SecretPlace extends plugin {
 
     //活动
     async huodongshop(e) {
+
         //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        if (nowTime < 1682265600000) {
+            e.reply(`「遗迹寻宝」活动暂未开启！`);
+            return;
+        }
+        if (nowTime > 1684166399999) {
+            e.reply(`「遗迹寻宝」已结束！`);
             return;
         }
         let img = await get_huodongshop_img(e);
@@ -559,11 +568,11 @@ export class SecretPlace extends plugin {
             return;
         }
         if (nowTime < 1682265600000) {
-            e.reply(`「七日馈赠」活动暂未开启！`);
+            e.reply(`「遗迹寻宝」活动暂未开启！`);
             return;
         }
         if (nowTime > 1684166399999) {
-            e.reply(`「七日馈赠」已结束！`);
+            e.reply(`「遗迹寻宝」已结束！`);
             return;
         }
         let addres = "遗迹";
@@ -578,11 +587,11 @@ export class SecretPlace extends plugin {
             return;
         }
         if (nowTime < 1682265600000) {
-            e.reply(`「七日馈赠」活动暂未开启！`);
+            e.reply(`「遗迹寻宝」活动暂未开启！`);
             return;
         }
         if (nowTime > 1684166399999) {
-            e.reply(`「七日馈赠」已结束！`);
+            e.reply(`「遗迹寻宝」已结束！`);
             return;
         }
         let usr_qq = e.user_id;
@@ -647,11 +656,11 @@ export class SecretPlace extends plugin {
             return;
         }
         if (nowTime < 1682265600000) {
-            e.reply(`「七日馈赠」活动暂未开启！`);
+            e.reply(`「遗迹寻宝」活动暂未开启！`);
             return;
         }
         if (nowTime > 1684166399999) {
-            e.reply(`「七日馈赠」已结束！`);
+            e.reply(`「遗迹寻宝」已结束！`);
             return;
         }
         let usr_qq = e.user_id;
