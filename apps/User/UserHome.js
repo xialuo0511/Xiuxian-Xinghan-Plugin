@@ -2983,7 +2983,8 @@ export class UserHome extends plugin {
                         await Add_灵石(usr_qq, -1000000)
                         e.reply('你在挖矿途中一只苦力怕靠近你然后爆炸了,你来不及反应,剩余' + player.当前血量 + '你什么都没有得到')
                     } else {
-                        e.reply(`${last_msg}${fyd_msg}你在星荧洞窟捡到了挖到圆石${18 * mugao * n + 9 * shigao * n}个,煤炭${18 * mugao * n + 9 * shigao * n}个,铁矿${9 * mugao * n + 3 * shigao * n}个,黄金矿${9 * mugao * n}个,获得了修为${xiuwei}血气${xueqi}`)
+                        e.reply(`${last_msg}${fyd_msg}你在星荧洞窟捡到了挖到圆石${18 * mugao * n + 9 * shigao * n}个,
+                                    煤炭${18 * mugao * n + 9 * shigao * n}个,铁矿${9 * mugao * n + 3 * shigao * n}个,黄金矿${9 * mugao * n}个,获得了修为${xiuwei}血气${xueqi}`)
                     }
                 } else {
                     e.reply('你想起来你没有石镐或铁镐,于是又回家了')
@@ -3322,7 +3323,6 @@ export class UserHome extends plugin {
                 await Write_equipment(usr_qq, equipment);
                 return;
             } else {
-                e.reply('修仙游戏请在群聊中游玩');
                 e.reply('你没有该附魔书')
                 return;
             }

@@ -12,8 +12,8 @@ import {
     get_random_fromARR,
     Read_najie
 } from '../Xiuxian/xiuxian.js'
-import {Read_player, Read_equipment} from '../Xiuxian/xiuxian.js'
-import {Add_HP, exist_najie_thing, Add_修为, Add_血气, Add_najie_thing, sleep} from '../Xiuxian/xiuxian.js'
+import { Read_player, Read_equipment } from '../Xiuxian/xiuxian.js'
+import { Add_HP, exist_najie_thing, Add_修为, Add_血气, Add_najie_thing, sleep } from '../Xiuxian/xiuxian.js'
 
 /**
  * 全局变量
@@ -142,10 +142,10 @@ export class Level extends plugin {
             }
         }
         //线性概率获得仙宠
-       if (now_level_id < 42) {
+        if (now_level_id < 42) {
             let random = Math.random()
             if (random < now_level_id / 60 * 0.5 / 5) {
-                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length ));
+                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length));
                 random2 = (Math.ceil((random2 + 1) / 5) - 1) * 5;
                 e.reply("修仙本是逆天而行,神明愿意降下自己的恩泽.这只[" + data.changzhuxianchon[random2].name + "],将伴随与你,愿你修仙路上不再独身一人.`")
                 await Add_najie_thing(usr_qq, data.changzhuxianchon[random2].name, "仙宠", 1)
@@ -153,7 +153,7 @@ export class Level extends plugin {
         } else {
             let random = Math.random()
             if (random < now_level_id / 60 * 0.5) {
-                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length ));
+                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length));
                 random2 = (Math.ceil((random2 + 1) / 5) - 1) * 5;
                 e.reply("修仙本是逆天而行,神明愿意降下自己的恩泽.这只[" + data.changzhuxianchon[random2].name + "],将伴随与你,愿你修仙路上不再独身一人.`")
                 await Add_najie_thing(usr_qq, data.changzhuxianchon[random2].name, "仙宠", 1)
@@ -214,7 +214,7 @@ export class Level extends plugin {
         }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         //真仙突破
-        if (now_level_id >= 51 && player.灵根.name != "天五灵根" && player.灵根.name != "垃圾五灵根" && player.灵根.name != "九转轮回体"&&player.灵根.name != "九重魔功"&&player.灵根.name != "仙之心·火"&&player.灵根.name != "仙之心·水"&&player.灵根.name != "仙之心·雷"&&player.灵根.name != "仙之心·冰"&&player.灵根.name != "仙之心·岩"&&player.灵根.name != "仙之心·风"&&player.灵根.name != "仙之心·木") {
+        if (now_level_id >= 51 && player.灵根.name != "天五灵根" && player.灵根.name != "垃圾五灵根" && player.灵根.name != "九转轮回体" && player.灵根.name != "九重魔功" && player.灵根.name != "仙之心·火" && player.灵根.name != "仙之心·水" && player.灵根.name != "仙之心·雷" && player.灵根.name != "仙之心·冰" && player.灵根.name != "仙之心·岩" && player.灵根.name != "仙之心·风" && player.灵根.name != "仙之心·木") {
             e.reply(`你灵根不齐，无成帝的资格！请先夺天地之造化，修补灵根后再来突破吧`);
             return;
         }
@@ -304,7 +304,7 @@ export class Level extends plugin {
         if (now_level_id < 42) {
             let random = Math.random()
             if (random < now_level_id / 60 * 0.5 / 5) {
-                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length ));
+                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length));
                 random2 = (Math.ceil((random2 + 1) / 5) - 1) * 5;
                 e.reply("修仙本是逆天而行,神明愿意降下自己的恩泽.这只[" + data.changzhuxianchon[random2].name + "],将伴随与你,愿你修仙路上不再独身一人.`")
                 await Add_najie_thing(usr_qq, data.changzhuxianchon[random2].name, "仙宠", 1)
@@ -312,7 +312,7 @@ export class Level extends plugin {
         } else {
             let random = Math.random()
             if (random < now_level_id / 60 * 0.5) {
-                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length ));
+                let random2 = Math.trunc(Math.random() * (data.changzhuxianchon.length));
                 random2 = (Math.ceil((random2 + 1) / 5) - 1) * 5;
                 e.reply("修仙本是逆天而行,神明愿意降下自己的恩泽.这只[" + data.changzhuxianchon[random2].name + "],将伴随与你,愿你修仙路上不再独身一人.`")
                 await Add_najie_thing(usr_qq, data.changzhuxianchon[random2].name, "仙宠", 1)
