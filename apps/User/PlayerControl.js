@@ -3,7 +3,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import common from "../../../../lib/common/common.js"
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
-import { player_efficiency, Read_player, existplayer, isNotNull,exist_najie_thing,Add_najie_thing,Add_血气,Add_修为 } from '../Xiuxian/xiuxian.js'
+import { player_efficiency, Read_player, existplayer, isNotNull, exist_najie_thing, Add_najie_thing, Add_血气, Add_修为 } from '../Xiuxian/xiuxian.js'
 import { segment } from "oicq"
 
 /**
@@ -310,18 +310,19 @@ export class PlayerControl extends plugin {
      * @param e
      * @returns {Promise<void>}
      */
-        async endWoek(e){
-            //不开放私聊功能
-            if (!e.isGroup) {
-                e.reply('修仙游戏请在群聊中游玩');
-                return;
-            }
+    async endWoek(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let action = await this.getPlayerAction(e.user_id);
         let state = await this.getPlayerState(action);
         if (state == "空闲") {
             return;
         }
         if (action.action != "降妖") {
+            e.reply('123');
             return;
         }
         //结算
@@ -407,9 +408,9 @@ export class PlayerControl extends plugin {
         let other_xiuwei = 0;
 
         let msg = [segment.at(usr_qq)];
-              //炼丹师丹药修正
-        let transformation="修为"
-        let xueqi=0;
+        //炼丹师丹药修正
+        let transformation = "修为"
+        let xueqi = 0;
         let action3 = await redis.get("xiuxian:player:" + 10 + ":biguang");//数据放在redis里
         action3 = await JSON.parse(action3);
         for (var i = 0; i < action3.length; i++) {
@@ -421,83 +422,84 @@ export class PlayerControl extends plugin {
                         action3[i].biguanxl = 0
                     }
                 }
-                if(action3[i].lianti>0){
-                    transformation="血气"
+                if (action3[i].lianti > 0) {
+                    transformation = "血气"
                     action3[i].lianti--
                 }
-          
 
-        //随机事件预留空间
-        if (is_random) {
-            let rand = Math.random();
-            //顿悟
-            if (rand < 0.2) {
-                rand = Math.trunc(rand * 10) + 45;
-                other_xiuwei = rand * time;
-                xueqi=Math.trunc(rand * time * action3[i].beiyong4);
-                if(transformation=="血气"){
-                    msg.push("\n本次闭关顿悟,受到炼神之力修正,额外增加血气:" + xueqi);
 
-                }else{
-                msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
+                //随机事件预留空间
+                if (is_random) {
+                    let rand = Math.random();
+                    //顿悟
+                    if (rand < 0.2) {
+                        rand = Math.trunc(rand * 10) + 45;
+                        other_xiuwei = rand * time;
+                        xueqi = Math.trunc(rand * time * action3[i].beiyong4);
+                        if (transformation == "血气") {
+                            msg.push("\n本次闭关顿悟,受到炼神之力修正,额外增加血气:" + xueqi);
+
+                        } else {
+                            msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
+                        }
+                    }
+                    //走火入魔
+                    else if (rand > 0.8) {
+                        rand = Math.trunc(rand * 10) + 5;
+                        other_xiuwei = -1 * rand * time;
+                        xueqi = Math.trunc(rand * time * action3[i].beiyong4);
+                        if (transformation == "血气") {
+                            msg.push("\n,由于你闭关时隔壁装修,导致你差点走火入魔,受到炼神之力修正,血气下降" + xueqi);
+
+                        } else {
+                            msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * time);
+                        }
+                    }
                 }
-            }
-            //走火入魔
-            else if (rand > 0.8) {
-                rand = Math.trunc(rand * 10) + 5;
-                other_xiuwei = -1 * rand * time;
-                xueqi=Math.trunc(rand * time * action3[i].beiyong4);
-                if(transformation=="血气"){
-                    msg.push("\n,由于你闭关时隔壁装修,导致你差点走火入魔,受到炼神之力修正,血气下降" +xueqi);
-
-                }else{
-                    msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * time);
+                let other_x = 0;
+                let qixue = 0;
+                if (await exist_najie_thing(usr_qq, "魔界秘宝", "道具") && player.魔道值 > 999) {
+                    other_x = Math.trunc(xiuwei * 0.15 * time);
+                    await Add_najie_thing(usr_qq, "魔界秘宝", "道具", -1);
+                    msg.push("\n消耗了道具[魔界秘宝],额外增加" + other_x + "修为");
+                    await Add_修为(usr_qq, other_x);
                 }
-            }
-        }
-        let other_x=0;
-        let qixue=0;
-        if (await exist_najie_thing(usr_qq, "魔界秘宝", "道具") && player.魔道值>999) {
-            other_x=Math.trunc(xiuwei*0.15*time);
-            await Add_najie_thing(usr_qq, "魔界秘宝", "道具", -1);
-            msg.push("\n消耗了道具[魔界秘宝],额外增加"+other_x+"修为");
-            await Add_修为(usr_qq, other_x);
-        }
-        if (await exist_najie_thing(usr_qq, "神界秘宝", "道具") && player.魔道值<1 && (player.灵根.type == "转生" || player.level_id >41)) {
-            qixue=Math.trunc(xiuwei*0.1*time);
-            await Add_najie_thing(usr_qq, "神界秘宝", "道具", -1);
-            msg.push("\n消耗了道具[神界秘宝],额外增加"+qixue+"血气");
-            await Add_血气(usr_qq, qixue);
-        }
-        //设置修为，设置血量
-        
-        await this.setFileValue(usr_qq, blood * time, "当前血量");
+                if (await exist_najie_thing(usr_qq, "神界秘宝", "道具") && player.魔道值 < 1 && (player.灵根.type == "转生" || player.level_id > 41)) {
+                    qixue = Math.trunc(xiuwei * 0.1 * time);
+                    await Add_najie_thing(usr_qq, "神界秘宝", "道具", -1);
+                    msg.push("\n消耗了道具[神界秘宝],额外增加" + qixue + "血气");
+                    await Add_血气(usr_qq, qixue);
+                }
+                //设置修为，设置血量
 
-        //给出消息提示
-        if(transformation=="血气"){
-            await this.setFileValue(usr_qq, (xiuwei * time + other_xiuwei)*action3[i].beiyong4, transformation);//丹药修正
-        msg.push("\n受到炼神之力的影响,增加血气:" + xiuwei * time*action3[i].beiyong4, "  获得治疗,血量增加:" + blood * time);}
-    else{
-        await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
-        if (is_random) {
-            
-            msg.push("\n增加气血:" + xiuwei * time, "  获得治疗,血量增加:" + blood * time+"炼神之力消散了");
-        } else {
-            msg.push("\n增加修为:" + xiuwei * time, "  获得治疗,血量增加:" + blood * time);
-        }
-        }
+                await this.setFileValue(usr_qq, blood * time, "当前血量");
 
-        if (group_id) {
-            await this.pushInfo(group_id, true, msg)
-        } else {
-            await this.pushInfo(usr_qq, false, msg);
+                //给出消息提示
+                if (transformation == "血气") {
+                    await this.setFileValue(usr_qq, (xiuwei * time + other_xiuwei) * action3[i].beiyong4, transformation);//丹药修正
+                    msg.push("\n受到炼神之力的影响,增加血气:" + xiuwei * time * action3[i].beiyong4, "  获得治疗,血量增加:" + blood * time);
+                }
+                else {
+                    await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
+                    if (is_random) {
+
+                        msg.push("\n增加气血:" + xiuwei * time, "  获得治疗,血量增加:" + blood * time + "炼神之力消散了");
+                    } else {
+                        msg.push("\n增加修为:" + xiuwei * time, "  获得治疗,血量增加:" + blood * time);
+                    }
+                }
+
+                if (group_id) {
+                    await this.pushInfo(group_id, true, msg)
+                } else {
+                    await this.pushInfo(usr_qq, false, msg);
+                }
+                if (action3[i].lianti <= 0) {
+                    action3[i].lianti = 0
+                    action3[i].beiyong4 = 0
+                }
+            }//炼丹师修正结束
         }
-        if(action3[i].lianti<=0){
-            action3[i].lianti=0
-            action3[i].beiyong4=0
-        }
-    }//炼丹师修正结束
-}
         await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action3))
         return;
     }
