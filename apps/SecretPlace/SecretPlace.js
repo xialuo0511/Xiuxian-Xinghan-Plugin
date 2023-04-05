@@ -2,7 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { Read_player, existplayer, ForwardMsg, isNotNull, sleep,  exist_najie_thing,Add_najie_thing,convert2integer } from '../Xiuxian/xiuxian.js'
+import { Read_player, existplayer, ForwardMsg, isNotNull, sleep, exist_najie_thing, Add_najie_thing, convert2integer } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
@@ -31,7 +31,7 @@ export class SecretPlace extends plugin {
                     reg: '^#秘境$',
                     fnc: 'Secretplace'
                 },
-                 {
+                {
                     reg: '^#寻宝$',
                     fnc: 'xunbao'
                 },
@@ -87,14 +87,14 @@ export class SecretPlace extends plugin {
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
     }
-    
+
     //活动
     async huodongshop(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let img = await get_huodongshop_img(e);
         e.reply(img);
         return;
@@ -103,9 +103,9 @@ export class SecretPlace extends plugin {
     async Xiuxianstate(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         await Go(e);
         allaction = false;
         return;
@@ -115,9 +115,9 @@ export class SecretPlace extends plugin {
     async Secretplace(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let addres = "秘境";
         let weizhi = data.didian_list;
         await Goweizhi(e, weizhi, addres);
@@ -127,9 +127,9 @@ export class SecretPlace extends plugin {
     async Forbiddenarea(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let addres = "禁地";
         let weizhi = data.forbiddenarea_list;
         await jindi(e, weizhi, addres);
@@ -139,9 +139,9 @@ export class SecretPlace extends plugin {
     async Timeplace(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         e.reply("仙府乃民间传说之地,请自行探索")
     }
     async xunbao(e) {
@@ -277,20 +277,20 @@ export class SecretPlace extends plugin {
         if (!isNotNull(weizhi)) {
             return;
         }
-         if (didian == '提瓦特') {
+        if (didian == '提瓦特') {
             let yuansu = ["仙之心·火", "仙之心·水", "仙之心·雷", "仙之心·岩", "仙之心·冰", "仙之心·风", "仙之心·木"]
             let lingen = player.灵根.name
-            if(!(lingen == yuansu[0]||lingen  == yuansu[1]||lingen  == yuansu[2]||lingen  == yuansu[3]||lingen  == yuansu[4]||lingen == yuansu[5]||lingen == yuansu[6])){
+            if (!(lingen == yuansu[0] || lingen == yuansu[1] || lingen == yuansu[2] || lingen == yuansu[3] || lingen == yuansu[4] || lingen == yuansu[5] || lingen == yuansu[6])) {
                 e.reply("你是元素灵根吗,就来提瓦特大陆");
                 return
+            }
         }
-    }
-     if(didian=="诸神黄昏·旧神界"){
-         if (now_level_id < 41) {
-            e.reply("没有达到仙人之前还是不要去了")
-            return;
+        if (didian == "诸神黄昏·旧神界") {
+            if (now_level_id < 41) {
+                e.reply("没有达到仙人之前还是不要去了")
+                return;
+            }
         }
-    }
         if (player.灵石 < weizhi.Price) {
             e.reply("没有灵石寸步难行,攒到" + weizhi.Price + "灵石才够哦~");
             return true;
@@ -381,13 +381,13 @@ export class SecretPlace extends plugin {
             e.reply("到了地图上的地点，发现洞府前有一句前人留下的遗言:‘至少有10w修为才能抵御仙威！’");
             return true;
         }
-        let dazhe=1;
-        if (await exist_najie_thing(usr_qq, "仙府通行证", "道具") && player.魔道值<1 && (player.灵根.type == "转生" || player.level_id >41)) {
-            dazhe=0;
-            e.reply(player.名号+"使用了道具仙府通行证,本次仙府免费");
+        let dazhe = 1;
+        if (await exist_najie_thing(usr_qq, "仙府通行证", "道具") && player.魔道值 < 1 && (player.灵根.type == "转生" || player.level_id > 41)) {
+            dazhe = 0;
+            e.reply(player.名号 + "使用了道具仙府通行证,本次仙府免费");
             await Add_najie_thing(usr_qq, "仙府通行证", "道具", -1);
         }
-        let Price = weizhi.Price*dazhe;
+        let Price = weizhi.Price * dazhe;
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.timeplace;//时间（分钟）
         let action_time = 60000 * time;//持续时间，单位毫秒
@@ -464,18 +464,18 @@ export class SecretPlace extends plugin {
             }
         }
         //记录时间
-        let dazhe=1;
-        if (await exist_najie_thing(usr_qq, "杀神崖通行证", "道具") && player.魔道值<1 && (player.灵根.type == "转生" || player.level_id >41) && didian=="杀神崖") {
-            dazhe=0;
-            e.reply(player.名号+"使用了道具杀神崖通行证,本次仙境免费");
+        let dazhe = 1;
+        if (await exist_najie_thing(usr_qq, "杀神崖通行证", "道具") && player.魔道值 < 1 && (player.灵根.type == "转生" || player.level_id > 41) && didian == "杀神崖") {
+            dazhe = 0;
+            e.reply(player.名号 + "使用了道具杀神崖通行证,本次仙境免费");
             await Add_najie_thing(usr_qq, "杀神崖通行证", "道具", -1);
         }
-        else if (await exist_najie_thing(usr_qq, "仙境优惠券", "道具") && player.魔道值<1 && (player.灵根.type == "转生" || player.level_id >41)) {
-            dazhe=0.7;
-            e.reply(player.名号+"使用了道具仙境优惠券,本次消耗减少30%");
+        else if (await exist_najie_thing(usr_qq, "仙境优惠券", "道具") && player.魔道值 < 1 && (player.灵根.type == "转生" || player.level_id > 41)) {
+            dazhe = 0.7;
+            e.reply(player.名号 + "使用了道具仙境优惠券,本次消耗减少30%");
             await Add_najie_thing(usr_qq, "仙境优惠券", "道具", -1);
         }
-        let Price = weizhi.Price*dazhe;
+        let Price = weizhi.Price * dazhe;
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
         let action_time = 60000 * time;//持续时间，单位毫秒
@@ -558,6 +558,14 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        if (nowTime < 1682265600000) {
+            e.reply(`「七日馈赠」活动暂未开启！`);
+            return;
+        }
+        if (nowTime > 1684166399999) {
+            e.reply(`「七日馈赠」已结束！`);
+            return;
+        }
         let addres = "遗迹";
         let weizhi = data.yiji_list;
         await Goyiji(e, weizhi, addres);
@@ -567,6 +575,14 @@ export class SecretPlace extends plugin {
     async Goyijiplace(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        if (nowTime < 1682265600000) {
+            e.reply(`「七日馈赠」活动暂未开启！`);
+            return;
+        }
+        if (nowTime > 1684166399999) {
+            e.reply(`「七日馈赠」已结束！`);
             return;
         }
         let usr_qq = e.user_id;
@@ -621,13 +637,21 @@ export class SecretPlace extends plugin {
         return;
     }
 
-/**
- * 兑换
- */
+    /**
+     * 兑换
+     */
 
-    async daibiduihuan(e){
+    async daibiduihuan(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        if (nowTime < 1682265600000) {
+            e.reply(`「七日馈赠」活动暂未开启！`);
+            return;
+        }
+        if (nowTime > 1684166399999) {
+            e.reply(`「七日馈赠」已结束！`);
             return;
         }
         let usr_qq = e.user_id;
@@ -654,7 +678,7 @@ export class SecretPlace extends plugin {
             e.reply(`你的纳戒中没有【${commodities_list[0].daibi}】`);
             return;
         }
-        
+
         if (shu >= quantity) {
             await Add_najie_thing(usr_qq, commodities_list[0].daibi, "道具", -quantity);
             await Add_najie_thing(usr_qq, commodities_list[0].name, commodities_list[0].class, shuliang)
@@ -664,7 +688,7 @@ export class SecretPlace extends plugin {
             e.reply("购买需要[" + commodities_list[0].daibi + "]*" + quantity + "，你只有[" + commodities_list[0].daibi + "]*" + shu)
             return;
         }
-        
+
     }
 }
 
