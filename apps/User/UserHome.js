@@ -131,7 +131,7 @@ export class UserHome extends plugin {
             }
         }
         //特殊兑换码调整
-        if (data.duihuan[i].name == "1.4版本参与测试") {
+        if (data.duihuan[i].name.includes("版本参与测试")) {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
                 if (usr_qq == data.duihuan[i].qq[o].name) {
                     action.push(name);
