@@ -1690,7 +1690,7 @@ export class UserHome extends plugin {
                     return
                 }
                 if (daomu > 0.01 && daomu <= 0.1) {
-                    await Add_najie_thing(usr_qq, "经验球", "丹药", 6);
+                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
                     await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
                     e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一些经验瓶"])
                     return
