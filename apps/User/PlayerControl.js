@@ -310,7 +310,7 @@ export class PlayerControl extends plugin {
      * @param e
      * @returns {Promise<void>}
      */
-    async endWoek(e) {
+    async endWork(e) {
         //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
@@ -322,7 +322,6 @@ export class PlayerControl extends plugin {
             return;
         }
         if (action.action != "降妖") {
-            e.reply('123');
             return;
         }
         //结算
