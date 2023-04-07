@@ -382,7 +382,7 @@ export class AdminSuper extends plugin {
     //获取发送修为数量
     let xiuweibuchang = e.msg.replace('#', '');
     xiuweibuchang = xiuweibuchang.replace('发', '');
-    xiuweibuchang = xiuweibuchang.replace('仙石补偿', '');
+    xiuweibuchang = xiuweibuchang.replace('顶级仙石', '');
     const pattern = new RegExp('[0-9]+');
     const str = xiuweibuchang;
     if (!pattern.test(str)) {
