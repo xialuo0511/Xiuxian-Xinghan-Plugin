@@ -7,6 +7,7 @@ import {
   existplayer,
   Add_修为,
   Add_血气,
+  Add_顶级仙石,
   isNotNull,
   Write_player,
   Write_najie,
@@ -88,6 +89,10 @@ export class AdminSuper extends plugin {
           fnc: 'xueqiFuli',
         },
         {
+          reg: '^#发顶级仙石(.*)$',
+          fnc: 'faxianshi',
+        },
+        {
           reg: '^#扣血气(.*)$',
           fnc: 'xueqiDeduction',
         },
@@ -123,9 +128,9 @@ export class AdminSuper extends plugin {
   async off_xiuwei(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let usr_qq = e.user_id;
     //有无账号
     let ifexistplay = await existplayer(usr_qq);
@@ -163,9 +168,9 @@ export class AdminSuper extends plugin {
   async off_level(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let usr_qq = e.user_id;
     //有无账号
     let ifexistplay = await existplayer(usr_qq);
@@ -308,11 +313,11 @@ export class AdminSuper extends plugin {
     let str = [];
     str.push("测试文本");
     let log_data = {
-        log: str,
+      log: str,
     };
     const data1 = await new Show(e).get_logData(log_data);
     let img = await puppeteer.screenshot('log', {
-        ...data1,
+      ...data1,
     });
     e.reply(img);
     return;
@@ -322,9 +327,9 @@ export class AdminSuper extends plugin {
   async xiuweiFuli(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     if (!e.isMaster) {
       return;
     }
@@ -365,13 +370,60 @@ export class AdminSuper extends plugin {
     return;
   }
 
+  //修为补偿
+  async faxianshi(e) {
+    //不开放私聊功能
+    if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
+    if (!e.isMaster) {
+      return;
+    }
+    //获取发送修为数量
+    let xiuweibuchang = e.msg.replace('#', '');
+    xiuweibuchang = xiuweibuchang.replace('发', '');
+    xiuweibuchang = xiuweibuchang.replace('仙石补偿', '');
+    const pattern = new RegExp('[0-9]+');
+    const str = xiuweibuchang;
+    if (!pattern.test(str)) {
+      e.reply(`错误福利`);
+      return;
+    }
+    //校验输入修为数
+    if (
+      parseInt(xiuweibuchang) == parseInt(xiuweibuchang) &&
+      parseInt(xiuweibuchang) > 0
+    ) {
+      xiuweibuchang = parseInt(xiuweibuchang);
+    } else {
+      xiuweibuchang = 100; //没有输入正确数字或不是正数
+    }
+    let isat = e.message.some(item => item.type === 'at');
+    if (!isat) {
+      return;
+    }
+    let atItem = e.message.filter(item => item.type === 'at');
+    let this_qq = atItem[0].qq;
+    //有无存档
+    let ifexistplay = await existplayer(this_qq);
+    if (!ifexistplay) {
+      e.reply(`此人尚未踏入仙途`);
+      return;
+    }
+    let player = await data.getData('player', this_qq);
+    await Add_顶级仙石(this_qq, xiuweibuchang);
+    e.reply(`【全服公告】 ${player.名号} 获得顶级仙石*${xiuweibuchang}`);
+    return;
+  }
+
   // #扣修为
   async xiuweiDeduction(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     if (!e.isMaster) {
       return;
     }
@@ -413,9 +465,9 @@ export class AdminSuper extends plugin {
   async xueqiFuli(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     if (!e.isMaster) {
       return;
     }
@@ -460,9 +512,9 @@ export class AdminSuper extends plugin {
   async xueqiDeduction(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     if (!e.isMaster) {
       return;
     }
@@ -502,9 +554,9 @@ export class AdminSuper extends plugin {
 
   async Worldstatistics(e) {
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     if (!e.isMaster) {
       return;
     }
@@ -556,70 +608,70 @@ export class AdminSuper extends plugin {
       Worldmoney = Worldmoney.toFixed(2);
       msg = [
         '___[修仙世界]___' +
-          '\n人数：' +
-          acount +
-          '\n修道者：' +
-          senior +
-          '\n修仙者：' +
-          lower +
-          '\n财富：' +
-          Worldmoney +
-          '\n人均：' +
-          (Worldmoney / acount).toFixed(3),
+        '\n人数：' +
+        acount +
+        '\n修道者：' +
+        senior +
+        '\n修仙者：' +
+        lower +
+        '\n财富：' +
+        Worldmoney +
+        '\n人均：' +
+        (Worldmoney / acount).toFixed(3),
       ];
     } else if (Worldmoney > 10000 && Worldmoney < 1000000) {
       Worldmoney = Worldmoney / 10000;
       Worldmoney = Worldmoney.toFixed(2);
       msg = [
         '___[修仙世界]___' +
-          '\n人数：' +
-          acount +
-          '\n修道者：' +
-          senior +
-          '\n修仙者：' +
-          lower +
-          '\n财富：' +
-          Worldmoney +
-          '万' +
-          '\n人均：' +
-          (Worldmoney / acount).toFixed(3) +
-          '万',
+        '\n人数：' +
+        acount +
+        '\n修道者：' +
+        senior +
+        '\n修仙者：' +
+        lower +
+        '\n财富：' +
+        Worldmoney +
+        '万' +
+        '\n人均：' +
+        (Worldmoney / acount).toFixed(3) +
+        '万',
       ];
     } else if (Worldmoney > 1000000 && Worldmoney < 100000000) {
       Worldmoney = Worldmoney / 1000000;
       Worldmoney = Worldmoney.toFixed(2);
       msg = [
         '___[修仙世界]___' +
-          '\n人数：' +
-          acount +
-          '\n修道者：' +
-          senior +
-          '\n修仙者：' +
-          lower +
-          '\n财富：' +
-          Worldmoney +
-          '百万' +
-          '\n人均：' +
-          (Worldmoney / acount).toFixed(3) +
-          '百万',
+        '\n人数：' +
+        acount +
+        '\n修道者：' +
+        senior +
+        '\n修仙者：' +
+        lower +
+        '\n财富：' +
+        Worldmoney +
+        '百万' +
+        '\n人均：' +
+        (Worldmoney / acount).toFixed(3) +
+        '百万',
       ];
     } else if (Worldmoney > 100000000) {
       Worldmoney = Worldmoney / 100000000;
       Worldmoney = Worldmoney.toFixed(2);
       msg = [
         '___[修仙世界]___' +
-          '\n人数：' +
-          acount +
-          '\n修道者：' +
-          senior +
-          '\n修仙者：' +
-          lower +
-          '\n财富：' +
-          Worldmoney +
-          '亿' +
-          '\n人均：' +
-          (Worldmoney / acount).toFixed(3) +
-          '亿',
+        '\n人数：' +
+        acount +
+        '\n修道者：' +
+        senior +
+        '\n修仙者：' +
+        lower +
+        '\n财富：' +
+        Worldmoney +
+        '亿' +
+        '\n人均：' +
+        (Worldmoney / acount).toFixed(3) +
+        '亿',
       ];
     }
     await ForwardMsg(e, msg);
@@ -632,9 +684,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let Forum;
     try {
       Forum = await Read_Forum();
@@ -656,9 +708,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let Forum;
     try {
       Forum = await Read_Forum();
@@ -680,9 +732,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     //boss分为金角大王、银角大王、魔王
     //魔王boss
     await redis.set('BossMaxplus', 1);
@@ -703,9 +755,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let User_maxplus = 1; //所有仙人数
     User_maxplus = Number(User_maxplus);
     let User_max = 1; //所有高段
@@ -818,9 +870,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let thingqq = e.msg.replace('#', '');
     //拿到物品与数量
     thingqq = thingqq.replace('清除', '');
@@ -863,9 +915,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     e.reply('开始清除！');
     let Exchange;
     try {
@@ -922,9 +974,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     e.reply('开始行动！');
     let playerList = [];
     let files = fs
@@ -969,9 +1021,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     //没有at信息直接返回,不执行
     let isat = e.message.some(item => item.type === 'at');
     if (!isat) {
@@ -1019,9 +1071,9 @@ export class AdminSuper extends plugin {
     }
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     //没有at信息直接返回,不执行
     let isat = e.message.some(item => item.type === 'at');
     if (!isat) {
@@ -1176,7 +1228,7 @@ export async function synchronization(e) {
     if (isNotNull(player.热能)) {
       player.热能 = undefined;
     }
-    if (!isNotNull(player.热量)||player.热量==null) {
+    if (!isNotNull(player.热量) || player.热量 == null) {
       player.热量 = 0;
     }
     //补
@@ -1216,7 +1268,7 @@ export async function synchronization(e) {
     if (!isNotNull(player.linggen)) {
       player.linggen = [];
     }
-     if (!isNotNull(player.师徒任务阶段)) {
+    if (!isNotNull(player.师徒任务阶段)) {
       player.师徒任务阶段 = 0;
     }
     if (!isNotNull(player.师徒积分)) {
@@ -1297,15 +1349,15 @@ export async function synchronization(e) {
     if (!isNotNull(player.神石)) {
       player.神石 = 0;
     }
-    if(player.血气==null){
-      player.血气=0;
+    if (player.血气 == null) {
+      player.血气 = 0;
     }
     if (player.Physique_id == 0) {
       player.Physique_id = 1;
     }
-    if(player.镇妖塔层数>=3000 && player.神魄段数>=1500){
-      player.镇妖塔层数=3000
-      player.神魄段数=1500;
+    if (player.镇妖塔层数 >= 3000 && player.神魄段数 >= 1500) {
+      player.镇妖塔层数 = 3000
+      player.神魄段数 = 1500;
     }
     let i = 0;
     let action2 = await redis.get('xiuxian:player:' + usr_qq + ':pifu');
@@ -1436,41 +1488,41 @@ export async function synchronization(e) {
     //1.24将纳戒中原石替换为圆石
     for (let i = 0; i < najie.材料.length; i++) {
       const element = najie.材料[i];
-      if (element.name=="原石") {
-        najie.材料[i].name="圆石";
+      if (element.name == "原石") {
+        najie.材料[i].name = "圆石";
         break;
       }
     }
     for (let i = 0; i < najie.道具.length; i++) {
       const element = najie.道具[i];
-      if (element.name=="斧头") {
-        najie.道具[i].name="木斧";
+      if (element.name == "斧头") {
+        najie.道具[i].name = "木斧";
         break;
       }
     }
     for (let i = 0; i < najie.道具.length; i++) {
       const element = najie.道具[i];
-      if (element.name=="天横山") {
-        najie.道具[i].name="天衡山";
+      if (element.name == "天横山") {
+        najie.道具[i].name = "天衡山";
         break;
       }
     }
     for (let i = 0; i < najie.道具.length; i++) {
       const element = najie.道具[i];
-      if (element.name=="剑帝一剑") {
-        najie.道具[i].name="剑神一剑";
+      if (element.name == "剑帝一剑") {
+        najie.道具[i].name = "剑神一剑";
         break;
       }
     }
     for (let i = 0; i < najie.装备.length; i++) {
       const element = najie.装备[i];
       if (!isNotNull(element.fumo)) {
-        najie.装备[i].fumo="无";
+        najie.装备[i].fumo = "无";
       }
     }
     for (i = 0; i < data.shicai_list.length; i++) {
       if (najie.食材.name == data.shicai_list[i].name) {
-        najie.食材[i].加成=data.shicai_list[i].加成
+        najie.食材[i].加成 = data.shicai_list[i].加成
       }
     }
     //修
@@ -1521,27 +1573,27 @@ export async function synchronization(e) {
         item => item.name == '幸运儿'
       ).加成;
     }
-     if(equipment.项链.属性=="幸运"){
-      if (player.仙宠.type == "幸运" && player.幸运 != player.仙宠.加成+equipment.项链.加成+player.addluckyNo) {
-        player.幸运 = player.仙宠.加成 + player.addluckyNo+equipment.项链.加成;
-      }else if(player.仙宠.type != "幸运" && player.幸运 !=equipment.项链.加成+player.addluckyNo){
-            player.幸运 = player.addluckyNo+equipment.项链.加成;
+    if (equipment.项链.属性 == "幸运") {
+      if (player.仙宠.type == "幸运" && player.幸运 != player.仙宠.加成 + equipment.项链.加成 + player.addluckyNo) {
+        player.幸运 = player.仙宠.加成 + player.addluckyNo + equipment.项链.加成;
+      } else if (player.仙宠.type != "幸运" && player.幸运 != equipment.项链.加成 + player.addluckyNo) {
+        player.幸运 = player.addluckyNo + equipment.项链.加成;
       }
-      }else{
-        if (player.仙宠.type == "幸运" && player.幸运 !=player.仙宠.加成+player.addluckyNo) {
-          player.幸运 = player.仙宠.加成 + player.addluckyNo;
-        }else if(player.仙宠.type != "幸运" && player.幸运 !=player.addluckyNo){
-            player.幸运=player.addluckyNo;
-        }
+    } else {
+      if (player.仙宠.type == "幸运" && player.幸运 != player.仙宠.加成 + player.addluckyNo) {
+        player.幸运 = player.仙宠.加成 + player.addluckyNo;
+      } else if (player.仙宠.type != "幸运" && player.幸运 != player.addluckyNo) {
+        player.幸运 = player.addluckyNo;
       }
+    }
     if (!isNotNull(equipment.武器.fumo)) {
-      equipment.武器.fumo="无";
+      equipment.武器.fumo = "无";
     }
     if (!isNotNull(equipment.护具.fumo)) {
-      equipment.护具.fumo="无";
+      equipment.护具.fumo = "无";
     }
     if (!isNotNull(equipment.法宝.fumo)) {
-      equipment.法宝.fumo="无";
+      equipment.法宝.fumo = "无";
     }
     await Write_najie(usr_qq, najie);
     await Write_player(usr_qq, player);
