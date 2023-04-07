@@ -396,7 +396,7 @@ export class AdminSuper extends plugin {
     ) {
       xiuweibuchang = parseInt(xiuweibuchang);
     } else {
-      xiuweibuchang = 100; //没有输入正确数字或不是正数
+      xiuweibuchang = 1; //没有输入正确数字或不是正数
     }
     let isat = e.message.some(item => item.type === 'at');
     if (!isat) {

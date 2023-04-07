@@ -1135,7 +1135,6 @@ export async function get_player_img(e) {
         }
     }
     let dingjixianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
-    e.reply(dingjixianshi);
     if (!dingjixianshi) {
         dingjixianshi = 0
     }
