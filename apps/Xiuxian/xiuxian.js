@@ -256,7 +256,6 @@ export async function Add_灵石(usr_qq, 灵石数量 = 0) {
 
 export async function Add_顶级仙石(usr_qq, 仙石数量 = 0) {
     let dingjixianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
-    e.reply(dingjixianshi);
     if (!dingjixianshi) {
         dingjixianshi = 0
     }

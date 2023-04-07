@@ -370,7 +370,6 @@ export class AdminSuper extends plugin {
     return;
   }
 
-  //修为补偿
   async faxianshi(e) {
     //不开放私聊功能
     if (!e.isGroup) {
