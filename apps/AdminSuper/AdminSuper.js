@@ -390,10 +390,7 @@ export class AdminSuper extends plugin {
       return;
     }
     //校验输入修为数
-    if (
-      parseInt(xiuweibuchang) == parseInt(xiuweibuchang) &&
-      parseInt(xiuweibuchang) > 0
-    ) {
+    if (parseInt(xiuweibuchang) == parseInt(xiuweibuchang)) {
       xiuweibuchang = parseInt(xiuweibuchang);
     } else {
       xiuweibuchang = 1; //没有输入正确数字或不是正数
