@@ -259,6 +259,7 @@ export async function Add_顶级仙石(usr_qq, 仙石数量 = 0) {
     if (!dingjixianshi) {
         dingjixianshi = 0
     }
+    dingjixianshi = Number(dingjixianshi);
     dingjixianshi += Math.trunc(仙石数量);
     await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", dingjixianshi);
     return;
