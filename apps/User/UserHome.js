@@ -3369,13 +3369,12 @@ export class UserHome extends plugin {
             this.finish('yesxigen');
             return;
         } else {
-            if (!e.isGroup) {
-                e.reply('修仙游戏请在群聊中游玩');
-                return;
-            } eturn;
+            this.setContext('yesxigen');
+            await this.reply("使用【洗根水】【补天丹】【补根丹】【神心丹】进行洗髓将清除轮回状态！\n请正确回复进行选择");
+            return;
         }
-        /** 结束上下文 */
     }
+    /** 结束上下文 */
 
     //兑换方法
     async DUIHUAN(e) {
@@ -3404,10 +3403,9 @@ export class UserHome extends plugin {
                 await this.reply('兑换' + gonfa + "成功");
                 this.finish('DUIHUAN');
                 return;
-                if (!e.isGroup) {
-                    e.reply('修仙游戏请在群聊中游玩');
-                    return;
-                } this.finish('DUIHUAN');
+            } else {
+                await this.reply('残卷无法兑换功法');
+                this.finish('DUIHUAN');
                 return;
             }
         }
