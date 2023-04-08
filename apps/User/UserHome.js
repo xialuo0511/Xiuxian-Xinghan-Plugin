@@ -215,7 +215,6 @@ export class UserHome extends plugin {
     }
 
     async Add_lhd(e) {
-        e.reply('修仙游戏请在群聊中游玩');
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
