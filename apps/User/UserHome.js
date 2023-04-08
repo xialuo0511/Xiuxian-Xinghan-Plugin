@@ -1503,9 +1503,9 @@ export class UserHome extends plugin {
                 await Add_najie_thing(usr_qq, "多莉的消息", "道具", -1);
                 return
             }
-            if (thing_name == "闹钟呼唤器") {
-                e.reply([segment.at(1564856979), "闹钟！！有人找你"])
-                await Add_najie_thing(usr_qq, "闹钟呼唤器", "道具", -1);
+            if (thing_name == "屑洛呼唤器") {
+                e.reply([segment.at(2531606029), "屑洛！！有人找你"])
+                await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", -1);
                 return
             }
             if (thing_name == "熔炉") {
@@ -1732,9 +1732,9 @@ export class UserHome extends plugin {
                     return
                 }
                 if (daomu > 0.7 && daomu <= 0.8) {
-                    await Add_najie_thing(usr_qq, "闹钟呼唤器", "道具", 1);
+                    await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", 1);
                     await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个闹钟呼唤器"])
+                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个屑洛呼唤器"])
                     return
                 }
                 if (daomu > 0.8 && daomu <= 0.9) {
