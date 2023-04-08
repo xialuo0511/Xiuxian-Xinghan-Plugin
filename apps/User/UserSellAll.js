@@ -433,10 +433,8 @@ export class UserSellAll extends plugin {
             }
         }
         await Add_血气(usr_qq, xueqi);
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+        e.reply(`服用成功,血气增加${xueqi}`);
+        return
     }
 
     async all_zhuangbei(e) {
@@ -497,10 +495,9 @@ export class UserSellAll extends plugin {
         } else {
             await instead_equipment(usr_qq, huju);
         }
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        } n;
+        let img = await get_equipment_img(e);
+        e.reply(img);
+        return;
     }
 
     async all_learn(e) {
