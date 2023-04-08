@@ -55,7 +55,6 @@ export class SecretPlaceplus extends plugin {
     async Xiuxianstate(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         await Go(e);
@@ -65,8 +64,8 @@ export class SecretPlaceplus extends plugin {
 
     //秘境地点
     async Secretplace(e) {
+        //不开放私聊功能
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let addres = "秘境";
@@ -75,9 +74,9 @@ export class SecretPlaceplus extends plugin {
     }
 
     //禁地
-    async Forbiddenarea(e){
+    async Forbiddenarea(e) {
+        //不开放私聊功能
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let addres = "禁地";
@@ -87,26 +86,27 @@ export class SecretPlaceplus extends plugin {
 
     //限定仙府
     async Timeplace(e) {
+        //不开放私聊功能
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         e.reply("仙府乃民间传说之地,请自行探索")
     }
 
+    //仙境
     async Fairyrealm(e) {
+        //不开放私聊功能
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let addres = "仙境";
         let weizhi = data.Fairyrealm_list;
         await Goweizhi(e, weizhi, addres);
     }
+
     //沉迷秘境
     async Gosecretplace(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let usr_qq = e.user_id;
@@ -198,12 +198,13 @@ export class SecretPlaceplus extends plugin {
             arr.group_id = e.group_id
         }
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
+        e.reply("开始降临" + didian + "," + time + "分钟后归来!");
+        return;
     }
 
     //沉迷禁地
     async Goforbiddenarea(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let usr_qq = e.user_id;
@@ -251,20 +252,20 @@ export class SecretPlaceplus extends plugin {
         if (!isNotNull(weizhi)) {
             return;
         }
-         if (didian == '提瓦特') {
+        if (didian == '提瓦特') {
             let yuansu = ["仙之心·火", "仙之心·水", "仙之心·雷", "仙之心·岩", "仙之心·冰", "仙之心·风", "仙之心·木"]
             let lingen = player.灵根.name
-            if(!(lingen == yuansu[0]||lingen  == yuansu[1]||lingen  == yuansu[2]||lingen  == yuansu[3]||lingen  == yuansu[4]||lingen == yuansu[5]||lingen == yuansu[6])){
+            if (!(lingen == yuansu[0] || lingen == yuansu[1] || lingen == yuansu[2] || lingen == yuansu[3] || lingen == yuansu[4] || lingen == yuansu[5] || lingen == yuansu[6])) {
                 e.reply("你是元素灵根吗,就来提瓦特大陆");
                 return
+            }
         }
-    }
-    if(didian=="诸神黄昏·旧神界"){
-         if (now_level_id < 41) {
-            e.reply("没有达到仙人之前还是不要去了")
-            return;
+        if (didian == "诸神黄昏·旧神界") {
+            if (now_level_id < 41) {
+                e.reply("没有达到仙人之前还是不要去了")
+                return;
+            }
         }
-    }
         if (player.灵石 < weizhi.Price * 10 * i) {
             e.reply("没有灵石寸步难行,攒到" + weizhi.Price * 10 * i + "灵石才够哦~");
             return true;
@@ -306,16 +307,14 @@ export class SecretPlaceplus extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }n;
+        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
+        e.reply("正在前往" + weizhi.name + "," + time + "分钟后归来!");
+        return;
     }
 
     //探索仙府
     async GoTimeplace(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let usr_qq = e.user_id;
@@ -394,9 +393,8 @@ export class SecretPlaceplus extends plugin {
         if (suiji == 0) {
             e.reply("你买下了那份地图,历经九九八十一天,终于到达了地图上的仙府,洞府上模糊得刻着[" + weizhi.name + "仙府]你兴奋地冲进去探索机缘,被强大的仙气压制，消耗了1000000修为成功突破封锁闯了进去" + time + "分钟后归来!");
         }
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
+        if (suiji == 1) {
+            e.reply("你买下了那份地图,历经九九八十一天,终于到达了地图上的地点,这座洞府仿佛是上个末法时代某个仙人留下的遗迹,你兴奋地冲进去探索机缘,被强大的仙气压制，消耗了1000000修为成功突破封锁闯了进去" + time + "分钟后归来!");
         }
         return;
     }
@@ -404,7 +402,6 @@ export class SecretPlaceplus extends plugin {
     //前往仙境
     async Gofairyrealm(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let usr_qq = e.user_id;
