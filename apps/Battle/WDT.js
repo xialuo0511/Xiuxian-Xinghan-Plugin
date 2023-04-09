@@ -2,7 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import config from '../../model/Config.js';
 import data from '../../model/XiuxianData.js';
-import { segment } from 'oicq';
+
 import {
   existplayer,
   exist_najie_thing,
@@ -45,9 +45,9 @@ export class WDT extends plugin {
   async biwu(e) {
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     //得到主动方qq
     let A = e.user_id;
 
@@ -515,9 +515,8 @@ export async function zd_battle(A_player, B_player) {
         B_player.当前血量 = 0;
       }
       msg.push(`第${Math.trunc(cnt / 2) + 1}回合：
-${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${
-        B_player.名号
-      }剩余血量${B_player.当前血量}`);
+${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号
+        }剩余血量${B_player.当前血量}`);
 
       //说明被冻结了
       if (cnt != yuansu.cnt) {
@@ -702,9 +701,8 @@ ${B_player.名号}冻结中`);
         A_player.当前血量 = 0;
       }
       msg.push(`第${Math.trunc(cnt / 2) + 1}回合：
-${B_player.名号}攻击了${A_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${
-        A_player.名号
-      }剩余血量${A_player.当前血量}`);
+${B_player.名号}攻击了${A_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${A_player.名号
+        }剩余血量${A_player.当前血量}`);
       if (cnt != yuansu.cnt) {
         msg.push(`第${Math.trunc(cnt / 2) + 2}回合：
 ${A_player.名号}冻结中`);

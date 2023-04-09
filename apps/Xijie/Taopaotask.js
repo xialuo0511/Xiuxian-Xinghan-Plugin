@@ -3,7 +3,7 @@ import common from "../../../../lib/common/common.js"
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import fs from "node:fs"
-import { segment } from "oicq"
+
 import { Harm } from "../Battle/Battle.js"
 import { Read_player, isNotNull, Add_najie_thing } from "../Xiuxian/xiuxian.js"
 import { Write_shop, Read_shop } from "../Xijie/Xijie.js"
@@ -68,7 +68,7 @@ export class Taopaotask extends plugin {
                 //有洗劫状态:这个直接结算即可
                 if (action.xijie == "-2") {
                     //5分钟后开始结算阶段一 
-                    end_time = end_time - action.time+60000*5;
+                    end_time = end_time - action.time + 60000 * 5;
                     //时间过了
                     if (now_time >= end_time) {
                         let weizhi = action.Place_address;
@@ -100,7 +100,7 @@ export class Taopaotask extends plugin {
                         //设定npc数值
                         let B_player = {
                             名号: monster.name,
-                            攻击: parseInt(monster.atk*(player.攻击+200000)),
+                            攻击: parseInt(monster.atk * (player.攻击 + 200000)),
                             防御: parseInt(monster.def * player.防御),
                             当前血量: parseInt(monster.blood * player.血量上限),
                             暴击率: monster.baoji,
@@ -112,103 +112,103 @@ export class Taopaotask extends plugin {
                         let last_msg = "";
                         if (Random < 0.1) {
                             A_player.当前血量 -= npc_damage;
-                            last_msg += B_player.名号+"似乎不屑追你,只是随手丢出神通,剩余血量"+A_player.当前血量;
+                            last_msg += B_player.名号 + "似乎不屑追你,只是随手丢出神通,剩余血量" + A_player.当前血量;
                         }
                         else if (Random < 0.25) {
-                            A_player.当前血量 -= Math.trunc(npc_damage*0.3);
-                            last_msg += "你引起了"+B_player.名号+"的兴趣,"+B_player.名号+"决定试探你,只用了三分力,剩余血量"+A_player.当前血量;
+                            A_player.当前血量 -= Math.trunc(npc_damage * 0.3);
+                            last_msg += "你引起了" + B_player.名号 + "的兴趣," + B_player.名号 + "决定试探你,只用了三分力,剩余血量" + A_player.当前血量;
                         }
                         else if (Random < 0.5) {
-                            A_player.当前血量 -= Math.trunc(npc_damage*1.5);
-                            last_msg += "你的逃跑让"+B_player.名号+"愤怒,"+B_player.名号+"使用了更加强大的一次攻击,剩余血量"+A_player.当前血量;
+                            A_player.当前血量 -= Math.trunc(npc_damage * 1.5);
+                            last_msg += "你的逃跑让" + B_player.名号 + "愤怒," + B_player.名号 + "使用了更加强大的一次攻击,剩余血量" + A_player.当前血量;
                         }
                         else if (Random < 0.7) {
-                            A_player.当前血量 -= Math.trunc(npc_damage*1.3);
-                            last_msg += "你成功的吸引了所有的仇恨,"+B_player.名号+"已经快要抓到你了,强大的攻击已经到了你的面前,剩余血量"+A_player.当前血量;
+                            A_player.当前血量 -= Math.trunc(npc_damage * 1.3);
+                            last_msg += "你成功的吸引了所有的仇恨," + B_player.名号 + "已经快要抓到你了,强大的攻击已经到了你的面前,剩余血量" + A_player.当前血量;
                         }
                         else if (Random < 0.9) {
-                            A_player.当前血量 -= Math.trunc(npc_damage*1.8);
-                            last_msg += "你们近乎贴脸飞行,"+B_player.名号+"的攻势愈加猛烈,已经快招架不住了,剩余血量"+A_player.当前血量;
+                            A_player.当前血量 -= Math.trunc(npc_damage * 1.8);
+                            last_msg += "你们近乎贴脸飞行," + B_player.名号 + "的攻势愈加猛烈,已经快招架不住了,剩余血量" + A_player.当前血量;
                         }
-                        else{
-                            A_player.当前血量 -= Math.trunc(npc_damage*0.5);
-                            last_msg += "身体快到极限了嘛,你暗暗问道,脚下逃跑的步伐更加迅速,剩余血量"+A_player.当前血量;
+                        else {
+                            A_player.当前血量 -= Math.trunc(npc_damage * 0.5);
+                            last_msg += "身体快到极限了嘛,你暗暗问道,脚下逃跑的步伐更加迅速,剩余血量" + A_player.当前血量;
                         }
-                            if (A_player.当前血量 < 0) {
-                                A_player.当前血量 = 0;
-                            }
-                            let arr = action;
-                            let shop = await Read_shop();
-                            for (i = 0; i < shop.length; i++) {
-                                if (shop[i].name == weizhi.name) {
-                                    shop[i].state = 0;
-                                    break;
-                                }
-                            }
-                            if (A_player.当前血量 > 0) {
-                                arr.A_player = A_player;
-                                arr.cishu--;
-                                arr.A_player = A_player;
-                            }
-                            else {
-                                var num=weizhi.Grade+1;
-                                last_msg += "\n在躲避追杀中,没能躲过此劫,被抓进了天牢\n在天牢中你找到了秘境之匙x"+num;
-                                await Add_najie_thing(player_id, "秘境之匙", "道具", num);
-                                delete arr.group_id;
+                        if (A_player.当前血量 < 0) {
+                            A_player.当前血量 = 0;
+                        }
+                        let arr = action;
+                        let shop = await Read_shop();
+                        for (i = 0; i < shop.length; i++) {
+                            if (shop[i].name == weizhi.name) {
                                 shop[i].state = 0;
-                                await Write_shop(shop);
-                                var time = 60;//时间（分钟）
-                                var action_time = 60000 * time;//持续时间，单位毫秒
-                                arr.action = "天牢";
-                                arr.xijie = 1;//关闭洗劫
-                                arr.end_time = new Date().getTime() + action_time;
+                                break;
                             }
-                            if (arr.cishu == 0)//说明成功了
-                            {
-                                last_msg += "\n你成功躲过了万仙盟的追杀,躲进了宗门";
-                                arr.xijie = 1;//关闭洗劫
-                                arr.end_time = new Date().getTime();
-                                delete arr.group_id;
-                                for (var j = 0; j < arr.thing.length; j++) {
-                                    await Add_najie_thing(player_id, arr.thing[j].name, arr.thing[j].class, arr.thing[j].数量);
-                                    last_msg += "";
-                                }
-                                shop[i].Grade++;
-                                if (shop[i].Grade > 3) {
-                                    shop[i].Grade = 3;
-                                }
-                                shop[i].state = 0;
-                                await Write_shop(shop);
+                        }
+                        if (A_player.当前血量 > 0) {
+                            arr.A_player = A_player;
+                            arr.cishu--;
+                            arr.A_player = A_player;
+                        }
+                        else {
+                            var num = weizhi.Grade + 1;
+                            last_msg += "\n在躲避追杀中,没能躲过此劫,被抓进了天牢\n在天牢中你找到了秘境之匙x" + num;
+                            await Add_najie_thing(player_id, "秘境之匙", "道具", num);
+                            delete arr.group_id;
+                            shop[i].state = 0;
+                            await Write_shop(shop);
+                            var time = 60;//时间（分钟）
+                            var action_time = 60000 * time;//持续时间，单位毫秒
+                            arr.action = "天牢";
+                            arr.xijie = 1;//关闭洗劫
+                            arr.end_time = new Date().getTime() + action_time;
+                        }
+                        if (arr.cishu == 0)//说明成功了
+                        {
+                            last_msg += "\n你成功躲过了万仙盟的追杀,躲进了宗门";
+                            arr.xijie = 1;//关闭洗劫
+                            arr.end_time = new Date().getTime();
+                            delete arr.group_id;
+                            for (var j = 0; j < arr.thing.length; j++) {
+                                await Add_najie_thing(player_id, arr.thing[j].name, arr.thing[j].class, arr.thing[j].数量);
+                                last_msg += "";
                             }
-                            //写入redis
-                            await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
-                            msg.push("\n" + last_msg);
-                            if (is_group) {
-                                await this.pushInfo(push_address, is_group, msg)
-                            } else {
-                                await this.pushInfo(player_id, is_group, msg);
+                            shop[i].Grade++;
+                            if (shop[i].Grade > 3) {
+                                shop[i].Grade = 3;
                             }
+                            shop[i].state = 0;
+                            await Write_shop(shop);
+                        }
+                        //写入redis
+                        await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
+                        msg.push("\n" + last_msg);
+                        if (is_group) {
+                            await this.pushInfo(push_address, is_group, msg)
+                        } else {
+                            await this.pushInfo(player_id, is_group, msg);
                         }
                     }
                 }
             }
         }
-     /**
-     * 推送消息，群消息推送群，或者推送私人
-     * @param id
-     * @param is_group
-     * @returns {Promise<void>}
-     */
-      async pushInfo(id, is_group, msg) {
-            if (is_group) {
-                await Bot.pickGroup(id)
-                    .sendMsg(msg)
-                    .catch((err) => {
-                        Bot.logger.mark(err);
-                    });
-            }
-            else {
-                await common.relpyPrivate(id, msg);
-            }
+    }
+    /**
+    * 推送消息，群消息推送群，或者推送私人
+    * @param id
+    * @param is_group
+    * @returns {Promise<void>}
+    */
+    async pushInfo(id, is_group, msg) {
+        if (is_group) {
+            await Bot.pickGroup(id)
+                .sendMsg(msg)
+                .catch((err) => {
+                    Bot.logger.mark(err);
+                });
+        }
+        else {
+            await common.relpyPrivate(id, msg);
         }
     }
+}

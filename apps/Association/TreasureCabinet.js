@@ -2,12 +2,12 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
-import { segment } from "oicq"
-import {shijianc, ForwardMsg,Read_najie,convert2integer,Check_thing} from '../Xiuxian/xiuxian.js'
+
+import { shijianc, ForwardMsg, Read_najie, convert2integer, Check_thing } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_HP, Add_血气, Add_修为, Add_najie_thing, isNotNull, Read_player, __PATH, foundthing } from '../Xiuxian/xiuxian.js'
 import path from "path"
 import { existplayer } from "../Xiuxian/xiuxian.js";
-import { exist_najie_thing,Locked_najie_thing,Write_player } from "../Xiuxian/xiuxian.js";
+import { exist_najie_thing, Locked_najie_thing, Write_player } from "../Xiuxian/xiuxian.js";
 
 
 /**
@@ -221,8 +221,8 @@ export class TreasureCabinet extends plugin {
             e.reply("阁主:你想把藏宝阁淹了吗？")
             return;
         }
-        thing_acunot=await convert2integer(thing_acunot);
-        thing_value=await convert2integer(thing_value);
+        thing_acunot = await convert2integer(thing_acunot);
+        thing_value = await convert2integer(thing_value);
         if (!isNaN(parseFloat(thing_value)) && isFinite(thing_value)) {
         } else {
             return;
@@ -237,7 +237,7 @@ export class TreasureCabinet extends plugin {
             e.reply(`这方世界没有[${thing_name}]`);
             return;
         }
-        if(await Check_thing(thing_exist)==1){
+        if (await Check_thing(thing_exist) == 1) {
             e.reply(`${thing_exist.name}特殊！`);
             return;
         }
@@ -654,7 +654,7 @@ export class TreasureCabinet extends plugin {
 
                 }
                 let up1 = action[i].beiyong3
-                   flag = 0.7 - up1;
+                flag = 0.7 - up1;
                 if (player.favorability > 1000) {
                     flag = 0.1 - up1;
                 } else if (player.favorability > 500) {
@@ -806,17 +806,17 @@ export class TreasureCabinet extends plugin {
         let code = thing.split("\*");
         let thing_name = null;//物品
         let thing_value = null;//数量
-        let pinji=null;
-        if (code.length==2) {
-            thing_name=code[0];
-            thing_value=code[1];
+        let pinji = null;
+        if (code.length == 2) {
+            thing_name = code[0];
+            thing_value = code[1];
         }
-        else if(code.length==3){
-            thing_name=code[0];
-            pinji=code[1];
-            thing_value=code[2];
+        else if (code.length == 3) {
+            thing_name = code[0];
+            pinji = code[1];
+            thing_value = code[2];
         }
-        thing_value=await convert2integer(thing_value);
+        thing_value = await convert2integer(thing_value);
         //判断列表中是否存在，不存在不能卖,并定位是什么物品
         let thing_exist = await foundthing(thing_name);
         if (!thing_exist) {
@@ -838,13 +838,13 @@ export class TreasureCabinet extends plugin {
 
 
         //纳戒中的数量
-        let thing_quantity = await exist_najie_thing(usr_qq, thing_name, thing_exist.class,pj);
+        let thing_quantity = await exist_najie_thing(usr_qq, thing_name, thing_exist.class, pj);
 
         if (thing_quantity < thing_value || !thing_quantity) {//没有
             e.reply(`【${thing_name}】数量不足`);
             return;
         }
-        if (await Locked_najie_thing(usr_qq, thing_name, thing_exist.class,pj) == 1) {
+        if (await Locked_najie_thing(usr_qq, thing_name, thing_exist.class, pj) == 1) {
             e.reply(`${thing_exist.class}:${thing_name}已锁定，请解锁后再出售。`);
             return;
         }

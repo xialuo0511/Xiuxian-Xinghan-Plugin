@@ -7,7 +7,7 @@ import { existplayer, Write_player, isNotNull, exist_najie_thing, Add_najie_thin
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
-import { segment } from "oicq"
+
 import { zd_battle } from "../Battle/Battle.js"
 /**
  * 全局变量
@@ -123,12 +123,12 @@ export class Occupation extends plugin {
         if (!allaction) {
             return;
         }
-        allaction=false;
+        allaction = false;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             return;
         }
-         
+
         let occupation = e.msg.replace("#转职", "");
         let player = await Read_player(usr_qq);
         let player_occupation = player.occupation;
@@ -196,16 +196,16 @@ export class Occupation extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-         await Go(e);
+        await Go(e);
         if (!allaction) {
             return;
         }
-        allaction=false;
+        allaction = false;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             return;
         }
-         
+
         let player = await Read_player(usr_qq);
         let action = await redis.get("xiuxian:player:" + usr_qq + ":fuzhi");//副职
         action = await JSON.parse(action);
@@ -319,7 +319,7 @@ export class Occupation extends plugin {
         return true;
     }
 
- async qingchushangjinbang(e){
+    async qingchushangjinbang(e) {
         if (!e.isMaster) {
             return;
         }
@@ -331,12 +331,12 @@ export class Occupation extends plugin {
         let action = await redis.get("xiuxian:player:" + 1 + ":shangjing");
         action = await JSON.parse(action);
         e.reply("开启清除")
-        action=null;
+        action = null;
         e.reply("清除完成")
         await redis.set("xiuxian:player:" + 1 + ":shangjing", JSON.stringify(action));
         return;
     }
-    
+
     async plant_back(e) {
         //不开放私聊功能
         if (!e.isGroup) {
@@ -743,18 +743,15 @@ export class Occupation extends plugin {
                     m += `\n仙缘丹药力${action[i].beiyong1 * 100}%药效${action[i].ped}次`;
                 }
                 if (action[i].lianti > 0) {
-                    m += `\n炼神丹药力${action[i].beiyong4 * 100}%药效${
-                        action[i].lianti
+                    m += `\n炼神丹药力${action[i].beiyong4 * 100}%药效${action[i].lianti
                         }次`;
                 }
                 if (action[i].beiyong2 > 0) {
-                    m += `\n神赐丹药力${action[i].beiyong3 * 100}% 药效${
-                        action[i].beiyong2
+                    m += `\n神赐丹药力${action[i].beiyong3 * 100}% 药效${action[i].beiyong2
                         }次`;
                 }
                 if (action[i].biguan > 0) {
-                    m += `\n辟谷丹药力${action[i].biguanxl * 100}%药效${
-                        action[i].biguan
+                    m += `\n辟谷丹药力${action[i].biguanxl * 100}%药效${action[i].biguan
                         }次`;
                 }
                 let player = await data.getData('player', usr_qq);
@@ -1146,7 +1143,7 @@ export class Occupation extends plugin {
         try {
             qq = action.arm[num].QQ;
         }
-        catch 
+        catch
         {
             e.reply("不要伤及无辜")//输错了，没有该目标
             return
@@ -1362,7 +1359,7 @@ export class Occupation extends plugin {
         try {
             qq = action[num].QQ;
         }
-        catch 
+        catch
         {
             e.reply("不要伤及无辜")//输错了，没有该目标
             return
@@ -1410,7 +1407,7 @@ export class Occupation extends plugin {
             学习的功法: player.学习的功法,
             灵根: player.灵根,
             魔道值: player.魔道值,
-            神石:player.神石,
+            神石: player.神石,
             法球倍率: player.灵根.法球倍率,
             仙宠: player.仙宠
         }
@@ -1450,14 +1447,14 @@ export class Occupation extends plugin {
         if (!await existplayer(usr_qq)) {
             return;
         }
-    
+
         //不开放私聊
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-    
-    
+
+
         //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
         //防止继续其他娱乐行为
@@ -1471,7 +1468,7 @@ export class Occupation extends plugin {
             await Add_灵石(usr_qq, -2000)
             return
         }
-    
+
         //获取时间
         let time = e.msg.replace("#狩猎", "");
         time = time.replace("分钟", "");
@@ -1495,7 +1492,7 @@ export class Occupation extends plugin {
             //不设置时间默认30分钟
             time = 30;
         }
-    
+
         //查询redis中的人物动作
         let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
         action = JSON.parse(action);
@@ -1526,10 +1523,10 @@ export class Occupation extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
-    
+
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
         e.reply(`现在开始外出打猎${time}分钟`);
-    
+
         return true;
     }
     async shoulie_back(e) {
@@ -1546,8 +1543,8 @@ export class Occupation extends plugin {
         if (action.action != "狩猎") {
             return;
         }
-    
-    
+
+
         //结算
         let end_time = action.end_time;
         let start_time = action.end_time - action.time;
@@ -1555,7 +1552,7 @@ export class Occupation extends plugin {
         let time;
         var y = this.xiuxianConfigData.mine.time;//固定时间
         var x = this.xiuxianConfigData.mine.cycle;//循环次数
-    
+
         if (end_time > now_time) {//属于提前结束
             time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
             //超过就按最低的算，即为满足30分钟才结算一次
@@ -1585,13 +1582,13 @@ export class Occupation extends plugin {
                 time = 0;
             }
         }
-    
+
         if (e.isGroup) {
             await this.shoulie_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
         } else {
             await this.shoulie_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
         }
-    
+
         let arr = action;
         arr.is_jiesuan = 1;//结算状态
         arr.shoulie = 1;//采药状态
@@ -1605,14 +1602,14 @@ export class Occupation extends plugin {
         delete arr.group_id;//结算完去除group_id
         await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
     }
-    
-    
-     async shoulie_jiesuan(user_id, time, is_random, group_id) {
-    
+
+
+    async shoulie_jiesuan(user_id, time, is_random, group_id) {
+
         let usr_qq = user_id;
         let player = data.getData("player", usr_qq);
         let now_level_id;
-    
+
         if (!isNotNull(player.level_id)) {
             return;
         }
@@ -1631,44 +1628,44 @@ export class Occupation extends plugin {
             time *= rate;
             ext = `你是猎户，获得狩猎经验${exp}，额外获得猎物${Math.floor(rate * 100)}%，`;
         }
-    
+
         let end_amount = Math.floor(4 * (rate + 1) * (shoulie_amount1))//稀有
         if (player.level_id <= 21) {
-    
+
             end_amount *= player.level_id / 40
-            
+
             msg.push("由于你境界不足化神,在狗熊岭遇见熊大熊二，摆脱他们花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
         } else {
             end_amount *= player.level_id / 40
-           
+
         }
-    
-    
+
+
         //shoulie_amount1 = parseInt(shoulie_amount1 * time);
         //shoulie_amount2 = parseInt(shoulie_amount2 * time);
         //shoulie_amount3 = parseInt(shoulie_amount3 * time);
         //shoulie_amount4 = parseInt(shoulie_amount4 * time);
-        end_amount = Math.floor(end_amount)/50;
+        end_amount = Math.floor(end_amount) / 50;
         end_amount = Math.floor(end_amount);
 
 
-                        await Add_najie_thing(usr_qq, "野兔", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野鸡", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野猪", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野牛", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野羊", "食材", end_amount);
-                        await Add_职业经验(usr_qq,exp);
-                        msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
-    
-    
-    
-    
+        await Add_najie_thing(usr_qq, "野兔", "食材", end_amount);
+        await Add_najie_thing(usr_qq, "野鸡", "食材", end_amount);
+        await Add_najie_thing(usr_qq, "野猪", "食材", end_amount);
+        await Add_najie_thing(usr_qq, "野牛", "食材", end_amount);
+        await Add_najie_thing(usr_qq, "野羊", "食材", end_amount);
+        await Add_职业经验(usr_qq, exp);
+        msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
+
+
+
+
         if (group_id) {
             await this.pushInfo(group_id, true, msg)
         } else {
             await this.pushInfo(usr_qq, false, msg);
         }
-    
+
         return;
     }
 
@@ -1935,7 +1932,7 @@ export class Occupation extends plugin {
         let end_time = action.end_time;
         //当前时间>=结束时间，并且未结算 属于已经完成任务，却并没有结算的
         //当前时间<=完成时间，并且未结算 属于正在进行
-        if (!((now_time >= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0 || action.min == 0)) || (now_time <= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0 || action.mine == 0||action.shoulie == 0)))) {
+        if (!((now_time >= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0 || action.min == 0)) || (now_time <= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0 || action.mine == 0 || action.shoulie == 0)))) {
 
             return "空闲";
         }
