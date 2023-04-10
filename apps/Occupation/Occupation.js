@@ -787,7 +787,6 @@ export class Occupation extends plugin {
 
     async liandan(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let usr_qq = e.user_id;
@@ -846,7 +845,7 @@ export class Occupation extends plugin {
         }
         for (let i in materials) {
             let material = materials[i];
-            tmp_msg += `${material.name}×${material.amount * n},`;
+            tmp_msg += `${material.name}×${material.amount * n}，`;
             await Add_najie_thing(usr_qq, material.name, "草药", -material.amount * n);
         }
         let res_n = 0;
