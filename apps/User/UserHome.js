@@ -3532,7 +3532,7 @@ export class UserHome extends plugin {
             quantity = parseInt(code[1]);
         }
         //e.reply(`thing_name:${thing_name},   quantity:${quantity}`);
-        let ifexist = data.commodities_list.find(item => item.name == thing_name);
+        let ifexist = data.xianshi_list.find(item => item.name == thing_name);
         if (!ifexist) {
             e.reply(`仙石堂还没有这样的东西:${thing_name}`);
             return;
