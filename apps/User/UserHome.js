@@ -3513,7 +3513,7 @@ export class UserHome extends plugin {
         }
         allaction = false;
         let thing = e.msg.replace("#", '');
-        thing = thing.replace("购买", '');
+        thing = thing.replace("仙石购买", '');
         let code = thing.split("\*");
         let thing_name = code[0];
         //默认没有数量
