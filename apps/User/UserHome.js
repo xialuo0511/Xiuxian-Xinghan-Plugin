@@ -65,6 +65,9 @@ export class UserHome extends plugin {
                 reg: '^#购买((.*)|(.*)*(.*))$',
                 fnc: 'Buy_comodities'
             }, {
+                reg: '^#仙石购买((.*)|(.*)*(.*))$',
+                fnc: 'xianshiBuy_comodities'
+            }, {
                 reg: '^#出售.*$',
                 fnc: 'Sell_comodities'
             }, {
@@ -3486,6 +3489,86 @@ export class UserHome extends plugin {
         await Add_灵石(usr_qq, -commodities_price);
         //发送消息
         e.reply([`购买成功!  获得[${thing_name}]*${quantity},花[${commodities_price}]灵石,剩余[${lingshi - commodities_price}]灵石  `, '\n可以在【我的纳戒】中查看']);
+        return;
+    }
+
+    //仙石商品
+    async xianshiBuy_comodities(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        await Go(e);
+        if (allaction) {
+            console.log(allaction);
+        } else {
+            return;
+        }
+        allaction = false;
+        let thing = e.msg.replace("#", '');
+        thing = thing.replace("购买", '');
+        let code = thing.split("\*");
+        let thing_name = code[0];
+        //默认没有数量
+        let quantity = 0;
+        if (parseInt(code[1]) != parseInt(code[1])) {
+            quantity = 1;
+        } else if (parseInt(code[1]) < 1) {
+            e.reply(`输入物品数量小于1,现在默认为1`);
+            quantity = 1;
+        }
+        // else if (parseInt(code[1]) > 99) {
+        //     e.reply(`客官，一次只能卖99瓶哦，货物稀缺呢~`);
+        //     quantity = 99;
+        // }
+        else {
+            quantity = parseInt(code[1]);
+        }
+        //e.reply(`thing_name:${thing_name},   quantity:${quantity}`);
+        let ifexist = data.commodities_list.find(item => item.name == thing_name);
+        if (!ifexist) {
+            e.reply(`仙石堂还没有这样的东西:${thing_name}`);
+            return;
+        }
+        let player = await Read_player(usr_qq);
+        let lingshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
+        lingshi = Number(lingshi);
+        //如果没钱，或者为负数
+        if (lingshi <= 0) {
+            e.reply(`掌柜：就你这穷酸样，也想来仙石堂？走走走！`);
+            return;
+        }
+        // 价格倍率
+        //价格
+        let commodities_price = ifexist.出售价 * 1.2 * quantity;
+        let addWorldmoney = ifexist.出售价 * 0.2 * quantity;
+        commodities_price = Math.trunc(commodities_price);
+        //判断金额
+        if (lingshi < commodities_price) {
+            e.reply(`口袋里的仙石不足以支付${thing_name},还需要${commodities_price - lingshi}灵石`);
+            return;
+        }
+        let Worldmoney = await redis.get("Xiuxian:Worldmoney");
+        if (Worldmoney == null || Worldmoney == undefined || Worldmoney <= 0 || Worldmoney == NaN) {
+            Worldmoney = 1;
+        }
+        Worldmoney = Number(Worldmoney);
+        Worldmoney = Worldmoney + addWorldmoney;
+        Worldmoney = Number(Worldmoney);
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        } Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
+        await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", lingshi);
+        //发送消息
+        e.reply([`购买成功!  获得[${thing_name}]*${quantity},花[${commodities_price}]仙石,剩余[${lingshi - commodities_price}]仙石  `, '\n可以在【我的纳戒】中查看']);
         return;
     }
 

@@ -14,16 +14,16 @@ export default class Game extends base {
       ...myData,
     };
   }
-    //师徒商城
-    async get_shitujifenData(myData) {
-      this.model = 'shitujifen';
-      return {
-        ...this.screenData,
-        saveId: 'shitujifen',
-        ...myData,
-      };
-    }
-     //我的弟子
+  //师徒商城
+  async get_shitujifenData(myData) {
+    this.model = 'shitujifen';
+    return {
+      ...this.screenData,
+      saveId: 'shitujifen',
+      ...myData,
+    };
+  }
+  //我的弟子
   async get_shituData(myData) {
     this.model = 'shitu';
     return {
@@ -59,7 +59,7 @@ export default class Game extends base {
     };
   }
 
-  async get_xianchong(myData) { 
+  async get_xianchong(myData) {
     this.model = 'xianchong';
     return {
       ...this.screenData,
@@ -196,7 +196,7 @@ export default class Game extends base {
       saveId: 'msg',
       ...myData,
     };
-    }
+  }
   //村庄名单
   async get_msg2(myData) {
     this.model = 'msg2';
@@ -216,7 +216,7 @@ export default class Game extends base {
     };
   }
 
-    //shop
+  //shop
   async get_didianData(myData) {
     this.model = 'shop';
     return {
@@ -244,7 +244,17 @@ export default class Game extends base {
       ...myData,
     };
   }
-  
+
+  //仙石堂
+  async get_xianshiData(myData) {
+    this.model = 'xianshi';
+    return {
+      ...this.screenData,
+      saveId: 'xianshi',
+      ...myData,
+    };
+  }
+
   //活动商店
   async get_huodongshopData(myData) {
     this.model = 'huodongshop';
