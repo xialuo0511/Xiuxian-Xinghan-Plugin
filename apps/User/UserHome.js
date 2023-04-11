@@ -3552,7 +3552,7 @@ export class UserHome extends plugin {
         commodities_price = Math.trunc(commodities_price);
         //判断金额
         if (lingshi < commodities_price) {
-            e.reply(`口袋里的仙石不足以支付${thing_name},还需要${commodities_price - lingshi}灵石`);
+            e.reply(`口袋里的仙石不足以支付${thing_name},还需要${commodities_price - lingshi}仙石`);
             return;
         }
         let Worldmoney = await redis.get("Xiuxian:Worldmoney");
@@ -3568,7 +3568,7 @@ export class UserHome extends plugin {
         } Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
         await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", lingshi);
         //发送消息
-        e.reply([`购买成功!  获得[${thing_name}]*${quantity},花[${commodities_price}]仙石,剩余[${lingshi - commodities_price}]仙石  `, '\n可以在【我的纳戒】中查看']);
+        e.reply([`购买成功!  获得[${thing_name}]*${quantity},花费[${commodities_price}]仙石,剩余[${lingshi - commodities_price}]仙石  `, '\n可以在【我的练气】中查看剩余仙石，在【我的纳戒】中查看物品']);
         return;
     }
 
