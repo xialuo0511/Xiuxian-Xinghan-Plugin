@@ -3566,7 +3566,7 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         } Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
-        await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", lingshi);
+        await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", lingshi - commodities_price);
         //发送消息
         e.reply([`购买成功!  获得[${thing_name}]*${quantity},花费[${commodities_price}]仙石,剩余[${lingshi - commodities_price}]仙石  `, '\n可以在【我的练气】中查看剩余仙石，在【我的纳戒】中查看物品']);
         return;
