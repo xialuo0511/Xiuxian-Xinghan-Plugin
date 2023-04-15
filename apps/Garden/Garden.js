@@ -2,6 +2,10 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import { timestampToTime, shijianc, exist_najie_thing, ForwardMsg, Add_najie_thing } from '../Xiuxian/xiuxian.js'
+
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
 /**
  * 作者：湖中屋
  */
@@ -97,7 +101,15 @@ export class Garden extends plugin {
             ];
             msg.push(msg1);
         }
-        await ForwardMsg(e, msg);
+        let log_data = {
+            log: msg,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
+        return;
         return;
     }
 
