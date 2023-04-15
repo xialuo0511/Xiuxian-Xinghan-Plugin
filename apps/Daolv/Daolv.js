@@ -1,10 +1,10 @@
 
 import plugin from '../../../../lib/plugins/plugin.js'
-import { Add_HP,fstadd_qinmidu, __PATH } from "../Xiuxian/xiuxian.js"
-import { segment } from "oicq";
-import { exist_najie_thing,existplayer,Read_player,find_qinmidu,Read_qinmidu,Write_qinmidu,add_qinmidu,Add_najie_thing} from "../Xiuxian/xiuxian.js"
+import { Add_HP, fstadd_qinmidu, __PATH } from "../Xiuxian/xiuxian.js"
+    ;
+import { exist_najie_thing, existplayer, Read_player, find_qinmidu, Read_qinmidu, Write_qinmidu, add_qinmidu, Add_najie_thing } from "../Xiuxian/xiuxian.js"
 
-let x=0;
+let x = 0;
 let chaoshi_time
 let user_A;
 let user_B;
@@ -46,8 +46,8 @@ export class Daolv extends plugin {
 
 
 
-    
-    async qiuhun(e){
+
+    async qiuhun(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -102,75 +102,66 @@ export class Daolv extends plugin {
             e.reply(`对方猜大小正在进行哦，等他结束再求婚吧!`);
             return;
         }
-        let pd=await find_qinmidu(A,B);
+        let pd = await find_qinmidu(A, B);
         let ishavejz = await exist_najie_thing(A, "定情信物", "道具");
         if (!ishavejz) {
             e.reply("你没有[定情信物],无法发起求婚");
             return;
         }
-        else if (pd==false || (pd>0 && pd<500))
-        {
-             if (pd==false) pd=0;
+        else if (pd == false || (pd > 0 && pd < 500)) {
+            if (pd == false) pd = 0;
             e.reply(`你们亲密度不足500,无法心意相通(当前亲密度${pd})`);
             return;
         }
-        else if (pd==0)
-        {
+        else if (pd == 0) {
             e.reply(`对方已有道侣`);
             return;
         }
-        if (x==1 || x==2)
-        {
+        if (x == 1 || x == 2) {
             e.reply(`有人缔结道侣，请稍等`);
             return;
         }
-        x=1;
-        user_A=A;
-        user_B=B;
-        let player_A = await Read_player(A); 
-        let msg= [segment.at(B), "\n"];
+        x = 1;
+        user_A = A;
+        user_B = B;
+        let player_A = await Read_player(A);
+        let msg = [segment.at(B), "\n"];
         msg.push(`${player_A.名号}想和你缔结道侣,你愿意吗？\n回复【我愿意】or【我拒绝】`);
         e.reply(msg);
         chaoshi(e);
         return;
     }
 
-    async xuanze(e)
-    {
+    async xuanze(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        if (e.user_id!=user_B)
-        {
+        if (e.user_id != user_B) {
             return;
         }
-        if (x==1)
-        {
-            let player_B = await Read_player(user_B); 
-            if (e.msg=="我愿意")
-            {
-                let qinmidu=await Read_qinmidu();
-                let i=await found(user_A,user_B);
-                if (i!=qinmidu.length)
-                {
-                    qinmidu[i].婚姻=1;
+        if (x == 1) {
+            let player_B = await Read_player(user_B);
+            if (e.msg == "我愿意") {
+                let qinmidu = await Read_qinmidu();
+                let i = await found(user_A, user_B);
+                if (i != qinmidu.length) {
+                    qinmidu[i].婚姻 = 1;
                     await Write_qinmidu(qinmidu);
                     e.reply(`${player_B.名号}同意了你的请求`);
-                    await Add_najie_thing(user_A,"定情信物","道具",-1)
+                    await Add_najie_thing(user_A, "定情信物", "道具", -1)
                 }
             }
-            else if (e.msg=="我拒绝")
-            {
+            else if (e.msg == "我拒绝") {
                 e.reply(`${player_B.名号}拒绝了你的请求`);
             }
             clearTimeout(chaoshi_time);
-            x=0;
+            x = 0;
             return;
         }
     }
 
-    async lihun(e){
+    async lihun(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -226,72 +217,63 @@ export class Daolv extends plugin {
             return;
         }
 
-        let qinmidu=await Read_qinmidu();
-        let i=await found(A,B)
-        let pd=await find_qinmidu(A,B);
-        if (pd==false)
-        {
+        let qinmidu = await Read_qinmidu();
+        let i = await found(A, B)
+        let pd = await find_qinmidu(A, B);
+        if (pd == false) {
             e.reply("你们还没建立关系，断个锤子");
             return;
         }
-        else if (qinmidu[i].婚姻==0)
-        {
+        else if (qinmidu[i].婚姻 == 0) {
             e.reply("你们还没结婚，断个锤子");
             return;
         }
-        if (x==1 || x==2)
-        {
+        if (x == 1 || x == 2) {
             e.reply(`有人正在缔结道侣，请稍等`);
             return;
         }
-        x=2;
-        user_A=A;
-        user_B=B;
-        let player_A = await Read_player(A); 
-        let msg= [segment.at(B), "\n"];
+        x = 2;
+        user_A = A;
+        user_B = B;
+        let player_A = await Read_player(A);
+        let msg = [segment.at(B), "\n"];
         msg.push(`${player_A.名号}要和你断绝姻缘\n回复【我同意】or【我拒绝】`);
         e.reply(msg);
         chaoshi(e);
         return;
     }
 
-    async xuanze2(e)
-    {
+    async xuanze2(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        if (e.user_id!=user_B)
-        {
+        if (e.user_id != user_B) {
             return;
         }
-        if (x==2)
-        {
-            let player_A = await Read_player(user_A); 
-            let player_B = await Read_player(user_B); 
-            let qinmidu=await Read_qinmidu();
-            let i=await found(user_A,user_B);
-            if (i!=qinmidu.length)
-                {
-                    if (e.msg=="我同意")
-                    {
-                        qinmidu[i].婚姻=0;
-                        await Write_qinmidu(qinmidu);
-                        e.reply(`${player_A.名号}和${player_B.名号}和平分手`);
-                    }
-                    else if (e.msg=="我拒绝")
-                    {
-                        e.reply(`${player_B.名号}拒绝了${player_A.名号}提出的建议`);
-                        
-                    }
+        if (x == 2) {
+            let player_A = await Read_player(user_A);
+            let player_B = await Read_player(user_B);
+            let qinmidu = await Read_qinmidu();
+            let i = await found(user_A, user_B);
+            if (i != qinmidu.length) {
+                if (e.msg == "我同意") {
+                    qinmidu[i].婚姻 = 0;
+                    await Write_qinmidu(qinmidu);
+                    e.reply(`${player_A.名号}和${player_B.名号}和平分手`);
                 }
+                else if (e.msg == "我拒绝") {
+                    e.reply(`${player_B.名号}拒绝了${player_A.名号}提出的建议`);
+
+                }
+            }
             clearTimeout(chaoshi_time);
-            x=0;
+            x = 0;
             return;
         }
     }
 
-    async get_dift(e){
+    async get_dift(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
@@ -317,24 +299,22 @@ export class Daolv extends plugin {
             e.reply("你没有[百合花篮]");
             return;
         }
-        let pd=await find_qinmidu(A,B);
-        if (pd==false)
-        {
-            await fstadd_qinmidu(A,B);
+        let pd = await find_qinmidu(A, B);
+        if (pd == false) {
+            await fstadd_qinmidu(A, B);
         }
-        else if (pd==0)
-        {
+        else if (pd == 0) {
             e.reply(`对方已有道侣`);
             return;
         }
-      
-        await add_qinmidu(A,B,60);
+
+        await add_qinmidu(A, B, 60);
         await Add_najie_thing(A, "百合花篮", "道具", -1);
         e.reply(`你们的亲密度增加了60`);
         return;
-        
-        
-        
+
+
+
     }
 
 }
@@ -342,20 +322,18 @@ export class Daolv extends plugin {
 
 async function chaoshi(e) {
     chaoshi_time = setTimeout(() => {
-        if (x == 1 || x==2) {
+        if (x == 1 || x == 2) {
             x = 0;
             e.reply("对方没有搭理你");
             return true;
         }
     }, 30000);
 }
-async function found(A,B) {
-    let qinmidu=await Read_qinmidu();
+async function found(A, B) {
+    let qinmidu = await Read_qinmidu();
     let i;
-    for (i=0;i<qinmidu.length;i++)
-    {
-        if ((qinmidu[i].QQ_A==A && qinmidu[i].QQ_B==B) || (qinmidu[i].QQ_A==B && qinmidu[i].QQ_B==A))
-        {
+    for (i = 0; i < qinmidu.length; i++) {
+        if ((qinmidu[i].QQ_A == A && qinmidu[i].QQ_B == B) || (qinmidu[i].QQ_A == B && qinmidu[i].QQ_B == A)) {
             break;
         }
     }

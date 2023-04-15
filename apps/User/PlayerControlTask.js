@@ -3,8 +3,8 @@ import common from "../../../../lib/common/common.js"
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "node:fs"
-import { segment } from "oicq"
-import { isNotNull, exist_najie_thing, Add_najie_thing, Add_血气,Add_修为 } from "../Xiuxian/xiuxian.js"
+
+import { isNotNull, exist_najie_thing, Add_najie_thing, Add_血气, Add_修为 } from "../Xiuxian/xiuxian.js"
 
 /**
  * 定时任务
@@ -125,14 +125,14 @@ export class PlayerControlTask extends plugin {
                                     msg.push("\n消耗了道具[魔界秘宝],额外增加" + other_x + "修为");
                                     await Add_修为(player_id, other_x);
                                 }
-                                if (await exist_najie_thing(player_id, "神界秘宝", "道具") && player.魔道值<1 && (player.灵根.type == "转生" || player.level_id >41)) {
+                                if (await exist_najie_thing(player_id, "神界秘宝", "道具") && player.魔道值 < 1 && (player.灵根.type == "转生" || player.level_id > 41)) {
                                     qixue = Math.trunc(xiuwei * 0.1 * time);
                                     await Add_najie_thing(player_id, "神界秘宝", "道具", -1);
                                     msg.push("\n消耗了道具[神界秘宝],额外增加" + qixue + "血气");
                                     await Add_血气(player_id, qixue);
                                 }
 
-                                
+
                                 await this.setFileValue(player_id, blood * time, "当前血量");
 
                                 if (action.acount == null) {
@@ -149,10 +149,10 @@ export class PlayerControlTask extends plugin {
                                 await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
                                 xueqi = Math.trunc(xiuwei * time * action3[i].beiyong4);
                                 if (transformation == "血气") {
-                                    await this.setFileValue(player_id, (xiuwei * time + other_xiuwei)* action3[i].beiyong4, transformation);
+                                    await this.setFileValue(player_id, (xiuwei * time + other_xiuwei) * action3[i].beiyong4, transformation);
                                     msg.push("\n受到炼神之力的影响,增加气血:" + xueqi, "血量增加:" + blood * time);
                                 } else {
-                                     await this.setFileValue(player_id, xiuwei * time + other_xiuwei, transformation);
+                                    await this.setFileValue(player_id, xiuwei * time + other_xiuwei, transformation);
                                     msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
                                 }
                                 await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
