@@ -77,10 +77,9 @@ export class Garden extends plugin {
             ass = data.getAssociation(player.宗门.宗门名称);
         }
         let zuowu;
-        let msg = [
-            `宗门名称: ${ass.宗门名称}` + "\n" +
-            `药园可栽种: ${ass.宗门等级} 棵药草` + "\n" +
-            `药园药草如下:`]
+        let msg = [`宗门名称: ${ass.宗门名称}`]
+        msg.push(`药园可栽种: ${ass.宗门等级} 棵药草`)
+        msg.push(`药园药草如下:`)
         let nowTime = new Date().getTime(); //获取当前时间
 
         for (var i = 0; i < ass.药园.作物.length; i++) {
@@ -94,11 +93,9 @@ export class Garden extends plugin {
                 chengshu_m = 0;
                 chengshu_s = 0;
             }
-            let msg1 = [
-                `作物: ${zuowu[i].name} ` + "\n" +
-                `描述: ${zuowu[i].desc}` + "\n" +
-                `成长时间:${chengshu_t}天${chengshu_m}小时${chengshu_s}分钟`
-            ];
+            let msg1 = [`作物: ${zuowu[i].name} `]
+            msg.push(`描述: ${zuowu[i].desc}`)
+            msg.push(`成长时间:${chengshu_t}天${chengshu_m}小时${chengshu_s}分钟`)
             msg.push(msg1);
         }
         let log_data = {
