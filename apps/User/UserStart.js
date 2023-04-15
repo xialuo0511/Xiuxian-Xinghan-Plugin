@@ -559,74 +559,95 @@ export class UserStart extends plugin {
             return;
         }
         await redis.set("xiuxian:player:" + usr_qq + ":huodonglastsign_time", nowTime);//redis设置签到时间
+        let sign = await redis.get("xiuxian:player:" + usr_qq + ":huodongsign");//redis设置签到时间
+        if (!sign) {
+            sign = 0
+        }
+        let xianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
+        if (!xianshi) {
+            xianshi = 0
+        }
+        sign = sign + 1
+        await redis.set("xiuxian:player:" + usr_qq + ":huodongsign", sign);//redis设置签到
         let player = await data.getData("player", usr_qq);
-        if (player.连续签到天数 > 7) {//签到连续7天或者昨天没有签到,连续签到天数清零
+        if (sign > 7) {//签到连续7天或者昨天没有签到,连续签到天数清零
             e.reply(`「七日馈赠」已领取完毕！`);
             return;
         }
 
-        player.连续签到天数 += 1;
-        data.setData("player", usr_qq, player);
-
-        if (player.连续签到天数 = 1) {
+        if (sign = 1) {
             await Add_najie_thing(usr_qq, "2w", "道具", "5");
+            xianshi = xianshi + 5
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${player.连续签到天数}天馈赠成功！获得[2w]*5`
+                `领取第${sign}天馈赠成功！获得[2w]*5,[顶级仙石]*5`
             ]
             e.reply(msg);
             return;
         }
-        if (player.连续签到天数 = 2) {
+        if (sign = 2) {
             await Add_najie_thing(usr_qq, "甜酿丹", "丹药", "10");
+            xianshi = xianshi + 10
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${player.连续签到天数}天馈赠成功！获得[甜酿丹]*10`
+                `领取第${sign}天馈赠成功！获得[甜酿丹]*10,[顶级仙石]*10`
             ]
             e.reply(msg);
             return;
         }
-        if (player.连续签到天数 = 3) {
+        if (sign = 3) {
             await Add_najie_thing(usr_qq, "摘榜令", "道具", "3");
+            xianshi = xianshi + 10
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${player.连续签到天数}天馈赠成功！获得[摘榜令]*3 `
+                `领取第${sign}天馈赠成功！获得[摘榜令]*3,[顶级仙石]*10 `
             ]
             e.reply(msg);
             return;
         }
-        if (player.连续签到天数 = 4) {
+        if (sign = 4) {
             await Add_najie_thing(usr_qq, "2w", "道具", "15");
+            xianshi = xianshi + 15
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${player.连续签到天数}天馈赠成功！获得[2w]*15`
+                `领取第${sign}天馈赠成功！获得[2w]*15,[顶级仙石]*15`
             ]
             e.reply(msg);
             return;
         }
-        if (player.连续签到天数 = 5) {
+        if (sign = 5) {
             await Add_najie_thing(usr_qq, "八阶淬体丹", "丹药", "1");
+            xianshi = xianshi + 15
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${player.连续签到天数}天馈赠成功！获得[八阶淬体丹]*1`
+                `领取第${sign}天馈赠成功！获得[八阶淬体丹]*1,[顶级仙石]*15`
             ]
             e.reply(msg);
             return;
         }
-        if (player.连续签到天数 = 6) {
+        if (sign = 6) {
             await Add_najie_thing(usr_qq, "西游记", "功法", "1");
+            xianshi = xianshi + 15
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${player.连续签到天数}天馈赠成功！获得[西游记]*1`
+                `领取第${sign}天馈赠成功！获得[西游记]*1,[顶级仙石]*15`
             ]
             e.reply(msg);
             return;
         }
-        if (player.连续签到天数 = 7) {
+        if (sign = 7) {
             await Add_najie_thing(usr_qq, "2w", "道具", "30");
+            xianshi = xianshi + 20
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${player.连续签到天数}天馈赠成功！获得[2w]*5`
+                `领取第${sign}天馈赠成功！获得[2w]*5,[顶级仙石]*20`
             ]
             e.reply(msg);
             return;
