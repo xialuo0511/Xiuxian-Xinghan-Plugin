@@ -3,7 +3,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
-import {segment} from "oicq"
+
 import {
     Read_player,
     existplayer,
@@ -12,8 +12,8 @@ import {
     Write_player,
     Locked_najie_thing
 } from '../Xiuxian/xiuxian.js'
-import {Add_灵石, Add_najie_thing,convert2integer,Check_thing} from '../Xiuxian/xiuxian.js'
-import {__PATH} from "../Xiuxian/xiuxian.js"
+import { Add_灵石, Add_najie_thing, convert2integer, Check_thing } from '../Xiuxian/xiuxian.js'
+import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**
  * 全局变量
@@ -352,13 +352,13 @@ export class MoneyOperation extends plugin {
                 pinji = thing_name_pinji_amount[1];
                 amount = Number(thing_name_pinji_amount[2]);
             }
-            amount= await convert2integer(amount);
+            amount = await convert2integer(amount);
             let thing_exist = await foundthing(thing_name);
             if (!thing_exist) {
                 e.reply(`这方世界没有[${thing_name}]`);
                 return;
             }
-            if (await Check_thing(thing_exist)==1) {
+            if (await Check_thing(thing_exist) == 1) {
                 e.reply(`${thing_exist.name}特殊！`);
                 return;
             }

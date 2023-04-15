@@ -1,5 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js'
-import { segment } from "oicq"
+
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Gaodenyuansulun, Add_najie_thing } from '../Xiuxian/xiuxian.js'
@@ -131,7 +131,7 @@ export class BOSS2 extends plugin {
             }
             let PlayerRecordJSON = JSON.parse(PlayerRecord);
             let PlayerList = await SortPlayer(PlayerRecordJSON);
-            if (!PlayerRecordJSON ?.Name) {
+            if (!PlayerRecordJSON?.Name) {
                 e.reply("请等待下次天理周本刷新后再使用本功能");
                 return true;
             }

@@ -4,7 +4,7 @@ import common from '../../../../lib/common/common.js';
 import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
 import fetch from 'node-fetch';
-import {segment} from 'oicq';
+
 import {
     Read_player,
     existplayer,
@@ -16,7 +16,7 @@ import {
     fstadd_qinmidu,
     find_qinmidu,
 } from '../Xiuxian/xiuxian.js';
-import {Add_灵石, Add_修为} from '../Xiuxian/xiuxian.js';
+import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js';
 import Show from '../../model/show.js';
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 

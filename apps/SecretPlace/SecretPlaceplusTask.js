@@ -3,7 +3,7 @@ import common from '../../../../lib/common/common.js';
 import config from '../../model/Config.js';
 import data from '../../model/XiuxianData.js';
 import fs from 'node:fs';
-import { segment } from 'oicq';
+
 import {
   Read_player,
   isNotNull,
@@ -14,7 +14,7 @@ import {
   Add_修为,
   Add_血气,
   Add_HP,
-  exist_najie_thing,Write_player
+  exist_najie_thing, Write_player
 } from '../Xiuxian/xiuxian.js';
 import { mjzd_battle } from '../Battle/Battle.js';
 
@@ -400,36 +400,36 @@ export class SecretPlaceplusTask extends plugin {
               let random2 = Math.random();
               let caoyao = '';
               if (A_player.职业 == '采药师') {
-                if (random2 > 0.95&&random2<=1) {
+                if (random2 > 0.95 && random2 <= 1) {
                   caoyao += '"仙蕴花"';
                   await Add_najie_thing(player_id, '仙蕴花', '草药', 1);
-                }else if(random2 > 0.9&&random2<=0.95) {
+                } else if (random2 > 0.9 && random2 <= 0.95) {
                   caoyao += '"魔蕴花"';
                   await Add_najie_thing(player_id, '魔蕴花', '草药', 1);
-                }else if (random2 > 0.88&&random2<0.885) {
+                } else if (random2 > 0.88 && random2 < 0.885) {
                   caoyao += '"太玄仙草"';
                   await Add_najie_thing(player_id, '太玄仙草', '草药', 1);
-                }else if (random2 > 0.83&&random2<=0.88) {
+                } else if (random2 > 0.83 && random2 <= 0.88) {
                   caoyao += '"古神藤"';
                   await Add_najie_thing(player_id, '古神藤', '草药', 1);
-                }else if (random2>0&&random2<=0.005) {
+                } else if (random2 > 0 && random2 <= 0.005) {
                   caoyao += '"神之眼"';
                   await Add_najie_thing(player_id, '神之眼', '草药', 1);
-                }else if (random2 > 0.80&&random2<=0.83) {
+                } else if (random2 > 0.80 && random2 <= 0.83) {
                   caoyao += '"炼骨花"';
                   await Add_najie_thing(player_id, '炼骨花', '草药', 1);
-                }else if(random2>0.005&&random2<=0.01){
-                    caoyao +=  '"仙缘草"';
+                } else if (random2 > 0.005 && random2 <= 0.01) {
+                  caoyao += '"仙缘草"';
                   await Add_najie_thing(player_id, '仙缘草', '草药', 1);
                 }
                 if (
-                  random2 > 0.95&&random2<=1 ||
-                 random2 > 0.9&&random2<=0.95 ||
-                 random2 > 0.88&&random2<0.885 ||
-                  random2 > 0.83&&random2<=0.88 ||
-                 random2>0&&random2<=0.005||
-                  random2 > 0.80&&random2<=0.83||
-                  random2>0.005&&random2<=0.01
+                  random2 > 0.95 && random2 <= 1 ||
+                  random2 > 0.9 && random2 <= 0.95 ||
+                  random2 > 0.88 && random2 < 0.885 ||
+                  random2 > 0.83 && random2 <= 0.88 ||
+                  random2 > 0 && random2 <= 0.005 ||
+                  random2 > 0.80 && random2 <= 0.83 ||
+                  random2 > 0.005 && random2 <= 0.01
                 ) {
                   last_msg +=
                     '\n\n' +
@@ -535,7 +535,7 @@ export class SecretPlaceplusTask extends plugin {
    * @returns {Promise<void>}
    */
   async pushInfo(id, is_group, msg) {
-      if (is_group) {
+    if (is_group) {
       await Bot.pickGroup(id)
         .sendMsg(msg)
         .catch(err => {
@@ -545,5 +545,5 @@ export class SecretPlaceplusTask extends plugin {
       await common.relpyPrivate(id, msg);
     }
   }
-  
+
 }

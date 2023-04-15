@@ -4,7 +4,7 @@ import data from '../../model/XiuxianData.js'
 import Show from "../../model/show.js"
 import path from "path"
 import fs from "fs"
-import { segment } from "oicq"
+
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 let sudokukey = false;
@@ -51,18 +51,18 @@ export class SudokuGame extends plugin {
 
 
     async CreateSudoku(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let usr_qq = e.user_id;
-         //获取游戏状态
+        //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-         //防止继续其他娱乐行为
+        //防止继续其他娱乐行为
         if (game_action == 0) {
-             e.reply("修仙：游戏进行中...");
-             return;
+            e.reply("修仙：游戏进行中...");
+            return;
         }
         if (sudokukey) {
             await e.reply(`当前已经有棋局存在,先解决它吧`);
@@ -76,8 +76,8 @@ export class SudokuGame extends plugin {
 
 
     async Getsudokuboard(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -140,8 +140,8 @@ export class SudokuGame extends plugin {
 
 
     async setnumber(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -191,8 +191,8 @@ export class SudokuGame extends plugin {
 
 
     async CheckSudoku(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -225,8 +225,8 @@ export class SudokuGame extends plugin {
 
 
     async ifCloseSudoku(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -243,8 +243,8 @@ export class SudokuGame extends plugin {
 
 
     async CloseSudoku(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -263,8 +263,8 @@ export class SudokuGame extends plugin {
 
 
     async nowSudoku(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -530,7 +530,7 @@ async function get_sudoku_img(e) {
     }
     let sudokudata = {
         "temp": constboard,
-        "board":board
+        "board": board
     }
     const data1 = await new Show(e).get_sudokuData(sudokudata);
     let img = await puppeteer.screenshot("sudoku", {

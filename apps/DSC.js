@@ -1,5 +1,5 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import { segment } from "oicq"
+
 import data from '../model/XiuxianData.js'
 import fs from "fs"
 
@@ -36,51 +36,51 @@ export class DSC extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        
+
         if (await data.existData("player", e.user_id)) {
             let CurrentPlayerAttributes = await data.getData("player", e.user_id);
             if (CurrentPlayerAttributes.当前血量 <= 100000) {
                 e.reply("身体没有状态 下去送死？");
                 return true;
             }
-    let usr_qq = e.user_id;
-    let player = data.getData("player", usr_qq);
-    let 神魄段数 = player.神魄段数
-    //人数的万倍
-    let Health = 100000*神魄段数;
-    //攻击
-    let Attack = 100000*神魄段数;
-    //防御
-    let Defence = 10000*神魄段数;
-    //奖励下降
-    let Reward = 1200*神魄段数;
-    let bosszt = {
-        "Health": Health,
-        "OriginHealth": Health,
-        "isAngry": 0,
-        "isWeak": 0,
-        "Attack": Attack,
-        "Defence": Defence,
-        "KilledTime": -1,
-        "Reward": Reward,
-    };
-     if(神魄段数>=1500){
-        CurrentPlayerAttributes.神魄段数=1500;
-    e.reply("神魄段最多1500！！");
-    await data.setData("player", e.user_id, CurrentPlayerAttributes); 
-    return;
-   }
-   var Time = 2;
-   let now_Time = new Date().getTime(); //获取当前时间戳
-   let shuangxiuTimeout = parseInt(60000 * Time);
-   let last_time = await redis.get("xiuxian:player:" + usr_qq + "CD");//获得上次的时间戳,
-   last_time = parseInt(last_time);
-   if (now_Time < last_time + shuangxiuTimeout) {
-       let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
-       let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
-       e.reply("正在CD中，" + `剩余cd:  ${Couple_m}分 ${Couple_s}秒`);
-       return;
-   }
+            let usr_qq = e.user_id;
+            let player = data.getData("player", usr_qq);
+            let 神魄段数 = player.神魄段数
+            //人数的万倍
+            let Health = 100000 * 神魄段数;
+            //攻击
+            let Attack = 100000 * 神魄段数;
+            //防御
+            let Defence = 10000 * 神魄段数;
+            //奖励下降
+            let Reward = 1200 * 神魄段数;
+            let bosszt = {
+                "Health": Health,
+                "OriginHealth": Health,
+                "isAngry": 0,
+                "isWeak": 0,
+                "Attack": Attack,
+                "Defence": Defence,
+                "KilledTime": -1,
+                "Reward": Reward,
+            };
+            if (神魄段数 >= 1500) {
+                CurrentPlayerAttributes.神魄段数 = 1500;
+                e.reply("神魄段最多1500！！");
+                await data.setData("player", e.user_id, CurrentPlayerAttributes);
+                return;
+            }
+            var Time = 2;
+            let now_Time = new Date().getTime(); //获取当前时间戳
+            let shuangxiuTimeout = parseInt(60000 * Time);
+            let last_time = await redis.get("xiuxian:player:" + usr_qq + "CD");//获得上次的时间戳,
+            last_time = parseInt(last_time);
+            if (now_Time < last_time + shuangxiuTimeout) {
+                let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
+                let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
+                e.reply("正在CD中，" + `剩余cd:  ${Couple_m}分 ${Couple_s}秒`);
+                return;
+            }
             let BattleFrame = 0, TotalDamage = 0, msg = [];
             let BOSSCurrentAttack = bosszt.isAngry ? Math.trunc(bosszt.Attack * 1.8) : bosszt.isWeak ? Math.trunc(bosszt.Attack * 0.7) : bosszt.Attack;
             let BOSSCurrentDefence = bosszt.isWeak ? Math.trunc(bosszt.Defence * 0.7) : bosszt.Defence;
@@ -90,7 +90,7 @@ export class DSC extends plugin {
                     let Player_To_BOSS_Damage = Harm(CurrentPlayerAttributes.攻击, BOSSCurrentDefence) + Math.trunc(CurrentPlayerAttributes.攻击 * CurrentPlayerAttributes.灵根.法球倍率);
                     let SuperAttack = (2 < CurrentPlayerAttributes.暴击率) ? 1.5 : 1;
                     msg.push(`第${Math.trunc(BattleFrame / 2) + 1}回合：`);
-                    if (BattleFrame==0){
+                    if (BattleFrame == 0) {
                         msg.push("你进入锻神池，开始了！");
                         Player_To_BOSS_Damage = 0;
                     }
@@ -102,7 +102,7 @@ export class DSC extends plugin {
                 }
                 else {
                     let BOSS_To_Player_Damage = Harm(BOSSCurrentAttack, Math.trunc(CurrentPlayerAttributes.防御 * 0.1));
-                    if (CurrentPlayerAttributes.学习的功法&&CurrentPlayerAttributes.学习的功法.indexOf("剑帝一剑")>-1 && BattleFrame==2) {
+                    if (CurrentPlayerAttributes.学习的功法 && CurrentPlayerAttributes.学习的功法.indexOf("剑帝一剑") > -1 && BattleFrame == 2) {
                         msg.push("你发现剑帝的剑法还可以使用！ 【护身剑罡！】（吸收的负担减轻20%）");
                         BOSS_To_Player_Damage = Math.trunc(BOSS_To_Player_Damage * 0.8);
                     }
@@ -131,21 +131,21 @@ export class DSC extends plugin {
             await redis.set("xiuxian:player:" + usr_qq + "CD", now_Time);
             if (bosszt.Health == 0) {
                 CurrentPlayerAttributes.神魄段数 += 5;
-                CurrentPlayerAttributes.血气 += Reward;      
-                CurrentPlayerAttributes.当前血量 = CurrentPlayerAttributes.血量上限;         
+                CurrentPlayerAttributes.血气 += Reward;
+                CurrentPlayerAttributes.当前血量 = CurrentPlayerAttributes.血量上限;
                 e.reply([segment.at(e.user_id), `\n你成功突破一段神魄，段数+5！血气增加${Reward} 血量补偿满血！`]);
-                await data.setData("player", e.user_id, CurrentPlayerAttributes);  
+                await data.setData("player", e.user_id, CurrentPlayerAttributes);
             }
-            if (CurrentPlayerAttributes.当前血量 == 0||CurrentPlayerAttributes.当前血量 < 0) {
-                CurrentPlayerAttributes.当前血量 = 0; 
-                let JL = Reward*2               
+            if (CurrentPlayerAttributes.当前血量 == 0 || CurrentPlayerAttributes.当前血量 < 0) {
+                CurrentPlayerAttributes.当前血量 = 0;
+                let JL = Reward * 2
                 JL = Number(JL)
-                JL= JL.toFixed(0)                        
-                CurrentPlayerAttributes.修为 -= JL;               
+                JL = JL.toFixed(0)
+                CurrentPlayerAttributes.修为 -= JL;
                 e.reply([segment.at(e.user_id), `\n你未能通过此层锻神池！修为-${JL}`]);
                 await data.setData("player", e.user_id, CurrentPlayerAttributes);
             }
-           
+
             return true;
         }
         else {

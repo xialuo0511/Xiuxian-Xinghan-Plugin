@@ -1,5 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js'
-import { segment } from "oicq"
+
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Read_player, existplayer, isNotNull, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js'
@@ -197,7 +197,7 @@ export class BOSS3 extends plugin {
             if (CurrentPlayerAttributes.当前血量 <= 200000) {
                 e.reply("还是先疗伤吧，别急着参战了");
                 return true;
-            } 
+            }
             if (WorldBOSSBattleCD[e.user_id] != undefined) {
                 let Seconds = Math.trunc((300000 - (new Date().getTime() - WorldBOSSBattleCD[e.user_id])) / 1000);
                 if (Seconds <= 300 && Seconds >= 0) {
