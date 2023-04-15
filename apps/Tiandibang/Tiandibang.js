@@ -1056,7 +1056,7 @@ export class Tiandibang extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-
+        let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
