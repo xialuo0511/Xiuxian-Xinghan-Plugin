@@ -6,9 +6,13 @@ import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 import data from '../../model/XiuxianData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
-import { ForwardMsg, Read_player, shijianc, Add_灵石, existplayer, Add_najie_thing, exist_najie_thing } from "../Xiuxian/xiuxian.js"
+import { Read_player, shijianc, Add_灵石, existplayer, Add_najie_thing, exist_najie_thing } from "../Xiuxian/xiuxian.js"
 import { zd_battle } from "../Battle/Battle.js"
 import config from "../../model/Config.js"
+
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
 
 export class Tiandibang extends plugin {
     constructor() {
@@ -248,7 +252,14 @@ export class Tiandibang extends plugin {
                     "\n积分：" + tiandibang[m].积分);
             }
         }
-        await ForwardMsg(e, msg);
+        let log_data = {
+            log: msg,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
         return;
     }
 
@@ -429,7 +440,14 @@ export class Tiandibang extends plugin {
             await Add_灵石(usr_qq, lingshi);
             if (msg.length > 50) {
             } else {
-                await ForwardMsg(e, msg);
+                let log_data = {
+                    log: msg,
+                };
+                const data1 = await new Show(e).get_logData(log_data);
+                let img = await puppeteer.screenshot('log', {
+                    ...data1,
+                });
+                e.reply(img);
             }
             e.reply(last_msg);
         }
@@ -482,7 +500,14 @@ export class Tiandibang extends plugin {
             await Add_灵石(usr_qq, lingshi);
             if (msg.length > 50) {
             } else {
-                await ForwardMsg(e, msg);
+                let log_data = {
+                    log: msg,
+                };
+                const data1 = await new Show(e).get_logData(log_data);
+                let img = await puppeteer.screenshot('log', {
+                    ...data1,
+                });
+                e.reply(img);
             }
             e.reply(last_msg);
         }
@@ -554,7 +579,14 @@ export class Tiandibang extends plugin {
             "\n血量：" + tiandibang[m].当前血量 +
             "\n暴击：" + tiandibang[m].暴击率 +
             "%\n积分：" + tiandibang[m].积分);
-        await ForwardMsg(e, msg);
+        let log_data = {
+            log: msg,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
         return;
     }
 
