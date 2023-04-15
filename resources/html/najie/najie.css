@@ -20,8 +20,8 @@
 }
 
 .card_box {
-    margin: 30px 30px 30px 30px;
-    width: 740px;
+    margin: 20px auto 20px auto;
+    width: 800px;
     display: flex;
     flex-wrap: nowrap;
     background: radial-gradient(at top left, #ffffff10, #d7edea10);
@@ -29,9 +29,9 @@
     border-left: 1px solid #ffcc80;
     border-right: 1px solid #bb8020;
     border-bottom: 1px solid #bb8020;
-    box-shadow: 1px 2px 6px rgba(170, 31, 0, 0.2), 3px 8px 12px rgba(71, 35, 22, 0.3);
+    box-shadow: 1px 2px 6px rgba(170, 31, 0, 0.2),
+        3px 8px 12px rgba(71, 35, 22, 0.3);
     z-index: 999;
-    border-radius: 20px;
 }
 
 .box {

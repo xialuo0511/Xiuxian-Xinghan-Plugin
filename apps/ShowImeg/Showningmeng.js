@@ -3,7 +3,7 @@ import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 import data from '../../model/XiuxianData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
-import { get_gongfa_img,get_danyao_img,get_wuqi_img,get_fabao_img,get_huju_img,get_daoju_img,get_XianChong_img,get_huanying_img} from '../ShowImeg/showData.js'
+import { get_gongfa_img, get_danyao_img, get_wuqi_img, get_fabao_img, get_huju_img, get_daoju_img, get_XianChong_img, get_huanying_img } from '../ShowImeg/showData.js'
 /**
  * 生图模块
  */
@@ -43,7 +43,7 @@ export class Showningmeng extends plugin {
                     reg: "^#道具楼$",
                     fnc: "Show_DaoJu",
                 },
-                 {
+                {
                     reg: "^#仙宠楼$",
                     fnc: "Show_XianChong",
                 },
@@ -80,6 +80,10 @@ export class Showningmeng extends plugin {
                     fnc: "show_ningmenghome",
                 },
                 {
+                    reg: "^#仙石堂(装备|丹药|功法|道具|草药|武器|护具|法宝|血量|修为|血气|天赋)?$",
+                    fnc: "show_xianshihome",
+                },
+                {
                     reg: '^#元素武器图鉴$',
                     fnc: 'yuansu'
                 }
@@ -89,13 +93,25 @@ export class Showningmeng extends plugin {
     }
     //柠檬堂
     async show_ningmenghome(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-		let thing_type = e.msg.replace("#柠檬堂","");
-        let img = await get_ningmenghome_img(e,thing_type);
+        let thing_type = e.msg.replace("#柠檬堂", "");
+        let img = await get_ningmenghome_img(e, thing_type);
+        e.reply(img);
+        return;
+    }
+    //仙石堂
+    async show_xianshihome(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let thing_type = e.msg.replace("#仙石堂", "");
+        let img = await get_xianshihome_img(e, thing_type);
         e.reply(img);
         return;
     }
@@ -103,16 +119,16 @@ export class Showningmeng extends plugin {
     async yuansu(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-           return;
-       }
-       let img = await get_zhanshou_img(e);
-       e.reply(img);
-       return;
-   }
+            return;
+        }
+        let img = await get_zhanshou_img(e);
+        e.reply(img);
+        return;
+    }
     //万宝楼
     async show_valuables(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -120,21 +136,21 @@ export class Showningmeng extends plugin {
         e.reply(img);
         return;
     }
-     //仙宠楼
-     async Show_XianChong(e) {
+    //仙宠楼
+    async Show_XianChong(e) {
 
         if (!e.isGroup) {
-          return;
+            return;
         }
         let img = await get_XianChong_img(e);
         e.reply(img);
         return;
     }
- //法宝楼
-     async Show_FaBao(e) {
+    //法宝楼
+    async Show_FaBao(e) {
 
         if (!e.isGroup) {
-          return;
+            return;
         }
         let img = await get_fabao_img(e);
         e.reply(img);
@@ -145,30 +161,30 @@ export class Showningmeng extends plugin {
     async Show_WuQi(e) {
 
         if (!e.isGroup) {
-          return;
+            return;
         }
         let img = await get_wuqi_img(e);
         e.reply(img);
         return;
     }
-   
-   //护具楼
-   async Show_HuJu(e) {
 
-    if (!e.isGroup) {
+    //护具楼
+    async Show_HuJu(e) {
+
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-    let img = await get_huju_img(e);
-    e.reply(img);
-    return;
-}
+        let img = await get_huju_img(e);
+        e.reply(img);
+        return;
+    }
 
     //丹药楼
     async Show_DanYao(e) {
 
         if (!e.isGroup) {
-          return;
+            return;
         }
         let img = await get_danyao_img(e);
         e.reply(img);
@@ -178,7 +194,7 @@ export class Showningmeng extends plugin {
     async Show_GongFa(e) {
 
         if (!e.isGroup) {
-          return;
+            return;
         }
         let img = await get_gongfa_img(e);
         e.reply(img);
@@ -189,7 +205,7 @@ export class Showningmeng extends plugin {
     async Show_DaoJu(e) {
 
         if (!e.isGroup) {
-          return;
+            return;
         }
         let img = await get_daoju_img(e);
         e.reply(img);
@@ -199,98 +215,98 @@ export class Showningmeng extends plugin {
     async Show_HuanYing(e) {
 
         if (!e.isGroup) {
-          return;
+            return;
         }
         let img = await get_huanying_img(e);
         e.reply(img);
         return;
     }
-     /*//法宝楼
-     async show_valuables_fabao(e) {
-        //不开放私聊功能
+    /*//法宝楼
+    async show_valuables_fabao(e) {
+       //不开放私聊功能
+       if (!e.isGroup) {
+          return;
+      }
+      let img = await get_valuables_fabao_img(e);
+      e.reply(img);
+      return;
+  }
+
+   //武器楼
+   async show_valuables_wuqi(e) {
+       //不开放私聊功能
+       if (!e.isGroup) {
+          return;
+      }
+      let img = await get_valuables_wuqi_img(e);
+      e.reply(img);
+      return;
+  } 
+  
+  //护具楼
+  async show_valuables_huju(e) {
+       //不开放私聊功能
+       if (!e.isGroup) {
+          return;
+      }
+      let img = await get_valuables_huju_img(e);
+      e.reply(img);
+      return;
+  }
+
+   //丹药楼
+   async show_valuables_drug(e) {
         if (!e.isGroup) {
+           e.reply('修仙游戏请在群聊中游玩');
            return;
        }
-       let img = await get_valuables_fabao_img(e);
+       let img = await get_valuables_drug_img(e);
+       e.reply(img);
+       return;
+   }
+   //功法楼
+   async show_valuables_skill(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+           e.reply('修仙游戏请在群聊中游玩');
+           return;
+       }
+       let img = await get_valuables_skill_img(e);
        e.reply(img);
        return;
    }
 
-    //武器楼
-    async show_valuables_wuqi(e) {
-        //不开放私聊功能
-        if (!e.isGroup) {
-           return;
-       }
-       let img = await get_valuables_wuqi_img(e);
-       e.reply(img);
-       return;
-   } 
-   
-   //护具楼
-   async show_valuables_huju(e) {
-        //不开放私聊功能
-        if (!e.isGroup) {
-           return;
-       }
-       let img = await get_valuables_huju_img(e);
-       e.reply(img);
-       return;
-   }
-
-    //丹药楼
-    async show_valuables_drug(e) {
-         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        let img = await get_valuables_drug_img(e);
-        e.reply(img);
-        return;
-    }
-    //功法楼
-    async show_valuables_skill(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        let img = await get_valuables_skill_img(e);
-        e.reply(img);
-        return;
-    }
-
-    //道具楼
-    async show_valuables_prop(e) {
-        //不开放私聊功能
-        if (!e.isGroup) {
-           return;
-       }
-       let img = await get_valuables_prop_img(e);
-       e.reply(img);
-       return;
-   }*/
+   //道具楼
+   async show_valuables_prop(e) {
+       //不开放私聊功能
+       if (!e.isGroup) {
+          return;
+      }
+      let img = await get_valuables_prop_img(e);
+      e.reply(img);
+      return;
+  }*/
 }
 /**
  * 返回柠檬堂
  * @return image
  */
-export async function get_ningmenghome_img(e,thing_type) {
+export async function get_ningmenghome_img(e, thing_type) {
     let usr_qq = e.user_id;
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
         return;
     }
     let commodities_list = data.commodities_list;
-	if (thing_type!=""){
-		if(thing_type=="装备"||thing_type=="丹药"||thing_type=="功法"||thing_type=="道具"||thing_type=="草药"){
-			commodities_list = commodities_list.filter(item => item.class == thing_type);
-		}
-		else if(thing_type=="武器"||thing_type=="护具"||thing_type=="法宝"||thing_type=="修为"||thing_type=="血量"||thing_type=="血气"||thing_type=="天赋"){
-			
-			commodities_list = commodities_list.filter(item => item.type == thing_type);
-		}
-	}
+    if (thing_type != "") {
+        if (thing_type == "装备" || thing_type == "丹药" || thing_type == "功法" || thing_type == "道具" || thing_type == "草药") {
+            commodities_list = commodities_list.filter(item => item.class == thing_type);
+        }
+        else if (thing_type == "武器" || thing_type == "护具" || thing_type == "法宝" || thing_type == "修为" || thing_type == "血量" || thing_type == "血气" || thing_type == "天赋") {
+
+            commodities_list = commodities_list.filter(item => item.type == thing_type);
+        }
+    }
     let ningmenghome_data = {
         user_id: usr_qq,
         commodities_list: commodities_list
@@ -302,11 +318,44 @@ export async function get_ningmenghome_img(e,thing_type) {
     return img;
 
 }
+
+/**
+ * 返回仙石堂
+ * @return image
+ */
+export async function get_xianshihome_img(e, thing_type) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let commodities_list = data.xianshi_list;
+    if (thing_type != "") {
+        if (thing_type == "装备" || thing_type == "丹药" || thing_type == "功法" || thing_type == "道具" || thing_type == "草药") {
+            commodities_list = commodities_list.filter(item => item.class == thing_type);
+        }
+        else if (thing_type == "武器" || thing_type == "护具" || thing_type == "法宝" || thing_type == "修为" || thing_type == "血量" || thing_type == "血气" || thing_type == "天赋") {
+
+            commodities_list = commodities_list.filter(item => item.type == thing_type);
+        }
+    }
+    let ningmenghome_data = {
+        user_id: usr_qq,
+        commodities_list: commodities_list
+    }
+    const data1 = await new Show(e).get_xianshiData(ningmenghome_data);
+    let img = await puppeteer.screenshot("ningmenghome", {
+        ...data1,
+    });
+    return img;
+
+}
+
 /**
  * 返回斩首堂
  * @return image
  */
- export async function get_zhanshou_img(e) {
+export async function get_zhanshou_img(e) {
     let usr_qq = e.user_id;
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
@@ -350,7 +399,7 @@ export async function get_valuables_img(e) {
  * 返回道具楼
  * @return image
  */
- export async function get_valuables_prop_img(e) {
+export async function get_valuables_prop_img(e) {
     let usr_qq = e.user_id;
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
@@ -397,7 +446,7 @@ export async function get_valuables_fabao_img(e) {
  * 武器楼
  * @return image
  */
- export async function get_valuables_wuqi_img(e) {
+export async function get_valuables_wuqi_img(e) {
     let usr_qq = e.user_id;
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
@@ -418,7 +467,7 @@ export async function get_valuables_fabao_img(e) {
  * 护具楼
  * @return image
  */
- export async function get_valuables_huju_img(e) {
+export async function get_valuables_huju_img(e) {
     let usr_qq = e.user_id;
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {

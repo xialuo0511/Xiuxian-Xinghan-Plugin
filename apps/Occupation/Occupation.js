@@ -787,7 +787,6 @@ export class Occupation extends plugin {
 
     async liandan(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
             return;
         }
         let usr_qq = e.user_id;
@@ -1686,6 +1685,7 @@ export class Occupation extends plugin {
             e.reply("不要随便对村庄干坏事啊喂")
             return
         }
+        e.reply("唤魔者职业修复中");
         let msg = [];
         let action = await redis.get("xiuxian:player:" + usr_qq + ":jiangjing");
         action = await JSON.parse(action);
