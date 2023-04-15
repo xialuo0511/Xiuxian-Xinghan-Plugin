@@ -1433,7 +1433,14 @@ export class Occupation extends plugin {
         }
         if (msg.length > 100) {
         } else {
-            await ForwardMsg(e, msg);
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
         }
         for (var i = 0; i < this.xiuxianConfigData.Group.length; i++) {
             await this.pushInfo(this.xiuxianConfigData.Group[i], true, last_msg);
