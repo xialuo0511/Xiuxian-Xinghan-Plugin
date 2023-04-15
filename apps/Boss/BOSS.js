@@ -1,5 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js'
-import { segment } from "oicq"
+
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Read_player, existplayer, isNotNull, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js'

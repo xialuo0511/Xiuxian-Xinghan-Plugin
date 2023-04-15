@@ -4,7 +4,7 @@ import common from "../../../../lib/common/common.js"
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import { player_efficiency, Read_player, existplayer, isNotNull, exist_najie_thing, Add_najie_thing, Add_血气, Add_修为 } from '../Xiuxian/xiuxian.js'
-import { segment } from "oicq"
+
 
 /**
  * 定时任务

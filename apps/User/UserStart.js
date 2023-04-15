@@ -7,7 +7,7 @@ import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.j
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_HP, Add_修为, Add_najie_thing } from '../Xiuxian/xiuxian.js'
 import { get_player_img, get_gongfa_img } from '../ShowImeg/showData.js'
-import { segment } from "oicq"
+
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**

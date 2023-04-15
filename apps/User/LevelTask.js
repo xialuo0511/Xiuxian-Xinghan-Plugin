@@ -4,8 +4,8 @@ import common from "../../../../lib/common/common.js"
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "node:fs"
-import { segment } from "oicq"
-import { Read_player, isNotNull, Write_player,sleep,Add_najie_thing,exist_najie_thing } from "../Xiuxian/xiuxian.js"
+
+import { Read_player, isNotNull, Write_player, sleep, Add_najie_thing, exist_najie_thing } from "../Xiuxian/xiuxian.js"
 import { dujie } from "./Level.js"
 
 /**
@@ -76,14 +76,14 @@ export class LevelTask extends plugin {
 
                         //当前系数计算
                         let power_distortion = await dujie(player_id);
-                        var xx=1;
-                        let x=power_distortion
-                        let usr_qq=player_id
-                        var yaocaolist=["小吉祥草","大吉祥草","凝血草"]
-                        var leixinlist=["草药"]
+                        var xx = 1;
+                        let x = power_distortion
+                        let usr_qq = player_id
+                        var yaocaolist = ["小吉祥草", "大吉祥草", "凝血草"]
+                        var leixinlist = ["草药"]
                         let thing_quantity = await exist_najie_thing(usr_qq, yaocaolist[0], leixinlist[0]);
                         if (!thing_quantity) {
-                        }else{
+                        } else {
                             msg.push(`[小吉祥草]为你使用了元素技能[所问遍计]，从虚空中获得了渡劫的技巧`);
                             x = x * 1.2
                             await Add_najie_thing(usr_qq, yaocaolist[0], leixinlist[0], -xx);
@@ -91,7 +91,7 @@ export class LevelTask extends plugin {
                         }
                         let thing_quantity2 = await exist_najie_thing(usr_qq, yaocaolist[1], leixinlist[0]);
                         if (!thing_quantity2) {
-                        }else{
+                        } else {
                             msg.push(`[大吉祥草]为你使用了元素爆发[心景幻成]`);
                             x = x * 1.5
                             await Add_najie_thing(usr_qq, yaocaolist[1], leixinlist[0], -xx);
@@ -99,13 +99,13 @@ export class LevelTask extends plugin {
                         }
                         let thing_quantity3 = await exist_najie_thing(usr_qq, yaocaolist[2], leixinlist[0]);
                         if (!thing_quantity3) {
-                        }else{
+                        } else {
                             msg.push(`[凝血草]为你展开了一道防御`);
                             x = x * 1.1
                             await Add_najie_thing(usr_qq, yaocaolist[2], leixinlist[0], -xx);
                             await sleep(500);
                         }
-                        power_distortion=x
+                        power_distortion = x
                         //天赋
                         let power_Grade = action.power_Grade;
                         //现在的小于结算，是在渡劫中
@@ -126,7 +126,7 @@ export class LevelTask extends plugin {
                                     arr.working = 1;//降妖状态
                                     arr.power_up = 1;//渡劫状态
                                     arr.Place_action = 1;//秘境
-                                    player.power_place=0;
+                                    player.power_place = 0;
                                     await Write_player(player_id, player);
                                     await redis.set("xiuxian:player:" + player_id + ":power_aconut", 1);
                                     arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
@@ -139,17 +139,17 @@ export class LevelTask extends plugin {
                                     }
                                 } else {
                                     //血量计算根据雷来计算！
-                                    let act=(variable - power_n)
-                                    act=act/ (power_m - power_n);
+                                    let act = (variable - power_n)
+                                    act = act / (power_m - power_n);
 
-                                    player.当前血量 = player.当前血量 - player.当前血量 *act;
+                                    player.当前血量 = player.当前血量 - player.当前血量 * act;
 
                                     player.当前血量 = Math.trunc(player.当前血量);
 
                                     await Write_player(player_id, player);
                                     variable = Number(variable);
                                     power_distortion = Number(power_distortion);
-                                    msg.push("\n本次雷伤："+variable.toFixed(2)+"\n本次雷抗："+power_distortion.toFixed(2) +"\n" + player.名号 + "成功度过了第" + aconut + "道雷劫！\n下一道雷劫在一分钟后落下！");
+                                    msg.push("\n本次雷伤：" + variable.toFixed(2) + "\n本次雷抗：" + power_distortion.toFixed(2) + "\n" + player.名号 + "成功度过了第" + aconut + "道雷劫！\n下一道雷劫在一分钟后落下！");
                                     aconut = Number(aconut);
                                     aconut++;
                                     await redis.set("xiuxian:player:" + player_id + ":power_aconut", aconut);
@@ -167,12 +167,12 @@ export class LevelTask extends plugin {
                                 //扣一半修为
                                 player.修为 = player.修为 * 0.5;
                                 player.修为 = Math.trunc(player.修为);
-                                player.power_place=1;
+                                player.power_place = 1;
                                 await Write_player(player_id, player);
                                 variable = Number(variable);
                                 power_distortion = Number(power_distortion);
                                 //未挡住雷杰
-                                msg.push("\n本次雷伤"+variable.toFixed(2)+"\n本次雷抗："+power_distortion+"\n第" + aconut + "道雷劫落下了，可惜" + player.名号 + "未能抵挡，渡劫失败了！");
+                                msg.push("\n本次雷伤" + variable.toFixed(2) + "\n本次雷抗：" + power_distortion + "\n第" + aconut + "道雷劫落下了，可惜" + player.名号 + "未能抵挡，渡劫失败了！");
 
                                 let arr = action;
                                 //关闭所有状态，并把次数清零
@@ -197,7 +197,7 @@ export class LevelTask extends plugin {
                             player.当前血量 = 1;
                             player.修为 = player.修为 * 0.5;
                             player.修为 = Math.trunc(player.修为);
-                            player.power_place=1;
+                            player.power_place = 1;
                             await Write_player(player_id, player);
                             //还没有渡劫完成
                             //直接重新开始渡劫

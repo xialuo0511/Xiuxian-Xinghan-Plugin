@@ -7,7 +7,7 @@ import { existplayer, Write_player, isNotNull, exist_najie_thing, Add_najie_thin
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
-import { segment } from "oicq"
+
 import { zd_battle } from "../Battle/Battle.js"
 /**
  * 全局变量
