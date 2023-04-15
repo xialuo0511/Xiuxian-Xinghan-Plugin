@@ -697,7 +697,8 @@ async function GetAverageDamage() {
         let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (level_id >= 17) {
             temp[TotalPlayer] = parseInt(player.攻击);
-            Bot.logger.mark(`[雷电将军] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
+
+            //Bot.logger.mark(`[雷电将军] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
             TotalPlayer++;
         }
         if (level_id > 33) {
