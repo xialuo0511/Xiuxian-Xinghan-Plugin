@@ -1568,6 +1568,10 @@ export async function synchronization(e) {
       player.幸运 += data.necklace_list.find(
         item => item.name == '幸运儿'
       ).加成;
+      equipment.项链 = data.necklace_list.find(item => item.name == '幸运up');
+      player.幸运 += data.necklace_list.find(
+        item => item.name == '幸运up'
+      ).加成;
     }
     if (equipment.项链.属性 == "幸运") {
       if (player.仙宠.type == "幸运" && player.幸运 != player.仙宠.加成 + equipment.项链.加成 + player.addluckyNo) {
