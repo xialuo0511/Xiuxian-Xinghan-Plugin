@@ -35,7 +35,8 @@ import {
     Write_equipment,
     foundthing,
     foundhuishouthing,
-    convert2integer
+    convert2integer,
+    find_najiething
 } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Add_仙宠 } from "../Pokemon/Pokemon.js"
@@ -71,6 +72,10 @@ export class UserHome extends plugin {
                 reg: '^#出售.*$',
                 fnc: 'Sell_comodities'
             }, {
+                reg: '^#查询纳戒物品(.*)*(.*)$',
+                fnc: 'find_najiething'
+            },
+            {
                 reg: '^#哪里有(.*)$',
                 fnc: 'find_thing'
             }, {
@@ -97,6 +102,20 @@ export class UserHome extends plugin {
             }]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async find_najiething(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        let thing = e.msg.replace("#", '');
+        thing = thing.replace("查询纳戒物品", '');
+        let code = thing.split("\*");
+        let shuliang = await find_najiething(usr_qq, code[1], code[0]);
+        e.reply('你现在拥有' + code[0] + code[1] + '*' + shuliang)
+        return;
     }
 
     async huodong(e) {
