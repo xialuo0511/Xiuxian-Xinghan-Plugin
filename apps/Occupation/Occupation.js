@@ -993,6 +993,7 @@ export class Occupation extends plugin {
         await Add_najie_thing(usr_qq, equipment_name, "装备", 1, pinji);
         await Add_职业经验(usr_qq, res_exp * m);
         await e.reply(`${tmp_msg1}打造成功，获得${equipment_name}(${['劣', '普', '优', '精', '极', '绝', '顶'][pinji]})×1${tmp_msg2}`);
+        return;
     }
     async search_sb(e) {
         let usr_qq = e.user_id;

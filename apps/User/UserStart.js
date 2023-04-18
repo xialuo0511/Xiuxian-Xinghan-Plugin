@@ -551,7 +551,6 @@ export class UserStart extends plugin {
             e.reply(`「七日馈赠」已结束！`);
             return;
         }
-        //待修改
         let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
         if (!time) {
             time = 1681660800000
@@ -563,7 +562,8 @@ export class UserStart extends plugin {
             return;
         }
         await redis.set("xiuxian:player:" + usr_qq + ":huodonglastsign_time", nowTime);//redis设置签到时间
-        let sign = await redis.get("xiuxian:player:" + usr_qq + ":huodongsign");//redis设置签到时间
+        let sign = await redis.get("xiuxian:player:" + usr_qq + ":huodongsign");
+        sign = Number(sign);
         if (!sign) {
             sign = 0
         }
