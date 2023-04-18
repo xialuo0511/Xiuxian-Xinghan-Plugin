@@ -568,7 +568,6 @@ export class UserStart extends plugin {
         }
         sign = sign + 1
         await redis.set("xiuxian:player:" + usr_qq + ":huodongsign", sign);//redis设置签到
-        let player = await data.getData("player", usr_qq);
         if (sign >= 8) {//签到连续7天或者昨天没有签到,连续签到天数清零
             e.reply(`「七日馈赠」已领取完毕！`);
             return;
