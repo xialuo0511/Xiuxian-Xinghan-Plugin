@@ -2,7 +2,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
-import { Read_player, existplayer, get_random_talent, getLastsign, huodonggetLastsign, Read_equipment } from '../Xiuxian/xiuxian.js'
+import { Read_player, existplayer, get_random_talent, getLastsign, Read_equipment } from '../Xiuxian/xiuxian.js'
 import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.js'
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_HP, Add_修为, Add_najie_thing } from '../Xiuxian/xiuxian.js'
@@ -542,7 +542,6 @@ export class UserStart extends plugin {
         let now = new Date();
         let nowTime = now.getTime(); //获取当前日期的时间戳
         let Today = await shijianc(nowTime);
-        let lastsign_time = await huodonggetLastsign(usr_qq);//获得上次签到日期
 
         if (nowTime < 1681660800000) {
             e.reply(`「七日馈赠」活动暂未开启！`);
@@ -552,6 +551,12 @@ export class UserStart extends plugin {
             e.reply(`「七日馈赠」已结束！`);
             return;
         }
+        //待修改
+        let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
+        if (!time) {
+            time = 1681660800000
+        }
+        let lastsign_time = await shijianc(parseInt(time))//获得上次签到日期
 
         if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
             e.reply(`今日已经领取过了`);
@@ -570,6 +575,7 @@ export class UserStart extends plugin {
         await redis.set("xiuxian:player:" + usr_qq + ":huodongsign", sign);//redis设置签到
         if (sign >= 8) {//签到连续7天或者昨天没有签到,连续签到天数清零
             e.reply(`「七日馈赠」已领取完毕！`);
+            print("[调试模式]" + sign)
             return;
         }
 

@@ -1763,6 +1763,9 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             msg.push("你的元素与你佩戴的项链产生共鸣,下一击伤害增加" + equipment.项链.加成 * 100 + "%")
         }
     }
+
+
+
     if (equipment.武器.name == "赤角石溃杵") {
         if (A_lin == yuansu[3] && random > 0.5) {
             if (equipment.武器.fumo == "岩") {
@@ -1781,7 +1784,6 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             att = last_att * 1.2
         }
     }
-
     //玄冰之枪
     if (equipment.武器.name == "玄冰之枪") {
         if (A_lin == yuansu[4] && equipment.武器.fumo == "水" && random > 0.5) {
@@ -2154,6 +2156,16 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             msg.push(`${A_player.名号}使用了生命吸收,${B_player.名号}20%血量被${A_player.名号}吸取了`)
             B_player.当前血量 -= B_player.当前血量 * 0.2
             A_player.当前血量 += B_player.当前血量 * 0.2
+        }
+    }
+    if (equipment.项链.name == "强石之链") {
+        if (random > 0.5) {
+            msg.push("触发特殊技能，对方晕眩一回合")
+            donjie = true
+            huihe = true
+        } else {
+            msg.push("触发特殊技能，对方防御力降低50%")
+            B_player.防御 *= 0.5
         }
     }
     if (equipment.武器.fumo == "斩首") {
@@ -2598,17 +2610,6 @@ export async function getLastsign(usr_qq) {
     //查询redis中的人物动作
     let time = await redis.get("xiuxian:player:" + usr_qq + ":lastsign_time");
     if (time != null) {
-        let data = await shijianc(parseInt(time))
-        return data;
-    }
-    return false;
-}
-
-export async function huodonggetLastsign(usr_qq) {
-    //查询redis中的人物动作
-    let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
-    if (!time) {
-        time = 0
         let data = await shijianc(parseInt(time))
         return data;
     }
