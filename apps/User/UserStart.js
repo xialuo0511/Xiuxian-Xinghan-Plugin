@@ -541,7 +541,6 @@ export class UserStart extends plugin {
         }
         let now = new Date();
         let nowTime = now.getTime(); //获取当前日期的时间戳
-        let Yesterday = await shijianc(nowTime - 24 * 60 * 60 * 1000);//获得昨天日期
         let Today = await shijianc(nowTime);
         let lastsign_time = await huodonggetLastsign(usr_qq);//获得上次签到日期
 
