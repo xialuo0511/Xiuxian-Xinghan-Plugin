@@ -573,9 +573,8 @@ export class UserStart extends plugin {
         }
         sign = sign + 1
         await redis.set("xiuxian:player:" + usr_qq + ":huodongsign", sign);//redis设置签到
-        if (sign >= 8) {//签到连续7天或者昨天没有签到,连续签到天数清零
+        if (sign > 7) {//签到连续7天或者昨天没有签到,连续签到天数清零
             e.reply(`「七日馈赠」已领取完毕！`);
-            print("[调试模式]" + sign)
             return;
         }
 
@@ -651,7 +650,7 @@ export class UserStart extends plugin {
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[2w]*5,[顶级仙石]*20`
+                `领取第${sign}天馈赠成功！获得[2w]*30,[顶级仙石]*20`
             ]
             e.reply(msg);
             return;
