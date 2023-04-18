@@ -390,11 +390,11 @@ export class AdminSuper extends plugin {
       return;
     }
     //校验输入修为数
-    //if (parseInt(xiuweibuchang) == parseInt(xiuweibuchang)) {
+    if (parseInt(xiuweibuchang) == parseInt(xiuweibuchang)) {
       xiuweibuchang = parseInt(xiuweibuchang);
-    //} else {
-    //  xiuweibuchang = 1; //没有输入正确数字或不是正数
-    //}
+    } else {
+      xiuweibuchang = 1; //没有输入正确数字或不是正数
+    }
     let isat = e.message.some(item => item.type === 'at');
     if (!isat) {
       return;
