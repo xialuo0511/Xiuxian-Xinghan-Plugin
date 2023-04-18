@@ -547,7 +547,7 @@ export class UserStart extends plugin {
             e.reply(`「七日馈赠」活动暂未开启！`);
             return;
         }
-        if (nowTime > 1682524799999) {
+        if (nowTime > 1682611199999) {
             e.reply(`「七日馈赠」已结束！`);
             return;
         }
@@ -623,12 +623,12 @@ export class UserStart extends plugin {
             return;
         }
         if (sign == 5) {
-            await Add_najie_thing(usr_qq, "八阶淬体丹", "丹药", "1");
-            xianshi = xianshi + 15
+            await Add_najie_thing(usr_qq, "2w", "道具", "30");
+            xianshi = xianshi + 20
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[八阶淬体丹]*1,[顶级仙石]*15`
+                `领取第${sign}天馈赠成功！获得[2w]*30,[顶级仙石]*20`
             ]
             e.reply(msg);
             return;
@@ -645,12 +645,12 @@ export class UserStart extends plugin {
             return;
         }
         if (sign == 7) {
-            await Add_najie_thing(usr_qq, "2w", "道具", "30");
-            xianshi = xianshi + 20
+            await Add_najie_thing(usr_qq, "七星玄元丹", "丹药", "2");
+            xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[2w]*30,[顶级仙石]*20`
+                `领取第${sign}天馈赠成功！获得[七星玄元丹]*2,[顶级仙石]*15`
             ]
             e.reply(msg);
             return;
