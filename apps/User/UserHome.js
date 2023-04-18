@@ -3,7 +3,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
-import { segment } from "oicq"
+
 import {
     Read_player,
     existplayer,
@@ -35,7 +35,8 @@ import {
     Write_equipment,
     foundthing,
     foundhuishouthing,
-    convert2integer
+    convert2integer,
+    find_najiething
 } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Add_仙宠 } from "../Pokemon/Pokemon.js"
@@ -71,6 +72,10 @@ export class UserHome extends plugin {
                 reg: '^#出售.*$',
                 fnc: 'Sell_comodities'
             }, {
+                reg: '^#查询纳戒物品(.*)*(.*)$',
+                fnc: 'find_najiething'
+            },
+            {
                 reg: '^#哪里有(.*)$',
                 fnc: 'find_thing'
             }, {
@@ -97,6 +102,20 @@ export class UserHome extends plugin {
             }]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async find_najiething(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        let thing = e.msg.replace("#", '');
+        thing = thing.replace("查询纳戒物品", '');
+        let code = thing.split("\*");
+        let shuliang = await find_najiething(usr_qq, code[1], code[0]);
+        e.reply('你现在拥有' + code[0] + code[1] + '*' + shuliang)
+        return;
     }
 
     async huodong(e) {
@@ -3513,7 +3532,7 @@ export class UserHome extends plugin {
         }
         allaction = false;
         let thing = e.msg.replace("#", '');
-        thing = thing.replace("购买", '');
+        thing = thing.replace("仙石购买", '');
         let code = thing.split("\*");
         let thing_name = code[0];
         //默认没有数量
@@ -3532,7 +3551,7 @@ export class UserHome extends plugin {
             quantity = parseInt(code[1]);
         }
         //e.reply(`thing_name:${thing_name},   quantity:${quantity}`);
-        let ifexist = data.commodities_list.find(item => item.name == thing_name);
+        let ifexist = data.xianshi_list.find(item => item.name == thing_name);
         if (!ifexist) {
             e.reply(`仙石堂还没有这样的东西:${thing_name}`);
             return;
@@ -3552,7 +3571,7 @@ export class UserHome extends plugin {
         commodities_price = Math.trunc(commodities_price);
         //判断金额
         if (lingshi < commodities_price) {
-            e.reply(`口袋里的仙石不足以支付${thing_name},还需要${commodities_price - lingshi}灵石`);
+            e.reply(`口袋里的仙石不足以支付${thing_name},还需要${commodities_price - lingshi}仙石`);
             return;
         }
         let Worldmoney = await redis.get("Xiuxian:Worldmoney");
@@ -3566,9 +3585,9 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         } Add_najie_thing(usr_qq, thing_name, ifexist.class, quantity);
-        await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", lingshi);
+        await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", lingshi - commodities_price);
         //发送消息
-        e.reply([`购买成功!  获得[${thing_name}]*${quantity},花[${commodities_price}]仙石,剩余[${lingshi - commodities_price}]仙石  `, '\n可以在【我的纳戒】中查看']);
+        e.reply([`购买成功!  获得[${thing_name}]*${quantity},花费[${commodities_price}]仙石,剩余[${lingshi - commodities_price}]仙石  `, '\n可以在【我的练气】中查看剩余仙石，在【我的纳戒】中查看物品']);
         return;
     }
 

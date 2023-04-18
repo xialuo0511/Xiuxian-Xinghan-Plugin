@@ -81,7 +81,7 @@ export class Showningmeng extends plugin {
                 },
                 {
                     reg: "^#仙石堂(装备|丹药|功法|道具|草药|武器|护具|法宝|血量|修为|血气|天赋)?$",
-                    fnc: "show_nxianshihome",
+                    fnc: "show_xianshihome",
                 },
                 {
                     reg: '^#元素武器图鉴$',

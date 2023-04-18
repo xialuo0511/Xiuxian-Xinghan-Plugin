@@ -1,5 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js'
-import { segment } from "oicq"
+
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Read_player, existplayer, isNotNull, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js'
@@ -501,7 +501,7 @@ export class BOSS extends plugin {
 
                 e.reply([segment.at(e.user_id), "\n恭喜你亲手结果了散兵的性命,为民除害，额外获得100000灵石奖励！并在散兵身上翻到了" + weizhi[a].name + "!"]);
                 CurrentPlayerAttributes.灵石 += 100000;
-                Bot.logger.mark(`[散兵] 结算:${e.user_id}增加奖励100000`);
+                //Bot.logger.mark(`[散兵] 结算:${e.user_id}增加奖励100000`);
                 await data.setData("player", e.user_id, CurrentPlayerAttributes);
                 let action = await redis.get("xiuxian:player:" + e.user_id + ":action");
                 action = await JSON.parse(action);
@@ -534,12 +534,12 @@ export class BOSS extends plugin {
                         Rewardmsg.push("第" + `${i + 1}` + "名:\n" + `名号:${CurrentPlayer.名号}` + '\n' + `伤害:${PlayerRecordJSON.TotalDamage[PlayerList[i]]}` + '\n' + `获得灵石奖励${Reward}`);
                         CurrentPlayer.灵石 += Reward;
                         await data.setData("player", PlayerRecordJSON.QQ[PlayerList[i]], CurrentPlayer);
-                        Bot.logger.mark(`[散兵周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励${Reward}`);
+                        //Bot.logger.mark(`[散兵周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励${Reward}`);
                         continue;
                     }
                     else {
                         CurrentPlayer.灵石 += 150000;
-                        Bot.logger.mark(`[散兵周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励150000`);
+                        //Bot.logger.mark(`[散兵周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励150000`);
                         await data.setData("player", PlayerRecordJSON.QQ[PlayerList[i]], CurrentPlayer);
                     }
                     if (i == PlayerList.length - 1) Rewardmsg.push("其余参与的修仙者均获得15000灵石奖励！");
@@ -573,8 +573,8 @@ async function InitWorldBoss(e) {
         player_quantity = 1
     }
     let X = AverageDamage * 0.01;
-    Bot.logger.mark(`[散兵] 化神玩家总数：${player_quantity}`);
-    Bot.logger.mark(`[散兵] 生成基数:${X}`);
+    //Bot.logger.mark(`[散兵] 化神玩家总数：${player_quantity}`);
+    //Bot.logger.mark(`[散兵] 生成基数:${X}`);
     let Health = Math.trunc(X * 400 * player_quantity * 2);//血量要根据人数来
     let Attack = Math.trunc(X * 120);
     let Defence = Math.trunc(X);
@@ -696,7 +696,7 @@ async function GetAverageDamage() {
         let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (level_id >= 17) {
             temp[TotalPlayer] = parseInt(player.攻击);
-            Bot.logger.mark(`[散兵] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
+            //Bot.logger.mark(`[散兵] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
             TotalPlayer++;
         }
         if (level_id > 33) {

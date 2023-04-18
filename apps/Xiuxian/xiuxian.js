@@ -579,6 +579,85 @@ export async function Locked_najie_thing(usr_qq, thing_name, thing_class, thing_
     }
     return false;
 }
+
+/**
+ * 查询纳戒存在物品
+ */
+export async function find_najiething(usr_qq, thing_name, thing_class) {
+    let najie = await Read_najie(usr_qq);
+    var name = thing_name;
+    if (thing_class == "装备") {
+        let shuliang = najie.装备.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "丹药") {
+        let shuliang = najie.丹药.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "道具") {
+        let shuliang = najie.道具.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "功法") {
+        let shuliang = najie.功法.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "草药") {
+        let shuliang = najie.草药.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "材料") {
+        let shuliang = najie.材料.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "食材") {
+        let shuliang = najie.食材.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "盒子") {
+        let shuliang = najie.盒子.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "仙宠") {
+        let shuliang = najie.仙宠.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+    if (thing_class == "仙米") {
+        let shuliang = najie.仙米.find(item => item.name == name).数量
+        if (!shuliang) {
+            shuliang = 0
+        }
+        return shuliang;
+    }
+}
+
 /**
  * 增加减少纳戒内物品
  * @param usr_qq 操作存档的qq号
@@ -2528,7 +2607,7 @@ export async function getLastsign(usr_qq) {
 export async function huodonggetLastsign(usr_qq) {
     //查询redis中的人物动作
     let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
-    if (time != null) {
+    if (!time) {
         let data = await shijianc(parseInt(time))
         return data;
     }

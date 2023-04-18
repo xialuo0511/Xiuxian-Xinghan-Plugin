@@ -1,5 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js'
-import { segment } from "oicq"
+
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Gaodenyuansulun, Add_najie_thing } from '../Xiuxian/xiuxian.js'
@@ -131,7 +131,7 @@ export class BOSS2 extends plugin {
             }
             let PlayerRecordJSON = JSON.parse(PlayerRecord);
             let PlayerList = await SortPlayer(PlayerRecordJSON);
-            if (!PlayerRecordJSON ?.Name) {
+            if (!PlayerRecordJSON?.Name) {
                 e.reply("请等待下次天理周本刷新后再使用本功能");
                 return true;
             }
@@ -649,7 +649,7 @@ export class BOSS2 extends plugin {
 
                 e.reply([segment.at(e.user_id), "\n恭喜你亲手结果了天理的性命,为民除害，额外获得50000灵石奖励！并在天理身上翻到了" + weizhi[a].name + "!"]);
                 CurrentPlayerAttributes.灵石 += 50000;
-                Bot.logger.mark(`[天理] 结算:${e.user_id}增加奖励50000`);
+                //Bot.logger.mark(`[天理] 结算:${e.user_id}增加奖励50000`);
                 await data.setData("player", e.user_id, CurrentPlayerAttributes);
                 let action = await redis.get("xiuxian:player:" + e.user_id + ":action");
                 action = await JSON.parse(action);
@@ -737,12 +737,12 @@ export class BOSS2 extends plugin {
                         Rewardmsg.push("第" + `${i + 1}` + "名:\n" + `名号:${CurrentPlayer.名号}` + '\n' + `伤害:${PlayerRecordJSON.TotalDamage[PlayerList[i]]}` + '\n' + `获得灵石奖励${Reward}`);
                         CurrentPlayer.灵石 += Reward;
                         await data.setData("player", PlayerRecordJSON.QQ[PlayerList[i]], CurrentPlayer);
-                        Bot.logger.mark(`[天理周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励${Reward}`);
+                        //Bot.logger.mark(`[天理周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励${Reward}`);
                         continue;
                     }
                     else {
                         CurrentPlayer.灵石 += 30000;
-                        Bot.logger.mark(`[天理周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励30000`);
+                        //Bot.logger.mark(`[天理周本] 结算:${PlayerRecordJSON.QQ[PlayerList[i]]}增加奖励30000`);
                         await data.setData("player", PlayerRecordJSON.QQ[PlayerList[i]], CurrentPlayer);
                     }
                     if (i == PlayerList.length - 1) Rewardmsg.push("其余参与的修仙者均获得30000灵石奖励！");
@@ -769,8 +769,8 @@ async function InitWorldBoss() {
     let fairyNums = parseInt(AverageDamageStruct.fairy_nums);
     WorldBOSSBattleLock = 0;
     let X = AverageDamage * 0.01;
-    Bot.logger.mark(`[天理] 化神玩家总数：${player_quantity}`);
-    Bot.logger.mark(`[天理] 生成基数:${X}`);
+    // Bot.logger.mark(`[天理] 化神玩家总数：${player_quantity}`);
+    // Bot.logger.mark(`[天理] 生成基数:${X}`);
     let Health = Math.trunc(X * 280 * player_quantity * 2);
     let Attack = Math.trunc(X * 220);
     let Defence = Math.trunc(X * 200);
@@ -898,7 +898,7 @@ async function GetAverageDamage() {
         let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (level_id > 21 && level_id < 42) {
             temp[TotalPlayer] = parseInt(player.攻击);
-            Bot.logger.mark(`[天理] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
+            //Bot.logger.mark(`[天理] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
             TotalPlayer++;
         }
     }

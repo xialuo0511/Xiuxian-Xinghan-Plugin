@@ -1563,10 +1563,15 @@ export async function synchronization(e) {
     await redis.set('xiuxian:player:' + usr_qq + ':lhxigen', 0);
     //更新面板
     let equipment = await Read_equipment(usr_qq);
+    /*
     if (!isNotNull(equipment.项链)) {
       equipment.项链 = data.necklace_list.find(item => item.name == '幸运儿');
       player.幸运 += data.necklace_list.find(
         item => item.name == '幸运儿'
+      ).加成;
+      equipment.项链 = data.necklace_list.find(item => item.name == '幸运up');
+      player.幸运 += data.necklace_list.find(
+        item => item.name == '幸运up'
       ).加成;
     }
     if (equipment.项链.属性 == "幸运") {
@@ -1582,6 +1587,7 @@ export async function synchronization(e) {
         player.幸运 = player.addluckyNo;
       }
     }
+    */
     if (!isNotNull(equipment.武器.fumo)) {
       equipment.武器.fumo = "无";
     }
