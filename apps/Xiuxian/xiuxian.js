@@ -2607,7 +2607,7 @@ export async function getLastsign(usr_qq) {
 export async function huodonggetLastsign(usr_qq) {
     //查询redis中的人物动作
     let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
-    if (time != null) {
+    if (!time) {
         let data = await shijianc(parseInt(time))
         return data;
     }
