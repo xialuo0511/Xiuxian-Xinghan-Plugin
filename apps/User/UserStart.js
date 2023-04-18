@@ -570,12 +570,12 @@ export class UserStart extends plugin {
         sign = sign + 1
         await redis.set("xiuxian:player:" + usr_qq + ":huodongsign", sign);//redis设置签到
         let player = await data.getData("player", usr_qq);
-        if (sign > 7) {//签到连续7天或者昨天没有签到,连续签到天数清零
+        if (sign >= 8) {//签到连续7天或者昨天没有签到,连续签到天数清零
             e.reply(`「七日馈赠」已领取完毕！`);
             return;
         }
 
-        if (sign = 1) {
+        if (sign == 1) {
             await Add_najie_thing(usr_qq, "2w", "道具", "5");
             xianshi = xianshi + 5
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
@@ -586,7 +586,7 @@ export class UserStart extends plugin {
             e.reply(msg);
             return;
         }
-        if (sign = 2) {
+        if (sign == 2) {
             await Add_najie_thing(usr_qq, "甜酿丹", "丹药", "10");
             xianshi = xianshi + 10
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
@@ -597,7 +597,7 @@ export class UserStart extends plugin {
             e.reply(msg);
             return;
         }
-        if (sign = 3) {
+        if (sign == 3) {
             await Add_najie_thing(usr_qq, "摘榜令", "道具", "3");
             xianshi = xianshi + 10
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
@@ -608,7 +608,7 @@ export class UserStart extends plugin {
             e.reply(msg);
             return;
         }
-        if (sign = 4) {
+        if (sign == 4) {
             await Add_najie_thing(usr_qq, "2w", "道具", "15");
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
@@ -619,7 +619,7 @@ export class UserStart extends plugin {
             e.reply(msg);
             return;
         }
-        if (sign = 5) {
+        if (sign == 5) {
             await Add_najie_thing(usr_qq, "八阶淬体丹", "丹药", "1");
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
@@ -630,7 +630,7 @@ export class UserStart extends plugin {
             e.reply(msg);
             return;
         }
-        if (sign = 6) {
+        if (sign == 6) {
             await Add_najie_thing(usr_qq, "西游记", "功法", "1");
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
@@ -641,7 +641,7 @@ export class UserStart extends plugin {
             e.reply(msg);
             return;
         }
-        if (sign = 7) {
+        if (sign == 7) {
             await Add_najie_thing(usr_qq, "2w", "道具", "30");
             xianshi = xianshi + 20
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
