@@ -2169,11 +2169,11 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
         }
     }
     if (equipment.项链.name == "七七的项链") {
-        if (random > 0.5) {
-            msg.push("触发特殊技能，自身防御力提示77%")
+        if (random > 0.33) {
+            msg.push("【星神之域】从体内爆发出星神之域，77%概率免疫77%攻击伤害")
             A_player.防御 *= 1.77
         } else {
-            msg.push("触发特殊技能，对方防御力降低77%")
+            msg.push("【星神之域】从体内爆发出星神之域，对方防御力降低77%")
             B_player.防御 *= 0.33
         }
     }
