@@ -153,14 +153,6 @@ export class GuessLanternRiddles extends plugin {
                 all.push("【" + data.changzhu[tianluoRandom].name + "】")
             }
             await Add_najie_thing(usr_qq, "泥土", "材料", -10)
-            let log_data = {
-                log: msg,
-            };
-            const data1 = await new Show(e).get_logData(log_data);
-            let img = await puppeteer.screenshot('log', {
-                ...data1,
-            });
-            e.reply(img);
             e.reply("恭喜获得\n" + all)
             return;
         }
