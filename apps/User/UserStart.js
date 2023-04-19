@@ -568,6 +568,7 @@ export class UserStart extends plugin {
             sign = 0
         }
         let xianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
+        xianshi = Number(xianshi);
         if (!xianshi) {
             xianshi = 0
         }
