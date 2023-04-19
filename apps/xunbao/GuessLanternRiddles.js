@@ -33,14 +33,14 @@ export class GuessLanternRiddles extends plugin {
                     reg: '^#自选存档皮肤.*$',
                     fnc: 'cundan_pifu'
                 },
-             
+
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
     }
-   
-    
-   
+
+
+
     //换肤
     async cundan_pifu(e) {
         if (!e.isGroup) {
@@ -112,7 +112,7 @@ export class GuessLanternRiddles extends plugin {
         }
         return;
     }
-    
+
     async skten(e) {
         if (!e.isGroup) {
             return;
@@ -153,8 +153,16 @@ export class GuessLanternRiddles extends plugin {
                 all.push("【" + data.changzhu[tianluoRandom].name + "】")
             }
             await Add_najie_thing(usr_qq, "泥土", "材料", -10)
-            await ForwardMsg(e, msg)
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
             e.reply("恭喜获得\n" + all)
+            return;
         }
         if (thing == "寻宝活动祈愿") {
             let x = await exist_najie_thing(usr_qq, "树苗", "食材")
@@ -181,26 +189,26 @@ export class GuessLanternRiddles extends plugin {
             await ForwardMsg(e, msg)
             e.reply("恭喜获得\n" + all)
         }
-          if (thing == "附魔台") {
+        if (thing == "附魔台") {
             if (player.附魔台 != 1) {
                 e.reply('你没有附魔台')
                 return;
             }
             let x = await exist_najie_thing(usr_qq, "青金石", "材料")
-            if (!x && x<10) {
+            if (!x && x < 10) {
                 e.reply("你没有足够的【青金石】")
                 return;
             }
             let y = await exist_najie_thing(usr_qq, "书本", "材料")
-            if (!y&&y<10) {
+            if (!y && y < 10) {
                 e.reply("你没有足够的【书本】")
                 return;
             }
             await Add_najie_thing(usr_qq, "青金石", "材料", -10)
             await Add_najie_thing(usr_qq, "书本", "材料", -10)
             e.reply("附魔书亮起来了")
-            let msg  = []
-            for (var i = 0; 10>i;i++){
+            let msg = []
+            for (var i = 0; 10 > i; i++) {
                 if (player.书架 < 50) {
                     let tianluoRandom = Math.floor(Math.random() * (data.changzhufumoshu_list.length));
                     tianluoRandom = (Math.ceil((tianluoRandom + 1) / 5) - 1) * 5;
@@ -247,7 +255,7 @@ export class GuessLanternRiddles extends plugin {
         let thing = e.msg.replace("#", '');
         thing = thing.replace("单抽", '');
         if (thing == "寻宝常驻祈愿") {
-           
+
             let x = await exist_najie_thing(usr_qq, "泥土", "材料")
             if (!x) {
                 e.reply("你没有【泥土】")
@@ -261,7 +269,7 @@ export class GuessLanternRiddles extends plugin {
             e.reply("一道金光掉落在地上，走近一看是【" + data.changzhu[tianluoRandom].name + "】")
         }
         if (thing == "寻宝活动祈愿") {
-            
+
             let x = await exist_najie_thing(usr_qq, "树苗", "食材")
             if (!x) {
                 e.reply("你没有【树苗】")
@@ -329,7 +337,7 @@ export class GuessLanternRiddles extends plugin {
     }
 
 
-    
+
 
 }
 /**
