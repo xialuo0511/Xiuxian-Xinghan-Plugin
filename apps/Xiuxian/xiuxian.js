@@ -2168,6 +2168,15 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             B_player.防御 *= 0.5
         }
     }
+    if (equipment.项链.name == "七七的项链") {
+        if (random > 0.5) {
+            msg.push("触发特殊技能，自身防御力提示77%")
+            A_player.防御 *= 1.77
+        } else {
+            msg.push("触发特殊技能，对方防御力降低77%")
+            B_player.防御 *= 0.33
+        }
+    }
     if (equipment.武器.fumo == "斩首") {
         msg.push(`${A_player.名号}使用了斩首,冲向了${B_player.名号},下次伤害提升50%`)
         att = last_att * 1.5;
