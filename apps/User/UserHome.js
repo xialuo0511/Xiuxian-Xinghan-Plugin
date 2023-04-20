@@ -113,8 +113,19 @@ export class UserHome extends plugin {
         let thing = e.msg.replace("#", '');
         thing = thing.replace("查询纳戒", '');
         let code = thing.split("\*");
-        let shuliang = await find_najiething(usr_qq, code[0]);
-        e.reply('你现在拥有' + code[0] + '*' + shuliang)
+        let thing_exist = await foundthing(code[0]);
+        if (!thing_exist) {
+            e.reply(`这方世界没有[${thing_name}]`);
+            return;
+        }
+        let pj;
+        let x = await exist_najie_thing(usr_qq, code[0], thing_exist.class, pj);
+        if (!x) {
+            //没有
+            e.reply(`你没有[${thing_name}]这样的${thing_exist.class}`);
+            return;
+        }
+        e.reply('你现在拥有' + code[0] + '*' + x)
         return;
     }
 
