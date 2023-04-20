@@ -72,7 +72,7 @@ export class UserHome extends plugin {
                 reg: '^#出售.*$',
                 fnc: 'Sell_comodities'
             }, {
-                reg: '^#查询纳戒物品(.*)*(.*)$',
+                reg: '^#查询纳戒(.*)$',
                 fnc: 'find_najiething'
             },
             {
@@ -111,9 +111,9 @@ export class UserHome extends plugin {
         }
         let usr_qq = e.user_id;
         let thing = e.msg.replace("#", '');
-        thing = thing.replace("查询纳戒物品", '');
+        thing = thing.replace("查询纳戒", '');
         let code = thing.split("\*");
-        let shuliang = await find_najiething(usr_qq, code[1], code[0]);
+        let shuliang = await find_najiething(usr_qq, code[0]);
         e.reply('你现在拥有' + code[0] + code[1] + '*' + shuliang)
         return;
     }
