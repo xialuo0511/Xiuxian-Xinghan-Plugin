@@ -115,14 +115,14 @@ export class UserHome extends plugin {
         let code = thing.split("\*");
         let thing_exist = await foundthing(code[0]);
         if (!thing_exist) {
-            e.reply(`这方世界没有[${thing_name}]`);
+            e.reply(`这方世界没有[${code[0]}]`);
             return;
         }
         let pj;
         let x = await exist_najie_thing(usr_qq, code[0], thing_exist.class, pj);
         if (!x) {
             //没有
-            e.reply(`你没有[${thing_name}]这样的${thing_exist.class}`);
+            e.reply(`你没有[${code[0]}]这样的${thing_exist.class}`);
             return;
         }
         e.reply('你现在拥有' + code[0] + '*' + x)
