@@ -114,7 +114,7 @@ export class UserHome extends plugin {
         thing = thing.replace("查询纳戒", '');
         let code = thing.split("\*");
         let shuliang = await find_najiething(usr_qq, code[0]);
-        e.reply('你现在拥有' + code[0] + code[1] + '*' + shuliang)
+        e.reply('你现在拥有' + code[0] + '*' + shuliang)
         return;
     }
 
