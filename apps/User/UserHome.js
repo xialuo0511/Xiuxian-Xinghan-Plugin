@@ -72,7 +72,7 @@ export class UserHome extends plugin {
                 reg: '^#出售.*$',
                 fnc: 'Sell_comodities'
             }, {
-                reg: '^#查询纳戒(.*)$',
+                reg: '^#查询(纳戒|物品)(.*)$',
                 fnc: 'find_najiething'
             },
             {
