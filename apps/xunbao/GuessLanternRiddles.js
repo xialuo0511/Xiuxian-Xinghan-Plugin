@@ -179,6 +179,7 @@ export class GuessLanternRiddles extends plugin {
             }
             await Add_najie_thing(usr_qq, "树苗", "食材", -10)
             e.reply("恭喜获得\n" + all)
+            return;
         }
         if (thing == "附魔台") {
             if (player.附魔台 != 1) {
