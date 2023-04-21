@@ -2149,17 +2149,15 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
         }
     }
     if (equipment.项链.name == "七七的项链") {
-        A_player.防御 *= 2
         if (random > 0.33) {
             msg.push("【星神之域】从体内爆发出星神之域,77%概率免疫77%攻击伤害")
-            A_player.防御 *= 1.77
+            B_player.攻击 *= 0.33
         }
     }
     if (B.项链.name == "七七的项链") {
-        B_player.防御 *= 2
         if (random > 0.33) {
             msg.push("【星神之域】从体内爆发出星神之域,77%概率免疫77%攻击伤害")
-            B_player.防御 *= 1.77
+            A_player.攻击 *= 0.33
         }
     }
     if (equipment.武器.fumo == "斩首") {
