@@ -525,8 +525,6 @@ export class Battle extends plugin {
   }
 }
 
-}
-
 
 
 
