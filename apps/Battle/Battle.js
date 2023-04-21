@@ -46,6 +46,10 @@ export class Battle extends plugin {
           reg: '^(以武会友)$',
           fnc: 'biwu',
         },
+        {
+          reg: '#攻击木桩$',
+          fnc: 'muzhuang',
+        }
       ],
     });
     this.set = config.getConfig('xiuxian', 'xiuxian');
@@ -439,7 +443,93 @@ export class Battle extends plugin {
     await Add_血气(B, 20 * level_idBB);
     return;
   }
+
+  //比武
+  async muzhuang(e) {
+    //不开放私聊功能
+    if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
+    let A = e.user_id;
+
+    //先判断
+    let ifexistplay_A = await existplayer(A);
+    if (!ifexistplay_A || e.isPrivate) {
+      return;
+    }
+    //看看状态
+    //得到redis游戏状态
+    let last_game_timeA = await redis.get(
+      'xiuxian:player:' + A + ':last_game_time'
+    );
+    //设置游戏状态
+    if (last_game_timeA == 0) {
+      e.reply(`猜大小正在进行哦!`);
+      return true;
+    }
+
+    let isat = e.message.some(item => item.type === 'at');
+    if (!isat) {
+      return;
+    }
+    let atItem = e.message.filter(item => item.type === 'at');
+    let B = atItem[0].qq; //后手
+
+    if (A == B) {
+      e.reply('你还跟自己修炼上了是不是?');
+      return;
+    }
+    let ifexistplay_B = await existplayer(B);
+    if (!ifexistplay_B) {
+      e.reply('修仙者不可对凡人出手!');
+      return;
+    }
+    //这里前戏做完,确定要开打了
+    let final_msg = [segment.at(A), segment.at(B), '\n'];
+    let A_player = await Read_player(A);
+    let B_player = await Read_player(B);
+    final_msg.push(`${A_player.名号}向${B_player.名号}发起了切磋。`);
+    A_player.法球倍率 = A_player.灵根.法球倍率;
+    B_player.法球倍率 = B_player.灵根.法球倍率;
+    A_player.当前血量 = A_player.血量上限;
+    B_player.当前血量 = B_player.血量上限;
+    let Data_battle = await zd_battle(A_player, B_player);
+    let msg = Data_battle.msg;
+
+    let log_data = {
+      log: msg,
+    };
+    const data1 = await new Show(e).get_logData(log_data);
+    let img = await puppeteer.screenshot('log', {
+      ...data1,
+    });
+    e.reply(img);
+    return;
+
+    let A_win = `${A_player.名号}击败了${B_player.名号}`;
+    let B_win = `${B_player.名号}击败了${A_player.名号}`;
+    if (msg.find(item => item == A_win)) {
+    } else if (msg.find(item => item == B_win)) {
+    } else {
+      e.reply(`战斗过程出错`);
+      return;
+    }
+    //最后发送消息
+    e.reply(final_msg);
+    let level_idBB = data.Level_list.find(
+      item => item.level_id == B_player.Physique_id
+    ).level_id;
+    await Add_血气(B, 20 * level_idBB);
+    return;
+  }
 }
+
+}
+
+
+
+
 export async function zd_battle(AA_player, BB_player) {
   let A_player = BB_player;
   let B_player = AA_player;
@@ -572,6 +662,9 @@ ${B_player.名号}冻结中`);
   let Data_nattle = { msg: msg, A_xue: A_xue, B_xue: B_xue, };
   return Data_nattle;
 }
+
+
+
 export function baojishanghai(baojilv) {
   if (baojilv > 1) {
     baojilv = 1;
