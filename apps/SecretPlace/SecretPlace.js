@@ -7,6 +7,10 @@ import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 /**
  * 秘境模块
  */
@@ -736,7 +740,15 @@ export async function Goyiji(e, weizhi, addres) {
     for (let i = 0; i < weizhi.length; i++) {
         "遗迹:" + msg.push(weizhi[i].name + "\n" + "所需：" + weizhi[i].Price + "灵石")
     }
-    await ForwardMsg(e, msg);
+    let log_data = {
+        log: msg,
+    };
+    const data1 = await new Show(e).get_logData(log_data);
+    let img = await puppeteer.screenshot('log', {
+        ...data1,
+    });
+    e.reply(img);
+    return;
 }
 
 /**
@@ -750,7 +762,15 @@ export async function Goweizhi(e, weizhi, addres) {
     for (let i = 0; i < weizhi.length; i++) {
         msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "所需：" + weizhi[i].Price + "灵石")
     }
-    await ForwardMsg(e, msg);
+    let log_data = {
+        log: msg,
+    };
+    const data1 = await new Show(e).get_logData(log_data);
+    let img = await puppeteer.screenshot('log', {
+        ...data1,
+    });
+    e.reply(img);
+    return;
 }
 
 export async function jindi(e, weizhi, addres) {
@@ -761,7 +781,15 @@ export async function jindi(e, weizhi, addres) {
     for (let i = 0; i < weizhi.length; i++) {
         msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "所需：" + weizhi[i].Price + "灵石" + "\n" + "所需：" + weizhi[i].experience + "修为")
     }
-    await ForwardMsg(e, msg);
+    let log_data = {
+        log: msg,
+    };
+    const data1 = await new Show(e).get_logData(log_data);
+    let img = await puppeteer.screenshot('log', {
+        ...data1,
+    });
+    e.reply(img);
+    return;
 }
 
 /**
