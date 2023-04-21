@@ -195,9 +195,9 @@ export class SecretPlaceplusTask extends plugin {
             }
             if (weizhi.id == 5200) {
               console.log('大千');
-              monster_length = data.monster_list4.length;
+              monster_length = data.monster_list7.length;
               monster_index = Math.trunc(Math.random() * monster_length);
-              monster = data.monster_list1[monster_index];
+              monster = data.monster_list7[monster_index];
               console.log(monster.名号);
             }
             let B_player = {
