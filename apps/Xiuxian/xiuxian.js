@@ -1350,14 +1350,6 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
         }
         return data;
     })
-    let dirB = path.join(`${__PATH.equipment_path}/${B_qq}.json`);
-    let equipmentB = fs.readFileSync(dirB, 'utf8', (err, data) => {
-        if (err) {
-            console.log(err)
-            return "error";
-        }
-        return data;
-    })
     let dir1 = path.join(`${__PATH.equipment_path}/${B_qq}.json`);
     let B = fs.readFileSync(dir1, 'utf8', (err, data) => {
         if (err) {
@@ -2163,7 +2155,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             A_player.防御 *= 1.77
         }
     }
-    if (equipmentB.项链.name == "七七的项链") {
+    if (B.项链.name == "七七的项链") {
         B_player.防御 *= 2
         if (random > 0.33) {
             msg.push("【星神之域】从体内爆发出星神之域,77%概率免疫77%攻击伤害")
