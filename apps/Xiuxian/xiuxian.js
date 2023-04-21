@@ -1350,6 +1350,14 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
         }
         return data;
     })
+    let dirB = path.join(`${__PATH.equipment_path}/${B_qq}.json`);
+    let equipmentB = fs.readFileSync(dirB, 'utf8', (err, data) => {
+        if (err) {
+            console.log(err)
+            return "error";
+        }
+        return data;
+    })
     let dir1 = path.join(`${__PATH.equipment_path}/${B_qq}.json`);
     let B = fs.readFileSync(dir1, 'utf8', (err, data) => {
         if (err) {
@@ -2144,21 +2152,24 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             donjie = true
             huihe = true
         } else {
-            msg.push("触发特殊技能，对方防御力降低50%")
+            msg.push("触发特殊技能,对方防御力降低50%")
             B_player.防御 *= 0.5
         }
     }
-    /*
     if (equipment.项链.name == "七七的项链") {
+        A_player.防御 *= 2
         if (random > 0.33) {
-            msg.push("【星神之域】从体内爆发出星神之域，77%概率免疫77%攻击伤害")
+            msg.push("【星神之域】从体内爆发出星神之域,77%概率免疫77%攻击伤害")
             A_player.防御 *= 1.77
-        } else {
-            msg.push("【星神之域】从体内爆发出星神之域，对方防御力降低77%")
-            B_player.防御 *= 0.33
         }
     }
-    */
+    if (equipmentB.项链.name == "七七的项链") {
+        B_player.防御 *= 2
+        if (random > 0.33) {
+            msg.push("【星神之域】从体内爆发出星神之域,77%概率免疫77%攻击伤害")
+            B_player.防御 *= 1.77
+        }
+    }
     if (equipment.武器.fumo == "斩首") {
         msg.push(`${A_player.名号}使用了斩首,冲向了${B_player.名号},下次伤害提升50%`)
         att = last_att * 1.5;

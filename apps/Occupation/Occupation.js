@@ -938,7 +938,9 @@ export class Occupation extends plugin {
             rate = rate * 0.025
         }
         if (player.occupation == "炼器师") {
-            if (player.occupation_level >= 24) { suc_rate = 0.8 }
+            if (player.occupation_level >= 24) {
+                suc_rate = 0.8
+            }
             tmp_msg1 += `你是炼器师，额外增加成功率${Math.floor(rate * 10)}%(以乘法算)，`;
             suc_rate *= 1 + rate;
             m = 1;
