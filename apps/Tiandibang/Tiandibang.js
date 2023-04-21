@@ -1026,27 +1026,34 @@ export class Tiandibang extends plugin {
             for (var m = 0; m < l; m++) {
                 msg.push(
                     "名次：" + (m + 1) +
-                    "\n名号：" + tiandibang[m].名号 +
-                    "\n积分：" + tiandibang[m].积分);
+                    "|名号：" + tiandibang[m].名号 +
+                    "|积分：" + tiandibang[m].积分);
             }
         }
         else if (x >= l && (tiandibang.length - x) < l) {
             for (var m = tiandibang.length - l; m < tiandibang.length; m++) {
                 msg.push(
                     "名次：" + (m + 1) +
-                    "\n名号：" + tiandibang[m].名号 +
-                    "\n积分：" + tiandibang[m].积分);
+                    "|名号：" + tiandibang[m].名号 +
+                    "|积分：" + tiandibang[m].积分);
             }
         }
         else {
             for (var m = x - 5; m < x + 5; m++) {
                 msg.push(
                     "名次：" + (m + 1) +
-                    "\n名号：" + tiandibang[m].名号 +
-                    "\n积分：" + tiandibang[m].积分);
+                    "|名号：" + tiandibang[m].名号 +
+                    "|积分：" + tiandibang[m].积分);
             }
         }
-        await ForwardMsg(e, msg);
+        let log_data = {
+            log: msg,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
         return;
     }
 
