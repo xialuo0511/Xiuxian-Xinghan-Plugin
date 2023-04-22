@@ -314,7 +314,16 @@ export class AdminSuper extends plugin {
       e.reply('你凑什么热闹');
       return;
     }
-    e.reply(segment.image('http://119.23.246.247/index.php/archives/1/'));
+    //str = '123';
+    e.reply(img('http://119.23.246.247/index.php/archives/1/'));
+    // let log_data = {
+    //   log: str,
+    // };
+    // const data1 = await new Show(e).get_logData(log_data);
+    // let img = await puppeteer.screenshot('http://119.23.246.247/index.php/archives/1/', {
+    //   ...data1,
+    // });
+    // e.reply(img);
     return;
   }
 
