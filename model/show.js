@@ -235,6 +235,15 @@ export default class Game extends base {
       ...myData,
     };
   }
+
+  async get_ggData() {
+    this.model = 'gg';
+    return {
+      ...this.screenData,
+      saveId: 'gg',
+    };
+  }
+
   //柠檬堂
   async get_ningmenghomeData(myData) {
     this.model = 'ningmenghome';

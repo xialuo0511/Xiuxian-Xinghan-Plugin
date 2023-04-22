@@ -109,9 +109,21 @@ export class UserHome extends plugin {
             }, {
                 reg: '^#查询已反馈问题$',
                 fnc: 'cxwtfk'
+            }, {
+                reg: '^#查看公告$',
+                fnc: 'ckgg'
             }]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async ckgg(e) {
+        const data1 = await new Show(e).get_ggData();
+        let img = await puppeteer.screenshot('gg', {
+            ...data1,
+        });
+        e.reply(img);
+        return;
     }
 
     async wtfk(e) {
