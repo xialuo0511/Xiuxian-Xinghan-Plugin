@@ -107,8 +107,8 @@ export class UserHome extends plugin {
                 reg: '^#问题反馈.*$',
                 fnc: 'wtfk'
             }, {
-                reg: '^#查看已反馈问题$',
-                fnc: 'ckwtfk'
+                reg: '^#查询已反馈问题$',
+                fnc: 'cxwtfk'
             }]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
