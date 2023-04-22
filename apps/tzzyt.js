@@ -1,9 +1,10 @@
 import plugin from '../../../lib/plugins/plugin.js'
 
 import data from '../model/XiuxianData.js'
-import fs from "fs"
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
 
-//作者：波叽在（1695037643）的协助下完成
 export class tzzyt extends plugin {
     constructor() {
         super({
