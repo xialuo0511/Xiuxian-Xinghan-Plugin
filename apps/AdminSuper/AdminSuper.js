@@ -120,6 +120,10 @@ export class AdminSuper extends plugin {
           reg: '#全体清除.*的的(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材)(抹除|替换为.*的的(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材))$',
           fnc: 'replaceThing',
         },
+        {
+          reg: '#调试图片',
+          fnc: 'tiaoshi',
+        }
       ],
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
@@ -302,6 +306,15 @@ export class AdminSuper extends plugin {
       ...data1,
     });
     e.reply(img);
+    return;
+  }
+
+  async tiaoshi(e) {
+    if (!e.isMaster) {
+      e.reply('你凑什么热闹');
+      return;
+    }
+    e.reply(segment.image('http://119.23.246.247/index.php/archives/1/'));
     return;
   }
 
