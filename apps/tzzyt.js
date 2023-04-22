@@ -179,13 +179,14 @@ export class tzzyt extends plugin {
                 BattleFrame++;
             }
 
-            if (msg.length <= 30)
-                await ForwardMsg(e, msg);
-            else {
-                msg.length = 30;
-                await ForwardMsg(e, msg);
-                e.reply("战斗过长，仅展示部分内容");
-            }
+            let log_data = {
+                log: msg,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
             await redis.set("xiuxian:player:" + usr_qq + "CD", now_Time);
             if (bosszt.Health == 0) {
                 CurrentPlayerAttributes.镇妖塔层数 += 5;
@@ -211,29 +212,6 @@ export class tzzyt extends plugin {
             return true;
         }
     }
-}
-
-
-//发送转发消息
-//输入data一个数组,元素是字符串,每一个元素都是一条消息.
-async function ForwardMsg(e, data) {
-    //Bot.logger.mark(data);
-    let msgList = [];
-    for (let i of data) {
-        msgList.push({
-            message: i,
-            nickname: Bot.nickname,
-            user_id: Bot.uin,
-        });
-    }
-    if (msgList.length == 1) {
-        await e.reply(msgList[0].message);
-    }
-    else {
-        //console.log(msgList);
-        await e.reply(await Bot.makeForwardMsg(msgList));
-    }
-    return;
 }
 
 //通过暴击伤害返回输出用的文本
