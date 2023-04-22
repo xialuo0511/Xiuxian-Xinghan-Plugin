@@ -99,9 +99,42 @@ export class UserHome extends plugin {
             }, {
                 reg: '^#幻影牌面.*$',
                 fnc: 'zbhuanying'
+            }, {
+                reg: '^#问题反馈.*$',
+                fnc: 'wtfk'
+            }, {
+                reg: '^#查看已反馈问题$',
+                fnc: 'ckwtfk'
             }]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async wtfk(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        let thing = e.msg.replace("#", '');
+        thing = thing.replace("问题反馈", '');
+        if (thing.length < 15) {
+            e.reply('为避免刷屏，问题反馈至少15字')
+        } else if (thing.length > 100) {
+            e.reply('为避免服务器异常，请减少反馈字数')
+        } else {
+            let a = await redis.get('xiuxian:wtfk')
+            if (!a) {
+                a = [{ '问题状态': '处理中', '反馈用户': usr_qq, '反馈内容': thing }]
+                redis.set('xiuxian:wtfk', ...a)
+                e.reply('问题反馈成功，请在 #查询已反馈问题 中查看进度')
+            } else {
+                var b = eval(a);
+                b.push({ '问题状态': '处理中', '反馈用户': usr_qq, '反馈内容': thing });
+                e.reply('问题反馈成功，请在 #查询已反馈问题 中查看进度')
+            }
+            return;
+        }
     }
 
     async find_najiething(e) {
