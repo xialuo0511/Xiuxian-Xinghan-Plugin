@@ -42,6 +42,10 @@ import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Add_仙宠 } from "../Pokemon/Pokemon.js"
 import { get_equipment_img } from '../ShowImeg/showData.js'
 
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 /**
  * 全局变量
  */
@@ -134,6 +138,37 @@ export class UserHome extends plugin {
                 redis.set('xiuxian:wtfk', JSON.stringify(b))
                 e.reply('问题反馈成功，请在 #查询已反馈问题 中查看进度')
             }
+            return;
+        }
+    }
+
+    async cxwtfk(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let a = await redis.get('xiuxian:wtfk')
+        if (!a) {
+            a = '当前无已反馈问题'
+            let log_data = {
+                log: a,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+            return;
+        } else {
+            var b = eval(a);
+            let log_data = {
+                log: b,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
             return;
         }
     }
