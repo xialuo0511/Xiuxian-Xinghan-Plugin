@@ -1938,6 +1938,12 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             }
         }
     }
+    if (equipment.武器.name == "湛卢") {
+        msg.push("触发特殊技能，获得50%生命加成，150%攻击加成")
+        att *= 2.5
+        A_player.当前血量 *= 1.5
+    }
+
     //终末嗟叹之诗
     if (equipment.武器.name == "终末嗟叹之诗") {
         if (random > 0.8) {
