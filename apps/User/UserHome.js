@@ -126,7 +126,7 @@ export class UserHome extends plugin {
             let a = await redis.get('xiuxian:wtfk')
             if (!a) {
                 a = [{ '问题状态': '处理中', '反馈用户': usr_qq, '反馈内容': thing }]
-                redis.set('xiuxian:wtfk', ...a)
+                redis.set('xiuxian:wtfk', a)
                 e.reply('问题反馈成功，请在 #查询已反馈问题 中查看进度')
             } else {
                 var b = eval(a);
