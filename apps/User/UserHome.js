@@ -137,7 +137,7 @@ export class UserHome extends plugin {
                 for (var i = 0; i < b.length; i++) {
                     if (b[i].反馈内容 == thing) {
                         e.reply('问题已被其他人反馈，可在 #查询已反馈问题 中查看')
-                        break;
+                        return;
                     }
                 }
                 b.push({ "问题状态": "处理中", "反馈用户": usr_qq, "反馈内容": thing });
