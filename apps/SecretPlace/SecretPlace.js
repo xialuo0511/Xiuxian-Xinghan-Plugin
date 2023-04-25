@@ -683,7 +683,7 @@ export class SecretPlace extends plugin {
         let shuliang = code[1];
         //获取活动商店数据
         let commodities_list = data.huodongshop_list;
-        commodities_list = arr.filter(function(commodities_list){
+        commodities_list = commodities_list.filter(function(commodities_list){
             return commodities_list.name === thing_name;
         });
         commodities_list = commodities_list.filter(name => thing_name);
