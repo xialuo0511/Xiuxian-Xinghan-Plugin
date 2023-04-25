@@ -96,6 +96,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        let now = new Date();
+        let nowTime = now.getTime(); //获取当前日期的时间戳
         if (nowTime < 1682265600000) {
             e.reply(`「遗迹寻宝」活动暂未开启！`);
             return;
@@ -674,13 +676,25 @@ export class SecretPlace extends plugin {
 
         //获取输入信息
         let msg = e.msg.replace("#代币兑换", "");
+        var bool = msg.indexOf("*");
+        //返回大于等于0的整数值，若不包含"Text"则返回"-1。
         //分割文本变数组
-        let code = msg.split("*");
+        let code = [];
+        if(bool>0){
+            code = msg.split("*");
+        }else{
+            code.push(msg);
+            code.push(1);
+        }
+        
         //获取物品名和数量
         let thing_name = code[0];
         let shuliang = code[1];
         //获取活动商店数据
         let commodities_list = data.huodongshop_list;
+        commodities_list = commodities_list.filter(function(commodities_list){
+            return commodities_list.name === thing_name;
+        });
         commodities_list = commodities_list.filter(name => thing_name);
         //搜索纳戒物品
         let shu = await exist_najie_thing(usr_qq, commodities_list[0].daibi, "道具");
