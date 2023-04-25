@@ -381,6 +381,10 @@ export class MoneyOperation extends plugin {
                 return;
             }
             if (number >= amount) {
+                if (thing_exist.class == "仙宠") {
+                    e.reply('仙宠不可赠送！');
+                    return;
+                }
                 if (thing_exist.class == "装备") {
                     await Add_najie_thing(A_qq, thing_name, thing_exist.class, -amount, pj);
                     await Add_najie_thing(B_qq, thing_name, thing_exist.class, amount, pj);
