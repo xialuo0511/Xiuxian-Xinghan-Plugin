@@ -676,8 +676,17 @@ export class SecretPlace extends plugin {
 
         //获取输入信息
         let msg = e.msg.replace("#代币兑换", "");
+        var bool = msg.indexOf("*");
+        //返回大于等于0的整数值，若不包含"Text"则返回"-1。
         //分割文本变数组
-        let code = msg.split("*");
+        let code = [];
+        if(bool>0){
+            code = msg.split("*");
+        }else{
+            code.push(msg);
+            code.push(1);
+        }
+        
         //获取物品名和数量
         let thing_name = code[0];
         let shuliang = code[1];
