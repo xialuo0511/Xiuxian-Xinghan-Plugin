@@ -1544,6 +1544,7 @@ export class Occupation extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        /*
         let action = await this.getPlayerAction(e.user_id);
         let state = await this.getPlayerState(action);
         if (state == "空闲") {
@@ -1610,7 +1611,8 @@ export class Occupation extends plugin {
         arr.end_time = new Date().getTime();
         delete arr.group_id;//结算完去除group_id
         await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
-        e.reply("已返回");
+        */
+        e.reply("出现bug，请等待修复");
         return;
     }
 
