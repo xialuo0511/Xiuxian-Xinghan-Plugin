@@ -1599,17 +1599,19 @@ export class Occupation extends plugin {
         }
 
         let arr = action;
-        arr.is_jiesuan = 1;//结算状态
-        arr.shoulie = 1;//采药状态
-        arr.plant = 1;//采药状态
+        arr.shoulie = 1;//采矿状态
+        arr.shoulie = 1;//闭状态
         arr.shutup = 1;//闭关状态
         arr.working = 1;//降妖状态
         arr.power_up = 1;//渡劫状态
         arr.Place_action = 1;//秘境
+        arr.Place_actionplus = 1;//沉迷状态
         //结束的时间也修改为当前时间
         arr.end_time = new Date().getTime();
         delete arr.group_id;//结算完去除group_id
         await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
+        e.reply("已返回");
+        return;
     }
 
 
