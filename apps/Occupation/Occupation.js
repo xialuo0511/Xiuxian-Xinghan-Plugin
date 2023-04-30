@@ -1643,11 +1643,11 @@ export class Occupation extends plugin {
         let end_amount = Math.floor(4 * (rate + 1) * (shoulie_amount1))//稀有
         if (player.level_id <= 21) {
 
-            end_amount *= player.level_id / 35
+            end_amount *= player.level_id / 15
 
             msg.push("由于你境界不足化神,在狗熊岭遇见熊大熊二，摆脱他们花了很多时间，收入降低" + (1 - player.level_id / 30) * 50 + "%\n")
         } else {
-            end_amount *= player.level_id / 35
+            end_amount *= player.level_id / 15
 
         }
 
@@ -1656,7 +1656,7 @@ export class Occupation extends plugin {
         //shoulie_amount2 = parseInt(shoulie_amount2 * time);
         //shoulie_amount3 = parseInt(shoulie_amount3 * time);
         //shoulie_amount4 = parseInt(shoulie_amount4 * time);
-        end_amount = Math.floor(end_amount) / 35;
+        end_amount = Math.floor(end_amount) / 15;
         end_amount = Math.floor(end_amount);
 
 
