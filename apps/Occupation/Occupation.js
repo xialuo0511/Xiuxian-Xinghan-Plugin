@@ -1612,7 +1612,6 @@ export class Occupation extends plugin {
         await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
 
         //e.reply("出现bug，请等待修复");
-        return;
     }
 
 
@@ -1629,9 +1628,9 @@ export class Occupation extends plugin {
         var size = this.xiuxianConfigData.mine.size;
         let shoulie_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);
         let shoulie_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);
-        let shoulie_amount3 = Math.floor(time / 30);
-        let shoulie_amount4 = Math.floor(time / 30);
-        let shoulie_amount5 = Math.floor(time / 30);
+        let shoulie_amount3 = Math.floor(time / 20);
+        let shoulie_amount4 = Math.floor(time / 20);
+        let shoulie_amount5 = Math.floor(time / 20);
         let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
         let exp = 0;
         let ext = "";
@@ -1644,11 +1643,11 @@ export class Occupation extends plugin {
         let end_amount = Math.floor(4 * (rate + 1) * (shoulie_amount1))//稀有
         if (player.level_id <= 21) {
 
-            end_amount *= player.level_id / 40
+            end_amount *= player.level_id / 35
 
-            msg.push("由于你境界不足化神,在狗熊岭遇见熊大熊二，摆脱他们花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
+            msg.push("由于你境界不足化神,在狗熊岭遇见熊大熊二，摆脱他们花了很多时间，收入降低" + (1 - player.level_id / 30) * 50 + "%\n")
         } else {
-            end_amount *= player.level_id / 40
+            end_amount *= player.level_id / 35
 
         }
 
@@ -1657,7 +1656,7 @@ export class Occupation extends plugin {
         //shoulie_amount2 = parseInt(shoulie_amount2 * time);
         //shoulie_amount3 = parseInt(shoulie_amount3 * time);
         //shoulie_amount4 = parseInt(shoulie_amount4 * time);
-        end_amount = Math.floor(end_amount) / 50;
+        end_amount = Math.floor(end_amount) / 35;
         end_amount = Math.floor(end_amount);
 
 
