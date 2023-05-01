@@ -327,7 +327,7 @@ export async function Add_职业经验(usr_qq, exp = 0) {
         return;
     }
     exp = player.occupation_exp + exp;
-    let level = player.occupation_level;
+    let level = Number(player.occupation_level);
     while (true) {
         let need_exp = data.occupation_exp_list.find(item => item.id == level).experience;
         if (!need_exp) {
