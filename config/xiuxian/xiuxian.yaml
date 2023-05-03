@@ -50,7 +50,7 @@ Boss:
 Auction:
   interval: 1 #间歇时间
   openHour: 20 #星阁开启时间
-  closeHour: 22 #星阁关闭时间
+  closeHour: 23 #星阁关闭时间
 
 SecretPlace: #秘境出金概率
   one: 0.97 #0.97保底，0.03蚂蚁
