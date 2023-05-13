@@ -634,7 +634,7 @@ ${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${�
     //说明被冻结了
     if (cnt != yuansu.cnt) {
       msg.push(`第${cnt2 + 1}回合：
-${B_player.名号}冻结中`);
+${B_player.名号}无法造成伤害`);
       cnt += 2;
       continue;
     }

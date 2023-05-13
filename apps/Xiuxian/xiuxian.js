@@ -1310,6 +1310,9 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     let fyjiachen = 0//防御加成
     //AB灵根
 
+    let A_gongfa = A_player.学习的功法
+    let lunhuijing = A_gongfa.includes("混沌经")
+
 
     let A_lin = A_player.灵根.name
     let B_lin = B_player.灵根.name
@@ -1417,6 +1420,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
         chaodao = true
     }
     A_player.攻击 = att
+
 
     //火元素
     if (A_lin == yuansu[0]) {
@@ -2354,6 +2358,21 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
 
         }
     }
+
+    //功法
+    //轮回经
+    if (lunhuijing) {
+        if (random > 0.2) {
+            msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
+            donjie = true
+            huihe = true
+
+        } else if (random > 0.1) {
+            msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
+            att = last_att * 2
+        }
+    }
+
 
 
 
