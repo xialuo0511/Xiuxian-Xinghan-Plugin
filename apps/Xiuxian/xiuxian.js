@@ -2365,7 +2365,6 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
         if (random > 0.2) {
             msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
             donjie = true
-            huihe = true
 
         } else if (random > 0.1) {
             msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
