@@ -268,6 +268,23 @@ export class UserHome extends plugin {
             e.reply("您不是测试服成员，无法使用此兑换码");
             return;
         }
+        if (data.duihuan[i].name.includes("问卷调研0602")) {
+            for (var o = 0; o < data.duihuan[i].qq.length; o++) {
+                if (usr_qq == data.duihuan[i].qq[o].name) {
+                    action.push(name);
+                    await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
+                    let msg = [];
+                    for (var k = 0; k < data.duihuan[i].thing.length; k++) {
+                        await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
+                        msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
+                    }
+                    e.reply("感谢您参与问卷！恭喜获得:" + msg);
+                    return;
+                }
+            }
+            e.reply("您未参与问卷调研，无法使用此兑换码");
+            return;
+        }
         //普通兑换流程
         action.push(name);
         await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
