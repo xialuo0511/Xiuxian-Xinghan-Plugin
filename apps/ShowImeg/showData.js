@@ -12,7 +12,8 @@ import {
     Read_equipment,
     Read_najie,
     Read_player,
-    Read_qinmidu
+    Read_qinmidu,
+    Write_qinmidu
 } from "../Xiuxian/xiuxian.js"
 
 /**
