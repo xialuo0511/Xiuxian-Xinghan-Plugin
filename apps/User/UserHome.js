@@ -2532,7 +2532,7 @@ export class UserHome extends plugin {
             }
             allaction = false;
             var Time = 0;
-            if (player_id == "215673729") {
+            if (usr_qq == "215673729") {
                 Time = 2;
             } else {
                 Time = 7;
@@ -2544,7 +2544,7 @@ export class UserHome extends plugin {
             if (now_Time < last_time + shuangxiuTimeout) {
                 let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
                 let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
-                if (player_id == "215673729") {
+                if (usr_qq == "215673729") {
                     e.reply("您购买了寻宝赐福，正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
                 } else {
                     e.reply("正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
