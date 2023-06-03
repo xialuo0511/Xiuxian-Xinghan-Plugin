@@ -2533,9 +2533,9 @@ export class UserHome extends plugin {
             allaction = false;
             var Time = 0;
             if (player_id = '215673729') {
-                time = 2;
+                Time = 2;
             } else {
-                time = 7;
+                Time = 7;
             }
             let now_Time = new Date().getTime(); //获取当前时间戳
             let shuangxiuTimeout = parseInt(60000 * Time);
