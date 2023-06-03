@@ -2532,11 +2532,11 @@ export class UserHome extends plugin {
             }
             allaction = false;
             var Time = 0;
-            // if (player_id = '215673729') {
-            //     Time = 2;
-            // } else {
-            //     Time = 7;
-            // }
+            if (player_id == "215673729") {
+                Time = 2;
+            } else {
+                Time = 7;
+            }
             let now_Time = new Date().getTime(); //获取当前时间戳
             let shuangxiuTimeout = parseInt(60000 * Time);
             let last_time = await redis.get("xiuxian:player:" + usr_qq + "xunbaocd");//获得上次的时间戳,
@@ -2544,11 +2544,11 @@ export class UserHome extends plugin {
             if (now_Time < last_time + shuangxiuTimeout) {
                 let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
                 let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
-                // if (player_id = '215673729') {
-                //     e.reply("您购买了寻宝赐福，正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
-                // } else {
-                e.reply("正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
-                // }
+                if (player_id == "215673729") {
+                    e.reply("您购买了寻宝赐福，正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
+                } else {
+                    e.reply("正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
+                }
                 return;
             }
             let x = await exist_najie_thing(usr_qq, thing_name, thing_exist.class);
