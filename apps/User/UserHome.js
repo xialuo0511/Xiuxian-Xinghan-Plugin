@@ -3048,12 +3048,12 @@ export class UserHome extends plugin {
                 }
             }
             if (thing_name == "星荧洞窟") {
-                if (player.饱食度 < 3000) {
-                    e.reply('你快饿死了,还是先吃点东西吧');
-                    return;
-                }
                 if (now_level_id < 41) {
                     e.reply("你是仙人吗就去星荧洞窟");
+                    return;
+                }
+                if (player.饱食度 < 3000) {
+                    e.reply('你快饿死了,还是先吃点东西吧');
                     return;
                 }
                 let kouxue = parseInt(player.血量上限 * 0.25)
