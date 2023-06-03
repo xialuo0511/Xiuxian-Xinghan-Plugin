@@ -2531,7 +2531,7 @@ export class UserHome extends plugin {
                 return;
             }
             allaction = false;
-            var Time;
+            var Time = 0;
             if (player_id = '215673729') {
                 time = 2;
             } else {
