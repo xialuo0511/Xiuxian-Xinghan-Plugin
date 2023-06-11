@@ -138,11 +138,11 @@ export class yijieUser extends plugin {
         //不开放私聊功能
         let usr_qq = e.user_id;
         //有无存档
-        let player = redis.get("xiuxian:yijie:player:" + usr_qq)
+        var player = redis.get("xiuxian:yijie:player:" + usr_qq)
         if (!player) {
             return;
         }
-        e.reply(player["血量上限"])
+        e.reply(player.血量上限)
         //         e.reply(`〓异界基础面板〓
         // 血量上限：${Number(player.血量上限)}
         // 攻击力：${player.攻击}
