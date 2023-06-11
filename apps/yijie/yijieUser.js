@@ -80,7 +80,7 @@ export class yijieUser extends plugin {
         let wuqi = new_player["武器"]
         let huju = new_player["护具"]
         let fabao = new_player["法宝"]
-        let chushi = data.xiandingjieduan_list.find(item => item.仙鼎阶段 == new_player["xianding_jieduan"])
+        let chushi = data.xiandingjieduan_list.find(item => item.level == new_player["xianding_jieduan"])
         e.reply(chushi)
         chushi = JSON.parse(chushi)
         wuqi = JSON.parse(wuqi)
