@@ -138,17 +138,17 @@ export class yijieUser extends plugin {
         //不开放私聊功能
         let usr_qq = e.user_id;
         //有无存档
-        let player = await redis.get("xiuxian:yijie:player:" + usr_qq)
+        let player = redis.get("xiuxian:yijie:player:" + usr_qq)
         if (!player) {
             return;
         }
         e.reply(`〓异界基础面板〓
-        血量上限：`+ player["血量上限"] +
-            `攻击力：` + player["攻击"] +
-            `防御力：` + player["防御"] +
-            `暴击率：` + player["暴击率"] +
-            `暴击伤害：` + player["暴击伤害"] +
-            `饱食度：` + player["饱食度"])
+        \n血量上限：`+ player["血量上限"] +
+            `\n攻击力：` + player["攻击"] +
+            `\n防御力：` + player["防御"] +
+            `\n暴击率：` + player["暴击率"] +
+            `\n暴击伤害：` + player["暴击伤害"] +
+            `\n饱食度：` + player["饱食度"])
         return;
     }
 }
