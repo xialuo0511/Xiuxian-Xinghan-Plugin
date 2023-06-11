@@ -24,11 +24,11 @@ export class yijieUser extends plugin {
             priority: 600,
             rule: [
                 {
-                    reg: '^*造访异界$',
+                    reg: '^#造访异界$',
                     fnc: 'add_yijie'
                 },
                 {
-                    reg: '^*我的面板$',
+                    reg: '^#我的面板$',
                     fnc: 'Show_player'
                 }
             ]
