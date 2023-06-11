@@ -142,6 +142,7 @@ export class yijieUser extends plugin {
         if (player) {
             return;
         }
+        player = JSON.parse(...player)
         e.reply(player.血量上限)
         //         e.reply(`〓异界基础面板〓
         // 血量上限：${Number(player.血量上限)}
