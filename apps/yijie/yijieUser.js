@@ -139,7 +139,7 @@ export class yijieUser extends plugin {
         //不开放私聊功能
         let usr_qq = e.user_id;
         //有无存档
-        let ifexistplay = await existplayer(usr_qq);
+        let ifexistplay = redis.get("xiuxian:yijie:player:" + usr_qq)
         if (!ifexistplay) {
             return;
         }
