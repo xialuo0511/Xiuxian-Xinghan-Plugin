@@ -139,7 +139,7 @@ export class yijieUser extends plugin {
         let usr_qq = e.user_id;
         //有无存档
         var player = redis.get("xiuxian:yijie:player:" + usr_qq)
-        if (!player) {
+        if (player) {
             return;
         }
         e.reply(player.血量上限)
