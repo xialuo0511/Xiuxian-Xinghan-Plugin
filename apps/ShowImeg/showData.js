@@ -1213,6 +1213,92 @@ export async function get_player_img(e) {
 }
 
 /**
+ * 返回该玩家异界的存档图片
+ * @return image
+ */
+export async function get_yijie_player_img(e) {
+    let usr_qq = e.user_id;
+    let player = await redis.get("xiuxian:yijie:player:" + usr_qq)
+    if (!player) {
+        return;
+    }
+    let player_status = await getYijiePlayerAction(usr_qq);
+    let status = '空闲';
+    if (player_status.time != null) {
+        status = player_status.action + '(剩余时间:' + player_status.time + ')';
+    }
+    let power = player.攻击
+    let player_data = {
+        dingjixianshi: dingjixianshi,
+        user_id: usr_qq,
+        player, // 玩家数据
+        rank_lianqi, // 练气境界
+        expmax_lianqi, // 练气需求经验
+        rank_llianti, // 炼体境界
+        expmax_llianti, // 炼体需求经验
+        rank_liandan, // 炼丹境界
+        expmax_liandan, // 炼丹需求经验
+        equipment, // 装备数据
+        talent: parseInt(player.修炼效率提升 * 100), //
+        player_action: status, // 当前状态
+        this_association, // 宗门信息
+        strand_hp,
+        strand_lianqi,
+        strand_llianti,
+        strand_liandan,
+        PowerMini, // 玩家战力
+        bao,
+        nickname: player.名号,
+        linggen: player.灵根, //
+        declaration: player.宣言,
+        need_exp: need_exp,
+        need_exp2: need_exp2,
+        exp: player.修为,
+        exp2: player.血气,
+        zdl: power,
+        镇妖塔层数: player.镇妖塔层数,
+        sh: player.神魄段数,
+        mdz: player.魔道值,
+        hgd: player.favorability,
+        jczdl: power2,
+        level: level,
+        level2: level2,
+        lingshi: lingshi,
+        player_maxHP: player.血量上限,
+        player_nowHP: player.当前血量,
+        player_atk: kxjs[0],
+        player_atk2: p[0],
+        player_def: kxjs[1],
+        player_def2: p[1],
+        生命加成: kxjs[2],
+        生命加成_t: p[2],
+        防御加成: kxjs[3],
+        防御加成_t: p[3],
+        攻击加成: kxjs[4],
+        攻击加成_t: p[4],
+        player_bao: player.暴击率,
+        player_bao2: player.暴击伤害,
+        occupation: occupation,
+        occupation_level: occupation_level_name,
+        occupation_exp: occupation_exp,
+        occupation_need_exp: occupation_need_exp,
+        arms: equipment.武器,
+        armor: equipment.护具,
+        treasure: equipment.法宝,
+        association: this_association,
+        learned_gongfa: player.学习的功法,
+        婚姻状况: hunyin,
+        武器评级: 武器评级,
+        护具评级: 护具评级,
+        法宝评级: 法宝评级,
+    };
+    const data1 = await new Show(e).get_playerData(player_data);
+    return await puppeteer.screenshot('player', {
+        ...data1,
+    });
+}
+
+/**
  * 我的宗门
  * @return image
  */
@@ -1687,6 +1773,25 @@ export async function get_ranking_money_img(e, Data, usr_paiming, thisplayer, th
 async function getPlayerAction(usr_qq) {
     let arr = {};
     let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
+    action = JSON.parse(action);
+    if (action != null) {
+        let action_end_time = action.end_time;
+        let now_time = new Date().getTime();
+        if (now_time <= action_end_time) {
+            let m = parseInt((action_end_time - now_time) / 1000 / 60);
+            let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
+            arr.action = action.action;//当期那动作
+            arr.time = m + "分" + s + "秒";//剩余时间
+            return arr;
+        }
+    }
+    arr.action = "空闲";
+    return arr;
+}
+
+async function getYijiePlayerAction(usr_qq) {
+    let arr = {};
+    let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
     action = JSON.parse(action);
     if (action != null) {
         let action_end_time = action.end_time;
