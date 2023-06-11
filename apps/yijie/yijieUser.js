@@ -81,11 +81,10 @@ export class yijieUser extends plugin {
         let huju = new_player["护具"]
         let fabao = new_player["法宝"]
         let chushi = data.xiandingjieduan_list.find(item => item.level == new_player["xianding_jieduan"])
-        e.reply(chushi)
-        chushi = JSON.parse(chushi)
-        wuqi = JSON.parse(wuqi)
-        huju = JSON.parse(huju)
-        fabao = JSON.parse(fabao)
+        // chushi = JSON.parse(chushi)
+        // wuqi = JSON.parse(wuqi)
+        // huju = JSON.parse(huju)
+        // fabao = JSON.parse(fabao)
         new_player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
         new_player["防御"] = chushi["初始防御"] + huju["def"]
         new_player["血量上限"] = chushi["初始血量"] + fabao["hp"]
