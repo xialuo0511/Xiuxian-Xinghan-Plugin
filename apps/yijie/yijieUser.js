@@ -143,8 +143,8 @@ export class yijieUser extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let img = await get_yijie_player_img(e);
-        e.reply(img);
+        //let img = await get_yijie_player_img(e);
+        e.reply(ifexistplay);
         return;
     }
 }
