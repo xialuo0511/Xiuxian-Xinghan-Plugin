@@ -1,7 +1,6 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
-import { get_yijie_player_img } from '../ShowImeg/showData.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
