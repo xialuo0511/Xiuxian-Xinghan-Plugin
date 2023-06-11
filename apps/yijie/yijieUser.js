@@ -128,7 +128,6 @@ export class yijieUser extends plugin {
                 qq: usr_qq
             }
             action.push(arr)
-            console.log(arr);
             await redis.set("xiuxian:yijie:player:" + usr_qq + ":biguang", JSON.stringify(action))
         }
         return;
@@ -142,8 +141,8 @@ export class yijieUser extends plugin {
         if (player) {
             return;
         }
-        player = JSON.parse(...player)
-        e.reply(player.血量上限)
+        let a = JSON.parse(...player)
+        e.reply(a.血量上限)
         //         e.reply(`〓异界基础面板〓
         // 血量上限：${Number(player.血量上限)}
         // 攻击力：${player.攻击}
