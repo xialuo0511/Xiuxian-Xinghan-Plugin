@@ -86,7 +86,7 @@ export class yijieUser extends plugin {
         // huju = JSON.parse(huju)
         // fabao = JSON.parse(fabao)
         new_player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
-        new_player["防御"] = chushi["初始防御"] + huju["def"]
+        new_player["防御"] = chushi["初始防御"] + huju["fyu"]
         new_player["血量上限"] = chushi["初始血量"] + fabao["hp"]
         new_player["暴击率"] += fabao["bao"]
         await redis.set("xiuxian:yijie:player:" + usr_qq, new_player)
