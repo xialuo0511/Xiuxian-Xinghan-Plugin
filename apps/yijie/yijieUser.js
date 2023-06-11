@@ -74,8 +74,8 @@ export class yijieUser extends plugin {
             "暴击伤害": 0.50,
             "饱食度": 0,
             "武器": data.yijie_wuqi_list.find(item => item.name == "新手短剑"),
-            "护具": data.huju_list.find(item => item.name == "木盾"),
-            "法宝": data.fabao_list.find(item => item.name == "葫芦")
+            "护具": data.yijie_huju_list.find(item => item.name == "木盾"),
+            "法宝": data.yijie_fabao_list.find(item => item.name == "葫芦")
         }
         let wuqi = new_player["武器"]
         let huju = new_player["护具"]
@@ -87,7 +87,7 @@ export class yijieUser extends plugin {
         // fabao = JSON.parse(fabao)
         new_player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
         e.reply(huju + "1")
-        new_player["防御"] = chushi["初始防御"] + huju["atk"]
+        new_player["防御"] = chushi["初始防御"] + huju["def"]
         new_player["血量上限"] = chushi["初始血量"] + fabao["hp"]
         new_player["暴击率"] += fabao["bao"]
         await redis.set("xiuxian:yijie:player:" + usr_qq, new_player)
