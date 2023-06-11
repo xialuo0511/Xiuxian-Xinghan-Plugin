@@ -56,7 +56,7 @@ export class yijieUser extends plugin {
 
         //有无存档
         let ifexistplay = redis.get("xiuxian:yijie:player:" + usr_qq)
-        if (ifexistplay) {
+        if (!ifexistplay) {
             e.reply("您已身处异界")
             return;
         }
