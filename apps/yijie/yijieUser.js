@@ -89,7 +89,7 @@ export class yijieUser extends plugin {
         new_player["防御"] = chushi["初始防御"] + huju["def"]
         new_player["血量上限"] = chushi["初始血量"] + fabao["hp"]
         new_player["暴击率"] += fabao["bao"]
-        await redis.set("xiuxian:yijie:player:" + usr_qq, new_player)
+        await redis.set("xiuxian:yijie:player:" + usr_qq, JSON.stringify(new_player))
         //初始化背包
         let new_beibao = {
             "装备": [],
@@ -100,7 +100,7 @@ export class yijieUser extends plugin {
             "材料": [],
             "食材": [],
         }
-        await redis.set("xiuxian:yijie:playerbeibao:" + usr_qq, new_beibao)
+        await redis.set("xiuxian:yijie:playerbeibao:" + usr_qq, JSON.stringify(new_beibao))
         await this.Show_player(e);
         let i = 0
         let action = await redis.get("xiuxian:yijie:player:" + 10 + ":biguang");
