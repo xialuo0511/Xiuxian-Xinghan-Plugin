@@ -144,7 +144,7 @@ export class yijieUser extends plugin {
             return;
         }
         //let img = await get_yijie_player_img(e);
-        e.reply(JSON.stringify(ifexistplay));
+        e.reply(ifexistplay);
         return;
     }
 }
