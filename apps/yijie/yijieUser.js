@@ -143,7 +143,7 @@ export class yijieUser extends plugin {
             return;
         }
         e.reply(`〓异界基础面板〓
-        血量上限：${player.血量上限}
+        血量上限：${player.xianding_level}
         攻击力：${player.攻击}
         防御力：${player.防御}
         暴击率：${player.暴击率}
