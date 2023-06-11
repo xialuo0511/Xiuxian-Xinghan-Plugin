@@ -142,14 +142,14 @@ export class yijieUser extends plugin {
         if (!player) {
             return;
         }
-        e.reply(player)
-        e.reply(`〓异界基础面板〓
-血量上限：${Number(player.血量上限)}
-攻击力：${player.攻击}
-防御力：${player.防御}
-暴击率：${player.暴击率}
-暴击伤害：${player.暴击伤害}
-饱食度：${player.饱食度}`)
+        e.reply(player.血量上限)
+        //         e.reply(`〓异界基础面板〓
+        // 血量上限：${Number(player.血量上限)}
+        // 攻击力：${player.攻击}
+        // 防御力：${player.防御}
+        // 暴击率：${player.暴击率}
+        // 暴击伤害：${player.暴击伤害}
+        // 饱食度：${player.饱食度}`)
         return;
     }
 }
