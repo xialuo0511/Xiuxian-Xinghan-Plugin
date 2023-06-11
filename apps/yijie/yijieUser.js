@@ -143,14 +143,13 @@ export class yijieUser extends plugin {
             return;
         }
         e.reply(player)
-        player = JSON.parse(player)
         e.reply(`〓异界基础面板〓
-        \n血量上限：`+ player["血量上限"] +
-            `\n攻击力：` + player["攻击"] +
-            `\n防御力：` + player["防御"] +
-            `\n暴击率：` + player["暴击率"] +
-            `\n暴击伤害：` + player["暴击伤害"] +
-            `\n饱食度：` + player["饱食度"])
+        \n血量上限：`+ player.血量上限 +
+            `\n攻击力：` + player.攻击 +
+            `\n防御力：` + player.防御 +
+            `\n暴击率：` + player.暴击率 +
+            `\n暴击伤害：` + player.暴击伤害 +
+            `\n饱食度：` + player.饱食度)
         return;
     }
 }
