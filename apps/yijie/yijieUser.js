@@ -103,7 +103,7 @@ export class yijieUser extends plugin {
         await redis.set("xiuxian:yijie:playerbeibao:" + usr_qq, JSON.stringify(new_beibao))
         await this.Show_player(e);
         let i = 0
-        let action = await redis.get("xiuxian:yijie:player:" + 10 + ":biguang");
+        let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":biguang");
         action = await JSON.parse(action);
         if (action == null) {
             action = [];
@@ -130,7 +130,7 @@ export class yijieUser extends plugin {
             }
             action.push(arr)
             console.log(arr);
-            await redis.set("xiuxian:yijie:player:" + 10 + ":biguang", JSON.stringify(action))
+            await redis.set("xiuxian:yijie:player:" + usr_qq + ":biguang", JSON.stringify(action))
         }
         return;
     }
@@ -139,12 +139,17 @@ export class yijieUser extends plugin {
         //不开放私聊功能
         let usr_qq = e.user_id;
         //有无存档
-        let ifexistplay = await redis.get("xiuxian:yijie:player:" + usr_qq)
-        if (!ifexistplay) {
+        let player = await redis.get("xiuxian:yijie:player:" + usr_qq)
+        if (!player) {
             return;
         }
-        //let img = await get_yijie_player_img(e);
-        e.reply(ifexistplay);
+        e.reply(`〓异界基础面板〓
+        血量上限：`+ player["血量上限"] +
+            `攻击力：` + player["攻击"] +
+            `防御力：` + player["防御"] +
+            `暴击率：` + player["暴击率"] +
+            `暴击伤害：` + player["暴击伤害"] +
+            `饱食度：` + player["饱食度"])
         return;
     }
 }

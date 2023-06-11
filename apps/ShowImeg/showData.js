@@ -1213,22 +1213,6 @@ export async function get_player_img(e) {
 }
 
 /**
- * 返回该玩家异界的存档图片
- * @return image
- */
-export async function get_yijie_player_img(e) {
-    let usr_qq = e.user_id;
-    let player = await redis.get("xiuxian:yijie:player:" + usr_qq)
-    if (!player) {
-        return;
-    }
-    const data1 = await new Show(e).get_yijieplayerData(player);
-    return await puppeteer.screenshot('yijieplayer', {
-        ...data1,
-    });
-}
-
-/**
  * 我的宗门
  * @return image
  */
