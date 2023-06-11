@@ -1222,8 +1222,8 @@ export async function get_yijie_player_img(e) {
     if (!player) {
         return;
     }
-    const data1 = await new Show(e).get_playerData(player);
-    return await puppeteer.screenshot('player', {
+    const data1 = await new Show(e).get_yijieplayerData(player);
+    return await puppeteer.screenshot('yijieplayer', {
         ...data1,
     });
 }

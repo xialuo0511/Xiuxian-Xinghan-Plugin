@@ -14,6 +14,15 @@ export default class Game extends base {
       ...myData,
     };
   }
+
+  async get_yijieplayerData(myData) {
+    this.model = 'yijieplayer';
+    return {
+      ...this.screenData,
+      saveId: 'yijieplayer',
+      ...myData,
+    };
+  }
   //师徒商城
   async get_shitujifenData(myData) {
     this.model = 'shitujifen';

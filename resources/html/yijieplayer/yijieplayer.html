@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/yijieplayer/yijieplayer.css" />
+    <link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
+    <link rel="shortcut icon" href="#" />
+    <style type="text/css">
+        body {
+            width: 100%;
+            text-align: center;
+            background-image: url('{{pluResPath}}/img/player_pifu/0101.jpg');
+            background-size: 100% auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div class="header"></div>
+        <!--上-->
+        <div class="card_box">
+            <!--左-->
+            <div class="user_top_left">
+                <div class="user_top_img_bottom">
+                    <img class="user_top_img" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}"
+                        onerror="whenError(this)" />
+                </div>
+            </div>
+            <!--右-->
+            <div class="user_top_right">
+                <div class="user_top_font_right">QQ：{{user_id}}</div>
+                <div class="user_top_font_right">
+                    生命：
+                    <div class="blood_box">
+                        <div class="blood_bar" {{strand_hp.style}}></div>
+                        <div class="blood_volume">
+                            {{(player.血量上限).toFixed(0)}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--下-->
+        <div class="card_box">
+            <div class="use_data">
+                <div class="user_font user_font_title">[基础信息]</div>
+                <div class="user_font wupin">
+                    <div class="item">
+                        <div class="item_title font_left">
+                            攻击：{{player.攻击}}</sup>
+                        </div>
+                        <div class="item_title font_left">
+                            防御：{{player.防御}}<sup>{{player_def2}}</sup>
+                        </div>
+                        <div class="item_title font_left">暴击：{{bao}}</div>
+                        <div class="item_title font_left">
+                            暴伤：{{(player.暴击伤害*100).toFixed(0)}}%
+                        </div>
+                    </div>
+                    <div class="item">
+
+                    </div>
+                    <div class="item">
+
+                    </div>
+                </div>
+                <div class="user_font wupin">
+                    <div class="item">
+                        <div class="item_title font_left">
+                            {{xianding_exp}}
+                        </div>
+                        <div class="item_int">
+                            <div class="xuetiao">
+                                <div class="xueliang font_volume" {{xianding_exp.style}}>
+                                    {{xianding_exp}}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item_int">{{xianding_exp}}/1</div>
+                    </div>
+                </div>
+
+                <div class="user_font wupin">
+                    <div class="item">
+                        <div class="item_title font_left">
+                            饱食度:【{{player.饱食度}}】<br />
+                            状态：【{{player_action}}】
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--下-->
+        <div class="card_box2">
+            <div class="use_data2">
+                <div class="user_font user_font_title">[装备信息]</div>
+                <div class="user_font wupin">
+                    <div class="item">
+                        <div class="item_title2">{{武器.name}}</div>
+                        <div class="item_int2">
+                            攻击：{{(武器.atk).toFixed(0)}}
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item_title2">{{护具.name}}</div>
+                        <div class="item_int2">
+                            防御：{{(护具.def).toFixed(0)}}
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item_title2">{{法宝.name}}</div>
+                        <div class="item_int2">
+                            血量：{{(法宝.HP).toFixed(0)}}
+                        </div>
+                        <div class="item_int2">暴击：{{法宝.bao}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--下-->
+
+        <div class="user_bottom2"></div>
+</body>
+
+</html>
