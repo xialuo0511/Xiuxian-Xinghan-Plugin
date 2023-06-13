@@ -15,6 +15,8 @@ class XiuxianData {
         //插件根目录
         const __dirname = path.resolve() + path.sep + "plugins" + path.sep + "xiuxian-emulator-plugin";
         this.filePathMap = {
+            "yijie_player": path.join(__dirname, "/resources/data/yijie/player"),//用户数据
+            "yijie_beibao": path.join(__dirname, "/resources/data/yijie/beibao"),//用户数据
             "player": path.join(__dirname, "/resources/data/xiuxian_player"),//用户数据
             "equipment": path.join(__dirname, "/resources/data/xiuxian_equipment"),
             "najie": path.join(__dirname, "/resources/data/xiuxian_najie"),

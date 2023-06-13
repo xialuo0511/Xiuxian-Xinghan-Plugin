@@ -15,8 +15,12 @@ export const __PATH = {
     updata_log_path: path.join(__dirname, "补丁日志.txt"),
     //用户数据
     player_path: path.join(__dirname, "/resources/data/xiuxian_player"),
+    //异界用户数据
+    yijie_player_path: path.join(__dirname, "/resources/data/yijie/player"),
     //装备
     equipment_path: path.join(__dirname, "/resources/data/xiuxian_equipment"),
+    //异界背包
+    yijie_beibao_path: path.join(__dirname, "/resources/data/yijie/beibao"),
     //纳戒
     najie_path: path.join(__dirname, "/resources/data/xiuxian_najie"),
     //源数据
@@ -72,6 +76,17 @@ export async function existplayer(usr_qq) {
     }
     return false;
 }
+
+//检查异界存档是否存在，存在返回true;
+export async function yijie_existplayer(usr_qq) {
+    let exist_player;
+    exist_player = fs.existsSync(`${__PATH.yijie_player_path}/${usr_qq}.json`);
+    if (exist_player) {
+        return true;
+    }
+    return false;
+}
+
 /**
  * 
  * @param {*} data 物品
@@ -134,6 +149,16 @@ export async function Read_player(usr_qq) {
 //写入存档信息,第二个参数是一个JavaScript对象
 export async function Write_player(usr_qq, player) {
     let dir = path.join(__PATH.player_path, `${usr_qq}.json`);
+    let new_ARR = JSON.stringify(player, "", "\t");
+    fs.writeFileSync(dir, new_ARR, 'utf8', (err) => {
+        console.log('写入成功', err)
+    })
+    return;
+}
+
+//写入异界存档信息,第二个参数是一个JavaScript对象
+export async function Write_yijie_player(usr_qq, player) {
+    let dir = path.join(__PATH.yijie_player_path, `${usr_qq}.json`);
     let new_ARR = JSON.stringify(player, "", "\t");
     fs.writeFileSync(dir, new_ARR, 'utf8', (err) => {
         console.log('写入成功', err)
@@ -238,6 +263,16 @@ export async function Read_najie(usr_qq) {
 //写入纳戒信息,第二个参数是一个JavaScript对象
 export async function Write_najie(usr_qq, najie) {
     let dir = path.join(__PATH.najie_path, `${usr_qq}.json`);
+    let new_ARR = JSON.stringify(najie, "", "\t");
+    fs.writeFileSync(dir, new_ARR, 'utf8', (err) => {
+        console.log('写入成功', err)
+    })
+    return;
+}
+
+//写入异界背包信息,第二个参数是一个JavaScript对象
+export async function Write_yijie_beibao(usr_qq, najie) {
+    let dir = path.join(__PATH.yijie_beibao_path, `${usr_qq}.json`);
     let new_ARR = JSON.stringify(najie, "", "\t");
     fs.writeFileSync(dir, new_ARR, 'utf8', (err) => {
         console.log('写入成功', err)

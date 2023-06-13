@@ -1,6 +1,8 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
+import { Write_yijie_player, Write_yijie_beibao, yijie_existplayer } from '../Xiuxian/xiuxian.js'
+import data from '../../model/XiuxianData.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
@@ -88,7 +90,7 @@ export class yijieUser extends plugin {
         new_player["防御"] = chushi["初始防御"] + huju["def"]
         new_player["血量上限"] = chushi["初始生命"] + fabao["HP"]
         new_player["暴击率"] += fabao["bao"]
-        await redis.set("xiuxian:yijie:player:" + usr_qq, JSON.stringify(new_player))
+        await Write_yijie_player(usr_qq, new_player);
         //初始化背包
         let new_beibao = {
             "装备": [],
@@ -99,7 +101,7 @@ export class yijieUser extends plugin {
             "材料": [],
             "食材": [],
         }
-        await redis.set("xiuxian:yijie:playerbeibao:" + usr_qq, JSON.stringify(new_beibao))
+        await Write_yijie_beibao(usr_qq, new_player);
         await this.Show_player(e);
         let i = 0
         let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":biguang");
@@ -134,17 +136,16 @@ export class yijieUser extends plugin {
     }
     //#我的练气
     async Show_player(e) {
-        //不开放私聊功能
         let usr_qq = e.user_id;
         //有无存档
-        let player = redis.get("xiuxian:yijie:player:" + usr_qq)
-        if (player) {
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
             return;
         }
-        let a = player
-        e.reply(a.血量上限)
-                e.reply(`〓异界基础面板〓
-        血量上限：${Number(player["血量上限"])}
+        let player = await data.getData('yijie_player', usr_qq);
+        e.reply("如群聊无法接受消息，请私聊发送 #我的面板 以查询异界面板")
+        e.reply(`〓异界基础面板〓
+        血量上限：${player.血量上限}
         攻击力：${player.攻击}
         防御力：${player.防御}
         暴击率：${player.暴击率}
