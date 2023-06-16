@@ -87,7 +87,7 @@ export class yijieUser extends plugin {
         new_player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
         new_player["防御"] = chushi["初始防御"] + huju["def"]
         new_player["血量上限"] = chushi["初始生命"] + fabao["HP"]
-        new_player["暴击率"] += fabao["bao"]
+        new_player["暴击率"] = new_player["暴击率"] + fabao["bao"]
         await Write_yijie_player(usr_qq, new_player);
         //初始化背包
         let new_beibao = {
