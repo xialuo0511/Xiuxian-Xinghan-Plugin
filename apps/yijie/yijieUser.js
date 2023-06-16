@@ -2,8 +2,6 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import { Write_yijie_player, Write_yijie_beibao, yijie_existplayer } from '../Xiuxian/xiuxian.js'
-import data from '../../model/XiuxianData.js'
-
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**
