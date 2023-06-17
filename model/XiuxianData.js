@@ -89,7 +89,7 @@ class XiuxianData {
         //仙鼎阶段
         this.xiandingjieduan_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/仙鼎阶段.json`));
         //异界秘境
-        this.yijie_mijing = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境/仙鼎阶段.json`));
+        this.yijie_mijing = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境/秘境列表.json`));
 
 
         //加载丹药列表
