@@ -635,7 +635,11 @@ ${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${�
       msg.push(`第${cnt2 + 1}回合：
 ${B_player.名号}无法造成伤害`);
       cnt += 2;
-      continue;
+      if (A_player.当前血量 <= 0 | B_player.当前血量 <= 0) {
+
+      } else {
+        continue;
+      }
     }
     cnt++;
   }
