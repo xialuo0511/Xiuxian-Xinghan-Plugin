@@ -416,6 +416,14 @@ export class Battle extends plugin {
     B_player.当前血量 = B_player.血量上限;
     let Data_battle = await zd_battle(A_player, B_player);
     let msg = Data_battle.msg;
+    let A_win = `${A_player.名号}击败了${B_player.名号}`;
+    let B_win = `${B_player.名号}击败了${A_player.名号}`;
+    if (msg.find(item => item == A_win)) {
+    } else if (msg.find(item => item == B_win)) {
+    } else {
+      e.reply(`战斗过程出错`);
+      return;
+    }
 
     let log_data = {
       log: msg,
@@ -426,15 +434,6 @@ export class Battle extends plugin {
     });
     e.reply(img);
     return;
-
-    let A_win = `${A_player.名号}击败了${B_player.名号}`;
-    let B_win = `${B_player.名号}击败了${A_player.名号}`;
-    if (msg.find(item => item == A_win)) {
-    } else if (msg.find(item => item == B_win)) {
-    } else {
-      e.reply(`战斗过程出错`);
-      return;
-    }
     //最后发送消息
     e.reply(final_msg);
     let level_idBB = data.Level_list.find(
