@@ -601,6 +601,12 @@ export async function zd_battle(AA_player, BB_player) {
         伤害 = 伤害 * jineng2[i].beilv + jineng2[i].other;
       }
     }
+    if (cnt != yuansu.cnt) {
+      msg.push(`第${cnt2 + 1}回合：
+${B_player.名号}无法造成伤害`);
+      cnt += 2;
+      continue;
+    }
     if (A_player.魔道值 > 999) {
       buff += Math.trunc(A_player.魔道值 / 1000) / 100;
       if (buff > 1.3) buff = 1.3;
@@ -630,17 +636,6 @@ export async function zd_battle(AA_player, BB_player) {
     else A_player.防御 = BB_player.防御;
     msg.push(`第${cnt2 + 1}回合：
 ${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号}剩余血量${B_player.当前血量}`);
-    //说明被冻结了
-    if (cnt != yuansu.cnt) {
-      msg.push(`第${cnt2 + 1}回合：
-${B_player.名号}无法造成伤害`);
-      cnt += 2;
-      if (A_player.当前血量 <= 0 | B_player.当前血量 <= 0) {
-
-      } else {
-        continue;
-      }
-    }
     cnt++;
   }
   if (cnt % 2 == 0) {
