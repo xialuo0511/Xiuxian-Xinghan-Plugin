@@ -645,13 +645,13 @@ ${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${�
   }
   if (A_player.当前血量 <= 0) {
     AA_player.当前血量 = 0;
-    msg.push(`${BB_player.名号}击败了${AA_player.名号}`);
+    msg.push(`${B_player.名号}击败了${A_player.名号}`);
     B_xue = B_player.当前血量 - BB_player.当前血量;
     A_xue = -AA_player.当前血量;
   }
   else if (B_player.当前血量 <= 0) {
     BB_player.当前血量 = 0;
-    msg.push(`${AA_player.名号}击败了${BB_player.名号}`);
+    msg.push(`${A_player.名号}击败了${B_player.名号}`);
     B_xue = -BB_player.当前血量;
     A_xue = A_player.当前血量 - AA_player.当前血量;
   }
