@@ -54,7 +54,9 @@ export async function Goweizhi(e, weizhi, addres) {
         "***" + adr + "***"
     ];
     for (let i = 0; i < weizhi.length; i++) {
-        msg.push(weizhi[i].name + "\n" + "信息：" + weizhi[i].Grade)
+        msg.push("--------------------")
+        msg.push(weizhi[i].name)
+        msg.push("信息：" + weizhi[i].Grade)
     }
     let log_data = {
         log: msg,
