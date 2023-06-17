@@ -24,7 +24,7 @@ export class yijieSecretPlace extends plugin {
             priority: 600,
             rule: [
                 {
-                    reg: '^#秘境$',
+                    reg: '^#异界秘境$',
                     fnc: 'Secretplace'
                 }
             ]
@@ -40,7 +40,7 @@ export class yijieSecretPlace extends plugin {
             return;
         }
         let addres = "秘境";
-        let weizhi = data.didian_list;
+        let weizhi = data.yijie_mijing;
         await Goweizhi(e, weizhi, addres);
     }
 }
@@ -54,26 +54,7 @@ export async function Goweizhi(e, weizhi, addres) {
         "***" + adr + "***"
     ];
     for (let i = 0; i < weizhi.length; i++) {
-        msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "所需：" + weizhi[i].Price + "灵石")
-    }
-    let log_data = {
-        log: msg,
-    };
-    const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshot('log', {
-        ...data1,
-    });
-    e.reply(img);
-    return;
-}
-
-export async function jindi(e, weizhi, addres) {
-    let adr = addres;
-    let msg = [
-        "***" + adr + "***"
-    ];
-    for (let i = 0; i < weizhi.length; i++) {
-        msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "所需：" + weizhi[i].Price + "灵石" + "\n" + "所需：" + weizhi[i].experience + "修为")
+        msg.push(weizhi[i].name + "\n" + "信息：" + weizhi[i].Grade)
     }
     let log_data = {
         log: msg,
