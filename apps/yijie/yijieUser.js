@@ -153,15 +153,6 @@ export class yijieUser extends plugin {
         }
         let img = await get_yijie_player_img(e);
         e.reply(img);
-        let player = await data.getData('yijie_player', usr_qq);
-        e.reply("如群聊无法接受消息，请私聊发送 #我的面板 以查询异界面板")
-        e.reply(`〓异界基础面板〓
-血量上限：${player.血量上限}
-攻击力：${player.攻击}
-防御力：${player.防御}
-暴击率：${player.暴击率}
-暴击伤害：${player.暴击伤害}
-饱食度：${player.饱食度}`)
         return;
     }
 }
