@@ -26,6 +26,10 @@ export class yijieSecretPlace extends plugin {
                 {
                     reg: '^#异界秘境$',
                     fnc: 'Secretplace'
+                },
+                {
+                    reg: '^#探寻异界秘境.*$',
+                    fnc: 'Gosecretplace'
                 }
             ]
         })
@@ -42,6 +46,54 @@ export class yijieSecretPlace extends plugin {
         let addres = "秘境";
         let weizhi = data.yijie_mijing;
         await Goweizhi(e, weizhi, addres);
+    }
+
+    //降临秘境
+    async Gosecretplace(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        await Go(e);
+        if (allaction) {
+        } else {
+            return;
+        }
+        allaction = false;
+        let didian = e.msg.replace("#探寻异界秘境", '');
+        didian = didian.trim();
+        let weizhi = await data.yijie_mijing.find(item => item.name == didian);
+        if (!isNotNull(weizhi)) {
+            return;
+        }
+        //记录时间
+        let Price = weizhi.Price;
+        await Add_灵石(usr_qq, -Price);
+        const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
+        let action_time = 60000 * time;//持续时间，单位毫秒
+        let arr = {
+            "action": "历练",//动作
+            "end_time": new Date().getTime() + action_time,//结束时间
+            "time": action_time,//持续时间
+            "shutup": "1",//闭关
+            "working": "1",//降妖
+            "Place_action": "0",//秘境状态---开启
+            "Place_actionplus": "1",//沉迷秘境状态---关闭
+            "power_up": "1",//渡劫状态--关闭
+            "mojie": "1",//魔界状态---关闭
+            "xijie": "1", //洗劫状态开启
+            "plant": "1",//采药-开启
+            "mine": "1",//采矿-开启
+            //这里要保存秘境特别需要留存的信息
+            "Place_address": weizhi,
+        };
+        if (e.isGroup) {
+            arr.group_id = e.group_id
+        }
+        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
+        e.reply("开始探寻异界秘境【" + didian + "】," + time + "分钟后归来!");
+        return;
     }
 }
 
