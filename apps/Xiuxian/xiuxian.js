@@ -996,16 +996,21 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         return;
     }
     if (thing_class == "道具") {
-        if (x > 0 && !exist) {
-            //无中生有
-            let daoju = data.yijie_daoju.find(item => item.name == name)
-            najie.道具.push(daoju);
-            najie.道具.find(item => item.name == name).数量 = x;
-            najie.道具.find(item => item.name == name).islockd = 0;
+        if (x > 0) {
+            let e = await najie.道具.find(item => item.name == name);
+            if (!isNotNull(e)) {
+                var equipment = data.yijie_daoju.find(item => item.name == name);
+                let equipment0 = JSON.parse(JSON.stringify(equipment));
+                equipment0.数量 = x;
+                najie.道具.push(equipment0);
+                await Write_yijie_beibao(usr_qq, najie)
+                return;
+            }
+            e.数量 += x;
             await Write_yijie_beibao(usr_qq, najie);
             return;
         }
-        najie.道具.find(item => item.name == name).数量 += x;
+        najie.道具 = najie.道具.filter(item => item.数量 > 0);
         if (najie.道具.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.道具 = najie.道具.filter(item => item.name != name);
