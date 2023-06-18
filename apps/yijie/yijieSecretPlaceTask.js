@@ -90,7 +90,7 @@ export class yijieSecretPlaceTask extends plugin {
 
 
             let B_player = await yijie_zhanlijisuan(monster)
-            let A_win = `${player.名号}击败了${monster.名号}`;
+            let A_win = `击败了${monster.名号}`;
             let B_win = `${monster.名号}击败了${player.名号}`;
             var thing_name;
             var thing_class;
