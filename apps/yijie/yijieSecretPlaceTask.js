@@ -75,6 +75,9 @@ export class yijieSecretPlaceTask extends plugin {
           if (now_time > end_time) {
             let weizhi = action.Place_address;
             let A_player = await yijie_zhanlijisuan(player)
+            let monster;
+            let monster_length;
+            let monster_index;
 
             //根据秘境对应怪物
             if (
