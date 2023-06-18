@@ -91,7 +91,7 @@ export class yijieSecretPlaceTask extends plugin {
 
             let B_player = await yijie_zhanlijisuan(monster)
             let A_win = `击败了${monster.名号}`;
-            let B_win = `${monster.名号}击败了${player.名号}`;
+            let B_win = `被【${monster.名号}】击败了`;
             var thing_name;
             var thing_class;
             var x = this.xiuxianConfigData.SecretPlace.thing;
@@ -99,14 +99,14 @@ export class yijieSecretPlaceTask extends plugin {
             let random2;
             var m = '';
             if (A_player < B_player) {
-              msg.push(B_win)
+              msg.push(B_win + "\n")
               msg.push(`战力不够，被异界的怪物薄纱，建议提升后再来`)
             } else {
               random2 = Math.floor(Math.random() * weizhi.thing.length);
               thing_name = weizhi.thing[random2].name;
               thing_class = weizhi.thing[random2].class;
               msg.push(A_win + "\n")
-              msg.push(`在秘境探索的中途，意外的捡到了【${thing_name}】，捡到后速速返回异界`)
+              msg.push(`在秘境探索的中途，收获了【${thing_name}】`)
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
             }
             let arr = action;
