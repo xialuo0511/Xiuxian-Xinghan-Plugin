@@ -68,8 +68,6 @@ export class yijieSecretPlace extends plugin {
             return;
         }
         //记录时间
-        let Price = weizhi.Price;
-        await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.yijiesecretplace;//时间（分钟）
         let action_time = 60000 * time;//持续时间，单位毫秒
         let arr = {
@@ -88,6 +86,7 @@ export class yijieSecretPlace extends plugin {
             //这里要保存秘境特别需要留存的信息
             "Place_address": weizhi,
         };
+        arr["action"] = "探寻异界秘境【" + didian + "】"
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
@@ -151,7 +150,7 @@ export async function Go(e) {
         if (now_time <= action_end_time) {
             let m = parseInt((action_end_time - now_time) / 1000 / 60);
             let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
-            e.reply("正在探寻异界秘境" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
+            e.reply("正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
             return;
         }
     }
