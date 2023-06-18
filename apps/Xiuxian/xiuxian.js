@@ -996,17 +996,12 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         return;
     }
     if (thing_class == "道具") {
-        if (x > 0) {
-            let e = await najie.道具.find(item => item.name == name);
-            if (!isNotNull(e)) {
-                var equipment = data.yijie_daoju_list.find(item => item.name == name);
-                let equipment0 = JSON.parse(JSON.stringify(equipment));
-                equipment0.数量 = x;
-                najie.道具.push(equipment0);
-                await Write_yijie_beibao(usr_qq, najie)
-                return;
-            }
-            e.数量 += x;
+        if (x > 0 && !exist) {
+            //无中生有
+            let daoju = data.yijie_daoju.find(item => item.name == name)
+            najie.道具.push(daoju);
+            najie.道具.find(item => item.name == name).数量 = x;
+            najie.道具.find(item => item.name == name).islockd = 0;
             await Write_yijie_beibao(usr_qq, najie);
             return;
         }
@@ -1020,7 +1015,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
     }
     if (thing_class == "材料") {
         if (x > 0 && !exist) {//无中生有
-            najie.材料.push(data.cailiao_list.find(item => item.name == name));
+            najie.材料.push(data.yijie_cailiao.find(item => item.name == name));
             najie.材料.find(item => item.name == name).数量 = x;
             najie.材料.find(item => item.name == name).islockd = 0;
             await Write_yijie_beibao(usr_qq, najie);
@@ -1036,7 +1031,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
     }
     if (thing_class == "食材") {
         if (x > 0 && !exist) {//无中生有
-            najie.食材.push(data.shicai_list.find(item => item.name == name));
+            najie.食材.push(data.yijie_shichai.find(item => item.name == name));
             najie.食材.find(item => item.name == name).数量 = x;
             najie.食材.find(item => item.name == name).islockd = 0;
             await Write_yijie_beibao(usr_qq, najie);
