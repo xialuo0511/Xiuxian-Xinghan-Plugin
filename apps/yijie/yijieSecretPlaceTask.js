@@ -100,13 +100,13 @@ export class yijieSecretPlaceTask extends plugin {
             var m = '';
             if (A_player < B_player) {
               msg.push(B_win)
-              msg.push(`战力不够被异界的怪物薄纱，建议提升后再来`)
+              msg.push(`战力不够，被异界的怪物薄纱，建议提升后再来`)
             } else {
               random2 = Math.floor(Math.random() * weizhi.thing.length);
               thing_name = weizhi.thing[random2].name;
               thing_class = weizhi.thing[random2].class;
+              msg.push(A_win + "\n")
               msg.push(`在秘境探索的中途，意外的捡到了【${thing_name}】，捡到后速速返回异界`)
-              msg.push(A_win)
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
             }
             let arr = action;
