@@ -8,6 +8,7 @@ CD: #各种操作cd 必须为整数 单位：分
   garden: 3 # 药园
   level_up: 3 # 突破
   secretplace: 7 #秘境
+  yijiesecretplace: 3 #异界秘境
   yijiplace: 12 #遗迹
   timeplace: 6 #仙府
   forbiddenarea: 4 #禁地
