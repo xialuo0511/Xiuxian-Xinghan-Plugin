@@ -91,7 +91,7 @@ export class yijieSecretPlace extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
+        await redis.set("xiuxian:yijie:player:" + usr_qq + ":action", JSON.stringify(arr));
         e.reply("开始探寻异界秘境【" + didian + "】," + time + "分钟后归来!");
         return;
     }
