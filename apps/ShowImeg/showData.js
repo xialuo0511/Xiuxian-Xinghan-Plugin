@@ -1733,7 +1733,7 @@ async function getPlayerAction(usr_qq) {
     return arr;
 }
 
-async function yijieGetPlayAction(user_qq) {
+async function yijieGetPlayAction(usr_qq) {
     let arr = {};
     let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
     action = JSON.parse(action);
