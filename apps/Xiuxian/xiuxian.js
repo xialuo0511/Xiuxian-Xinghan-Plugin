@@ -1019,33 +1019,47 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         return;
     }
     if (thing_class == "材料") {
-        if (x > 0 && !exist) {//无中生有
-            najie.材料.push(data.yijie_cailiao.find(item => item.name == name));
-            najie.材料.find(item => item.name == name).数量 = x;
-            najie.材料.find(item => item.name == name).islockd = 0;
+        if (x > 0) {
+            let e = await najie.材料.find(item => item.name == name);
+            if (!isNotNull(e)) {
+                var equipment = data.yijie_cailiao.find(item => item.name == name);
+                let equipment0 = JSON.parse(JSON.stringify(equipment));
+                equipment0.数量 = x;
+                najie.材料.push(equipment0);
+                await Write_yijie_beibao(usr_qq, najie)
+                return;
+            }
+            e.数量 += x;
             await Write_yijie_beibao(usr_qq, najie);
             return;
         }
-        najie.材料.find(item => item.name == name).数量 += x;
+        najie.材料 = najie.材料.filter(item => item.数量 > 0);
         if (najie.材料.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.材料 = najie.材料.filter(item => item.name != thing_name);
+            najie.材料 = najie.材料.filter(item => item.name != name);
         }
         await Write_yijie_beibao(usr_qq, najie);
         return;
     }
     if (thing_class == "食材") {
-        if (x > 0 && !exist) {//无中生有
-            najie.食材.push(data.yijie_shichai.find(item => item.name == name));
-            najie.食材.find(item => item.name == name).数量 = x;
-            najie.食材.find(item => item.name == name).islockd = 0;
+        if (x > 0) {
+            let e = await najie.食材.find(item => item.name == name);
+            if (!isNotNull(e)) {
+                var equipment = data.yijie_shichai.find(item => item.name == name);
+                let equipment0 = JSON.parse(JSON.stringify(equipment));
+                equipment0.数量 = x;
+                najie.食材.push(equipment0);
+                await Write_yijie_beibao(usr_qq, najie)
+                return;
+            }
+            e.数量 += x;
             await Write_yijie_beibao(usr_qq, najie);
             return;
         }
-        najie.食材.find(item => item.name == name).数量 += x;
+        najie.食材 = najie.食材.filter(item => item.数量 > 0);
         if (najie.食材.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.食材 = najie.食材.filter(item => item.name != thing_name);
+            najie.食材 = najie.食材.filter(item => item.name != name);
         }
         await Write_yijie_beibao(usr_qq, najie);
         return;
