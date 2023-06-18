@@ -66,7 +66,7 @@ export class yijieSecretPlaceTask extends plugin {
         //现在的时间
         let now_time = new Date().getTime();
         //用户信息
-        let player = await data.getData('yijie_player', usr_qq);
+        let player = await data.getData('yijie_player', player_id);
         //有秘境状态:这个直接结算即可
         if (action.Place_action == '0') {
           //这里改一改,要在结束时间的前两分钟提前结算
