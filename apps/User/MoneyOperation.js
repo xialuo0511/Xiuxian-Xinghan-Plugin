@@ -152,7 +152,7 @@ export class MoneyOperation extends plugin {
             return;
         }
         let msg = e.msg.replace("#异界发", "");
-        let thing_name_pinji_amount = msg.substr(4).split("*");
+        let thing_name_pinji_amount = msg.substr(3).split("*");
         let thing_name = thing_name_pinji_amount[0];
         let amount = 1;
         amount = Number(thing_name_pinji_amount[1]);
@@ -162,7 +162,7 @@ export class MoneyOperation extends plugin {
         //判断列表中是否存在，不存在不能卖,并定位是什么物品
         let thing_exist = await yijie_foundthing(thing_name);
         if (!thing_exist) {
-            e.reply(`这方世界没有[${thing_name}]`);
+            e.reply(`异界没有[${thing_name}]`);
             return;
         }
         await Add_yijie_beibao_thing(B_qq, thing_name, thing_exist.class, amount)
