@@ -997,7 +997,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
     }
     if (thing_class == "道具") {
         if (x > 0) {
-            let e = await najie.装备.find(item => item.name == name);
+            let e = await najie.道具.find(item => item.name == name);
             if (!isNotNull(e)) {
                 var equipment = data.yijie_daoju_list.find(item => item.name == name);
                 let equipment0 = JSON.parse(JSON.stringify(equipment));
