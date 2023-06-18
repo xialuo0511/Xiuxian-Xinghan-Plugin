@@ -10,9 +10,10 @@ import {
     exist_najie_thing,
     foundthing,
     Write_player,
-    Locked_najie_thing
+    Locked_najie_thing,
+    yijie_foundthing
 } from '../Xiuxian/xiuxian.js'
-import { Add_灵石, Add_najie_thing, convert2integer, Check_thing } from '../Xiuxian/xiuxian.js'
+import { Add_灵石, Add_najie_thing, convert2integer, Check_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**
@@ -57,6 +58,14 @@ export class MoneyOperation extends plugin {
                 {
                     reg: '^#全体发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材).*\\*[1-9]\d*',
                     fnc: 'wup_all'
+                },
+                {
+                    reg: '^#异界发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材).*\\*-?[1-9]\d*',
+                    fnc: 'yijie_wup'
+                },
+                {
+                    reg: '^#异界全体发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材).*\\*[1-9]\d*',
+                    fnc: 'yijie_wup_all'
                 },
                 {
                     reg: '^#扣除.*$',
@@ -120,6 +129,42 @@ export class MoneyOperation extends plugin {
             return;
         }
         await Add_najie_thing(B_qq, thing_name, thing_exist.class, amount)
+        e.reply("发放成功")
+    }
+
+    async yijie_wup(e) {
+        //主人
+        if (!e.isMaster) {
+            return;
+        }
+        //对方
+        let isat = e.message.some((item) => item.type === "at");
+        if (!isat) {
+            return;
+        }
+        let atItem = e.message.filter((item) => item.type === "at");//获取at信息
+        let B_qq = atItem[0].qq;//对方qq
+        //检查存档
+        let ifexistplay = await yijie_existplayer(B_qq);
+        if (!ifexistplay) {
+            e.reply("对方无存档");
+            return;
+        }
+        let msg = e.msg.replace("#异界发", "");
+        let thing_name_pinji_amount = msg.substr(4).split("*");
+        let thing_name = thing_name_pinji_amount[0];
+        let amount = 1;
+        amount = Number(thing_name_pinji_amount[1]);
+        if (amount == NaN) {
+            return;
+        }
+        //判断列表中是否存在，不存在不能卖,并定位是什么物品
+        let thing_exist = await yijie_foundthing(thing_name);
+        if (!thing_exist) {
+            e.reply(`这方世界没有[${thing_name}]`);
+            return;
+        }
+        await Add_yijie_beibao_thing(B_qq, thing_name, thing_exist.class, amount)
         e.reply("发放成功")
     }
 

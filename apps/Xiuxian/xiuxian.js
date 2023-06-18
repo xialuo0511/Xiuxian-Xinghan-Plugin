@@ -261,7 +261,7 @@ export async function Read_najie(usr_qq) {
 }
 
 //读取背包信息，返回成一个JavaScript对象
-export async function Read_beibao(usr_qq) {
+export async function Read_yijie_beibao(usr_qq) {
     let dir = path.join(`${__PATH.yijie_beibao_path}/${usr_qq}.json`);
     let najie = fs.readFileSync(dir, 'utf8', (err, data) => {
         if (err) {
@@ -953,6 +953,96 @@ export async function Add_najie_thing(usr_qq, thing_name, thing_class, n, pinji 
             najie.仙宠口粮 = najie.仙宠口粮.filter(item => item.name != thing_name);
         }
         await Write_najie(usr_qq, najie);
+        return;
+    }
+}
+
+
+/**
+ * 增加减少背包内物品
+ * @param usr_qq 操作存档的qq号
+ * @param thing_name  物品名称
+ * @param thing_class  物品类别
+ * @param n  操作的数量,取+增加,取 -减少
+ * @returns 无
+ */
+export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n) {
+    var x = n;
+    if (x == 0) {
+        return;
+    }
+    x = Number(x)
+    let najie = await Read_yijie_beibao(usr_qq);
+    var name = thing_name;
+    let exist = await exist_najie_thing(usr_qq, name, thing_class);
+    //这部分写得很冗余,但能跑
+    if (thing_class == "装备") {
+        if (x > 0) {
+            let e = await najie.装备.find(item => item.name == name);
+            if (!isNotNull(e)) {
+                var equipment = data.yijie_zhuangbei_list.find(item => item.name == name);
+                let equipment0 = JSON.parse(JSON.stringify(equipment));
+                equipment0.数量 = x;
+                najie.装备.push(equipment0);
+                await Write_yijie_beibao(usr_qq, najie)
+                return;
+            }
+            e.数量 += x;
+            await Write_yijie_beibao(usr_qq, najie);
+            return;
+        }
+        najie.装备 = najie.装备.filter(item => item.数量 > 0);
+        await Write_yijie_beibao(usr_qq, najie);
+        return;
+    }
+    if (thing_class == "道具") {
+        if (x > 0 && !exist) {
+            //无中生有
+            let daoju = data.daoju_list.find(item => item.name == name)
+            najie.道具.push(daoju);
+            najie.道具.find(item => item.name == name).数量 = x;
+            najie.道具.find(item => item.name == name).islockd = 0;
+            await Write_yijie_beibao(usr_qq, najie);
+            return;
+        }
+        najie.道具.find(item => item.name == name).数量 += x;
+        if (najie.道具.find(item => item.name == name).数量 < 1) {
+            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+            najie.道具 = najie.道具.filter(item => item.name != name);
+        }
+        await Write_yijie_beibao(usr_qq, najie);
+        return;
+    }
+    if (thing_class == "材料") {
+        if (x > 0 && !exist) {//无中生有
+            najie.材料.push(data.cailiao_list.find(item => item.name == name));
+            najie.材料.find(item => item.name == name).数量 = x;
+            najie.材料.find(item => item.name == name).islockd = 0;
+            await Write_yijie_beibao(usr_qq, najie);
+            return;
+        }
+        najie.材料.find(item => item.name == name).数量 += x;
+        if (najie.材料.find(item => item.name == name).数量 < 1) {
+            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+            najie.材料 = najie.材料.filter(item => item.name != thing_name);
+        }
+        await Write_yijie_beibao(usr_qq, najie);
+        return;
+    }
+    if (thing_class == "食材") {
+        if (x > 0 && !exist) {//无中生有
+            najie.食材.push(data.shicai_list.find(item => item.name == name));
+            najie.食材.find(item => item.name == name).数量 = x;
+            najie.食材.find(item => item.name == name).islockd = 0;
+            await Write_yijie_beibao(usr_qq, najie);
+            return;
+        }
+        najie.食材.find(item => item.name == name).数量 += x;
+        if (najie.食材.find(item => item.name == name).数量 < 1) {
+            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+            najie.食材 = najie.食材.filter(item => item.name != thing_name);
+        }
+        await Write_yijie_beibao(usr_qq, najie);
         return;
     }
 }
@@ -3112,6 +3202,36 @@ export async function foundthing(thing_name) {
     for (var i = 0; i < data.shicai_list.length; i++) {
         if (thing_name == data.shicai_list[i].name) {
             return data.shicai_list[i];
+        }
+    }
+    return false
+}
+
+/**
+ * 
+ * @param {*} thing_name 物品名
+ * @returns 
+ */
+//遍历异界物品
+export async function yijie_foundthing(thing_name) {
+    for (var i = 0; i < data.yijie_daoju.length; i++) {
+        if (thing_name == data.yijie_daoju[i].name) {
+            return data.yijie_daoju[i];
+        }
+    }
+    for (var i = 0; i < data.yijie_zhuangbei_list.length; i++) {
+        if (thing_name == data.yijie_zhuangbei_list[i].name) {
+            return data.yijie_zhuangbei_list[i];
+        }
+    }
+    for (var i = 0; i < data.yijie_cailiao.length; i++) {
+        if (thing_name == data.yijie_cailiao[i].name) {
+            return data.yijie_cailiao[i];
+        }
+    }
+    for (var i = 0; i < data.yijie_shichai.length; i++) {
+        if (thing_name == data.yijie_shichai[i].name) {
+            return data.yijie_shichai[i];
         }
     }
     return false

@@ -15,8 +15,8 @@ class XiuxianData {
         //插件根目录
         const __dirname = path.resolve() + path.sep + "plugins" + path.sep + "xiuxian-emulator-plugin";
         this.filePathMap = {
-            "yijie_player": path.join(__dirname, "/resources/data/yijie/player"),//用户数据
-            "yijie_beibao": path.join(__dirname, "/resources/data/yijie/beibao"),//用户数据
+            "yijie_player": path.join(__dirname, "/resources/data/yijie/player"),//异界玩家数据
+            "yijie_beibao": path.join(__dirname, "/resources/data/yijie/beibao"),//异界背包数据
             "player": path.join(__dirname, "/resources/data/xiuxian_player"),//用户数据
             "equipment": path.join(__dirname, "/resources/data/xiuxian_equipment"),
             "najie": path.join(__dirname, "/resources/data/xiuxian_najie"),
@@ -80,16 +80,18 @@ class XiuxianData {
 
 
         //异界
-        //法宝
-        this.yijie_fabao_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/法宝列表.json`));
-        //武器
-        this.yijie_wuqi_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/武器列表.json`));
-        //护具
-        this.yijie_huju_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/护具列表.json`));
+        //装备
+        this.yijie_zhuangbei_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/装备列表.json`));
         //仙鼎阶段
         this.xiandingjieduan_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/仙鼎阶段.json`));
         //异界秘境
         this.yijie_mijing = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境/秘境列表.json`));
+        //异界道具
+        this.yijie_daoju = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/道具列表.json`));
+        //异界材料
+        this.yijie_cailiao = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/材料列表.json`));
+        //异界食材
+        this.yijie_shichai = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/食材列表.json`));
 
 
         //加载丹药列表
