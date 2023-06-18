@@ -13,7 +13,8 @@ import {
     Read_najie,
     Read_player,
     Read_qinmidu,
-    Write_qinmidu
+    Write_qinmidu,
+    yijie_zhanlijisuan
 } from "../Xiuxian/xiuxian.js"
 
 /**
@@ -1213,6 +1214,35 @@ export async function get_player_img(e) {
 }
 
 /**
+ * 返回该玩家的异界存档图片
+ * @return image
+ */
+export async function get_yijie_player_img(e) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData('yijie_player', usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let player = await data.getData('yijie_player', usr_qq);
+    let player_status = await yijieGetPlayAction(usr_qq);
+    let status = '空闲';
+    if (player_status.time != null) {
+        status = player_status.action + '(剩余时间:' + player_status.time + ')';
+    }
+    data.setData('yijie_player', usr_qq, player);
+    let PowerMini = await yijie_zhanlijisuan(player)
+    let player_data = {
+        user_id: usr_qq,
+        PowerMini: PowerMini,
+        player, // 玩家数据
+    };
+    const data1 = await new Show(e).get_yijieplayerData(player_data);
+    return await puppeteer.screenshot('yijieplayer', {
+        ...data1,
+    });
+}
+
+/**
  * 我的宗门
  * @return image
  */
@@ -1687,6 +1717,25 @@ export async function get_ranking_money_img(e, Data, usr_paiming, thisplayer, th
 async function getPlayerAction(usr_qq) {
     let arr = {};
     let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
+    action = JSON.parse(action);
+    if (action != null) {
+        let action_end_time = action.end_time;
+        let now_time = new Date().getTime();
+        if (now_time <= action_end_time) {
+            let m = parseInt((action_end_time - now_time) / 1000 / 60);
+            let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
+            arr.action = action.action;//当期那动作
+            arr.time = m + "分" + s + "秒";//剩余时间
+            return arr;
+        }
+    }
+    arr.action = "空闲";
+    return arr;
+}
+
+async function yijieGetPlayAction(user_qq) {
+    let arr = {};
+    let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
     action = JSON.parse(action);
     if (action != null) {
         let action_end_time = action.end_time;

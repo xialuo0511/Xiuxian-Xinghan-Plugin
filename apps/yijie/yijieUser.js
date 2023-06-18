@@ -150,6 +150,8 @@ export class yijieUser extends plugin {
         if (!ifexistplay) {
             return;
         }
+        let img = await get_player_img(e);
+        e.reply(img);
         let player = await data.getData('yijie_player', usr_qq);
         e.reply("如群聊无法接受消息，请私聊发送 #我的面板 以查询异界面板")
         e.reply(`〓异界基础面板〓
