@@ -1146,7 +1146,7 @@ export async function yijie_zhanlijisuan(yijie_player) {
     let heji = hp * 0.8 + atk * 1.5 + def * 1.2
     let zhanli = heji * baoji * (1 + baoshang)
     zhanli = zhanli + heji * (1 - baoji)
-    zhanli = Math.parseInt(zhanli)
+    zhanli = parseInt(zhanli)
     return zhanli;
 }
 
