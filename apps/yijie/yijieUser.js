@@ -40,6 +40,7 @@ export class yijieUser extends plugin {
     }
 
     async myzhanli(e) {
+        let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
