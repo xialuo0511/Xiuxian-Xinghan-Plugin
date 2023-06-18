@@ -70,7 +70,7 @@ export class yijieSecretPlace extends plugin {
         //记录时间
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
-        const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
+        const time = this.xiuxianConfigData.CD.yijiesecretplace;//时间（分钟）
         let action_time = 60000 * time;//持续时间，单位毫秒
         let arr = {
             "action": "历练",//动作
