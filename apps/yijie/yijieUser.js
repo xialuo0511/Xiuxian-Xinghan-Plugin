@@ -65,12 +65,6 @@ export class yijieUser extends plugin {
             return;
         }
 
-        //调试
-        if (usr_qq !== 2531606029) {
-            e.reply("功能暂未开放，敬请期待")
-            return;
-        }
-
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (ifexistplay) {
