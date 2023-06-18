@@ -260,6 +260,21 @@ export async function Read_najie(usr_qq) {
     return najie;
 }
 
+//读取背包信息，返回成一个JavaScript对象
+export async function Read_beibao(usr_qq) {
+    let dir = path.join(`${__PATH.yijie_beibao_path}/${usr_qq}.json`);
+    let najie = fs.readFileSync(dir, 'utf8', (err, data) => {
+        if (err) {
+            console.log(err)
+            return "error";
+        }
+        return data;
+    })
+    //将字符串数据转变成数组格式
+    najie = JSON.parse(najie);
+    return najie;
+}
+
 //写入纳戒信息,第二个参数是一个JavaScript对象
 export async function Write_najie(usr_qq, najie) {
     let dir = path.join(__PATH.najie_path, `${usr_qq}.json`);

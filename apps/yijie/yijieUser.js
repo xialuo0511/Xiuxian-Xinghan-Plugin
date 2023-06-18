@@ -92,14 +92,11 @@ export class yijieUser extends plugin {
         //初始化背包
         let new_beibao = {
             "装备": [],
-            "丹药": [],
             "道具": [],
-            "功法": [],
-            "草药": [],
             "材料": [],
             "食材": [],
         }
-        await Write_yijie_beibao(usr_qq, new_player);
+        await Write_yijie_beibao(usr_qq, new_beibao);
         await this.Show_player(e);
         let i = 0
         let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":biguang");
