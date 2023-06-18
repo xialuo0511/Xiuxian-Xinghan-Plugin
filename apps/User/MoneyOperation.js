@@ -7,6 +7,7 @@ import fs from "fs"
 import {
     Read_player,
     existplayer,
+    yijie_existplayer,
     exist_najie_thing,
     foundthing,
     Write_player,
