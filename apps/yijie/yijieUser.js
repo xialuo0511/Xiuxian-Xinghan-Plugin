@@ -1,7 +1,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
-import { Write_yijie_player, Write_yijie_beibao, yijie_existplayer } from '../Xiuxian/xiuxian.js'
+import { Write_yijie_player, Write_yijie_beibao, yijie_existplayer, yijie_zhanlijisuan } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**
@@ -29,10 +29,27 @@ export class yijieUser extends plugin {
                 {
                     reg: '^#我的面板$',
                     fnc: 'Show_player'
+                },
+                {
+                    reg: '^#我的异界战力$',
+                    fnc: 'myzhanli'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async myzhanli(e) {
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            e.reply("您还未前往异界")
+            return;
+        }
+        let player = await data.getData('yijie_player', usr_qq);
+        let zhanli = await yijie_zhanlijisuan(player)
+        e.reply("您当前异界战力为：" + zhanli)
+        return;
     }
 
     async add_yijie(e) {
@@ -54,8 +71,8 @@ export class yijieUser extends plugin {
         }
 
         //有无存档
-        let ifexistplay = redis.get("xiuxian:yijie:player:" + usr_qq)
-        if (!ifexistplay) {
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (ifexistplay) {
             e.reply("您已身处异界")
             return;
         }
