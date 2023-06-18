@@ -2,6 +2,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import { Write_yijie_player, Write_yijie_beibao, yijie_existplayer, yijie_zhanlijisuan } from '../Xiuxian/xiuxian.js'
+import { get_yijie_player_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**
@@ -150,7 +151,7 @@ export class yijieUser extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let img = await get_player_img(e);
+        let img = await get_yijie_player_img(e);
         e.reply(img);
         let player = await data.getData('yijie_player', usr_qq);
         e.reply("如群聊无法接受消息，请私聊发送 #我的面板 以查询异界面板")
