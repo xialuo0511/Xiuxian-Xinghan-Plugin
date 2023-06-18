@@ -107,7 +107,7 @@ export class yijieSecretPlaceTask extends plugin {
               thing_class = weizhi.thing[random2].class;
               msg.push(`在秘境探索的中途，意外的捡到了【${thing_name}】，捡到后速速返回异界`)
               msg.push(A_win)
-              await Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, 1)
+              await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
             }
             let arr = action;
             //把状态都关了
