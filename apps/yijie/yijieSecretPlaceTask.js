@@ -7,9 +7,6 @@ import fs from 'node:fs';
 import {
   isNotNull,
   Add_yijie_beibao_thing,
-} from '../Xiuxian/xiuxian.js';
-import {
-  Add_yijie_beibao_thing,
   yijie_zhanlijisuan
 } from '../Xiuxian/xiuxian.js';
 
