@@ -59,7 +59,7 @@ export class yijieUser extends plugin {
         let wupin = e.msg.replace("#炼化", '');
         wupin = wupin.trim();
         let shuliang = await exist_yijie_beibao_thing(usr_qq, wupin, "道具");
-        if (didian.includes("仙鼎遗书")) {
+        if (wupin.includes("仙鼎遗书")) {
             if (!shuliang || shuliang < 1) {
                 e.reply(`您的【${wupin}】不足！`)
                 return;
