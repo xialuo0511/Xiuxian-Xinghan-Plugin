@@ -2,8 +2,8 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_najie_thing, convert2integer } from '../Xiuxian/xiuxian.js'
-import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
+import { Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
+import { exist_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
@@ -64,8 +64,13 @@ export class yijieSecretPlace extends plugin {
         let didian = e.msg.replace("#探寻异界秘境", '');
         didian = didian.trim();
         if (didian.includes("仙鼎历练")) {
-            e.reply("暂未开放")
-            return;
+            if (!exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具") || exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具") == 0) {
+                e.reply("您的【仙鼎历练券】不足！")
+                return;
+            } else {
+                await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", -1)
+            }
+
         }
         let weizhi = await data.yijie_mijing.find(item => item.name == didian);
         if (!isNotNull(weizhi)) {

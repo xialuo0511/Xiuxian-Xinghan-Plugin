@@ -508,6 +508,40 @@ export async function player_efficiency(usr_qq) {
     data.setData("player", usr_qq, player);
     return;
 }
+
+/**
+ * 
+ * @param {*} usr_qq 玩家qq
+ * @param {*} thing_name 物品名
+ * @param {*} thing_class 物品类别
+ * @param {*} thing_pinji 可选参数，装备品阶，数字0-6等
+ * @returns 物品数量或者false
+ *
+ * 要用await
+ * 检查纳戒内物品是否存在
+ * 判断物品
+ */
+export async function exist_yijie_beibao_thing(usr_qq, thing_name, thing_class) {
+    let najie = await Read_yijie_beibao(usr_qq);
+    let ifexist;
+    if (thing_class == "装备") {
+        ifexist = najie.装备.find(item => item.name == thing_name);
+    }
+    if (thing_class == "道具") {
+        ifexist = najie.道具.find(item => item.name == thing_name);
+    }
+    if (thing_class == "材料") {
+        ifexist = najie.材料.find(item => item.name == thing_name);
+    }
+    if (thing_class == "食材") {
+        ifexist = najie.食材.find(item => item.name == thing_name);
+    }
+    if (ifexist) {
+        return ifexist.数量;
+    }
+    return false;
+}
+
 /**
  * 
  * @param {*} usr_qq 玩家qq
