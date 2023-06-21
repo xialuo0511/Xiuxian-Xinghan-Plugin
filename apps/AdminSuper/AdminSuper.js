@@ -1657,10 +1657,6 @@ export async function yijie_tongbu(e) {
   for (let player_id of playerList) {
     let usr_qq = player_id;
     let player = await data.getData('yijie_player', usr_qq);
-    if (!isNotNull(player.level_id)) {
-      e.reply('版本升级错误！重装吧，旧版本不支持1.1.6版本之前的存档升级！');
-      return;
-    }
     //删
     // if (isNotNull(player.境界)) {
     //   player.境界 = undefined;
