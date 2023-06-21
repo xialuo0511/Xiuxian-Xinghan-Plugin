@@ -154,6 +154,15 @@ export default class Game extends base {
     };
   }
 
+  async get_beibaoData(myData) {
+    this.model = 'beibao';
+    return {
+      ...this.screenData,
+      saveId: 'beibao',
+      ...myData,
+    };
+  }
+
   async get_stateData(myData) {
     this.model = 'state';
     return {

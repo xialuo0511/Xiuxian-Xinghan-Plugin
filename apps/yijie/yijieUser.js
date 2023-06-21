@@ -2,7 +2,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import { Write_yijie_player, Write_yijie_beibao, yijie_existplayer, yijie_zhanlijisuan } from '../Xiuxian/xiuxian.js'
-import { get_yijie_player_img } from '../ShowImeg/showData.js'
+import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 /**
@@ -34,10 +34,26 @@ export class yijieUser extends plugin {
                 {
                     reg: '^#我的异界战力$',
                     fnc: 'myzhanli'
+                },
+                {
+                    reg: '^#我的背包$',
+                    fnc: 'mybeibao'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async mybeibao(e) {
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let img = await get_beibao_img(e);
+        e.reply(img);
+        return;
     }
 
     async myzhanli(e) {

@@ -1506,6 +1506,32 @@ export async function get_najie_img(e) {
 }
 
 /**
+ * 返回该玩家的背包图片
+ * @return image
+ */
+export async function get_beibao_img(e) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("yijie_player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let najie = await data.getData("yijie_beibao", usr_qq);
+    let player_data = {
+        user_id: usr_qq,
+        najie: najie,
+        najie_equipment: najie.装备,
+        najie_daoju: najie.道具,
+        najie_cailiao: najie.材料,
+        najie_shicai: najie.食材,
+        修仙版本: versionData,
+    }
+    const data1 = await new Show(e).get_beibaoData(player_data);
+    return await puppeteer.screenshot("beibao", {
+        ...data1,
+    });
+}
+
+/**
  * 返回境界列表图片
  * @return image
  */
