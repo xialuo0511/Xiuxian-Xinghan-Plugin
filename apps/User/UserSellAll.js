@@ -13,7 +13,7 @@ import {
 import { Add_灵石, Add_najie_thing, Add_修为, Add_player_学习功法, Add_血气, Locked_najie_thing, Check_thing } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { get_equipment_img } from '../ShowImeg/showData.js'
-import { synchronization } from '../AdminSuper/AdminSuper.js'
+import { synchronization, yijie_tongbu } from '../AdminSuper/AdminSuper.js'
 import { Pushforum_ASS } from '../Help/Forum.js'
 import { Synchronization_ASS } from '../Association/TreasureCabinet.js'
 
@@ -245,7 +245,7 @@ export class UserSellAll extends plugin {
     }
 
     async all_yijie_tongbu(e) {
-        await synchronization(e);
+        await yijie_tongbu(e);
         return;
     }
 

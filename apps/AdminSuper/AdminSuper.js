@@ -1180,7 +1180,7 @@ async function clearNajieThing(thingType, thingName) {
     .filter(usrObj => usrObj);
 }
 
-export async function synchronization(e) {
+export async function yijie_tongbu(e) {
   if (!e.isMaster) {
     return;
   }
