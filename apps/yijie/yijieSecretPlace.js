@@ -63,8 +63,9 @@ export class yijieSecretPlace extends plugin {
         allaction = false;
         let didian = e.msg.replace("#探寻异界秘境", '');
         didian = didian.trim();
+        let shuliang = await exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具");
         if (didian.includes("仙鼎历练")) {
-            if (!exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具") || exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具") <= 0) {
+            if (!shuliang || shuliang < 1) {
                 e.reply("您的【仙鼎历练券】不足！")
                 return;
             } else {
