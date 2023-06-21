@@ -40,7 +40,7 @@ export class yijieUser extends plugin {
                     fnc: 'mybeibao'
                 },
                 {
-                    reg: '^#炼化.*$',
+                    reg: '^#炼化(.*|(.*)*(.*))$',
                     fnc: 'lianhua'
                 }
             ]
@@ -55,19 +55,25 @@ export class yijieUser extends plugin {
         if (!ifexistplay) {
             return;
         }
+
         let beibao = await Read_yijie_beibao(usr_qq);
         let wupin = e.msg.replace("#炼化", '');
         wupin = wupin.trim();
+        wupin = wupin.split("\*");
+        let xshuliang = Number(wupin[1])
+        if (!xshuliang) {
+            xshuliang = 1
+        }
         let shuliang = await exist_yijie_beibao_thing(usr_qq, wupin, "道具");
         if (wupin.includes("仙鼎遗书")) {
-            if (!shuliang || shuliang < 1) {
-                e.reply(`您的【${wupin}】不足！`)
+            if (!shuliang || shuliang < xshuliang) {
+                e.reply(`您的【${wupin}】不足！您现在只有${shuliang}个`)
                 return;
             } else {
                 let thing = beibao.道具.find(item => item.name == wupin);
                 await Add_xianding_exp(usr_qq, thing.出售价)
-                await Add_yijie_beibao_thing(usr_qq, wupin, "道具", -1)
-                e.reply(`炼化【${wupin}】*1，获得仙鼎经验*${thing.出售价}`)
+                await Add_yijie_beibao_thing(usr_qq, wupin, "道具", -1 * xshuliang)
+                e.reply(`炼化【${wupin}】*${xshuliang}，获得仙鼎经验*${thing.出售价 * xshuliang}`)
             }
         }
         return;
