@@ -77,9 +77,9 @@ export class yijieUser extends plugin {
             "id": e.user_id,
             "名号": e.user_id,
             "xianding_level": 1,//仙鼎等级
-            "xianding_exp": 1,//仙鼎经验
+            "xianding_exp": 0,//仙鼎经验
             "xianding_jieduan": 1,//仙鼎阶段
-            "血量上限": 200,
+            "血量上限": 0,
             "攻击": 0,
             "防御": 0,
             "暴击率": 0.05,

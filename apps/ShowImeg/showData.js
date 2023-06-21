@@ -1231,7 +1231,15 @@ export async function get_yijie_player_img(e) {
     }
     data.setData('yijie_player', usr_qq, player);
     let PowerMini = await yijie_zhanlijisuan(player)
+    let xianding = "仙鼎等级：" + player.xianding_level
+    let xianding_exp_max = data.yijie_xianding.find(
+        item => item.level == player.xianding_level
+    ).exp;
+    let strand_xianding = Strand(player.xianding_exp, xianding_exp_max);
     let player_data = {
+        strand_xianding: strand_xianding,
+        xianding_exp_max: xianding_exp_max,
+        xianding: xianding,
         user_id: usr_qq,
         PowerMini: PowerMini,
         player, // 玩家数据
