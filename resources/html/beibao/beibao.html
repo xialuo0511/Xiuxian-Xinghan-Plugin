@@ -40,16 +40,13 @@
             <div class="user_font  wupin">
                 {{each najie.装备 item}}
                 <div class="item">
-                    <div class="item_title">
-                        【{{item.type}}】{{item.name}}({{['劣','普','优','精','极','绝','顶'][item.pinji]}})
-                    </div>
-                    {{if item.type != "武器"}}
+                    {{if item.type == "武器"}}
                     <div class="item_int">攻击：{{item.atk}}</div>
                     {{/if}}
-                    {{if item.type != "护具"}}
+                    {{if item.type == "护具"}}
                     <div class="item_int">防御：{{item.def}}</div>
                     {{/if}}
-                    {{if item.type != "法宝"}}
+                    {{if item.type == "法宝"}}
                     <div class="item_int">血量：{{item.HP}}</div>
                     <div class="item_int">暴击：{{item.bao*100}}%</div>
                     {{/if}}
