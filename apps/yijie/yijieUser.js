@@ -1,7 +1,17 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
-import { Write_yijie_player, Write_yijie_beibao, yijie_existplayer, yijie_zhanlijisuan, Read_yijie_beibao, Add_yijie_beibao_thing, Add_xianding_exp, exist_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
+import {
+    Write_yijie_player,
+    Write_yijie_beibao,
+    yijie_existplayer,
+    yijie_zhanlijisuan,
+    Read_yijie_beibao,
+    Add_yijie_beibao_thing,
+    Add_xianding_exp,
+    exist_yijie_beibao_thing,
+    yijie_foundthing
+} from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
@@ -40,7 +50,7 @@ export class yijieUser extends plugin {
                     fnc: 'mybeibao'
                 },
                 {
-                    reg: '^#炼化((.*)|(.*)*(.*))$',
+                    reg: '^#炼化(.*|(.*)*(.*))$',
                     fnc: 'lianhua'
                 }
             ]
@@ -55,28 +65,24 @@ export class yijieUser extends plugin {
         if (!ifexistplay) {
             return;
         }
-
         let beibao = await Read_yijie_beibao(usr_qq);
         let wupin = e.msg.replace("#炼化", '');
         wupin = wupin.trim();
-        // if (!wupin.includes("*")) {
-        //     wupin = wupin + "*"
-        // }
-        wupin = wupin.split("\*");
-        let xshuliang = Number(wupin[1])
-        if (!xshuliang) {
-            xshuliang = 1
+        let x = await yijie_foundthing(wupin)
+        if (!x) {
+            e.reply("异界查无此物")
+            return;
         }
         let shuliang = await exist_yijie_beibao_thing(usr_qq, wupin, "道具");
         if (wupin.includes("仙鼎遗书")) {
-            if (!shuliang || shuliang < xshuliang) {
-                e.reply(`您的【${wupin}】不足！您现在只有${shuliang}个`)
+            if (!shuliang || shuliang < 1) {
+                e.reply(`您的【${wupin}】不足！`)
                 return;
             } else {
                 let thing = beibao.道具.find(item => item.name == wupin);
                 await Add_xianding_exp(usr_qq, thing.出售价)
-                await Add_yijie_beibao_thing(usr_qq, wupin, "道具", -1 * xshuliang)
-                e.reply(`炼化【${wupin}】*${xshuliang}，获得仙鼎经验*${thing.出售价 * xshuliang}`)
+                await Add_yijie_beibao_thing(usr_qq, wupin, "道具", -1)
+                e.reply(`炼化【${wupin}】*1，获得仙鼎经验*${thing.出售价}!`)
             }
         }
         return;
