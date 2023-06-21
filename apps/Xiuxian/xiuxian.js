@@ -1045,6 +1045,9 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
             return;
         }
         najie.道具 = najie.道具.filter(item => item.数量 > 0);
+        if (!najie.道具.find(item => item.name == name)) {
+            return;
+        }
         if (najie.道具.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.道具 = najie.道具.filter(item => item.name != name);
