@@ -40,6 +40,9 @@
             <div class="user_font  wupin">
                 {{each najie.装备 item}}
                 <div class="item">
+                    <div class="item_title">
+                        【{{item.type}}】{{item.name}}
+                    </div>
                     {{if item.type == "武器"}}
                     <div class="item_int">攻击：{{item.atk}}</div>
                     {{/if}}
