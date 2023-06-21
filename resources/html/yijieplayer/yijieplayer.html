@@ -35,7 +35,7 @@
                 <div class="user_top_font_right">
                     生命：{{(player.血量上限).toFixed(0)}}
                 </div>
-                <div class="user_top_font_right">代币：0</div>
+                <div class="user_top_font_right">星魂币：{{player.星魂币}}</div>
             </div>
         </div>
         <!--下-->
@@ -55,6 +55,9 @@
                                 暴伤：{{(player.暴击伤害*100).toFixed(0)}}%
                             </div>
                         </div>
+                        <div class="item_title font_left">
+                            饱食度:【{{player.饱食度}}】
+                        </div>
                     </div>
                 </div>
                 <div class="user_font wupin">
@@ -70,13 +73,6 @@
                             </div>
                         </div>
                         <div class="item_int">{{player.xianding_exp}}/{{xianding_exp_max}}</div>
-                    </div>
-                </div>
-                <div class="user_font wupin">
-                    <div class="item">
-                        <div class="item_title font_left">
-                            饱食度:【{{player.饱食度}}】
-                        </div>
                     </div>
                 </div>
             </div>
