@@ -146,6 +146,21 @@ export async function Read_player(usr_qq) {
     return player;
 }
 
+//读取异界存档信息，返回成一个JavaScript对象
+export async function Read_yijie_player(usr_qq) {
+    let dir = path.join(`${__PATH.yijie_player_path}/${usr_qq}.json`);
+    let player = fs.readFileSync(dir, 'utf8', (err, data) => {
+        if (err) {
+            console.log(err)
+            return "error";
+        }
+        return data;
+    })
+    //将字符串数据转变成数组格式
+    player = JSON.parse(player);
+    return player;
+}
+
 //写入存档信息,第二个参数是一个JavaScript对象
 export async function Write_player(usr_qq, player) {
     let dir = path.join(__PATH.player_path, `${usr_qq}.json`);
@@ -319,6 +334,13 @@ export async function Add_热量(usr_qq, 热量 = 0) {
     let player = await Read_player(usr_qq);
     player.热量 += Math.trunc(热量);
     await Write_player(usr_qq, player);
+    return;
+}
+
+export async function Add_xianding_exp(usr_qq, exp = 0) {
+    let player = await Read_yijie_player(usr_qq);
+    player.xianding_exp += Math.trunc(exp);
+    await Write_yijie_player(usr_qq, player);
     return;
 }
 
