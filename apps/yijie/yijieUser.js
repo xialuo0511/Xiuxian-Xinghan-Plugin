@@ -40,7 +40,7 @@ export class yijieUser extends plugin {
                     fnc: 'mybeibao'
                 },
                 {
-                    reg: '^#炼化(.*|(.*)*(.*))$',
+                    reg: '^#炼化((.*)|(.*)*(.*))$',
                     fnc: 'lianhua'
                 }
             ]
@@ -59,9 +59,9 @@ export class yijieUser extends plugin {
         let beibao = await Read_yijie_beibao(usr_qq);
         let wupin = e.msg.replace("#炼化", '');
         wupin = wupin.trim();
-        if (!wupin.includes("*")) {
-            wupin = wupin + "*"
-        }
+        // if (!wupin.includes("*")) {
+        //     wupin = wupin + "*"
+        // }
         wupin = wupin.split("\*");
         let xshuliang = Number(wupin[1])
         if (!xshuliang) {
