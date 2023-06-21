@@ -82,7 +82,7 @@ export class yijieUser extends plugin {
                 let thing = beibao.道具.find(item => item.name == wupin);
                 await Add_xianding_exp(usr_qq, thing.出售价)
                 await Add_yijie_beibao_thing(usr_qq, wupin, "道具", -1)
-                e.reply(`炼化【${wupin}】*1，获得仙鼎经验*${thing.出售价}!`)
+                e.reply(`炼化【${wupin}】*1，获得仙鼎经验*${thing.出售价}`)
             }
         }
         return;
