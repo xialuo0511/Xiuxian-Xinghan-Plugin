@@ -291,12 +291,12 @@ export class AdminSuper extends plugin {
       str.push(t);
       //str += "\n";
     }
-    let T;
+    /*let T;
     for (j = 0; j < str.length / 2; j++) {
       T = str[j];
       str[j] = str[str.length - 1 - j];
       str[str.length - 1 - j] = T;
-    }
+    }*/
     //console.log("jg:\n" + " " + str);
     let log_data = {
       log: str,
