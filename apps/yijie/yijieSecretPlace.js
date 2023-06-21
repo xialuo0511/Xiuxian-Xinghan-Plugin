@@ -63,6 +63,10 @@ export class yijieSecretPlace extends plugin {
         allaction = false;
         let didian = e.msg.replace("#探寻异界秘境", '');
         didian = didian.trim();
+        if (didian.includes("仙鼎历练")) {
+            e.reply("暂未开放")
+            return;
+        }
         let weizhi = await data.yijie_mijing.find(item => item.name == didian);
         if (!isNotNull(weizhi)) {
             return;
