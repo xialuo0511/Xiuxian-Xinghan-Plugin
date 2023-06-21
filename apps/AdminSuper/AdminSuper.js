@@ -19,7 +19,8 @@ import {
   Read_updata_log,
   Add_HP,
   Add_najie_thing,
-  exist_najie_thing
+  exist_najie_thing,
+  Write_yijie_player
 } from '../Xiuxian/xiuxian.js';
 import { Read_Exchange, Write_Exchange } from '../Exchange/Exchange.js';
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
@@ -1637,3 +1638,41 @@ export async function synchronization(e) {
 
   return;
 }
+
+export async function synchronization(e) {
+  if (!e.isMaster) {
+    return;
+  }
+  e.reply('开始同步异界存档');
+  let playerList = [];
+  let files = fs
+    .readdirSync(
+      './plugins/xiuxian-emulator-plugin/resources/data/yijie/player'
+    )
+    .filter(file => file.endsWith('.json'));
+  for (let file of files) {
+    file = file.replace('.json', '');
+    playerList.push(file);
+  }
+  for (let player_id of playerList) {
+    let usr_qq = player_id;
+    let player = await data.getData('yijie_player', usr_qq);
+    if (!isNotNull(player.level_id)) {
+      e.reply('版本升级错误！重装吧，旧版本不支持1.1.6版本之前的存档升级！');
+      return;
+    }
+    //删
+    // if (isNotNull(player.境界)) {
+    //   player.境界 = undefined;
+    // }
+    //补
+    if (!isNotNull(player.星魂币)) {
+      player.星魂币 = 1;
+    }
+    await Write_yijie_player(usr_qq, player);
+  }
+  e.reply('异界存档同步结束');
+
+  return;
+}
+

@@ -69,6 +69,10 @@ export class UserSellAll extends plugin {
                     fnc: 'all_tongbu'
                 },
                 {
+                    reg: '^#一键同步异界信息$',
+                    fnc: 'all_yijie_tongbu'
+                },
+                {
                     reg: "^#召唤天道",
                     fnc: "tiandao",
                 },
@@ -237,6 +241,11 @@ export class UserSellAll extends plugin {
         await synchronization(e);
         await Pushforum_ASS(e);
         await Synchronization_ASS(e);
+        return;
+    }
+
+    async all_yijie_tongbu(e) {
+        await synchronization(e);
         return;
     }
 
