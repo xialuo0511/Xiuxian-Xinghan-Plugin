@@ -85,6 +85,7 @@ export class yijieUser extends plugin {
             "暴击率": 0.05,
             "暴击伤害": 0.50,
             "饱食度": 0,
+            "星魂币": 0,
             "武器": data.yijie_zhuangbei_list.find(item => item.name == "木剑"),
             "护具": data.yijie_zhuangbei_list.find(item => item.name == "木盾"),
             "法宝": data.yijie_zhuangbei_list.find(item => item.name == "葫芦")

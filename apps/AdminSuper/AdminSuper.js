@@ -1663,7 +1663,7 @@ export async function yijie_tongbu(e) {
     // }
     //补
     if (!isNotNull(player.星魂币)) {
-      player.星魂币 = 1;
+      player.星魂币 = 0;
     }
     await Write_yijie_player(usr_qq, player);
   }
