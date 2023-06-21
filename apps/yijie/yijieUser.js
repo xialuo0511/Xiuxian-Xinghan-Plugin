@@ -50,7 +50,7 @@ export class yijieUser extends plugin {
                     fnc: 'mybeibao'
                 },
                 {
-                    reg: '^#炼化(.*|(.*)*(.*))$',
+                    reg: '^#炼化.*$',
                     fnc: 'lianhua'
                 }
             ]
