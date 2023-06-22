@@ -134,7 +134,7 @@ export class yijieUser extends plugin {
             }
         }
         if (yishu1 != 0) {
-            msg = msg + `消耗【一级仙鼎遗书】*${yishu1},`
+            msg = `消耗【一级仙鼎遗书】*${yishu1},`
         }
         if (yishu2 != 0) {
             msg = msg + `消耗【二级仙鼎遗书】*${yishu2},`
