@@ -104,7 +104,7 @@ export class xianding extends plugin {
                 await Add_xianding_exp(usr_qq, thing.出售价 * shuliang)
                 let lingshi = 0 - shuliang
                 e.reply(lingshi)
-                await Add_yijie_beibao_thing(usr_qq, i, "道具", lingshi)
+                await Add_yijie_beibao_thing(usr_qq, i, "道具", -lingshi)
                 expshuliang = expshuliang + thing.出售价 * shuliang
                 if (i.includes("一")) {
                     yishu1 = shuliang
