@@ -111,25 +111,24 @@ export class yijieUser extends plugin {
 
         let all_yishu = ["一级仙鼎遗书", "二级仙鼎遗书", "三级仙鼎遗书", "四级仙鼎遗书", "五级仙鼎遗书"]
         for (var i of all_yishu) {
-            let shuliang = await exist_yijie_beibao_thing(usr_qq, all_yishu[i], "道具");
+            let shuliang = await exist_yijie_beibao_thing(usr_qq, i, "道具");
             if (!shuliang) {
                 shuliang = 0
             }
-            e.reply(all_yishu[i])
             if (shuliang > 0) {
-                let thing = beibao.道具.find(item => item.name == all_yishu[i]);
+                let thing = beibao.道具.find(item => item.name == i);
                 await Add_xianding_exp(usr_qq, thing.出售价 * shuliang)
                 await Add_yijie_beibao_thing(usr_qq, wupin, "道具", -1 * shuliang)
                 expshuliang = expshuliang + thing.出售价 * shuliang
-                if (all_yishu[i].includes("一")) {
+                if (i.includes("一")) {
                     yishu1 = shuliang
-                } else if (all_yishu[i].includes("二")) {
+                } else if (i.includes("二")) {
                     yishu2 = shuliang
-                } else if (all_yishu[i].includes("三")) {
+                } else if (i.includes("三")) {
                     yishu3 = shuliang
-                } else if (all_yishu[i].includes("四")) {
+                } else if (i.includes("四")) {
                     yishu4 = shuliang
-                } else if (all_yishu[i].includes("五")) {
+                } else if (i.includes("五")) {
                     yishu5 = shuliang
                 }
             }
