@@ -4,6 +4,7 @@ import Help from '../../model/help.js';
 import Help1 from '../../model/xunbaohelp.js';
 import Help2 from '../../model/shituhelp.js';
 import Help3 from '../../model/huodonghelp.js';
+import yijieHelp from '../../model/yijie.js';
 import md5 from 'md5';
 
 let helpData = {
@@ -60,6 +61,17 @@ export class BotHelp extends plugin {
         }
       ],
     });
+  }
+
+  async yijiehelp(e) {
+    if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
+    let data = await yijieHelp.yiijehelp(e);
+    if (!data) return;
+    let img = await this.cache(data);
+    await e.reply(img)
   }
 
   async huodonghelp(e) {
