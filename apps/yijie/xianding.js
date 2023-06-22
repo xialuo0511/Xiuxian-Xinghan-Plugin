@@ -7,6 +7,7 @@ import {
     yijie_existplayer,
     yijie_zhanlijisuan,
     Read_yijie_beibao,
+    Read_yijie_player,
     Add_yijie_beibao_thing,
     Add_xianding_exp,
     exist_yijie_beibao_thing,
@@ -40,10 +41,43 @@ export class xianding extends plugin {
                 {
                     reg: '^#一键炼化$',
                     fnc: 'lianhua_all'
+                },
+                {
+                    reg: '^#仙鼎突破$',
+                    fnc: 'xianding_up'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async xianding_up(e) {
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let player = await Read_yijie_player(usr_qq);
+        //先判断够不够经验
+        let xianding_exp_max = data.yijie_xianding.find(
+            item => item.level == player.xianding_level
+        ).exp;
+        if (player.xianding_exp < xianding_exp_max) {
+            e.reply("您的仙鼎经验不足，请炼化更多遗书后再突破！")
+            return;
+        }
+        let new_exp = player.xianding_exp - xianding_exp_max
+        let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"])
+        player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
+        player["防御"] = chushi["初始防御"] + huju["def"]
+        player["血量上限"] = chushi["初始生命"] + fabao["HP"]
+        player["暴击率"] = new_player["暴击率"] + fabao["bao"]
+        player["暴击率"] = Number(new_player["暴击率"].toFixed(3))
+        player["xianding_exp"] = new_exp
+        await Write_yijie_player(usr_qq, new_player);
+        e.reply(`突破成功！仙鼎升到了${player.xianding_level + 1}级，为你提供的力量提高了！可前往【我的面板】查看`)
+        return;
     }
 
     async lianhua(e) {
