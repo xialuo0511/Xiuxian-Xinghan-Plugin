@@ -52,10 +52,44 @@ export class yijieUser extends plugin {
                 {
                     reg: '^#炼化.*$',
                     fnc: 'lianhua'
+                },
+                {
+                    reg: '^#一键炼化$',
+                    fnc: 'lianhua_all'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async lianhua(e) {
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let beibao = await Read_yijie_beibao(usr_qq);
+        let wupin = e.msg.replace("#炼化", '');
+        wupin = wupin.trim();
+        let x = await yijie_foundthing(wupin)
+        if (!x) {
+            e.reply("异界查无此物")
+            return;
+        }
+        let shuliang = await exist_yijie_beibao_thing(usr_qq, wupin, "道具");
+        if (wupin.includes("仙鼎遗书")) {
+            if (!shuliang || shuliang < 1) {
+                e.reply(`您的【${wupin}】不足！可前往【修仙签到】获取`)
+                return;
+            } else {
+                let thing = beibao.道具.find(item => item.name == wupin);
+                await Add_xianding_exp(usr_qq, thing.出售价)
+                await Add_yijie_beibao_thing(usr_qq, wupin, "道具", -1)
+                e.reply(`炼化【${wupin}】*1，获得仙鼎经验*${thing.出售价}`)
+            }
+        }
+        return;
     }
 
     async lianhua(e) {

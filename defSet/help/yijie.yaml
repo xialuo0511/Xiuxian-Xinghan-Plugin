@@ -1,0 +1,30 @@
+- group: 异界秘境
+  list:
+    - icon: help-icon_14
+      title: '#异界秘境'
+      desc: '查询全部异界的秘境'
+    - icon: help-icon_14
+      title: '#探寻异界秘境+秘境名'
+      desc: '前往秘境获得装备、遗书等'
+
+
+- group: 异界世界
+  list:
+    - icon: help-icon_59
+      title: '#造访异界'
+      desc: '前往异界'
+    - icon: help-icon_71
+      title: '#我的面板'
+      desc: '查看异界面板'
+    - icon: help-icon_70
+      title: '#我的背包'
+      desc: '查看异界背包'
+    - icon: help-icon_81
+      title: '#我的异界战力'
+      desc: '查询异界战力'
+
+- group: 仙鼎
+  list:
+    - icon: help-icon_82
+      title: '#炼化+仙鼎遗书名'
+      desc: '炼化仙鼎遗书，提升仙鼎等级'
