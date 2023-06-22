@@ -115,6 +115,7 @@ export class yijieUser extends plugin {
             if (!shuliang) {
                 shuliang = 0
             }
+            shuliang = Number(shuliang)
             if (shuliang > 0) {
                 let thing = beibao.道具.find(item => item.name == all_yishu[i]);
                 await Add_xianding_exp(usr_qq, thing.出售价 * shuliang)
