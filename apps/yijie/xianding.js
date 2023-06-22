@@ -77,6 +77,9 @@ export class xianding extends plugin {
     }
 
     async lianhua_all(e) {
+    e.reply("功能异常，请等待修复")
+    return;
+    /*
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
@@ -139,7 +142,7 @@ export class xianding extends plugin {
         } else {
             e.reply(`本次炼化${msg}共提升仙鼎经验*${expshuliang}`)
             return;
-        }
+        }*/
     }
     
 }
