@@ -1069,6 +1069,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         if (!najie.道具.find(item => item.name == name)) {
             return;
         }
+        najie.道具.find(item => item.name == name).数量 += x;
         if (najie.道具.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.道具 = najie.道具.filter(item => item.name != name);
@@ -1095,6 +1096,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         if (!najie.材料.find(item => item.name == name)) {
             return;
         }
+        najie.材料.find(item => item.name == name).数量 += x;
         if (najie.材料.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.材料 = najie.材料.filter(item => item.name != name);
@@ -1121,6 +1123,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         if (!najie.食材.find(item => item.name == name)) {
             return;
         }
+        najie.食材.find(item => item.name == name).数量 += x;
         if (najie.食材.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.食材 = najie.食材.filter(item => item.name != name);
