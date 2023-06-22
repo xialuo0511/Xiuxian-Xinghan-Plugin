@@ -536,7 +536,6 @@ export async function player_efficiency(usr_qq) {
  * @param {*} usr_qq 玩家qq
  * @param {*} thing_name 物品名
  * @param {*} thing_class 物品类别
- * @param {*} thing_pinji 可选参数，装备品阶，数字0-6等
  * @returns 物品数量或者false
  *
  * 要用await

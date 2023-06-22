@@ -77,74 +77,39 @@ export class xianding extends plugin {
     }
 
     async lianhua_all(e) {
-    e.reply("功能异常，请等待修复")
-    return;
-    /*
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
         let usr_qq = e.user_id;
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
             return;
         }
-        let beibao = await Read_yijie_beibao(usr_qq);
-        let yishu1 = 0
-        let yishu2 = 0
-        let yishu3 = 0
-        let yishu4 = 0
-        let yishu5 = 0
-        let expshuliang = 0
-
-        let msg
-
-        let all_yishu = ["一级仙鼎遗书", "二级仙鼎遗书", "三级仙鼎遗书", "四级仙鼎遗书", "五级仙鼎遗书"]
-        for (var i of all_yishu) {
-            let shuliang = await exist_yijie_beibao_thing(usr_qq, i, "道具");
-            if (!shuliang) {
-                shuliang = 0
-            }
-            if (shuliang > 0) {
-                let thing = beibao.道具.find(item => item.name == i);
-                let ds = thing.数量
-                await Add_xianding_exp(usr_qq, thing.出售价 * shuliang)
-                await Add_yijie_beibao_thing(usr_qq, i, "道具", -ds)
-                expshuliang = expshuliang + thing.出售价 * shuliang
-                if (i.includes("一")) {
-                    yishu1 = shuliang
-                } else if (i.includes("二")) {
-                    yishu2 = shuliang
-                } else if (i.includes("三")) {
-                    yishu3 = shuliang
-                } else if (i.includes("四")) {
-                    yishu4 = shuliang
-                } else if (i.includes("五")) {
-                    yishu5 = shuliang
-                }
+        //检索方法
+        let najie = await data.getData("yijie_beibao", usr_qq);
+        let xiuwei = 0
+        for (var l of najie.道具) {
+            if (l.type == '仙鼎遗书') {
+                //纳戒中的数量
+                let quantity = await exist_yijie_beibao_thing(usr_qq, l.name, l.class);
+                await Add_xianding_exp(usr_qq, quantity * l.出售价)
+                await Add_yijie_beibao_thing(usr_qq, l.name, l.class, -quantity);
+                xiuwei = xiuwei + l.出售价 * quantity;
             }
         }
-        if (yishu1 != 0) {
-            msg = `消耗【一级仙鼎遗书】*${yishu1},`
-        }
-        if (yishu2 != 0) {
-            msg = msg + `【二级仙鼎遗书】*${yishu2},`
-        }
-        if (yishu3 != 0) {
-            msg = msg + `【三级仙鼎遗书】*${yishu3},`
-        }
-        if (yishu4 != 0) {
-            msg = msg + `【四级仙鼎遗书】*${yishu4},`
-        }
-        if (yishu5 != 0) {
-            msg = msg + `【五级仙鼎遗书】*${yishu5},`
-        }
-        if (yishu1 + yishu2 + yishu3 + yishu4 + yishu5 == 0) {
+        await Add_修为(usr_qq, xiuwei);
+        if (xiuwei == 0) {
             e.reply("您的背包里没有一本仙鼎遗书，本次炼化提高的经验为0")
             return;
         } else {
-            e.reply(`本次炼化${msg}共提升仙鼎经验*${expshuliang}`)
+            e.reply(`一键炼化成功！本次炼化共提升仙鼎经验*${expshuliang}`)
             return;
-        }*/
+        }
     }
-    
+
 }
 
 /**
