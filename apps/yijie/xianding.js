@@ -104,7 +104,7 @@ export class xianding extends plugin {
             e.reply("您的背包里没有一本仙鼎遗书，本次炼化提高的经验为0")
             return;
         } else {
-            e.reply(`一键炼化成功！本次炼化共提升仙鼎经验*${xiuwei}`)
+            e.reply(`已将背包全部仙鼎遗书炼化！本次炼化共提升仙鼎经验*${xiuwei}`)
             return;
         }
     }
