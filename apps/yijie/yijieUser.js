@@ -110,7 +110,7 @@ export class yijieUser extends plugin {
         let msg
 
         let all_yishu = ["一级仙鼎遗书", "二级仙鼎遗书", "三级仙鼎遗书", "四级仙鼎遗书", "五级仙鼎遗书"]
-        for (i of all_yishu) {
+        for (var i of all_yishu) {
             let shuliang = await exist_yijie_beibao_thing(usr_qq, all_yishu[i], "道具");
             if (shuliang && shuliang > 0) {
                 let thing = beibao.道具.find(item => item.name == all_yishu[i]);
