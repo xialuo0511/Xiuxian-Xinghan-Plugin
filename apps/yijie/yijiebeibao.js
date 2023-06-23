@@ -78,10 +78,14 @@ export class yijiebeibao extends plugin {
                     let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
                     e.reply(`您打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
+                    if (item.name == thing.best) {
+                        cishu = 0
+                    } else {
+                        cishu += 1
+                    }
                     break;
                 }
             }
-            cishu += 1
         } else {
             for (let i in contents) {
                 let item = contents[i].items.find(item => item.name == thing.best);
