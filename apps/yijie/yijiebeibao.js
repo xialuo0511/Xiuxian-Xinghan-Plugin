@@ -76,18 +76,12 @@ export class yijiebeibao extends plugin {
             cishu = 0
         }
         if (!lishi) {
-            lishi = []
-        } else {
-            lishi = lishi.split("");
+            lishi = ""
         }
         cishu = Number(cishu)
         cishu += 1
         var time = new Date();
-        let a = {
-            "time": time.toLocaleString(),
-            "cishu": cishu,
-            "wuping": "string"
-        }
+        let a
         if (cishu < thing.baodi) {
             for (let i in contents) {
                 rate += contents[i].rate;
@@ -95,7 +89,7 @@ export class yijiebeibao extends plugin {
                     let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
                     e.reply(`您第${cishu}次打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
-                    a["wuping"] = `【${item.name}】*${item.amount}`
+                    a = `【${item.name}】*${item.amount}`
                     if (item.name == thing.best) {
                         cishu = 0
                     }
@@ -108,15 +102,18 @@ export class yijiebeibao extends plugin {
                 if (item) {
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
                     e.reply(`您第${cishu}次打开了【${thing_name}】，本次为保底，获得了【${item.name}】*${item.amount}`);
-                    a["wuping"] = `【${item.name}】*${item.amount}`
+                    a = `【${item.name}】*${item.amount}`
                     break;
                 }
             }
             cishu = 0
         }
-
-        lishi.push(a.toString())
-        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "log", lishi.toString())
+        lishi = `====================
+时间：${time.toLocaleString()}
+次数：${cishu}
+物品：${a}
+` + lishi
+        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "log", lishi)
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
         return;
     }
