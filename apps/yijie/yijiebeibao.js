@@ -56,7 +56,7 @@ export class yijiebeibao extends plugin {
         }
         let thing_name = e.msg.replace("#开启箱子", '');
         thing_name = thing_name.trim();
-        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, "盒子");
+        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, "箱子");
         if (!x) {
             e.reply(`你没有【${thing_name}】这样的盒子`);
             return;
