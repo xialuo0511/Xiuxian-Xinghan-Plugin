@@ -182,10 +182,10 @@ export class yijiebeibao extends plugin {
                     if (rand < rate) {
                         let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
                         await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                        chuhuo_all += `【${item.name}】*${item.amount},`;
                         a = `【${item.name}】*${item.amount}`
                         if (item.name == thing.best) {
                             cishu = 0
+                            chuhuo_all += `【(极品)${item.name}】*${item.amount},`;
                         }
                         break;
                     }
@@ -195,7 +195,7 @@ export class yijiebeibao extends plugin {
                     let item = contents[i].items.find(item => item.name == thing.best);
                     if (item) {
                         await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                        chuhuo_all += `【（保底）${item.name}】*${item.amount},`;
+                        chuhuo_all += `【(保底)(极品)${item.name}】*${item.amount},`;
                         a = `【${item.name}】*${item.amount}`
                         break;
                     }
