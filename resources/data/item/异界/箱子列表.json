@@ -4,6 +4,8 @@
         "name": "低级武器箱",
         "class": "箱子",
         "type": "活动",
+        "best": "断刃",
+        "baodi": 20,
         "contents": [
             {
                 "items": [

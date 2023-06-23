@@ -66,15 +66,34 @@ export class yijiebeibao extends plugin {
         let contents = thing.contents;
         let rand = Math.random();
         let rate = 0;
-        for (let i in contents) {
-            rate += contents[i].rate;
-            if (rand < rate) {
-                let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
-                await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                e.reply(`您打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
-                break;
-            }
+        let cishu = await redis.get("xiuxian:box:player:" + usr_qq)
+        if (!cishu) {
+            cishu = 0
         }
+        cishu = Number(cishu)
+        if (cishu < thing.baodi) {
+            for (let i in contents) {
+                rate += contents[i].rate;
+                if (rand < rate) {
+                    let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
+                    await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
+                    e.reply(`您打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
+                    break;
+                }
+            }
+            cishu += 1
+        } else {
+            for (let i in contents) {
+                let item = contents[i].items.find(item => item.name == thing.best);
+                if (item) {
+                    await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
+                    e.reply(`您打开了【${thing_name}】，本次为保底，获得了【${item.name}】*${item.amount}`);
+                    break;
+                }
+            }
+            cishu = 0
+        }
+        await redis.set("xiuxian:box:player:" + usr_qq, cishu)
         return;
     }
 
