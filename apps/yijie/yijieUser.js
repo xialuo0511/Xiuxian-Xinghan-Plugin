@@ -84,14 +84,14 @@ export class yijieUser extends plugin {
         player[sf.type] = sf
 
         let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"])
-        let wuqi = new_player["武器"]
-        let huju = new_player["护具"]
-        let fabao = new_player["法宝"]
+        let wuqi = player["武器"]
+        let huju = player["护具"]
+        let fabao = player["法宝"]
         player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
         player["防御"] = chushi["初始防御"] + huju["def"]
         player["血量上限"] = chushi["初始生命"] + fabao["HP"]
-        player["暴击率"] = new_player["暴击率"] + fabao["bao"]
-
+        player["暴击率"] = player["暴击率"] + fabao["bao"]
+        player["暴击率"] = Number(player["暴击率"].toFixed(3))
         await Add_yijie_beibao_thing(usr_qq, sf.name, sf.class, -1)
         await Add_yijie_beibao_thing(usr_qq, change.name, change.class, 1)
         await Write_yijie_player(usr_qq, player)
