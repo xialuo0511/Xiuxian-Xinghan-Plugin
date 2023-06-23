@@ -47,10 +47,6 @@ export class yijieUser extends plugin {
                     fnc: 'myzhanli'
                 },
                 {
-                    reg: '^#我的背包$',
-                    fnc: 'mybeibao'
-                },
-                {
                     reg: '^#异界装备.*$',
                     fnc: 'zb'
                 }
@@ -96,18 +92,6 @@ export class yijieUser extends plugin {
         await Add_yijie_beibao_thing(usr_qq, change.name, change.class, 1)
         await Write_yijie_player(usr_qq, player)
         this.Show_player(e)
-        return;
-    }
-
-    async mybeibao(e) {
-        let usr_qq = e.user_id;
-        //有无存档
-        let ifexistplay = await yijie_existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
-        }
-        let img = await get_beibao_img(e);
-        e.reply(img);
         return;
     }
 

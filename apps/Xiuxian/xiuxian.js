@@ -319,6 +319,14 @@ export async function Add_灵石(usr_qq, 灵石数量 = 0) {
     return;
 }
 
+//使用时记得加await
+export async function Add_星魂币(usr_qq, 星魂币数量 = 0) {
+    let player = await Read_yijie_player(usr_qq);
+    player.星魂币 += Math.trunc(星魂币数量);
+    await Write_yijie_player(usr_qq, player);
+    return;
+}
+
 export async function Add_顶级仙石(usr_qq, 仙石数量 = 0) {
     let dingjixianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
     if (!dingjixianshi) {

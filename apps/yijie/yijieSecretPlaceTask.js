@@ -7,7 +7,8 @@ import fs from 'node:fs';
 import {
   isNotNull,
   Add_yijie_beibao_thing,
-  yijie_zhanlijisuan
+  yijie_zhanlijisuan,
+  Add_星魂币
 } from '../Xiuxian/xiuxian.js';
 
 /**
@@ -90,14 +91,14 @@ export class yijieSecretPlaceTask extends plugin {
             if (
               weizhi.id == 20009002
             ) {
-              monster_length = data.yijie_guaiwu1.length;
+              monster_length = data.yijie_guaiwu0.length;
               monster_index = Math.trunc(Math.random() * monster_length);
-              monster = data.yijie_guaiwu1[monster_index];
+              monster = data.yijie_guaiwu0[monster_index];
             }
 
 
             let B_player = await yijie_zhanlijisuan(monster)
-            let A_win = `击败了${monster.名号}`;
+            let A_win = `击败了【${monster.名号}】`;
             let B_win = `被【${monster.名号}】击败了`;
             var thing_name;
             var thing_class;
@@ -112,8 +113,14 @@ export class yijieSecretPlaceTask extends plugin {
               random2 = Math.floor(Math.random() * weizhi.thing.length);
               thing_name = weizhi.thing[random2].name;
               thing_class = weizhi.thing[random2].class;
-              msg.push(A_win + "\n")
-              msg.push(`在秘境探索的中途，收获了【${thing_name}】`)
+              if (weizhi.name.includes("仙鼎历练")) {
+                msg.push(A_win + "\n")
+                msg.push(`在秘境探索的中途，收获了【${thing_name}】，本次探寻仙鼎历练秘境，获得异界使者的奖励10星魂币`)
+                await Add_星魂币(player_id, 10)
+              } else {
+                msg.push(A_win + "\n")
+                msg.push(`在秘境探索的中途，收获了【${thing_name}】`)
+              }
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
             }
             let arr = action;

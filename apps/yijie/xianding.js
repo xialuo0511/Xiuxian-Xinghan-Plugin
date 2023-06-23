@@ -69,7 +69,7 @@ export class xianding extends plugin {
         }
         let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"] + 1)
         if (!chushi) {
-            e.reply("您已达到当前等级上限！请以后再来！")
+            e.reply("您已达到当前仙鼎等级上限！请以后再来！")
             return;
         }
         let new_exp = player.xianding_exp - xianding_exp_max
