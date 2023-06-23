@@ -71,15 +71,20 @@ export class yijiebeibao extends plugin {
         let rand = Math.random();
         let rate = 0;
         let cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id)
-        let lishi = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id + "log")
+        let all_cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_all")
+        let lishi = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_log")
         if (!cishu) {
             cishu = 0
+        }
+        if (!all_cishu) {
+            all_cishu = 0
         }
         if (!lishi) {
             lishi = ""
         }
         cishu = Number(cishu)
         cishu += 1
+        all_cishu += 1
         var time = new Date();
         let a
         if (cishu < thing.baodi) {
@@ -110,10 +115,12 @@ export class yijiebeibao extends plugin {
         }
         lishi = `====================
 时间：${time.toLocaleString()}
-次数：${cishu}
+当前次数：${cishu}
+总次数：${all_cishu}
 物品：${a}
 ` + lishi
-        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "log", lishi)
+        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_log", lishi)
+        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_all", all_cishu)
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
         return;
     }
