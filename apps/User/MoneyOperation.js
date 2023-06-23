@@ -65,6 +65,10 @@ export class MoneyOperation extends plugin {
                     fnc: 'yijie_wup'
                 },
                 {
+                    reg: '^#异界全体发(装备|道具|材料|箱子|食材).*\\*-?[1-9]\d*',
+                    fnc: 'yijie_wup_all'
+                },
+                {
                     reg: '^#异界全体发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材).*\\*[1-9]\d*',
                     fnc: 'yijie_wup_all'
                 },
@@ -174,8 +178,6 @@ export class MoneyOperation extends plugin {
         if (!e.isMaster) {
             return;
         }
-        //这是自己的
-        let A_qq = e.user_id;
         //所有玩家
         let File = fs.readdirSync(__PATH.player_path);
         File = File.filter(file => file.endsWith(".json"));
@@ -209,6 +211,37 @@ export class MoneyOperation extends plugin {
             await Add_najie_thing(this_qq, thing_name, thing_exist.class, amount);
         }
         e.reply(`发放成功,目前共有${File_length}个玩家,每人增加${amount}个${thing_name}`);
+    }
+
+    async yijie_wup_all(e) {
+        //主人
+        if (!e.isMaster) {
+            return;
+        }
+        //所有玩家
+        let File = fs.readdirSync(__PATH.yijie_player_path);
+        File = File.filter(file => file.endsWith(".json"));
+        let File_length = File.length;
+        //获取发送灵石数量
+        let msg = e.msg.replace("#异界全体发", "");
+        let thing_name_pinji_amount = msg.substr(2).split("*");
+        let thing_name = thing_name_pinji_amount[0];
+        let amount = 1;
+        amount = Number(thing_name_pinji_amount[1]);
+        if (amount == NaN) {
+            return;
+        }
+        //判断列表中是否存在，不存在不能卖,并定位是什么物品
+        let thing_exist = await yijie_foundthing(thing_name);
+        if (!thing_exist) {
+            e.reply(`异界查无此物`);
+            return;
+        }
+        for (let i = 0; i < File_length; i++) {
+            let this_qq = File[i].replace(".json", '');
+            await Add_yijie_beibao_thing(this_qq, thing_name, thing_exist.class, amount);
+        }
+        e.reply(`发放成功,目前共有${File_length}个玩家,每人增加【${thing_name}】*${amount}`);
     }
 
     async MoneyWord(e) {
