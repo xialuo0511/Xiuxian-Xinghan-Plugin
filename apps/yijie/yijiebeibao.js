@@ -71,17 +71,16 @@ export class yijiebeibao extends plugin {
             cishu = 0
         }
         cishu = Number(cishu)
+        cishu += 1
         if (cishu < thing.baodi) {
             for (let i in contents) {
                 rate += contents[i].rate;
                 if (rand < rate) {
                     let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                    e.reply(`您打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
+                    e.reply(`您第${cishu}次打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
                     if (item.name == thing.best) {
                         cishu = 0
-                    } else {
-                        cishu += 1
                     }
                     break;
                 }
@@ -91,7 +90,7 @@ export class yijiebeibao extends plugin {
                 let item = contents[i].items.find(item => item.name == thing.best);
                 if (item) {
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                    e.reply(`您打开了【${thing_name}】，本次为保底，获得了【${item.name}】*${item.amount}`);
+                    e.reply(`您第${cishu}次打开了【${thing_name}】，本次为保底，获得了【${item.name}】*${item.amount}`);
                     break;
                 }
             }
