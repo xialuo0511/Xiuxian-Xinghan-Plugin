@@ -115,7 +115,7 @@ export class yijiebeibao extends plugin {
         }
 
         lishi.push(a)
-        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "log", lishi.toString)
+        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "log", lishi.toString())
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
         return;
     }
