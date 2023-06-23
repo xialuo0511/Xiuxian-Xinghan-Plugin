@@ -186,6 +186,8 @@ export class yijiebeibao extends plugin {
                         if (item.name == thing.best) {
                             cishu = 0
                             chuhuo_all += `【(极品)${item.name}】*${item.amount},`;
+                        } else {
+                            chuhuo_all += `【${item.name}】*${item.amount},`;
                         }
                         break;
                     }
