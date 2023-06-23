@@ -95,6 +95,9 @@ export class yijieshop extends plugin {
         } else {
             quantity = parseInt(code[1]);
         }
+        if (!quantity) {
+            quantity = 1
+        }
         //e.reply(`thing_name:${thing_name},   quantity:${quantity}`);
         let ifexist = data.yijie_liuli.find(item => item.name == thing_name);
         if (!ifexist) {
@@ -110,7 +113,7 @@ export class yijieshop extends plugin {
         }
         // 价格倍率
         //价格
-        let commodities_price = ifexist.出售价 * quantity;
+        let commodities_price = ifexist.售价 * quantity;
         commodities_price = Math.trunc(commodities_price);
         //判断金额
         if (lingshi < commodities_price) {
