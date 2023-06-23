@@ -20,7 +20,8 @@ import {
   Add_HP,
   Add_najie_thing,
   exist_najie_thing,
-  Write_yijie_player
+  Write_yijie_player,
+  Write_yijie_beibao
 } from '../Xiuxian/xiuxian.js';
 import { Read_Exchange, Write_Exchange } from '../Exchange/Exchange.js';
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
@@ -1657,6 +1658,7 @@ export async function yijie_tongbu(e) {
   for (let player_id of playerList) {
     let usr_qq = player_id;
     let player = await data.getData('yijie_player', usr_qq);
+    let beibao = await data.getData("yijie_beibao", usr_qq)
     //删
     // if (isNotNull(player.境界)) {
     //   player.境界 = undefined;
@@ -1665,7 +1667,11 @@ export async function yijie_tongbu(e) {
     if (!isNotNull(player.星魂币)) {
       player.星魂币 = 0;
     }
+    if (!isNotNull(beibao.箱子)) {
+      beibao.箱子 = [];
+    }
     await Write_yijie_player(usr_qq, player);
+    await Write_yijie_beibao(usr_qq, beibao);
   }
   e.reply('异界存档同步结束');
 
