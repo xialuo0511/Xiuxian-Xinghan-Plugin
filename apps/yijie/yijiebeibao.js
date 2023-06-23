@@ -154,7 +154,7 @@ export class yijiebeibao extends plugin {
         let contents = thing.contents;
         let chuhuo_all = ""
 
-        for (i = 0; i < 10; i++) {
+        for (let i = 0; i < 10; i++) {
 
             let rand = Math.random();
             let rate = 0;
