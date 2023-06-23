@@ -11,7 +11,8 @@ import {
     Add_yijie_beibao_thing,
     Add_xianding_exp,
     exist_yijie_beibao_thing,
-    yijie_foundthing
+    yijie_foundthing,
+    Add_星魂币
 } from '../Xiuxian/xiuxian.js'
 import { get_liulishop_img } from '../ShowImeg/Showningmeng.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -37,6 +38,10 @@ export class yijieshop extends plugin {
                 {
                     reg: "^#琉璃堂(装备|道具|武器|护具|法宝|箱子)?$",
                     fnc: "yijie_liuli",
+                },
+                {
+                    reg: '^#琉璃堂购买((.*)|(.*)*(.*))$',
+                    fnc: 'Buy_comodities'
                 }
             ]
         })
@@ -53,6 +58,69 @@ export class yijieshop extends plugin {
         let thing_type = e.msg.replace("#琉璃堂", "");
         let img = await get_liulishop_img(e, thing_type);
         e.reply(img);
+        return;
+    }
+
+    //购买商品
+    async Buy_comodities(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        await Go(e);
+        if (allaction) {
+            console.log(allaction);
+        } else {
+            return;
+        }
+        allaction = false;
+        let thing = e.msg.replace("#", '');
+        thing = thing.replace("琉璃堂购买", '');
+        let code = thing.split("\*");
+        let thing_name = code[0];
+        //默认没有数量
+        let quantity = 0;
+        if (parseInt(code[1]) != parseInt(code[1])) {
+            quantity = 1;
+        } else if (parseInt(code[1]) < 1) {
+            e.reply(`输入物品数量小于1,现在默认为1`);
+            quantity = 1;
+        } else {
+            quantity = parseInt(code[1]);
+        }
+        //e.reply(`thing_name:${thing_name},   quantity:${quantity}`);
+        let ifexist = data.yijie_liuli.find(item => item.name == thing_name);
+        if (!ifexist) {
+            e.reply(`琉璃堂还没有这样的东西:${thing_name}`);
+            return;
+        }
+        let player = await Read_yijie_player(usr_qq);
+        let lingshi = player.星魂币;
+        //如果没钱，或者为负数
+        if (lingshi <= 0) {
+            e.reply(`琉璃苣：星魂币不足，请下次再来！`);
+            return;
+        }
+        // 价格倍率
+        //价格
+        let commodities_price = ifexist.出售价 * quantity;
+        commodities_price = Math.trunc(commodities_price);
+        //判断金额
+        if (lingshi < commodities_price) {
+            e.reply(`星魂币不足以支付${thing_name},还需要${commodities_price - lingshi}星魂币`);
+            return;
+        }
+        Add_yijie_beibao_thing(usr_qq, thing_name, ifexist.class, quantity);
+        await Add_星魂币(usr_qq, -commodities_price);
+        //发送消息
+        e.reply([`购买成功!  获得【${thing_name}】*${quantity},花费了【${commodities_price}】星魂币,剩余【${lingshi - commodities_price}】星魂币  `, '\n可以在【我的面板】中查看']);
         return;
     }
 
