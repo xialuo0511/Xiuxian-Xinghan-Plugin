@@ -123,7 +123,7 @@ export class yijieshop extends plugin {
         Add_yijie_beibao_thing(usr_qq, thing_name, ifexist.class, quantity);
         await Add_星魂币(usr_qq, -commodities_price);
         //发送消息
-        e.reply([`购买成功!  获得【${thing_name}】*${quantity},花费了【${commodities_price}】星魂币,剩余【${lingshi - commodities_price}】星魂币  `, '\n可以在【我的面板】中查看']);
+        e.reply([`购买成功!  获得【${thing_name}】*${quantity},花费了【${commodities_price}】星魂币,剩余【${lingshi - commodities_price}】星魂币  `, '\n可以在【#我的面板】中查看']);
         return;
     }
 
