@@ -81,19 +81,21 @@ export class yijieSecretPlaceTask extends plugin {
             let monster_index;
 
             //根据秘境对应怪物
-            if (
-              weizhi.id == 20009001
-            ) {
+            if (weizhi.id == 20009001) {
               monster_length = data.yijie_guaiwu1.length;
               monster_index = Math.trunc(Math.random() * monster_length);
               monster = data.yijie_guaiwu1[monster_index];
             }
-            if (
-              weizhi.id == 20009002
-            ) {
+            //仙鼎秘境08开头
+            if (weizhi.id == 20008001) {
               monster_length = data.yijie_guaiwu0.length;
               monster_index = Math.trunc(Math.random() * monster_length);
               monster = data.yijie_guaiwu0[monster_index];
+            }
+            if (weizhi.id == 20008002) {
+              monster_length = data.yijie_guaiwu1.length;
+              monster_index = Math.trunc(Math.random() * monster_length);
+              monster = data.yijie_guaiwu1[monster_index];
             }
 
 
