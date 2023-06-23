@@ -94,7 +94,7 @@ export class yijiebeibao extends plugin {
                     let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
                     e.reply(`您第${cishu}次打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
-                    a[wuping] = `【${item.name}】*${item.amount}`
+                    a["wuping"] = `【${item.name}】*${item.amount}`
                     if (item.name == thing.best) {
                         cishu = 0
                     }
@@ -107,7 +107,7 @@ export class yijiebeibao extends plugin {
                 if (item) {
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
                     e.reply(`您第${cishu}次打开了【${thing_name}】，本次为保底，获得了【${item.name}】*${item.amount}`);
-                    a[wuping] = `【${item.name}】*${item.amount}`
+                    a["wuping"] = `【${item.name}】*${item.amount}`
                     break;
                 }
             }
