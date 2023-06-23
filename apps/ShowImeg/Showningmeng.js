@@ -320,6 +320,38 @@ export async function get_ningmenghome_img(e, thing_type) {
 }
 
 /**
+ * 返回琉璃堂
+ * @return image
+ */
+export async function get_liulishop_img(e, thing_type) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("yijie_player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let liuli = data.yijie_liuli;
+    if (thing_type != "") {
+        if (thing_type == "装备" || thing_type == "道具" || thing_type == "箱子") {
+            liuli = liuli.filter(item => item.class == thing_type);
+        }
+        else if (thing_type == "武器" || thing_type == "护具" || thing_type == "法宝") {
+
+            liuli = liuli.filter(item => item.type == thing_type);
+        }
+    }
+    let ningmenghome_data = {
+        user_id: usr_qq,
+        commodities_list: liuli
+    }
+    const data1 = await new Show(e).get_liuli(ningmenghome_data);
+    let img = await puppeteer.screenshot("liuli", {
+        ...data1,
+    });
+    return img;
+
+}
+
+/**
  * 返回仙石堂
  * @return image
  */

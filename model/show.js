@@ -281,6 +281,16 @@ export default class Game extends base {
     };
   }
 
+  //琉璃堂
+  async get_liuli(myData) {
+    this.model = 'liuli';
+    return {
+      ...this.screenData,
+      saveId: 'liuli',
+      ...myData,
+    };
+  }
+
   //仙石堂
   async get_xianshiData(myData) {
     this.model = 'xianshi';
