@@ -132,7 +132,7 @@ export class yijieshop extends plugin {
 export async function Go(e) {
     let usr_qq = e.user_id;
     //有无存档
-    let ifexistplay = await existplayer(usr_qq);
+    let ifexistplay = await yijie_existplayer(usr_qq);
     if (!ifexistplay) {
         return;
     }
