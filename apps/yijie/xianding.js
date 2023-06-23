@@ -75,7 +75,7 @@ export class xianding extends plugin {
         player["血量上限"] += chushi["初始生命"]
         player["xianding_exp"] = new_exp
         await Write_yijie_player(usr_qq, player);
-        e.reply(`突破成功！仙鼎升到了${player.xianding_level + 1}级，为你提供的力量提高了！可前往【我的面板】查看`)
+        e.reply(`突破成功！仙鼎升到了${player.xianding_level}级，为你提供的力量提高了！可前往【我的面板】查看`)
         return;
     }
 
