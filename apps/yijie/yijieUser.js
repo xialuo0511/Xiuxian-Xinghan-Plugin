@@ -10,7 +10,8 @@ import {
     Add_yijie_beibao_thing,
     Add_xianding_exp,
     exist_yijie_beibao_thing,
-    yijie_foundthing
+    yijie_foundthing,
+    Read_yijie_player
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -48,10 +49,45 @@ export class yijieUser extends plugin {
                 {
                     reg: '^#我的背包$',
                     fnc: 'mybeibao'
+                },
+                {
+                    reg: '^#异界装备.*$',
+                    fnc: 'zb'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async zb(e) {
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let zb = e.msg.replace("#异界装备", '');
+        zb = zb.trim();
+        let sfcz = await yijie_foundthing(zb)
+        if (!sfcz) {
+            e.reply("异界查无此物")
+            return;
+        }
+        let beibao = await Read_yijie_beibao(usr_qq);
+        let player = await Read_yijie_player(usr_qq);
+        let sf = beibao.装备.find(item => item.name == zb)
+        if (!sf) {
+            e.reply(`您的背包中没有${zb}`)
+            return;
+        }
+        let change = player[sf.type]
+        player[sf.type] = sf
+
+        await Add_yijie_beibao_thing(usr_qq, sf.name, sf.class, -1)
+        await Add_yijie_beibao_thing(usr_qq, change.name, change.class, 1)
+        await Write_yijie_player(usr_qq, player)
+        this.Show_player(e)
+        return;
     }
 
     async mybeibao(e) {
