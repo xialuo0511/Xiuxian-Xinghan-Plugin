@@ -1085,6 +1085,33 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         await Write_yijie_beibao(usr_qq, najie);
         return;
     }
+    if (thing_class == "箱子") {
+        if (x > 0) {
+            let e = await najie.箱子.find(item => item.name == name);
+            if (!isNotNull(e)) {
+                var equipment = data.yijie_box.find(item => item.name == name);
+                let equipment0 = JSON.parse(JSON.stringify(equipment));
+                equipment0.数量 = x;
+                najie.箱子.push(equipment0);
+                await Write_yijie_beibao(usr_qq, najie)
+                return;
+            }
+            e.数量 += x;
+            await Write_yijie_beibao(usr_qq, najie);
+            return;
+        }
+        najie.箱子 = najie.箱子.filter(item => item.数量 > 0);
+        if (!najie.箱子.find(item => item.name == name)) {
+            return;
+        }
+        najie.箱子.find(item => item.name == name).数量 += x;
+        if (najie.箱子.find(item => item.name == name).数量 < 1) {
+            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+            najie.箱子 = najie.箱子.filter(item => item.name != name);
+        }
+        await Write_yijie_beibao(usr_qq, najie);
+        return;
+    }
     if (thing_class == "材料") {
         if (x > 0) {
             let e = await najie.材料.find(item => item.name == name);

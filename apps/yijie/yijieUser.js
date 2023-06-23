@@ -165,6 +165,7 @@ export class yijieUser extends plugin {
             "道具": [],
             "材料": [],
             "食材": [],
+            "箱子": []
         }
         await Write_yijie_beibao(usr_qq, new_beibao);
         await this.Show_player(e);

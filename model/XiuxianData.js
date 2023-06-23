@@ -92,6 +92,8 @@ class XiuxianData {
         this.yijie_cailiao = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/材料列表.json`));
         //异界食材
         this.yijie_shichai = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/食材列表.json`));
+        //异界箱子
+        this.yijie_box = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/箱子列表.json`));
         //仙鼎等级
         this.yijie_xianding = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/仙鼎阶段.json`));
         //异界怪物列表

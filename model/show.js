@@ -172,6 +172,15 @@ export default class Game extends base {
     };
   }
 
+  async get_xianding_level_Data(myData) {
+    this.model = 'xiandinglevel';
+    return {
+      ...this.screenData,
+      saveId: 'xiandinglevel',
+      ...myData,
+    };
+  }
+
   async get_stateDatazhiye(myData) {
     this.model = 'statezhiye';
     return {

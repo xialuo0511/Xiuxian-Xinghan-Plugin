@@ -62,6 +62,10 @@ export class showData extends plugin {
                     fnc: "show_LevelMax",
                 },
                 {
+                    reg: "^#仙鼎等级$",
+                    fnc: "xianding_level",
+                },
+                {
                     reg: "^#我的宗门$",
                     fnc: "show_association",
                 },
@@ -161,6 +165,17 @@ export class showData extends plugin {
             return;
         }
         let img = await get_statemax_img(e);
+        e.reply(img);
+        return;
+    }
+
+    async xianding_level(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let img = await get_xianding_level_img(e);
         e.reply(img);
         return;
     }
@@ -1559,6 +1574,38 @@ export async function get_state_img(e, all_level) {
     }
     const data1 = await new Show(e).get_stateData(state_data);
     return await puppeteer.screenshot("state", {
+        ...data1,
+    });
+}
+
+/**
+ * 返回仙鼎等级列表图片
+ * @return image
+ */
+export async function get_xianding_level_img(e, all_level) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("yijie_player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let player = await data.getData("yijie_player", usr_qq);
+    let Level_id = player.xianding_level;
+    let Level_list = data.xiandingjieduan_list;
+    //循环删除表信息
+    if (!all_level) {
+        for (let i = 1; i <= 60; i++) {
+            if (i > Level_id - 6 && i < Level_id + 6) {
+                continue;
+            }
+            Level_list = await Level_list.filter(item => item.level_id != i);
+        }
+    }
+    let state_data = {
+        user_id: usr_qq,
+        Level_list: Level_list
+    }
+    const data1 = await new Show(e).get_xianding_level_Data(state_data);
+    return await puppeteer.screenshot("xianding", {
         ...data1,
     });
 }

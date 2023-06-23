@@ -22,6 +22,9 @@
     - icon: help-icon_81
       title: '#我的异界战力'
       desc: '查询异界战力'
+    - icon: help-icon_81
+      title: '#异界装备'
+      desc: '装备'
 
 - group: 仙鼎
   list:
