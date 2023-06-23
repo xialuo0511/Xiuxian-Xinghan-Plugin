@@ -2,7 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
+import { Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing, Read_yijie_player } from '../Xiuxian/xiuxian.js'
 import { exist_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
@@ -60,7 +60,7 @@ export class yijieSecretPlace extends plugin {
         } else {
             return;
         }
-        let player = await Read_player(usr_qq)
+        let player = await Read_yijie_player(usr_qq)
         allaction = false;
         let didian = e.msg.replace("#探寻异界秘境", '');
         didian = didian.trim();
