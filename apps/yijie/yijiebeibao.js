@@ -81,6 +81,7 @@ export class yijiebeibao extends plugin {
         }
         cishu = Number(cishu)
         cishu += 1
+        var time = new Date();
         let a = {
             "time": time.toLocaleString(),
             "cishu": cishu,
