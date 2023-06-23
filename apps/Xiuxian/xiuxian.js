@@ -3373,6 +3373,11 @@ export async function yijie_foundthing(thing_name) {
             return data.yijie_shichai[i];
         }
     }
+    for (var i = 0; i < data.yijie_box.length; i++) {
+        if (thing_name == data.yijie_box[i].name) {
+            return data.yijie_box[i];
+        }
+    }
     return false
 }
 

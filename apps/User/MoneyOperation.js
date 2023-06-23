@@ -61,7 +61,7 @@ export class MoneyOperation extends plugin {
                     fnc: 'wup_all'
                 },
                 {
-                    reg: '^#异界发(装备|道具|材料|箱子||食材).*\\*-?[1-9]\d*',
+                    reg: '^#异界发(装备|道具|材料|箱子|食材).*\\*-?[1-9]\d*',
                     fnc: 'yijie_wup'
                 },
                 {
