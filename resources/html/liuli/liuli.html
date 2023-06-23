@@ -25,7 +25,7 @@
 					<div class="user_font">
 						<div>
 							<div style="display:inline-block;">【{{item.type}}】{{item.name}}</div>
-							<div class="price">{{item.出售价*1.2}}星魂币</div>
+							<div class="price">{{item.售价*1}}星魂币</div>
 						</div>
 						{{if item.class=="武器"}}
 						<div class="info" style="width:130px;">攻：{{item.atk}}</div>
@@ -35,6 +35,8 @@
 						<div class="info" style="width:130px;">血：{{item.HP}}</div>
 						<div class="info" style="width:130px;">暴：{{item.bao*100}}%</div>
 						{{else if item.class=="道具"}}
+						<div class="info">描述：{{item.desc}}</div>
+						{{else if item.class=="箱子"}}
 						<div class="info">描述：{{item.desc}}</div>
 						{{/if}}
 					</div>
