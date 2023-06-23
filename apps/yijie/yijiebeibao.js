@@ -41,6 +41,10 @@ export class yijiebeibao extends plugin {
                 {
                     reg: '^#开启箱子.*$',
                     fnc: 'open_box'
+                },
+                {
+                    reg: '^#查询箱子.*$',
+                    fnc: 'find_box'
                 }
             ]
         })
@@ -97,6 +101,29 @@ export class yijiebeibao extends plugin {
             cishu = 0
         }
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
+        return;
+    }
+
+    async find_box(e) {
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let thing_name = e.msg.replace("#查询箱子", '');
+        thing_name = thing_name.trim();
+        let sf = await yijie_foundthing(thing_name);
+        if (!sf) {
+            e.reply("异界查无此物")
+            return;
+        }
+        let thing = data.yijie_box.find(item => item.name == thing_name);
+        let cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id)
+        e.reply(`箱子：${thing_name}
+保底数：${thing.baodi}
+已抽数：${cishu}
+还有【${thing.baodi - cishu}】抽保底`)
         return;
     }
 
