@@ -83,6 +83,7 @@ export class yijiebeibao extends plugin {
             lishi = ""
         }
         cishu = Number(cishu)
+        all_cishu = Number(all_cishu)
         cishu += 1
         all_cishu += 1
         var time = new Date();
