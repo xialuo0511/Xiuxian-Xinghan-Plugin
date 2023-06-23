@@ -66,7 +66,7 @@ export class yijiebeibao extends plugin {
         let contents = thing.contents;
         let rand = Math.random();
         let rate = 0;
-        let cishu = await redis.get("xiuxian:box:player:" + usr_qq)
+        let cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id)
         if (!cishu) {
             cishu = 0
         }
