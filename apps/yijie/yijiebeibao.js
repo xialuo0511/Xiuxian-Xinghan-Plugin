@@ -96,7 +96,7 @@ export class yijiebeibao extends plugin {
             }
             cishu = 0
         }
-        await redis.set("xiuxian:box:player:" + usr_qq, cishu)
+        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
         return;
     }
 
