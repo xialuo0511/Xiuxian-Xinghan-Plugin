@@ -60,23 +60,31 @@ export class yijieSecretPlace extends plugin {
         } else {
             return;
         }
+        let player = await Read_player(usr_qq)
         allaction = false;
         let didian = e.msg.replace("#探寻异界秘境", '');
         didian = didian.trim();
-        let shuliang = await exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具");
-        if (didian.includes("仙鼎历练")) {
-            if (!shuliang || shuliang < 1) {
-                e.reply("您的【仙鼎历练券】不足！")
-                return;
-            } else {
-                await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", -1)
-            }
 
-        }
         let weizhi = await data.yijie_mijing.find(item => item.name == didian);
         if (!isNotNull(weizhi)) {
             return;
         }
+        if (didian.includes("仙鼎历练")) {
+            if (player.xianding_level < didian.tuijian) {
+                e.reply(`进入本历练秘境至少需要仙鼎等级：${didian.tuijian},您当前仙鼎等级为${player.xianding_level},请提示后再来！`)
+                return;
+            } else {
+                let shuliang = await exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具");
+                if (!shuliang || shuliang < 1) {
+                    e.reply("您的【仙鼎历练券】不足！")
+                    return;
+                } else {
+                    await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", -1)
+                }
+            }
+
+        }
+
         //记录时间
         const time = this.xiuxianConfigData.CD.yijiesecretplace;//时间（分钟）
         let action_time = 60000 * time;//持续时间，单位毫秒
