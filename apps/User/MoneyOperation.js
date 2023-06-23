@@ -69,10 +69,6 @@ export class MoneyOperation extends plugin {
                     fnc: 'yijie_wup_all'
                 },
                 {
-                    reg: '^#异界全体发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材).*\\*[1-9]\d*',
-                    fnc: 'yijie_wup_all'
-                },
-                {
                     reg: '^#扣除.*$',
                     fnc: 'Deduction'
                 },

@@ -43,6 +43,10 @@ export class yijiebeibao extends plugin {
                     fnc: 'open_box'
                 },
                 {
+                    reg: '^#十连箱子.*$',
+                    fnc: 'open_box_ten'
+                },
+                {
                     reg: '^#查询箱子.*$',
                     fnc: 'find_box'
                 }
@@ -126,6 +130,95 @@ export class yijiebeibao extends plugin {
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
         return;
     }
+
+    async open_box_ten(e) {
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let thing_name = e.msg.replace("#开启箱子", '');
+        thing_name = thing_name.trim();
+        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, "箱子");
+        if (!x) {
+            e.reply(`你没有【${thing_name}】这样的箱子`);
+            return;
+        }
+        if (x < 10) {
+            e.reply(`【${thing_name}】不足十个！`);
+            return;
+        }
+        let thing = data.yijie_box.find(item => item.name == thing_name);
+        await Add_yijie_beibao_thing(usr_qq, thing_name, "箱子", -10);
+        let contents = thing.contents;
+        let chuhuo_all = ""
+
+        for (i = 0; i < 10; i++) {
+
+            let rand = Math.random();
+            let rate = 0;
+            let cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id)
+            let all_cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_all")
+            let lishi = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_log")
+            if (!cishu) {
+                cishu = 0
+            }
+            if (!all_cishu) {
+                all_cishu = 0
+            }
+            if (!lishi) {
+                lishi = ""
+            }
+            cishu = Number(cishu)
+            all_cishu = Number(all_cishu)
+            cishu += 1
+            all_cishu += 1
+            var time = new Date();
+            let a
+            if (cishu < thing.baodi) {
+                for (let i in contents) {
+                    rate += contents[i].rate;
+                    if (rand < rate) {
+                        let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
+                        await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
+                        chuhuo_all += `【${item.name}】*${item.amount},`;
+                        a = `【${item.name}】*${item.amount}`
+                        if (item.name == thing.best) {
+                            cishu = 0
+                        }
+                        break;
+                    }
+                }
+            } else {
+                for (let i in contents) {
+                    let item = contents[i].items.find(item => item.name == thing.best);
+                    if (item) {
+                        await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
+                        chuhuo_all += `【${item.name}】*${item.amount}（保底）,`;
+                        a = `【${item.name}】*${item.amount}`
+                        break;
+                    }
+                }
+                cishu = 0
+            }
+            lishi = `====================
+时间：${time.toLocaleString()}
+总次数：${all_cishu}
+当前次数：${cishu}
+保底还差：${thing.baodi - cishu}
+物品：${a}
+` + lishi
+            await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
+            await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_log", lishi)
+            await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_all", all_cishu)
+        }
+        e.reply(`您一次性打开了十个箱子，共获得了：
+${chuhuo_all}`)
+
+        return;
+    }
+
 
     async find_box(e) {
         let usr_qq = e.user_id;
