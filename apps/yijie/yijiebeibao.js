@@ -71,7 +71,7 @@ export class yijiebeibao extends plugin {
             if (rand < rate) {
                 let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
                 await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                e.reply(`您打开了【${thing_name}】，获得了【${item.name}】*${item.amount}！`);
+                e.reply(`您打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
                 break;
             }
         }
