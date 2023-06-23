@@ -115,8 +115,9 @@ export class yijiebeibao extends plugin {
         }
         lishi = `====================
 时间：${time.toLocaleString()}
-当前次数：${cishu}
 总次数：${all_cishu}
+当前次数：${cishu}
+保底还差：${thing.baodi - cishu}
 物品：${a}
 ` + lishi
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_log", lishi)
