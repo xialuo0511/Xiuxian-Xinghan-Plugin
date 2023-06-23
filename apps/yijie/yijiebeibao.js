@@ -72,7 +72,7 @@ export class yijiebeibao extends plugin {
         let rate = 0;
         let cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id)
         let lishi = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id + "log")
-        //lishi = lishi.split("");
+        lishi = lishi.split("");
         if (!cishu) {
             cishu = 0
         }
