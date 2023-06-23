@@ -71,7 +71,7 @@ export class yijieSecretPlace extends plugin {
         }
         if (didian.includes("仙鼎历练")) {
             if (player.xianding_level < weizhi.tuijian) {
-                e.reply(`进入本历练秘境至少需要仙鼎等级：${weizhi.tuijian},您当前仙鼎等级为${player.xianding_level},请提示后再来！`)
+                e.reply(`进入本历练秘境至少需要仙鼎等级：${weizhi.tuijian},您当前仙鼎等级为：${player.xianding_level},请提示后再来！`)
                 return;
             } else {
                 let shuliang = await exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具");
