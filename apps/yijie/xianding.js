@@ -67,7 +67,7 @@ export class xianding extends plugin {
             e.reply("您的仙鼎经验不足，请炼化更多遗书后再突破！")
             return;
         }
-        let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"])
+        let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"] + 1)
         if (!chushi) {
             e.reply("您已达到当前等级上限！请以后再来！")
             return;
