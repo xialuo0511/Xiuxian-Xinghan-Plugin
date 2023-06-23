@@ -69,6 +69,7 @@ export class xianding extends plugin {
         }
         let new_exp = player.xianding_exp - xianding_exp_max
         let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"])
+        player["xianding_level"] += 1
         player["攻击"] += chushi["初始攻击"]
         player["防御"] += chushi["初始防御"]
         player["血量上限"] += chushi["初始生命"]
