@@ -37,10 +37,45 @@ export class yijiebeibao extends plugin {
                 {
                     reg: '^#我的背包$',
                     fnc: 'mybeibao'
+                },
+                {
+                    reg: '^#打开箱子$',
+                    fnc: 'open_box'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async open_box(e) {
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let thing_name = e.msg.replace("#打开箱子", '');
+        thing_name = thing_name.trim();
+        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, "盒子");
+        if (!x) {
+            e.reply(`你没有【${thing_name}】这样的盒子`);
+            return;
+        }
+        let thing = data.yijie_box.find(item => item.name == thing_name);
+        await Add_yijie_beibao_thing(usr_qq, thing_name, "箱子", -1);
+        let contents = thing.contents;
+        let rand = Math.random();
+        let rate = 0;
+        for (let i in contents) {
+            rate += contents[i].rate;
+            if (rand < rate) {
+                let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
+                await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
+                e.reply(`${player.名号}打开${thing_name}，获得了${item.name}×${item.amount}`);
+                break;
+            }
+        }
+        return;
     }
 
     async mybeibao(e) {
