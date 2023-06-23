@@ -39,7 +39,7 @@ export class yijiebeibao extends plugin {
                     fnc: 'mybeibao'
                 },
                 {
-                    reg: '^#打开箱子$',
+                    reg: '^#开启箱子$',
                     fnc: 'open_box'
                 }
             ]
