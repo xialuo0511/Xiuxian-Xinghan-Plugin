@@ -565,6 +565,9 @@ export async function exist_yijie_beibao_thing(usr_qq, thing_name, thing_class) 
     if (thing_class == "食材") {
         ifexist = najie.食材.find(item => item.name == thing_name);
     }
+    if (thing_class == "箱子") {
+        ifexist = najie.箱子.find(item => item.name == thing_name);
+    }
     if (ifexist) {
         return ifexist.数量;
     }

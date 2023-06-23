@@ -58,7 +58,7 @@ export class yijiebeibao extends plugin {
         thing_name = thing_name.trim();
         let x = await exist_yijie_beibao_thing(usr_qq, thing_name, "箱子");
         if (!x) {
-            e.reply(`你没有【${thing_name}】这样的盒子`);
+            e.reply(`你没有【${thing_name}】这样的箱子`);
             return;
         }
         let thing = data.yijie_box.find(item => item.name == thing_name);
