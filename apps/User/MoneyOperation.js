@@ -152,7 +152,7 @@ export class MoneyOperation extends plugin {
             return;
         }
         let msg = e.msg.replace("#异界发", "");
-        let thing_name_pinji_amount = msg.substr(3).split("*");
+        let thing_name_pinji_amount = msg.substr(2).split("*");
         let thing_name = thing_name_pinji_amount[0];
         let amount = 1;
         amount = Number(thing_name_pinji_amount[1]);
