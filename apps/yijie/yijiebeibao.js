@@ -69,8 +69,8 @@ export class yijiebeibao extends plugin {
             e.reply(`你没有【${thing_name}】这样的箱子`);
             return;
         }
-        let thing = data.yijie_box.find(item => item.name == thing_name);
         await Add_yijie_beibao_thing(usr_qq, thing_name, "箱子", -1);
+        let thing = data.yijie_box.find(item => item.name == thing_name);
         let contents = thing.contents;
         let rand = Math.random();
         let rate = 0;
