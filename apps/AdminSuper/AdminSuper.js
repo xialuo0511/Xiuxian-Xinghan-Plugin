@@ -1671,8 +1671,10 @@ export async function yijie_tongbu(e) {
       beibao.箱子 = [];
     }
     for (let i = 0; i < beibao.箱子.length; i++) {
+      let shuliang = beibao.箱子[i].数量
       beibao.箱子[i] = data.yijie_box.find(item => item.id == beibao.箱子[i].id);
       delete beibao.箱子[i].contents;
+      beibao.箱子[i].数量 = shuliang
     }
     await Write_yijie_player(usr_qq, player);
     await Write_yijie_beibao(usr_qq, beibao);
