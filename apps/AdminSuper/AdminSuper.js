@@ -1670,6 +1670,13 @@ export async function yijie_tongbu(e) {
     if (!isNotNull(beibao.箱子)) {
       beibao.箱子 = [];
     }
+    for (let i = 0; i < beibao.箱子.length; i++) {
+      const element = beibao.箱子[i];
+      if (element == "2.0高级武器箱") {
+        najie.道具[i].name = "高级武器箱";
+        break;
+      }
+    }
     await Write_yijie_player(usr_qq, player);
     await Write_yijie_beibao(usr_qq, beibao);
   }

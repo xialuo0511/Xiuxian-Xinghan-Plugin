@@ -240,6 +240,12 @@ ${chuhuo_all}`)
         let thing = data.yijie_box.find(item => item.name == thing_name);
         let all_cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_all")
         let cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id)
+        if (!all_cishu) {
+            all_cishu = 0
+        }
+        if (!cishu) {
+            cishu = 0
+        }
         e.reply(`箱子：${thing_name}
 累计抽数：${all_cishu}
 本箱子保底数：${thing.baodi}

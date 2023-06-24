@@ -1102,6 +1102,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
                 var equipment = data.yijie_box.find(item => item.name == name);
                 let equipment0 = JSON.parse(JSON.stringify(equipment));
                 equipment0.数量 = x;
+                delete equipment0.contents;
                 najie.箱子.push(equipment0);
                 await Write_yijie_beibao(usr_qq, najie)
                 return;
