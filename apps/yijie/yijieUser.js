@@ -9,9 +9,12 @@ import {
     Read_yijie_beibao,
     Add_yijie_beibao_thing,
     Add_xianding_exp,
+    Add_yijie_饱食度,
     exist_yijie_beibao_thing,
     yijie_foundthing,
-    Read_yijie_player
+    Read_yijie_player,
+    convert2integer,
+    Add_星魂币
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -211,6 +214,111 @@ export class yijieUser extends plugin {
         let img = await get_yijie_player_img(e);
         e.reply(img);
         return;
+    }
+
+    async yijie_xunbao(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let player = await Read_yijie_player(usr_qq);
+        //检索方法
+        var reg = new RegExp(/异界寻宝/);
+        let msg = e.msg.replace(reg, '');
+        msg = msg.replace("#", '');
+        let code = msg.split("\*");
+        let thing_name = code[0];
+        let quantity = code[1];
+        quantity = await convert2integer(quantity);
+        //看看物品名称有没有设定,是不是瞎说的
+        let thing_exist = await yijie_foundthing(thing_name);
+        if (!thing_exist) {
+            e.reply(`异界查无此物`);
+            return;
+        }
+        await Go(e);
+        if (allaction) {
+            console.log(allaction);
+        } else {
+            return;
+        }
+        allaction = false;
+        var Time = 0;
+        if (usr_qq == "215673729" || usr_qq == "1204963735") {
+            Time = 2;
+        } else {
+            Time = 7;
+        }
+        let now_Time = new Date().getTime(); //获取当前时间戳
+        let shuangxiuTimeout = parseInt(60000 * Time);
+        let last_time = await redis.get("xiuxian:yijie:player:" + usr_qq + "xunbaocd");//获得上次的时间戳,
+        last_time = parseInt(last_time);
+        if (now_Time < last_time + shuangxiuTimeout) {
+            let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
+            let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
+            if (usr_qq == "215673729" || usr_qq == "1204963735") {
+                e.reply("【异界】您受到了寻宝赐福，正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
+            } else {
+                e.reply("【异界】正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
+            }
+            return;
+        }
+        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class);
+        if (!x) {
+            e.reply(`你的背包中没有【${thing_name}】这样的地图`);
+            return;
+        }
+        let math = Math.random();
+        let n = 1;
+        if (thing_name == "幽静谷") {
+            if (player.饱食度 < 100) {
+                e.reply('你快饿死了,还是先吃点东西吧');
+                return;
+            }
+            let mugao = await exist_yijie_beibao_thing(usr_qq, "玄蛛网", "道具")
+            if (quantity > 1) {
+                e.reply("地图一次只能使用一个")
+                return;
+            }
+            if (mugao > 0) {
+                await Add_yijie_饱食度(usr_qq, -100)
+                await redis.set("xiuxian:yijie:player:" + usr_qq + "xunbaocd", now_Time);
+                if (isNotNull(mugao) && mugao > quantity - 1) {
+                    await Add_yijie_beibao_thing(usr_qq, "", "玄蛛网", -1);
+                    mugao = 1
+                } else {
+                    mugao = 0;
+                }
+                await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", -1);
+                if (math > 0.95 && math < 1) {
+                    e.reply(`你在【幽静谷】只捡到了1000个星魂币，迅速跑走了！`)
+                    Add_星魂币(usr_qq, 1000)
+                    return;
+                } else if (math > 0.8 && math <= 0.95) {
+                    e.reply(`你在【幽静谷】捡到了550个星魂币，此外啥也没看到！`)
+                    Add_星魂币(usr_qq, 550)
+                    return;
+                } else if (math > 0.7 && math <= 0.8) {
+                    e.reply(`你在【幽静谷】捡到了50个星魂币，此外啥也没看到！`)
+                    Add_星魂币(usr_qq, 50)
+                    return;
+                } else {
+                    e.reply(`你在【幽静谷】只捡到了10个星魂币，此外啥也没看到！`)
+                    Add_星魂币(usr_qq, 10)
+                    return;
+                }
+            } else {
+                e.reply('你没有携带玄蛛网，无法进入幽静谷')
+                return;
+            }
+        }
     }
 }
 
