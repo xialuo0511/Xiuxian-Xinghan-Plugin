@@ -64,7 +64,7 @@ export class yijieUser extends plugin {
                     fnc: 'yijie_hecheng'
                 },
                 {
-                    reg: '#异界合成列表$',
+                    reg: '#查询异界合成列表$',
                     fnc: 'yijie_hecheng_list'
                 }
             ]
