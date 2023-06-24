@@ -65,7 +65,7 @@ export class yijieUser extends plugin {
                     fnc: 'yijie_hecheng'
                 },
                 {
-                    reg: '#查询异界合成列表$',
+                    reg: '#查询异界合成列表(装备|道具|武器|护具|法宝|材料)?$',
                     fnc: 'yijie_hecheng_list'
                 }
             ]
@@ -396,7 +396,8 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let img = await get_yijie_hecheng_img(e);
+        let thing_type = e.msg.replace("#查询异界合成列表", "");
+        let img = await get_yijie_hecheng_img(e, thing_type);
         e.reply(img);
         return;
     }
@@ -438,7 +439,7 @@ export async function Go(e) {
 }
 
 
-export async function get_yijie_hecheng_img(e) {
+export async function get_yijie_hecheng_img(e, thing_type) {
     let usr_qq = e.user_id;
     let ifexistplay = data.existData("yijie_player", usr_qq);
     if (!ifexistplay) {
@@ -447,7 +448,15 @@ export async function get_yijie_hecheng_img(e) {
 
 
     let tuzhi_list = data.yijie_hecheng;
+    if (thing_type != "") {
+        if (thing_type == "装备" || thing_type == "道具" || thing_type == "材料") {
+            liuli = liuli.filter(item => item.class == thing_type);
+        }
+        else if (thing_type == "武器" || thing_type == "护具" || thing_type == "法宝") {
 
+            liuli = liuli.filter(item => item.type == thing_type);
+        }
+    }
     let tuzhi_data = {
         user_id: usr_qq,
         tuzhi_list: tuzhi_list

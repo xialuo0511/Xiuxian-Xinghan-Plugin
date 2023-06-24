@@ -2,6 +2,7 @@
     {
         "name": "精铁矿",
         "class": "材料",
+        "type": "材料",
         "amount": 8,
         "materials": [
             {
@@ -13,6 +14,19 @@
                 "name": "煤矿",
                 "class": "材料",
                 "amount": 1
+            }
+        ]
+    },
+    {
+        "name": "木棍",
+        "class": "材料",
+        "type": "材料",
+        "amount": 4,
+        "materials": [
+            {
+                "name": "木块",
+                "class": "材料",
+                "amount": 2
             }
         ]
     }

@@ -21,6 +21,9 @@
     - icon: help-icon_79
       title: '#查询异界合成列表'
       desc: '查询异界合成列表'
+    - icon: help-icon_79
+      title: '#查询异界合成列表+类别'
+      desc: '筛选异界合成列表'
 
 - group: 异界秘境
   list:
