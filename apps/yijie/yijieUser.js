@@ -268,7 +268,7 @@ export class yijieUser extends plugin {
         if (now_Time < last_time + shuangxiuTimeout) {
             let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
             let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
-            if (usr_qq == "215673729" || usr_qq == "1204963735") {
+            if (usr_qq == "215673729" || usr_qq == "1204963735" || usr_qq == "2531606029") {
                 e.reply("【异界】您受到了寻宝赐福，正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
             } else {
                 e.reply("【异界】正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
