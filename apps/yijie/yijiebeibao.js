@@ -149,8 +149,8 @@ export class yijiebeibao extends plugin {
             e.reply(`【${thing_name}】不足十个！`);
             return;
         }
-        let thing = data.yijie_box.find(item => item.name == thing_name);
         await Add_yijie_beibao_thing(usr_qq, thing_name, "箱子", -10);
+        let thing = data.yijie_box.find(item => item.name == thing_name);
         let contents = thing.contents;
         let chuhuo_all = ""
 
