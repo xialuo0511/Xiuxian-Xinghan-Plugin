@@ -36,7 +36,7 @@ export class yijieshop extends plugin {
             priority: 600,
             rule: [
                 {
-                    reg: "^#琉璃堂(装备|道具|武器|护具|法宝|箱子)?$",
+                    reg: "^#琉璃堂(装备|道具|武器|护具|法宝|箱子|地图)?$",
                     fnc: "yijie_liuli",
                 },
                 {

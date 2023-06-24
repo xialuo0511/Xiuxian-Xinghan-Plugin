@@ -334,7 +334,7 @@ export async function get_liulishop_img(e, thing_type) {
         if (thing_type == "装备" || thing_type == "道具" || thing_type == "箱子") {
             liuli = liuli.filter(item => item.class == thing_type);
         }
-        else if (thing_type == "武器" || thing_type == "护具" || thing_type == "法宝") {
+        else if (thing_type == "武器" || thing_type == "护具" || thing_type == "法宝" || thing_type == "地图") {
 
             liuli = liuli.filter(item => item.type == thing_type);
         }
