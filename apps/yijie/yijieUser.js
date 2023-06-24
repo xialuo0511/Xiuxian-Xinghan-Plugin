@@ -256,7 +256,7 @@ export class yijieUser extends plugin {
         }
         allaction = false;
         var Time = 0;
-        if (usr_qq == "215673729" || usr_qq == "1204963735") {
+        if (usr_qq == "215673729" || usr_qq == "1204963735" || usr_qq == "2531606029") {
             Time = 2;
         } else {
             Time = 7;
