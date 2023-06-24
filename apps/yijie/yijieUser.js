@@ -450,11 +450,11 @@ export async function get_yijie_hecheng_img(e, thing_type) {
     let tuzhi_list = data.yijie_hecheng;
     if (thing_type != "") {
         if (thing_type == "装备" || thing_type == "道具" || thing_type == "材料") {
-            liuli = liuli.filter(item => item.class == thing_type);
+            tuzhi_list = tuzhi_list.filter(item => item.class == thing_type);
         }
         else if (thing_type == "武器" || thing_type == "护具" || thing_type == "法宝") {
 
-            liuli = liuli.filter(item => item.type == thing_type);
+            tuzhi_list = tuzhi_list.filter(item => item.type == thing_type);
         }
     }
     let tuzhi_data = {
