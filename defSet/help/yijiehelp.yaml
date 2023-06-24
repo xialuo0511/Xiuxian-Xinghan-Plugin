@@ -15,6 +15,12 @@
     - icon: help-icon_81
       title: '#异界装备'
       desc: '装备'
+    - icon: help-icon_80
+      title: '#异界合成xxx'
+      desc: '合成物品'
+    - icon: help-icon_79
+      title: '#查询异界合成列表'
+      desc: '查询异界合成列表'
 
 - group: 异界秘境
   list:
