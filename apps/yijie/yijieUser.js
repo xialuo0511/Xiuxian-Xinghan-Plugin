@@ -14,7 +14,8 @@ import {
     yijie_foundthing,
     Read_yijie_player,
     convert2integer,
-    Add_星魂币
+    Add_星魂币,
+    isNotNull
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
