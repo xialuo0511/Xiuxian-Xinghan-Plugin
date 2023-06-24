@@ -57,6 +57,10 @@ export class yijieUser extends plugin {
                 {
                     reg: '^#异界寻宝.*$',
                     fnc: 'yijie_xunbao'
+                },
+                {
+                    reg: '#异界合成.*$',
+                    fnc: 'yijie_hecheng'
                 }
             ]
         })
@@ -324,6 +328,61 @@ export class yijieUser extends plugin {
                 return;
             }
         }
+    }
+
+    async yijie_hecheng(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let player = await Read_yijie_player(usr_qq);
+        //检索方法
+        var reg = new RegExp(/异界合成/);
+        let msg = e.msg.replace(reg, '');
+        msg = msg.replace("#", '');
+        let code = msg.split("\*");
+        let thing_name = code[0];
+        let quantity = code[1];
+        quantity = await convert2integer(quantity);
+        //看看物品名称有没有设定,是不是瞎说的
+        let thing_exist = await yijie_foundthing(thing_name);
+        if (!thing_exist) {
+            e.reply(`异界查无此物`);
+            return;
+        }
+        allaction = false;
+        let wupin = data.yijie_hecheng.find(item => item.name == thing_name);
+        if (!isNotNull(wupin)) {
+            e.reply(`异界暂不支持该物品的合成`);
+            return;
+        }
+        //看物品是否够
+        for (let i = 0; i < wupin.materials.length; i++) {
+            const material = wupin.materials[i];
+            let x = await exist_yijie_beibao_thing(usr_qq, material.name, material.class);
+            if (x == false) {
+                x = 0;
+            }
+            if (x < material.amount * quantity) {
+                e.reply(`背包中拥有【${material.name}】*${x}，合成需要${material.amount * quantity}份`);
+                return;
+            }
+        }
+        //纳戒中减去对应物品
+        for (let i = 0; i < wupin.materials.length; i++) {
+            const material = wupin.materials[i];
+            await Add_yijie_beibao_thing(usr_qq, material.name, material.class, -material.amount * quantity)
+        }
+        await Add_yijie_beibao_thing(usr_qq, wupin.name, wupin.class, wupin.amount * quantity);
+        e.reply(`合成成功，获得【${wupin.name}】*${wupin.amount * quantity}`);
+        return;
     }
 }
 

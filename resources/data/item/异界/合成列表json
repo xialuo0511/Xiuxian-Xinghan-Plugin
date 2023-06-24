@@ -1,0 +1,19 @@
+[
+    {
+        "name": "精铁矿",
+        "class": "材料",
+        "amount": 8,
+        "materials": [
+            {
+                "name": "原铁矿",
+                "class": "材料",
+                "amount": 8
+            },
+            {
+                "name": "煤矿",
+                "class": "材料",
+                "amount": 1
+            }
+        ]
+    }
+]
