@@ -1672,6 +1672,7 @@ export async function yijie_tongbu(e) {
     }
     for (let i = 0; i < beibao.箱子.length; i++) {
       beibao.箱子[i] = data.yijie_box.find(item => item.id == beibao.箱子[i].id);
+      delete beibao.箱子[i].contents;
     }
     await Write_yijie_player(usr_qq, player);
     await Write_yijie_beibao(usr_qq, beibao);
