@@ -2,7 +2,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
-import { Read_player, existplayer, get_random_talent, getLastsign, Read_equipment } from '../Xiuxian/xiuxian.js'
+import { Read_player, existplayer, get_random_talent, getLastsign, Read_equipment, yijie_existplayer } from '../Xiuxian/xiuxian.js'
 import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.js'
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
@@ -517,15 +517,27 @@ export class UserStart extends plugin {
         data.setData("player", usr_qq, player);
         //给奖励
         let gift_xiuwei = player.连续签到天数 * 3000;
-        await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
-        await Add_修为(usr_qq, gift_xiuwei);
-        await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", 16)
-        let msg = [
-            segment.at(usr_qq),
-            `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket},【仙鼎历练券】*16`
-        ]
-        e.reply(msg);
-        return;
+        let yijie = await yijie_existplayer(usr_qq)
+        if (yijie) {
+            await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
+            await Add_修为(usr_qq, gift_xiuwei);
+            await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", 16)
+            let msg = [
+                segment.at(usr_qq),
+                `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket},【仙鼎历练券】*16`
+            ]
+            e.reply(msg);
+            return;
+        } else {
+            await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
+            await Add_修为(usr_qq, gift_xiuwei);
+            let msg = [
+                segment.at(usr_qq),
+                `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket}`
+            ]
+            e.reply(msg);
+            return;
+        }
     }
 
     async huodong_gift(e) {
