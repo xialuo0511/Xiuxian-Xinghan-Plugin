@@ -52,6 +52,10 @@ export class yijieUser extends plugin {
                 {
                     reg: '^#异界装备.*$',
                     fnc: 'zb'
+                },
+                {
+                    reg: '^#异界寻宝.*$',
+                    fnc: 'yijie_xunbao'
                 }
             ]
         })
