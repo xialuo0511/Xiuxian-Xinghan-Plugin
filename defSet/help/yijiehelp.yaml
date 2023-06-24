@@ -1,13 +1,3 @@
-- group: 异界秘境
-  list:
-    - icon: help-icon_14
-      title: '#异界秘境'
-      desc: '查询全部异界的秘境'
-    - icon: help-icon_14
-      title: '#探寻异界秘境+秘境名'
-      desc: '前往秘境获得装备、遗书等'
-
-
 - group: 异界世界
   list:
     - icon: help-icon_59
@@ -26,11 +16,49 @@
       title: '#异界装备'
       desc: '装备'
 
+- group: 异界秘境
+  list:
+    - icon: help-icon_14
+      title: '#异界秘境'
+      desc: '查询全部异界的秘境'
+    - icon: help-icon_14
+      title: '#探寻异界秘境+秘境名'
+      desc: '前往秘境获得装备、遗书等'
+
+
 - group: 仙鼎
   list:
+    - icon: help-icon_82
+      title: '#仙鼎等级'
+      desc: '查看最近几级的经验和基础值'
     - icon: help-icon_82
       title: '#炼化+仙鼎遗书名'
       desc: '炼化仙鼎遗书，提升仙鼎等级'
     - icon: help-icon_82
       title: '#仙鼎突破'
       desc: '提升仙鼎等级'
+
+- group: 商店
+  list:
+    - icon: help-icon_82
+      title: '#琉璃堂'
+      desc: '查看琉璃堂卖些啥'
+    - icon: help-icon_82
+      title: '#琉璃堂+类别'
+      desc: '筛选琉璃堂物品'
+    - icon: help-icon_82
+      title: '#琉璃堂购买'
+      desc: '花费星魂币购买'
+
+- group: 箱子
+  list:
+    - icon: help-icon_82
+      title: '#打开箱子xxx'
+      desc: '打开箱子'
+    - icon: help-icon_82
+      title: '#十连箱子xxx'
+      desc: '一发十连看看实力'
+    - icon: help-icon_82
+      title: '#查询箱子xxx'
+      desc: '查看最近抽了多少，还有多少保底'
+    
