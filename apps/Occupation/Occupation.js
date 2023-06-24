@@ -2006,6 +2006,8 @@ export async function get_tuzhi_img(e, all_level) {
     });
     return img;
 }
+
+
 export async function Go(e) {
     let usr_qq = e.user_id;
     //不支持私聊

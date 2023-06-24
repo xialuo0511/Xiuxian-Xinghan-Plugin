@@ -19,6 +19,7 @@ import {
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
+import Show from "../../model/show.js"
 
 /**
  * 全局
@@ -61,6 +62,10 @@ export class yijieUser extends plugin {
                 {
                     reg: '#异界合成.*$',
                     fnc: 'yijie_hecheng'
+                },
+                {
+                    reg: '#异界合成列表$',
+                    fnc: 'yijie_hecheng_list'
                 }
             ]
         })
@@ -384,6 +389,16 @@ export class yijieUser extends plugin {
         e.reply(`合成成功，获得【${wupin.name}】*${wupin.amount * quantity}`);
         return;
     }
+
+    async yijie_hecheng_list(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let img = await get_yijie_hecheng_img(e);
+        e.reply(img);
+        return;
+    }
 }
 
 /**
@@ -419,4 +434,26 @@ export async function Go(e) {
     }
     allaction = true;
     return;
+}
+
+
+export async function get_yijie_hecheng_img(e) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("yijie_player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+
+
+    let tuzhi_list = data.yijie_hecheng;
+
+    let tuzhi_data = {
+        user_id: usr_qq,
+        tuzhi_list: tuzhi_list
+    }
+    const data1 = await new Show(e).get_yijiehecheng_Data(tuzhi_data);
+    let img = await puppeteer.screenshot("yijie_hecheng", {
+        ...data1,
+    });
+    return img;
 }

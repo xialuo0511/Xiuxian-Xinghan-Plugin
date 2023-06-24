@@ -520,6 +520,16 @@ export default class Game extends base {
       ...myData,
     };
   }
+
+  async get_yijiehecheng_Data(myData) {
+    this.model = 'yijiehecheng';
+    return {
+      ...this.screenData,
+      saveId: 'yijiehecheng',
+      ...myData,
+    };
+  }
+
   async get_NIANGJIU(myData) {
     this.model = 'niangjiu';
     return {

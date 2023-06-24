@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/yijiehecheng/yijiehecheng.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="../../html/player/player.css" /> -->
+	<link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
+	<!-- <link rel="preload" href="../../img/player/xiuxian-01.png" as="image" /> -->
+	<link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+	<div>
+		<div class="user_bottom1">
+			<!-- 你要是闲得无聊,每个装备可以搞个icon -->
+			<div class="use_data">
+				<div class="user_font use_data_head" style="text-align: center;padding-left: 0px;">
+					<div>异界合成列表</div>
+					<div style="font-size:0.8em;">合成指令：#异界合成+物品名</div>
+				</div>
+				<div class="use_data_body">
+					{{each tuzhi_list item}}
+					<div class="user_font">
+						<div>
+							<div style="display:inline-block;">【{{item.class}}】{{item.name}}</div>
+							<div class="rate">合成数量*{{item.amount}}</div>
+						</div>
+						{{each item.materials material}}
+						<div class="info" style="width:130px;">{{material.name}}×{{material.amount}}</div>
+						{{/each}}
+					</div>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+	</div>
+	<style>
+
+	</style>
+
+</body>
+
+</html>
