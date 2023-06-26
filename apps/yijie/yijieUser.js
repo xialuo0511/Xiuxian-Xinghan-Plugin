@@ -348,20 +348,20 @@ export class yijieUser extends plugin {
                 }
                 await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", -1);
                 if (math > 0.8 && math < 1) {
-                    e.reply(`你在【深邃矿洞】挖出了十个【道具*原金矿】！`)
-                    await Add_yijie_beibao_thing(usr_qq, "原金矿", "道具", 10)
+                    e.reply(`你在【深邃矿洞】挖出了十个【材料*原金矿】！`)
+                    await Add_yijie_beibao_thing(usr_qq, "原金矿", "材料", 10)
                     return;
                 } else if (math > 0.6 && math <= 0.8) {
-                    e.reply(`你在【深邃矿洞】挖出了20个【道具*原铁矿】`)
-                    await Add_yijie_beibao_thing(usr_qq, "原铁矿", "道具", 20)
+                    e.reply(`你在【深邃矿洞】挖出了20个【材料*原铁矿】`)
+                    await Add_yijie_beibao_thing(usr_qq, "原铁矿", "材料", 20)
                     return;
                 } else if (math > 0.4 && math <= 0.6) {
-                    e.reply(`你在【深邃矿洞】挖出了一块钻石矿！`)
-                    await Add_yijie_beibao_thing(usr_qq, "钻石矿", "道具", 1)
+                    e.reply(`你在【深邃矿洞】挖出了一块【材料*钻石矿】`)
+                    await Add_yijie_beibao_thing(usr_qq, "钻石矿", "材料", 1)
                     return;
                 } else {
-                    e.reply(`你在【深邃矿洞】挖出了5个【道具*煤矿】`)
-                    Add_星魂币(usr_qq, 5)
+                    e.reply(`你在【深邃矿洞】挖出了5个【材料*煤矿】`)
+                    await Add_yijie_beibao_thing(usr_qq, "煤矿", "材料", 5)
                     return;
                 }
             } else {
