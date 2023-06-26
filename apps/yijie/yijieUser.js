@@ -308,14 +308,18 @@ export class yijieUser extends plugin {
                     mugao = 0;
                 }
                 await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", -1);
-                if (math > 0.75 && math < 1) {
+                if (math > 0.95 && math < 1) {
                     e.reply(`你在【幽静谷】发现了了1000个星魂币，之后迅速跑走了！`)
                     Add_星魂币(usr_qq, 1000)
                     return;
-                } else if (math > 0.6 && math <= 0.75) {
-                    e.reply(`你在【幽静谷】打开了一个宝箱，宝箱内装有【地图*深邃矿洞】*2以及【道具*铁镐】*2`)
+                } else if (math > 0.8 && math <= 0.95) {
+                    e.reply(`你在【幽静谷】打开了一个宝箱，宝箱内装有【道具*深邃矿洞】*2以及【道具*铁镐】*2`)
                     await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", 2)
                     await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", 2)
+                    return;
+                } else if (math > 0.6 && math <= 0.8) {
+                    e.reply(`你在【幽静谷】捡到了100个星魂币，此外啥也没看到！`)
+                    Add_星魂币(usr_qq, 100)
                     return;
                 } else if (math > 0.4 && math <= 0.6) {
                     e.reply(`你在【幽静谷】捡到了50个星魂币，此外啥也没看到！`)
