@@ -309,7 +309,7 @@ export class yijieUser extends plugin {
                 }
                 await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", -1);
                 if (math > 0.75 && math < 1) {
-                    e.reply(`你在【幽静谷】只捡到了1000个星魂币，迅速跑走了！`)
+                    e.reply(`你在【幽静谷】发现了了1000个星魂币，之后迅速跑走了！`)
                     Add_星魂币(usr_qq, 1000)
                     return;
                 } else if (math > 0.6 && math <= 0.75) {
