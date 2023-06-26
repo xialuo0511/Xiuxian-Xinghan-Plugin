@@ -61,6 +61,10 @@ export class yijieUser extends plugin {
                     fnc: 'yijie_xunbao'
                 },
                 {
+                    reg: '^#异界食用.*$',
+                    fnc: 'yijie_eat'
+                },
+                {
                     reg: '#异界合成.*$',
                     fnc: 'yijie_hecheng'
                 },
@@ -248,10 +252,7 @@ export class yijieUser extends plugin {
         var reg = new RegExp(/异界寻宝/);
         let msg = e.msg.replace(reg, '');
         msg = msg.replace("#", '');
-        let code = msg.split("\*");
-        let thing_name = code[0];
-        let quantity = code[1];
-        quantity = await convert2integer(quantity);
+        let thing_name = msg
         //看看物品名称有没有设定,是不是瞎说的
         let thing_exist = await yijie_foundthing(thing_name);
         if (!thing_exist) {
@@ -291,21 +292,16 @@ export class yijieUser extends plugin {
             return;
         }
         let math = Math.random();
-        let n = 1;
         if (thing_name == "幽静谷") {
             if (player.饱食度 < 100) {
                 e.reply('你快饿死了,还是先吃点东西吧');
                 return;
             }
             let mugao = await exist_yijie_beibao_thing(usr_qq, "玄蛛网", "道具")
-            if (quantity > 1) {
-                e.reply("地图一次只能使用一个")
-                return;
-            }
             if (mugao > 0) {
                 await Add_yijie_饱食度(usr_qq, -100)
                 await redis.set("xiuxian:yijie:player:" + usr_qq + "xunbaocd", now_Time);
-                if (isNotNull(mugao) && mugao > quantity - 1) {
+                if (isNotNull(mugao) && mugao > 0) {
                     await Add_yijie_beibao_thing(usr_qq, "", "玄蛛网", -1);
                     mugao = 1
                 } else {
@@ -316,11 +312,12 @@ export class yijieUser extends plugin {
                     e.reply(`你在【幽静谷】只捡到了1000个星魂币，迅速跑走了！`)
                     Add_星魂币(usr_qq, 1000)
                     return;
-                } else if (math > 0.8 && math <= 0.95) {
-                    e.reply(`你在【幽静谷】捡到了550个星魂币，此外啥也没看到！`)
-                    Add_星魂币(usr_qq, 550)
+                } else if (math > 0.9 && math <= 0.95) {
+                    e.reply(`你在【幽静谷】打开了一个宝箱，宝箱内装有【地图*深邃矿洞】*2以及【道具*铁镐】*2`)
+                    Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", 2)
+                    Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", 2)
                     return;
-                } else if (math > 0.7 && math <= 0.8) {
+                } else if (math > 0.7 && math <= 0.9) {
                     e.reply(`你在【幽静谷】捡到了50个星魂币，此外啥也没看到！`)
                     Add_星魂币(usr_qq, 50)
                     return;
@@ -334,6 +331,101 @@ export class yijieUser extends plugin {
                 return;
             }
         }
+        if (thing_name == "深邃矿洞") {
+            if (player.饱食度 < 100) {
+                e.reply('你快饿死了,还是先吃点东西吧');
+                return;
+            }
+            let mugao = await exist_yijie_beibao_thing(usr_qq, "铁镐", "道具")
+            if (mugao > 0) {
+                await Add_yijie_饱食度(usr_qq, -100)
+                await redis.set("xiuxian:yijie:player:" + usr_qq + "xunbaocd", now_Time);
+                if (isNotNull(mugao) && mugao > 0) {
+                    await Add_yijie_beibao_thing(usr_qq, "", "铁镐", -1);
+                    mugao = 1
+                } else {
+                    mugao = 0;
+                }
+                await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", -1);
+                if (math > 0.8 && math < 1) {
+                    e.reply(`你在【深邃矿洞】挖出了十个【道具*原金矿】！`)
+                    Add_yijie_beibao_thing(usr_qq, "原金矿", "道具", 10)
+                    return;
+                } else if (math > 0.6 && math <= 0.8) {
+                    e.reply(`你在【深邃矿洞】挖出了20个【道具*原铁矿】`)
+                    Add_yijie_beibao_thing(usr_qq, "原铁矿", "道具", 20)
+                    return;
+                } else if (math > 0.4 && math <= 0.6) {
+                    e.reply(`你在【深邃矿洞】挖出了一块钻石矿！`)
+                    Add_yijie_beibao_thing(usr_qq, "钻石矿", "道具", 1)
+                    return;
+                } else {
+                    e.reply(`你在【深邃矿洞】挖出了5个【道具*煤矿】`)
+                    Add_星魂币(usr_qq, 5)
+                    return;
+                }
+            } else {
+                e.reply('你没有铁镐，无法在矿洞里搜寻宝贝！')
+                return;
+            }
+        }
+    }
+
+    async yijie_eat(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let player = await Read_yijie_player(usr_qq);
+        //检索方法
+        var reg = new RegExp(/异界食用/);
+        let msg = e.msg.replace(reg, '');
+        msg = msg.replace("#", '');
+        let code = msg.split("\*");
+        let thing_name = code[0];
+        let quantity = code[1];
+        quantity = await convert2integer(quantity);
+        //看看物品名称有没有设定,是不是瞎说的
+        let thing_exist = await yijie_foundthing(thing_name);
+        if (!thing_exist) {
+            e.reply(`异界查无此物`);
+            return;
+        }
+        await Go(e);
+        if (allaction) {
+            console.log(allaction);
+        } else {
+            return;
+        }
+        allaction = false;
+        let action = await redis.get("xiuxian:player:" + 10 + ":biguang");
+        action = await JSON.parse(action);
+        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class);
+        if (!x) {
+            e.reply(`你没有【${thing_name}】这样的【${thing_exist.class}】`);
+            return;
+        }
+        quantity = await convert2integer(quantity)
+        if (thing_name == "烤肉") {
+            let shicai = await exist_yijie_beibao_thing(usr_qq, thing_name, "道具")
+            if (shicai >= quantity) {
+                await Add_yijie_beibao_thing(usr_qq, thing_name, "道具", -quantity);
+                await Add_yijie_饱食度(usr_qq, 20 * quantity)
+                e.reply(`服用成功,增加了${20 * quantity}点饱食度`)
+                return;
+            } else {
+                e.reply(`你没有那么多的【${thing_name}】`)
+                return;
+            }
+        }
+        e.reply(`不要随随便便什么东西都往嘴里送啊喂！`)
     }
 
     async yijie_hecheng(e) {

@@ -1,5 +1,18 @@
 [
     {
+        "name": "木棍",
+        "class": "材料",
+        "type": "材料",
+        "amount": 4,
+        "materials": [
+            {
+                "name": "木块",
+                "class": "材料",
+                "amount": 2
+            }
+        ]
+    },
+    {
         "name": "精铁矿",
         "class": "材料",
         "type": "材料",
@@ -18,15 +31,87 @@
         ]
     },
     {
-        "name": "木棍",
+        "name": "铁镐",
         "class": "材料",
         "type": "材料",
-        "amount": 4,
+        "amount": 1,
         "materials": [
             {
-                "name": "木块",
+                "name": "精铁矿",
+                "class": "材料",
+                "amount": 3
+            },
+            {
+                "name": "木棍",
                 "class": "材料",
                 "amount": 2
+            }
+        ]
+    },
+    {
+        "name": "金矿",
+        "class": "材料",
+        "type": "材料",
+        "amount": 8,
+        "materials": [
+            {
+                "name": "原金矿",
+                "class": "材料",
+                "amount": 8
+            },
+            {
+                "name": "煤矿",
+                "class": "材料",
+                "amount": 1
+            }
+        ]
+    },
+    {
+        "name": "压缩金矿",
+        "class": "材料",
+        "type": "材料",
+        "amount": 1,
+        "materials": [
+            {
+                "name": "原金矿",
+                "class": "材料",
+                "amount": 64
+            }
+        ]
+    },
+    {
+        "name": "钻石",
+        "class": "材料",
+        "type": "材料",
+        "amount": 8,
+        "materials": [
+            {
+                "name": "钻石矿石",
+                "class": "材料",
+                "amount": 8
+            },
+            {
+                "name": "煤矿",
+                "class": "材料",
+                "amount": 1
+            }
+        ]
+    },
+    {
+        "name": "压缩金剑",
+        "class": "武器",
+        "type": "武器",
+        "amount": 1,
+        "materials": [
+            {
+                "name": "压缩金矿",
+                "class": "材料",
+                "amount": 2
+            },
+            {
+                "name": "木棍",
+                "class": "材料",
+                "amount": 1
             }
         ]
     }
