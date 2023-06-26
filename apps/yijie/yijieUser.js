@@ -349,15 +349,15 @@ export class yijieUser extends plugin {
                 await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", -1);
                 if (math > 0.8 && math < 1) {
                     e.reply(`你在【深邃矿洞】挖出了十个【道具*原金矿】！`)
-                    Add_yijie_beibao_thing(usr_qq, "原金矿", "道具", 10)
+                    await Add_yijie_beibao_thing(usr_qq, "原金矿", "道具", 10)
                     return;
                 } else if (math > 0.6 && math <= 0.8) {
                     e.reply(`你在【深邃矿洞】挖出了20个【道具*原铁矿】`)
-                    Add_yijie_beibao_thing(usr_qq, "原铁矿", "道具", 20)
+                    await Add_yijie_beibao_thing(usr_qq, "原铁矿", "道具", 20)
                     return;
                 } else if (math > 0.4 && math <= 0.6) {
                     e.reply(`你在【深邃矿洞】挖出了一块钻石矿！`)
-                    Add_yijie_beibao_thing(usr_qq, "钻石矿", "道具", 1)
+                    await Add_yijie_beibao_thing(usr_qq, "钻石矿", "道具", 1)
                     return;
                 } else {
                     e.reply(`你在【深邃矿洞】挖出了5个【道具*煤矿】`)
