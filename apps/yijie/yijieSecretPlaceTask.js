@@ -8,7 +8,8 @@ import {
   isNotNull,
   Add_yijie_beibao_thing,
   yijie_zhanlijisuan,
-  Add_星魂币
+  Add_星魂币,
+  find_yijie_taozhuang
 } from '../Xiuxian/xiuxian.js';
 
 /**
@@ -107,7 +108,7 @@ export class yijieSecretPlaceTask extends plugin {
             var x = this.xiuxianConfigData.SecretPlace.thing;
             let random1 = Math.random();
             let random2;
-            var m = '';
+            let m = await find_yijie_taozhuang(player_id);
             if (A_player < B_player) {
               msg.push(B_win + "\n")
               msg.push(`战力不够，被异界的怪物薄纱，建议提升后再来`)
@@ -122,6 +123,18 @@ export class yijieSecretPlaceTask extends plugin {
               } else {
                 msg.push(A_win + "\n")
                 msg.push(`在秘境探索的中途，收获了【${thing_name}】`)
+              }
+              if (weizhi.name.includes("仙鼎历练")) {
+                await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
+              } else {
+                if (m == "探险者的春天") {
+                  if (random1 <= 0.25) {
+                    msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！`)
+                    await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 2)
+                  } else {
+                    await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
+                  }
+                }
               }
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
             }
