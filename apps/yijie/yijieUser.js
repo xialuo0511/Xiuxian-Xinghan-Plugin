@@ -272,6 +272,7 @@ export class yijieUser extends plugin {
         } else {
             Time = 7;
         }
+        console.log(player["武器"]);
         let now_Time = new Date().getTime(); //获取当前时间戳
         let shuangxiuTimeout = parseInt(60000 * Time);
         let last_time = await redis.get("xiuxian:yijie:player:" + usr_qq + "xunbaocd");//获得上次的时间戳,
