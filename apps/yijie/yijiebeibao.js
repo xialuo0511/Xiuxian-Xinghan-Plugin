@@ -62,7 +62,7 @@ export class yijiebeibao extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let thing_name = e.msg.replace("#开启箱子", '');
+        let thing_name = e.msg.replace("#十连箱子", '');
         thing_name = thing_name.trim();
         let x = await exist_yijie_beibao_thing(usr_qq, thing_name, "箱子");
         if (!x) {
@@ -72,6 +72,8 @@ export class yijiebeibao extends plugin {
         await Add_yijie_beibao_thing(usr_qq, thing_name, "箱子", -1);
         let thing = data.yijie_box.find(item => item.name == thing_name);
         let contents = thing.contents;
+        let chuhuo_all = ""
+
         let rand = Math.random();
         let rate = 0;
         let cishu = await redis.get("xiuxian:box:player:" + usr_qq + ":" + thing.id)
@@ -98,10 +100,12 @@ export class yijiebeibao extends plugin {
                 if (rand < rate) {
                     let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                    e.reply(`您第${cishu}次打开了【${thing_name}】，获得了【${item.name}】*${item.amount}`);
                     a = `【${item.name}】*${item.amount}`
                     if (item.name == thing.best) {
                         cishu = 0
+                        chuhuo_all += `【(极品)${item.name}】*${item.amount},`;
+                    } else {
+                        chuhuo_all += `【${item.name}】*${item.amount},`;
                     }
                     break;
                 }
@@ -111,7 +115,7 @@ export class yijiebeibao extends plugin {
                 let item = contents[i].items.find(item => item.name == thing.best);
                 if (item) {
                     await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
-                    e.reply(`您第${cishu}次打开了【${thing_name}】，本次为保底，获得了【${item.name}】*${item.amount}`);
+                    chuhuo_all += `【(保底)(极品)${item.name}】*${item.amount},`;
                     a = `【${item.name}】*${item.amount}`
                     break;
                 }
@@ -125,9 +129,12 @@ export class yijiebeibao extends plugin {
 保底还差：${thing.baodi - cishu}
 物品：${a}
 ` + lishi
+        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_log", lishi)
         await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id + "_all", all_cishu)
-        await redis.set("xiuxian:box:player:" + usr_qq + ":" + thing.id, cishu)
+        chuhuo_all = chuhuo_all.substring(0, chuhuo_all.length - 1);
+        e.reply(`您打开了${thing_name} ，获得了${chuhuo_all}`)
+
         return;
     }
 
