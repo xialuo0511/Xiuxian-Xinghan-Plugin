@@ -85,7 +85,11 @@ export class yijieUser extends plugin {
         let str = data.yijie_taozhuang
         let msg = []
         for (let i in str) {
-            msg.push(`套装：${str[i].name}\n效果：${str[i].context}\n【武器*${str[i].wuqi}】\n【护具*${str[i].wuqi}】\n【法宝*${str[i].wuqi}】`)
+            msg.push(`〓〓${str[i].name}〓〓`)
+            msg.push(`效果：${str[i].context}`)
+            msg.push(`【武器 * ${str[i].wuqi}】`)
+            msg.push(`【护具 * ${str[i].huju}】`)
+            msg.push(`【法宝 * ${str[i].fabao}】`)
         }
         let log_data = {
             log: msg,
