@@ -429,12 +429,14 @@ export async function Add_职业经验(usr_qq, exp = 0) {
     if (exp == 0) {
         return;
     }
+
     exp = player.occupation_exp + exp;
     let level = Number(player.occupation_level);
     while (true) {
-        let need_exp = data.occupation_exp_list.find(item => item.id == level).experience;
-        if (!need_exp) {
-            need_exp = 0
+        let a = data.occupation_exp_list.find(item => item.id == level)
+        let need_exp = 0
+        if (a) {
+            need_exp = a.experience
         }
         if (need_exp > exp) {
             break;
