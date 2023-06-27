@@ -466,11 +466,23 @@ export class yijieUser extends plugin {
         }
         quantity = await convert2integer(quantity)
         if (thing_name == "烤肉") {
-            let shicai = await exist_yijie_beibao_thing(usr_qq, thing_name, "道具")
+            let shicai = await exist_yijie_beibao_thing(usr_qq, thing_name, "食材")
             if (shicai >= quantity) {
-                await Add_yijie_beibao_thing(usr_qq, thing_name, "道具", -quantity);
+                await Add_yijie_beibao_thing(usr_qq, thing_name, "食材", -quantity);
                 await Add_yijie_饱食度(usr_qq, 20 * quantity)
                 e.reply(`服用成功,增加了${20 * quantity}点饱食度`)
+                return;
+            } else {
+                e.reply(`你没有那么多的【${thing_name}】`)
+                return;
+            }
+        }
+        if (thing_name == "白粥") {
+            let shicai = await exist_yijie_beibao_thing(usr_qq, thing_name, "食材")
+            if (shicai >= quantity) {
+                await Add_yijie_beibao_thing(usr_qq, thing_name, "食材", -quantity);
+                await Add_yijie_饱食度(usr_qq, 5 * quantity)
+                e.reply(`服用成功,增加了${5 * quantity}点饱食度`)
                 return;
             } else {
                 e.reply(`你没有那么多的【${thing_name}】`)
