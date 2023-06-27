@@ -1063,7 +1063,6 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
     x = Number(x)
     let najie = await Read_yijie_beibao(usr_qq);
     var name = thing_name;
-    let exist = await exist_najie_thing(usr_qq, name, thing_class);
     //这部分写得很冗余,但能跑
     if (thing_class == "装备") {
         if (x > 0) {
