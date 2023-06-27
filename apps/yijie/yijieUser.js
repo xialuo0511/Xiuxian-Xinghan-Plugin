@@ -86,8 +86,7 @@ export class yijieUser extends plugin {
         let msg = []
         msg.push("▮异界套装查询▮")
         for (let i in str) {
-            msg.push(`【${str[i].name}】`)
-            msg.push(`效果：${str[i].context}`)
+            msg.push(`【${str[i].name}】${str[i].context}`)
             msg.push(`武器：${str[i].wuqi}`)
             msg.push(`护具：${str[i].huju}`)
             msg.push(`法宝：${str[i].fabao}`)
