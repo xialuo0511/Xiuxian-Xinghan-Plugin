@@ -61,7 +61,7 @@ export class yijieUser extends plugin {
                     fnc: 'yijie_xunbao'
                 },
                 {
-                    reg: '^#异界食用.*$',
+                    reg: '^#食用.*$',
                     fnc: 'yijie_eat'
                 },
                 {

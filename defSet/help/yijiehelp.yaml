@@ -24,8 +24,11 @@
     - icon: help-icon_79
       title: '#查询异界合成列表+类别'
       desc: '筛选异界合成列表'
+    - icon: help-icon_14
+      title: '#查询异界装备套装'
+      desc: '查询异界全部套装装备效果'
 
-- group: 异界秘境
+- group: 异界秘境|寻宝
   list:
     - icon: help-icon_14
       title: '#异界秘境'
@@ -33,6 +36,12 @@
     - icon: help-icon_14
       title: '#探寻异界秘境+秘境名'
       desc: '前往秘境获得装备、遗书等'
+    - icon: help-icon_79
+      title: '#异界寻宝+地图名'
+      desc: '搜寻宝藏'
+    - icon: help-icon_79
+      title: '#食用'
+      desc: '吃点好的'
 
 
 - group: 仙鼎
