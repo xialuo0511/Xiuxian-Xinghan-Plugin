@@ -139,6 +139,9 @@ export class yijieUser extends plugin {
         if (find_tz && find_tz.name == "隐忍的刺客") {
             atk = Math.floor(atk * 1.15)
         }
+        if (find_tz && find_tz.name == "冒险家的历练") {
+            hp = Math.floor(hp * 1.25)
+        }
         player["攻击"] = chushi["初始攻击"] + atk
         player["防御"] = chushi["初始防御"] + def
         player["血量上限"] = chushi["初始生命"] + hp
