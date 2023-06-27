@@ -292,6 +292,18 @@ export class yijieUser extends plugin {
             return;
         }
         let math = Math.random();
+        let beilv = 1
+        let wuqi = player.武器
+        let huju = player.护具
+        let fabao = player.法宝
+        let fanbei = ""
+        let taozhuangmath = Math.random();
+        if (wuqi.name == "压缩金剑" && huju.name == "压缩金葫芦" && fabao.name == "压缩金盾") {
+            if (taozhuangmath >= 0.9) {
+                beilv = 2
+                fanbei = "您触发了【寻宝者的期许】三件套，本次寻宝收益翻倍！"
+            }
+        }
         if (thing_name == "幽静谷") {
             if (player.饱食度 < 100) {
                 e.reply('你快饿死了,还是先吃点东西吧');
@@ -309,25 +321,25 @@ export class yijieUser extends plugin {
                 }
                 await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", -1);
                 if (math > 0.95 && math < 1) {
-                    e.reply(`你在【幽静谷】发现了了1000个星魂币，之后迅速跑走了！`)
-                    Add_星魂币(usr_qq, 1000)
+                    e.reply(`${fanbei}你在【幽静谷】发现了${1000 * beilv}个星魂币，之后迅速跑走了！`)
+                    Add_星魂币(usr_qq, 1000 * beilv)
                     return;
                 } else if (math > 0.8 && math <= 0.95) {
-                    e.reply(`你在【幽静谷】打开了一个宝箱，宝箱内装有【道具*深邃矿洞】*2以及【道具*铁镐】*2`)
-                    await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", 2)
-                    await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", 2)
+                    e.reply(`${fanbei}你在【幽静谷】打开了一个宝箱，宝箱内装有【道具*深邃矿洞】*${2 * beilv}以及【道具*铁镐】*${2 * beilv}`)
+                    await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", 2 * beilv)
+                    await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", 2 * beilv)
                     return;
                 } else if (math > 0.6 && math <= 0.8) {
-                    e.reply(`你在【幽静谷】捡到了100个星魂币，此外啥也没看到！`)
-                    Add_星魂币(usr_qq, 100)
+                    e.reply(`${fanbei}你在【幽静谷】捡到了${100 * beilv}个星魂币，此外啥也没看到！`)
+                    Add_星魂币(usr_qq, 100 * beilv)
                     return;
                 } else if (math > 0.4 && math <= 0.6) {
-                    e.reply(`你在【幽静谷】捡到了50个星魂币，此外啥也没看到！`)
-                    Add_星魂币(usr_qq, 50)
+                    e.reply(`${fanbei}你在【幽静谷】捡到了${50 * beilv}个星魂币，此外啥也没看到！`)
+                    Add_星魂币(usr_qq, 50 * beilv)
                     return;
                 } else {
-                    e.reply(`你在【幽静谷】只捡到了10个星魂币，此外啥也没看到！`)
-                    Add_星魂币(usr_qq, 10)
+                    e.reply(`${fanbei}你在【幽静谷】只捡到了${10 * beilv}个星魂币，此外啥也没看到！`)
+                    Add_星魂币(usr_qq, 10 * beilv)
                     return;
                 }
             } else {
@@ -352,20 +364,20 @@ export class yijieUser extends plugin {
                 }
                 await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", -1);
                 if (math > 0.8 && math < 1) {
-                    e.reply(`你在【深邃矿洞】挖出了十个【材料*原金矿】！`)
-                    await Add_yijie_beibao_thing(usr_qq, "原金矿", "材料", 10)
+                    e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*原金矿】*${10 * beilv}`)
+                    await Add_yijie_beibao_thing(usr_qq, "原金矿", "材料", 10 * beilv)
                     return;
                 } else if (math > 0.6 && math <= 0.8) {
-                    e.reply(`你在【深邃矿洞】挖出了20个【材料*原铁矿】`)
-                    await Add_yijie_beibao_thing(usr_qq, "原铁矿", "材料", 20)
+                    e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*原铁矿】${20 * beilv}`)
+                    await Add_yijie_beibao_thing(usr_qq, "原铁矿", "材料", 20 * beilv)
                     return;
                 } else if (math > 0.4 && math <= 0.6) {
-                    e.reply(`你在【深邃矿洞】挖出了一块【材料*钻石矿】`)
-                    await Add_yijie_beibao_thing(usr_qq, "钻石矿", "材料", 1)
+                    e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*钻石矿】${1 * beilv}`)
+                    await Add_yijie_beibao_thing(usr_qq, "钻石矿", "材料", 1 * beilv)
                     return;
                 } else {
-                    e.reply(`你在【深邃矿洞】挖出了5个【材料*煤矿】`)
-                    await Add_yijie_beibao_thing(usr_qq, "煤矿", "材料", 5)
+                    e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*煤矿】${5 * beilv}`)
+                    await Add_yijie_beibao_thing(usr_qq, "煤矿", "材料", 5 * beilv)
                     return;
                 }
             } else {
