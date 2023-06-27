@@ -1256,7 +1256,7 @@ export async function get_yijie_player_img(e) {
     let huju = player.护具
     let fabao = player.法宝
     let taozhuang = "暂无套装效果"
-    let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && huju == huju.name && fabao == fabao.name).context;
+    let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name).context;
     if (!find_tz) {
         taozhuang = find_tz
     }
