@@ -84,6 +84,7 @@ export class yijieUser extends plugin {
     async find_zb(e) {
         let str = data.yijie_taozhuang
         let msg = []
+        msg.push("▮异界套装查询▮")
         for (let i in str) {
             msg.push(`〓〓${str[i].name}〓〓`)
             msg.push(`效果：${str[i].context}`)
