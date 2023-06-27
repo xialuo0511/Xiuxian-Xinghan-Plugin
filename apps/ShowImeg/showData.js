@@ -1268,7 +1268,7 @@ export async function get_yijie_player_img(e) {
         xianding: xianding,
         user_id: usr_qq,
         PowerMini: PowerMini,
-        taozhuang: taozhuang
+        taozhuang: taozhuang,
         player, // 玩家数据
     };
     const data1 = await new Show(e).get_yijieplayerData(player_data);
