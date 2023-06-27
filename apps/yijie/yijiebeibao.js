@@ -62,7 +62,7 @@ export class yijiebeibao extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let thing_name = e.msg.replace("#十连箱子", '');
+        let thing_name = e.msg.replace("#开启箱子", '');
         thing_name = thing_name.trim();
         let x = await exist_yijie_beibao_thing(usr_qq, thing_name, "箱子");
         if (!x) {
