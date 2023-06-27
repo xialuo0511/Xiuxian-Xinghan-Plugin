@@ -82,14 +82,13 @@ export class yijieUser extends plugin {
     }
 
     async find_zb(e) {
-        if (!e.isMaster) {
-            e.reply('你凑什么热闹');
-            return;
+        let str = data.yijie_taozhuang
+        let msg = []
+        for (let i in str) {
+            msg.push(`套装：${str[i].name}\n效果：${str[i].context}\n【武器*${str[i].wuqi}】\n【护具*${str[i].wuqi}】\n【法宝*${str[i].wuqi}】`)
         }
-        let str = [];
-        str.push("测试文本");
         let log_data = {
-            log: str,
+            log: msg,
         };
         const data1 = await new Show(e).get_logData(log_data);
         let img = await puppeteer.screenshot('log', {
