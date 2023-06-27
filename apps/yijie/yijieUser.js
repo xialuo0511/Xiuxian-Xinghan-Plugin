@@ -73,7 +73,7 @@ export class yijieUser extends plugin {
                     fnc: 'yijie_hecheng_list'
                 },
                 {
-                    reg: '#查询异界装备套装$',
+                    reg: '#查询异界(装备套装|套装效果)?$',
                     fnc: 'find_zb'
                 }
             ]
