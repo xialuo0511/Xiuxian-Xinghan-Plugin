@@ -184,18 +184,17 @@ export async function Write_yijie_player(usr_qq, player) {
 export async function find_yijie_taozhuang(usr_qq) {
     let isplayer = await yijie_existplayer(usr_qq);
     if (!isplayer) {
-        return false;
+        return;
     }
     let player = await Read_yijie_player(usr_qq);
     let wuqi = player["武器"]
     let huju = player["护具"]
     let fabao = player["法宝"]
     let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name);
-    if (!find_tz) {
-        return false;
-    } else {
+    if (find_tz) {
         return find_tz.name;
     }
+    return;
 }
 
 //读取装备信息，返回成一个JavaScript对象
