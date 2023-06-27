@@ -298,7 +298,7 @@ export class yijieUser extends plugin {
         let fabao = player["法宝"]
         let fanbei = ""
         let taozhuangmath = Math.random();
-        if (wuqi.name == "压缩金剑" && huju.name == "压缩金葫芦" && fabao.name == "压缩金盾") {
+        if (wuqi["name"] == "压缩金剑" && huju["name"] == "压缩金葫芦" && fabao["name"] == "压缩金盾") {
             // if (taozhuangmath >= 0.9) {
             beilv = 2
             fanbei = "您触发了【寻宝者的期许】三件套，本次寻宝收益翻倍！"
