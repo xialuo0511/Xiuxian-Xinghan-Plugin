@@ -1258,7 +1258,7 @@ export async function get_yijie_player_img(e) {
     let taozhuang = "暂无套装效果"
     let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name);
     if (find_tz) {
-        taozhuang = find_tz.name + find_tz.context
+        taozhuang = "【" + find_tz.name + "】" + find_tz.context
     }
     let player_data = {
         strand_xianding: strand_xianding,

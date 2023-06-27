@@ -128,10 +128,14 @@ export class yijieUser extends plugin {
         player[sf.type] = sf
 
         let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"])
-        let wuqi = player["武器"]
+        let wuqi = player["武器"].atk
         let huju = player["护具"]
         let fabao = player["法宝"]
-        player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
+        let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name);
+        if (find_tz && find_tz.name == "隐忍的刺客") {
+            wuqi = Math.floor(wuqi * 1.15)
+        }
+        player["攻击"] = chushi["初始攻击"] + wuqi
         player["防御"] = chushi["初始防御"] + huju["def"]
         player["血量上限"] = chushi["初始生命"] + fabao["HP"]
         player["暴击率"] = 0.05 + fabao["bao"]
