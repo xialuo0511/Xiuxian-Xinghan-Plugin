@@ -135,6 +135,7 @@ export class yijieUser extends plugin {
         let hp = fabao.HP
         let bao = fabao.bao
         let find_tz = await find_yijie_taozhuang(usr_qq);
+        console.log(find_tz)
         if (find_tz && find_tz == "隐忍的刺客") {
             atk = Math.floor(atk * 1.15)
         }
