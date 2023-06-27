@@ -1251,12 +1251,24 @@ export async function get_yijie_player_img(e) {
         item => item.level == player.xianding_level
     ).exp;
     let strand_xianding = Strand(player.xianding_exp, xianding_exp_max);
+
+    let wuqi = player.武器
+    let huju = player.护具
+    let fabao = player.法宝
+    let taozhuang = "暂无套装效果"
+    if (wuqi.name == "压缩金剑" && huju.name == "压缩金盾" && fabao.name == "压缩金葫芦") {
+        if (taozhuangmath >= 0.9) {
+            beilv = 2
+            taozhuang = "【寻宝者的期许】三件套：有10%的概率使得寻宝返回收益翻倍"
+        }
+    }
     let player_data = {
         strand_xianding: strand_xianding,
         xianding_exp_max: xianding_exp_max,
         xianding: xianding,
         user_id: usr_qq,
         PowerMini: PowerMini,
+        taozhuang: taozhuang
         player, // 玩家数据
     };
     const data1 = await new Show(e).get_yijieplayerData(player_data);
