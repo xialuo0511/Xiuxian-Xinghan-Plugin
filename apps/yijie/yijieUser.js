@@ -437,7 +437,7 @@ export class yijieUser extends plugin {
         }
         let player = await Read_yijie_player(usr_qq);
         //检索方法
-        var reg = new RegExp(/异界食用/);
+        var reg = new RegExp(/食用/);
         let msg = e.msg.replace(reg, '');
         msg = msg.replace("#", '');
         let code = msg.split("\*");
