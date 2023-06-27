@@ -293,9 +293,9 @@ export class yijieUser extends plugin {
         }
         let math = Math.random();
         let beilv = 1
-        let wuqi = player.武器
-        let huju = player.护具
-        let fabao = player.法宝
+        let wuqi = JSON.parse(player.武器)
+        let huju = JSON.parse(player.护具)
+        let fabao = JSON.parse(player.法宝)
         let fanbei = ""
         let taozhuangmath = Math.random();
         if (wuqi.name == "压缩金剑" && huju.name == "压缩金葫芦" && fabao.name == "压缩金盾") {
