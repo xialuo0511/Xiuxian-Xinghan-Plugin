@@ -272,7 +272,6 @@ export class yijieUser extends plugin {
         } else {
             Time = 7;
         }
-        console.log(player["武器"].name == "压缩金剑");
         let now_Time = new Date().getTime(); //获取当前时间戳
         let shuangxiuTimeout = parseInt(60000 * Time);
         let last_time = await redis.get("xiuxian:yijie:player:" + usr_qq + "xunbaocd");//获得上次的时间戳,
@@ -294,12 +293,12 @@ export class yijieUser extends plugin {
         }
         let math = Math.random();
         let beilv = 1
-        let wuqi = player["武器"]
-        let huju = player["护具"]
-        let fabao = player["法宝"]
+        let wuqi = player.武器
+        let huju = player.护具
+        let fabao = player.法宝
         let fanbei = ""
         let taozhuangmath = Math.random();
-        if (wuqi["name"] == "压缩金剑" && huju["name"] == "压缩金葫芦" && fabao["name"] == "压缩金盾") {
+        if (wuqi.name == "压缩金剑" && huju.name == "压缩金盾" && fabao.name == "压缩金葫芦") {
             // if (taozhuangmath >= 0.9) {
             beilv = 2
             fanbei = "您触发了【寻宝者的期许】三件套，本次寻宝收益翻倍！"
