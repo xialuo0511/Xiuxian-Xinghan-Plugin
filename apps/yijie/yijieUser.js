@@ -408,8 +408,8 @@ export class yijieUser extends plugin {
                     await Add_yijie_beibao_thing(usr_qq, "原铁矿", "材料", 20 * beilv)
                     return;
                 } else if (math > 0.4 && math <= 0.6) {
-                    e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*钻石矿】*${1 * beilv}`)
-                    await Add_yijie_beibao_thing(usr_qq, "钻石矿", "材料", 1 * beilv)
+                    e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*钻石】*${1 * beilv}`)
+                    await Add_yijie_beibao_thing(usr_qq, "钻石", "材料", 1 * beilv)
                     return;
                 } else {
                     e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*煤矿】*${5 * beilv}`)
