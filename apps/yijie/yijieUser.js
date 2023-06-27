@@ -301,7 +301,7 @@ export class yijieUser extends plugin {
         if (wuqi.name == "压缩金剑" && huju.name == "压缩金盾" && fabao.name == "压缩金葫芦") {
             // if (taozhuangmath >= 0.9) {
             beilv = 2
-            fanbei = "您触发了【寻宝者的期许】三件套，本次寻宝收益翻倍！"
+            fanbei = "您触发了【寻宝者的期许】三件套，本次寻宝收益翻倍！\n"
             // }
         }
         if (thing_name == "幽静谷") {
