@@ -134,12 +134,11 @@ export class yijieUser extends plugin {
         let fabao = player["法宝"]
         let hp = fabao.HP
         let bao = fabao.bao
-        let find_tz = await find_yijie_taozhuang(usr_qq);
-        console.log(find_tz)
-        if (find_tz && find_tz == "隐忍的刺客") {
+        let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name);
+        if (find_tz && find_tz.name == "隐忍的刺客") {
             atk = Math.floor(atk * 1.15)
         }
-        if (find_tz && find_tz == "冒险家的历练") {
+        if (find_tz && find_tz.name == "冒险家的历练") {
             hp = Math.floor(hp * 1.25)
         }
         player["攻击"] = chushi["初始攻击"] + atk
