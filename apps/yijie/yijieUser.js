@@ -71,10 +71,32 @@ export class yijieUser extends plugin {
                 {
                     reg: '#查询异界合成列表(装备|道具|武器|护具|法宝|材料)?$',
                     fnc: 'yijie_hecheng_list'
+                },
+                {
+                    reg: '#查询异界装备套装$',
+                    fnc: 'find_zb'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async find_zb(e) {
+        if (!e.isMaster) {
+            e.reply('你凑什么热闹');
+            return;
+        }
+        let str = [];
+        str.push("测试文本");
+        let log_data = {
+            log: str,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
+        return;
     }
 
     async zb(e) {

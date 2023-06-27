@@ -1256,8 +1256,9 @@ export async function get_yijie_player_img(e) {
     let huju = player.护具
     let fabao = player.法宝
     let taozhuang = "暂无套装效果"
-    if (wuqi.name == "压缩金剑" && huju.name == "压缩金盾" && fabao.name == "压缩金葫芦") {
-        taozhuang = `【寻宝者的期许】有10%的概率使得寻宝返回收益翻倍`
+    let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && huju == huju.name && fabao.name).描述;
+    if (!find_tz) {
+        taozhuang = find_tz
     }
     let player_data = {
         strand_xianding: strand_xianding,
