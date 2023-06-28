@@ -309,7 +309,7 @@ export class SecretPlaceTask extends plugin {
                     player.幸运 -= player.addluckyNo;
                     player.addluckyNo = 0;
                   }
-                  await data.setData('player', player_id, player);
+                  data.setData('player', player_id, player);
                 }
               }
               m += `]×${n}个。`;
@@ -343,9 +343,9 @@ export class SecretPlaceTask extends plugin {
               }
               last_msg +=
                 m +
-                '不巧撞见[' +
+                '不巧撞见【' +
                 B_player.名号 +
-                '],经过一番战斗,击败对手,获得修为' +
+                '】,经过一番战斗,击败对手,获得修为' +
                 xiuwei +
                 ',气血' +
                 qixue;
@@ -385,9 +385,9 @@ export class SecretPlaceTask extends plugin {
                 let index = Math.trunc(Math.random() * length);
                 let kouliang = data.xianchonkouliang[index];
                 last_msg +=
-                  '\n七彩流光的神奇仙谷[' +
+                  '\n七彩流光的神奇仙谷【' +
                   kouliang.name +
-                  ']深埋在土壤中，是仙兽们的最爱。';
+                  '】深埋在土壤中，是仙兽们的最爱。';
                 await Add_najie_thing(player_id, kouliang.name, '仙米', 1);
               }
               if (random > 0.1 && random < 0.1002) {
@@ -468,15 +468,15 @@ export class SecretPlaceTask extends plugin {
             } else if (msgg.find(item => item == B_win)) {
               xiuwei = 800;
               last_msg =
-                '不巧撞见[' +
+                '不巧撞见【' +
                 B_player.名号 +
-                '],经过一番战斗,败下阵来,还好跑得快,只获得了修为' +
+                '】,经过一番战斗,败下阵来,还好跑得快,只获得了修为' +
                 xiuwei +
                 ']';
             } else {
               return;
             }
-            msg.push('\n' + player.名号 + last_msg + fyd_msg);
+            msg.push(`\n【${player.名号}】` + last_msg + fyd_msg);
             let arr = action;
             //把状态都关了
             arr.shutup = 1; //闭关状态
