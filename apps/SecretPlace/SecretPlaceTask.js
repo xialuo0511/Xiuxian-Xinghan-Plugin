@@ -362,6 +362,9 @@ export class SecretPlaceTask extends plugin {
                 'xiuxian:player:' + 10 + ':biguang'
               );
               action1 = await JSON.parse(action1);
+              if (!action1) {
+                action1 = {}
+              }
               for (let i = 0; i < action1.length; i++) {
                 if (action1[i].qq == player_id) {
                   if (typeof action1[i].beiyong1 != 'number') {
