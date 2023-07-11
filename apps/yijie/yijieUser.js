@@ -570,14 +570,14 @@ export async function Go(e) {
         return;
     }
     //获取游戏状态
-    let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
+    let game_action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":game_action");
     //防止继续其他娱乐行为
     if (game_action == 0) {
         e.reply("修仙：游戏进行中...");
         return;
     }
     //查询redis中的人物动作
-    let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
+    let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
     action = JSON.parse(action);
     if (action != null) {
         //人物有动作查询动作结束时间
