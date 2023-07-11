@@ -1070,7 +1070,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         if (x > 0) {
             let e = await najie.装备.find(item => item.name == name);
             if (!isNotNull(e)) {
-                var equipment = data.yijie_zhuangbei_list.find(item => item.name == name);
+                var equipment = data.yijie_daoju.find(item => item.name == name);
                 let equipment0 = JSON.parse(JSON.stringify(equipment));
                 equipment0.数量 = x;
                 najie.装备.push(equipment0);
@@ -1082,6 +1082,14 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
             return;
         }
         najie.装备 = najie.装备.filter(item => item.数量 > 0);
+        if (!najie.装备.find(item => item.name == name)) {
+            return;
+        }
+        najie.装备.find(item => item.name == name).数量 += x;
+        if (najie.装备.find(item => item.name == name).数量 < 1) {
+            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+            najie.装备 = najie.装备.filter(item => item.name != name);
+        }
         await Write_yijie_beibao(usr_qq, najie);
         return;
     }
