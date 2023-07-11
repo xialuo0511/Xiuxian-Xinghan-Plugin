@@ -562,7 +562,7 @@ export class UserStart extends plugin {
         }
         let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
         if (!time || time < 1689091200000) {
-            time = 1689091200000
+            time = 1589091200000
         }
         let lastsign_time = await shijianc(parseInt(time))//获得上次签到日期
 
