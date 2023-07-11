@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/yijiemijing/yijiemijing.css" />
+    <link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
+    <link rel="shortcut icon" href="#" />
+    <style type="text/css">
+        body {
+            width: 100%;
+            text-align: center;
+            background-image: url('{{pluResPath}}/img/player_pifu/0.jpg');
+            background-size: 100% auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div class="header">
+        </div>
+        <!--上-->
+        <div class="card_box">
+            <!--左-->
+            <div class="user_top_left">
+                <div class="user_top_img_bottom">
+                    <img class="user_top_img" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}"
+                        onerror="whenError(this)" />
+                </div>
+                <div class="user_top_font_left">{{user_id}}</div>
+            </div>
+            <!--右-->
+            <div class="user_top_right">
+                <div class="user_top_font_right">剩余仙鼎历练券：{{lilianquan}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card_box">
+        <div class="use_data">
+            <div class="user_font user_font_title">【异界秘境列表】</div>
+            <div class="user_font  wupin">
+                {{each item}}
+                <div class="item">
+                    <div class="item_title">{{item.name}}</div>
+                    <div class="item_int">秘境介绍：{{item.Grade}}</div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+    <div class="item_int">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
+    </div>
+    <div class="user_bottom2">
+    </div>
+</body>
+
+</html>

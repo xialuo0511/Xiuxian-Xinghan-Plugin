@@ -43,9 +43,8 @@ export class yijieSecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let addres = "秘境";
         let weizhi = data.yijie_mijing;
-        await Goweizhi(e, weizhi, addres);
+        await Goweizhi(e, weizhi);
     }
 
     //降临秘境
@@ -117,20 +116,12 @@ export class yijieSecretPlace extends plugin {
 /**
  * 地点查询
  */
-export async function Goweizhi(e, weizhi, addres) {
-    let adr = addres;
-    let msg = [
-        "***" + adr + "***"
-    ];
-    for (let i = 0; i < weizhi.length; i++) {
-        msg.push("***" + weizhi[i].name + "***")
-        msg.push("信息：" + weizhi[i].Grade)
-    }
+export async function Goweizhi(e, weizhi) {
     let log_data = {
-        log: msg,
+        weizhi,
     };
-    const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshot('log', {
+    const data1 = await new Show(e).get_yijiemijingData(log_data);
+    let img = await puppeteer.screenshot('yijiemijing', {
         ...data1,
     });
     e.reply(img);
