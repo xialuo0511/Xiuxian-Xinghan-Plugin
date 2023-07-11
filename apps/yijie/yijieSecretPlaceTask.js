@@ -141,7 +141,7 @@ export class yijieSecretPlaceTask extends plugin {
                   }
                 }
               }
-              await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
+              //await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
             }
             let arr = action;
             //把状态都关了
