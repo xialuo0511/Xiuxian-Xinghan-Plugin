@@ -87,6 +87,11 @@ export class yijieSecretPlaceTask extends plugin {
               monster_index = Math.trunc(Math.random() * monster_length);
               monster = data.yijie_guaiwu1[monster_index];
             }
+            if (weizhi.id == 20009002) {
+              monster_length = data.yijie_guaiwu2.length;
+              monster_index = Math.trunc(Math.random() * monster_length);
+              monster = data.yijie_guaiwu2[monster_index];
+            }
             //仙鼎秘境08开头
             if (weizhi.id == 20008001) {
               monster_length = data.yijie_guaiwu0.length;
