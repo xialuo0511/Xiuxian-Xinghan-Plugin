@@ -11,7 +11,8 @@ import {
     Add_xianding_exp,
     exist_yijie_beibao_thing,
     yijie_foundthing,
-    Read_yijie_player
+    Read_yijie_player,
+    Add_星魂币
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -49,10 +50,75 @@ export class yijiebeibao extends plugin {
                 {
                     reg: '^#查询箱子.*$',
                     fnc: 'find_box'
+                },
+                {
+                    reg: '^#异界出售.*$',
+                    fnc: 'Sell_comodities'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    //出售商品
+    async Sell_comodities(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        //命令判断
+        let thing = e.msg.replace("#", '');
+        thing = thing.replace("异界出售", '');
+        let code = thing.split("\*");
+        let thing_name = code[0]; //物品
+        let thing_amount = code[1];//数量
+        let thing_piji; //品级
+        //判断列表中是否存在，不存在不能卖,并定位是什么物品
+        let najie = await Read_yijie_beibao(usr_qq);
+        let thing_exist = await yijie_foundthing(thing_name);
+        if (!thing_exist) {
+            e.reply(`异界不存在【${thing_name}】`);
+            return;
+        }
+        // let thing_exist1 = await foundhuishouthing(thing_name);
+        // if (thing_exist1) {
+        //     e.reply(`[${thing_name}]只可回收，不可出售`);
+        //     return;
+        // }
+        if (thing_amount < 1 || thing_amount == null || thing_amount == undefined || thing_amount == NaN) {
+            thing_amount = 1;
+        } else {
+            thing_amount = thing_amount.replace(/[^0-9]/ig, "");
+        }
+        if (thing_amount < 1 || thing_amount == null || thing_amount == undefined || thing_amount == NaN) {
+            thing_amount = 1;
+        }
+        let x = await exist_najie_thing(usr_qq, thing_name, thing_exist.class, pj);
+        //判断戒指中是否存在
+        if (!x) {
+            //没有
+            e.reply(`你的背包里没有【${thing_name}】这样的${thing_exist.class}`);
+            return;
+        }
+        //判断戒指中的数量
+        if (x < thing_amount) {
+            //不够
+            e.reply(`你目前只有【${thing_name}】*${x}`);
+            return;
+        }
+        //数量够,数量减少,灵石增加
+        await Add_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class, -thing_amount, pj);
+        let commodities_price = thing_exist.出售价 * thing_amount;
+        await Add_星魂币(usr_qq, commodities_price);
+        e.reply(`出售成功!  获得${commodities_price}星魂币,还剩余【${thing_name}】*${x - thing_amount} `);
+        return;
     }
 
     async open_box(e) {
