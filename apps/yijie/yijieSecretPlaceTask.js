@@ -103,14 +103,11 @@ export class yijieSecretPlaceTask extends plugin {
               monster_index = Math.trunc(Math.random() * monster_length);
               monster = data.yijie_guaiwu2[monster_index];
             }
-
-
             let B_player = await yijie_zhanlijisuan(monster)
             let A_win = `击败了【${monster.名号}】`;
             let B_win = `被【${monster.名号}】击败了`;
             var thing_name;
             var thing_class;
-            var x = this.xiuxianConfigData.SecretPlace.thing;
             let random1 = Math.random();
             let random2;
             let m = await find_yijie_taozhuang(player_id);
@@ -141,7 +138,6 @@ export class yijieSecretPlaceTask extends plugin {
                   }
                 }
               }
-              //await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
             }
             let arr = action;
             //把状态都关了
