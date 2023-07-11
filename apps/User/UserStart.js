@@ -555,18 +555,19 @@ export class UserStart extends plugin {
         let now = new Date();
         let nowTime = now.getTime(); //获取当前日期的时间戳
         let Today = await shijianc(nowTime);
-
-        if (nowTime < 1681660800000) {
+        //7-12 0点开启
+        if (nowTime < 1689091200000) {
             e.reply(`「七日馈赠」活动暂未开启！`);
             return;
         }
-        if (nowTime > 1682611199999) {
+        //7-20 2359点结束
+        if (nowTime > 1689955199999) {
             e.reply(`「七日馈赠」已结束！`);
             return;
         }
         let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
-        if (!time) {
-            time = 1681660800000
+        if (!time || time < 1689091200000) {
+            time = 1689091200000
         }
         let lastsign_time = await shijianc(parseInt(time))//获得上次签到日期
 
