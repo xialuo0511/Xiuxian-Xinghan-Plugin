@@ -1070,7 +1070,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
         if (x > 0) {
             let e = await najie.装备.find(item => item.name == name);
             if (!isNotNull(e)) {
-                var equipment = data.yijie_daoju.find(item => item.name == name);
+                var equipment = data.yijie_zhuangbei.find(item => item.name == name);
                 let equipment0 = JSON.parse(JSON.stringify(equipment));
                 equipment0.数量 = x;
                 najie.装备.push(equipment0);
