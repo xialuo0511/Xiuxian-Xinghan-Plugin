@@ -141,6 +141,8 @@ export class yijieSecretPlaceTask extends plugin {
                   } else {
                     await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
                   }
+                } else {
+                  await Add_yijie_beibao_thing(player_id, thing_name, thing_class, 1)
                 }
               }
             }
