@@ -54,10 +54,74 @@ export class yijiebeibao extends plugin {
                 {
                     reg: '^#异界出售.*$',
                     fnc: 'Sell_comodities'
+                },
+                {
+                    reg: '^#异界一键出售.*$',
+                    fnc: 'Sell_all_comodities'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async Sell_all_comodities(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let str = [];
+        let najie = await data.getData("yijie_beibao", usr_qq);
+        let commodities_price = 0
+        let wupin = ['装备', '道具', '材料', '箱子', '食材'];
+        let wupin1 = []
+        if (e.msg != '#异界一键出售') {
+            let thing = e.msg.replace("#异界一键出售", '');
+            for (var i of wupin) {
+                if (thing.includes(i)) {
+                    wupin1.push(i)
+                    thing = thing.replace(i, "")
+                }
+            }
+            if (thing.length == 0) {
+                wupin = wupin1
+            } else {
+                return;
+            }
+        }
+        console.log(wupin);
+        for (var i of wupin) {
+            console.log(najie[i]);
+            for (let l of najie[i]) {
+                //纳戒中的数量
+                let quantity = l.数量;
+                let t;
+                await Add_yijie_beibao_thing(usr_qq, l.name, l.class, -quantity);
+                t = `【${l.name}*${l.数量}】出售成功,`;
+                commodities_price = commodities_price + l.出售价 * quantity;
+                let money = l.出售价 * quantity;
+                t = t + `共${money} 星魂币`;
+                str.push(t);
+            }
+        }
+        await Add_星魂币(usr_qq, commodities_price);
+        str.push(`出售成功!出售共获得${commodities_price}星魂币 `);
+
+        //返回图片
+        let log_data = {
+            log: str,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
+        return;
     }
 
     //出售商品
