@@ -137,33 +137,34 @@ export class yijieSecretPlaceTask extends plugin {
                 shu = 2
               }
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, shu)
-              let arr = action;
-              //把状态都关了
-              arr.shutup = 1; //闭关状态
-              arr.working = 1; //降妖状态
-              arr.power_up = 1; //渡劫状态
-              arr.Place_action = 1; //秘境
-              arr.Place_actionplus = 1; //沉迷状态
-              //结束的时间也修改为当前时间
-              arr.end_time = new Date().getTime();
-              //结算完去除group_id
-              delete arr.group_id;
-              //写入redis
-              await redis.set(
-                'xiuxian:yijie:player:' + player_id + ':action',
-                JSON.stringify(arr)
-              );
-              //发送消息
-              if (is_group) {
-                await this.pushInfo(push_address, is_group, msg);
-              } else {
-                await this.pushInfo(player_id, is_group, msg);
-              }
+            }
+            let arr = action;
+            //把状态都关了
+            arr.shutup = 1; //闭关状态
+            arr.working = 1; //降妖状态
+            arr.power_up = 1; //渡劫状态
+            arr.Place_action = 1; //秘境
+            arr.Place_actionplus = 1; //沉迷状态
+            //结束的时间也修改为当前时间
+            arr.end_time = new Date().getTime();
+            //结算完去除group_id
+            delete arr.group_id;
+            //写入redis
+            await redis.set(
+              'xiuxian:yijie:player:' + player_id + ':action',
+              JSON.stringify(arr)
+            );
+            //发送消息
+            if (is_group) {
+              await this.pushInfo(push_address, is_group, msg);
+            } else {
+              await this.pushInfo(player_id, is_group, msg);
             }
           }
         }
       }
     }
+  }
 
   /**
    * 推送消息，群消息推送群，或者推送私人
@@ -172,14 +173,14 @@ export class yijieSecretPlaceTask extends plugin {
    * @returns {Promise<void>}
    */
   async pushInfo(id, is_group, msg) {
-      if (is_group) {
-        await Bot.pickGroup(id)
-          .sendMsg(msg)
-          .catch(err => {
-            Bot.logger.mark(err);
-          });
-      } else {
-        await common.relpyPrivate(id, msg);
-      }
+    if (is_group) {
+      await Bot.pickGroup(id)
+        .sendMsg(msg)
+        .catch(err => {
+          Bot.logger.mark(err);
+        });
+    } else {
+      await common.relpyPrivate(id, msg);
     }
   }
+}
