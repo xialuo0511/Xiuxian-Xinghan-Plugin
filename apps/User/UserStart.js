@@ -599,7 +599,7 @@ export class UserStart extends plugin {
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
                 await Add_星魂币(usr_qq, 500);
-                msg.push("领取异界奖励成功，获得500星魂币！")
+                msg.push(",领取异界奖励成功，获得500星魂币！")
             }
             e.reply(msg);
             return;
