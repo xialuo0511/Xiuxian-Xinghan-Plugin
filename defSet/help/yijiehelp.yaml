@@ -74,7 +74,7 @@
 - group: 箱子
   list:
     - icon: help-icon_82
-      title: '#打开箱子xxx'
+      title: '#开启箱子xxx'
       desc: '打开箱子'
     - icon: help-icon_82
       title: '#十连箱子xxx'
