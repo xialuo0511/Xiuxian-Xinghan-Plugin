@@ -11,6 +11,7 @@ import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
  * 秘境模块
  */
 let allaction = false;
+const versionData = Config.getdefSet("version", "version");
 
 export class yijieSecretPlace extends plugin {
     constructor() {
@@ -117,8 +118,11 @@ export class yijieSecretPlace extends plugin {
  * 地点查询
  */
 export async function Goweizhi(e, weizhi) {
+    let player = await Read_yijie_player(e.user_id)
     let data = {
         weizhi,
+        player,
+        修仙版本: versionData,
     };
     const data1 = await new Show(e).get_yijiemijingData(data);
     let img = await puppeteer.screenshot('yijiemijing', {
