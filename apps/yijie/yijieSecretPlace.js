@@ -119,7 +119,7 @@ export class yijieSecretPlace extends plugin {
  */
 export async function Goweizhi(e, weizhi) {
     let player = await Read_yijie_player(e.user_id)
-    let lilianquan = await exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具");
+    let lilianquan = await exist_yijie_beibao_thing(e.user_id, "仙鼎历练券", "道具");
     if (!lilianquan) {
         lilianquan = 0
     }
