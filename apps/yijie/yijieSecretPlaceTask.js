@@ -123,18 +123,18 @@ export class yijieSecretPlaceTask extends plugin {
               random2 = Math.floor(Math.random() * weizhi.thing.length);
               thing_name = weizhi.thing[random2].name;
               thing_class = weizhi.thing[random2].class;
+              let shu = 1
+              if (!weizhi.name.includes("仙鼎历练") && m == "探险者的春天" && random1 <= 0.25) {
+                msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！`)
+                shu = 2
+              }
               if (weizhi.name.includes("仙鼎历练")) {
                 msg.push(A_win + "\n")
-                msg.push(`在秘境探索的中途，收获了【${thing_name}】，本次探寻仙鼎历练秘境，获得异界使者的奖励10星魂币`)
+                msg.push(`在秘境探索的中途，收获了【${thing_name}】*${shu}，本次探寻仙鼎历练秘境，获得异界使者的奖励10星魂币`)
                 await Add_星魂币(player_id, 10)
               } else {
                 msg.push(A_win + "\n")
-                msg.push(`在秘境探索的中途，收获了【${thing_name}】`)
-              }
-              let shu = 1
-              if (!weizhi.name.includes("仙鼎历练") && m == "探险者的春天") {
-                msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！`)
-                shu = 2
+                msg.push(`在秘境探索的中途，收获了【${thing_name}】*${shu}`)
               }
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, shu)
             }
