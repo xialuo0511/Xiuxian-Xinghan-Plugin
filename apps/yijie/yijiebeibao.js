@@ -50,11 +50,12 @@ export class yijiebeibao extends plugin {
                 {
                     reg: '^#查询箱子.*$',
                     fnc: 'find_box'
-                },
-                {
-                    reg: '^#异界出售.*$',
-                    fnc: 'Sell_comodities'
                 }
+                // ,
+                // {
+                //     reg: '^#异界出售.*$',
+                //     fnc: 'Sell_comodities'
+                // }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");

@@ -27,6 +27,9 @@
     - icon: help-icon_14
       title: '#查询异界装备套装'
       desc: '查询异界全部套装装备效果'
+    - icon: help-icon_14
+      title: '#异界出售+物品名*个数'
+      desc: '出售物品'
 
 - group: 异界秘境|寻宝
   list:
