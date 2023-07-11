@@ -100,7 +100,7 @@ export class yijiebeibao extends plugin {
         if (thing_amount < 1 || thing_amount == null || thing_amount == undefined || thing_amount == NaN) {
             thing_amount = 1;
         }
-        let x = await exist_najie_thing(usr_qq, thing_name, thing_exist.class, pj);
+        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class, pj);
         //判断戒指中是否存在
         if (!x) {
             //没有
@@ -114,7 +114,7 @@ export class yijiebeibao extends plugin {
             return;
         }
         //数量够,数量减少,灵石增加
-        await Add_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class, -thing_amount, pj);
+        await Add_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class, -thing_amount);
         let commodities_price = thing_exist.出售价 * thing_amount;
         await Add_星魂币(usr_qq, commodities_price);
         e.reply(`出售成功!  获得${commodities_price}星魂币,还剩余【${thing_name}】*${x - thing_amount} `);
