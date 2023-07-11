@@ -3,19 +3,19 @@
     - icon: help-icon_59
       title: '#造访异界'
       desc: '前往异界'
-    - icon: help-icon_71
+    - icon: help-icon_1
       title: '#我的面板'
       desc: '查看异界面板'
-    - icon: help-icon_70
+    - icon: help-icon_1
       title: '#我的背包'
       desc: '查看异界背包'
-    - icon: help-icon_81
+    - icon: help-icon_3
       title: '#我的异界战力'
       desc: '查询异界战力'
-    - icon: help-icon_81
+    - icon: help-icon_2
       title: '#异界装备'
       desc: '装备'
-    - icon: help-icon_80
+    - icon: help-icon_1
       title: '#异界合成xxx'
       desc: '合成物品'
     - icon: help-icon_79
@@ -30,6 +30,9 @@
     - icon: help-icon_14
       title: '#异界出售+物品名*个数'
       desc: '出售物品'
+    - icon: help-icon_14
+      title: '#异界一键出售+物品类型'
+      desc: '一键出售物品'
 
 - group: 异界秘境|寻宝
   list:
