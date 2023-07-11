@@ -300,6 +300,9 @@ export class OccupationTask extends plugin {
                         let usr_qq = player.id
                         end_amount = Math.floor(end_amount) / 40;
                         end_amount = Math.floor(end_amount);
+                        if (end_amount > 5000) (
+                            end_amount = 5000
+                        )
                         await Add_najie_thing(usr_qq, "野兔", "食材", end_amount);
                         await Add_najie_thing(usr_qq, "野鸡", "食材", end_amount);
                         await Add_najie_thing(usr_qq, "野猪", "食材", end_amount);
