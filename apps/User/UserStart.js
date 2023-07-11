@@ -2,7 +2,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
-import { Read_player, existplayer, get_random_talent, getLastsign, Read_equipment, yijie_existplayer } from '../Xiuxian/xiuxian.js'
+import { Read_player, existplayer, get_random_talent, getLastsign, Read_equipment, yijie_existplayer, Add_星魂币 } from '../Xiuxian/xiuxian.js'
 import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.js'
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
@@ -560,11 +560,6 @@ export class UserStart extends plugin {
             e.reply(`「七日馈赠」活动暂未开启！`);
             return;
         }
-        //7-20 2359点结束
-        if (nowTime > 1689955199999) {
-            e.reply(`「七日馈赠」已结束！`);
-            return;
-        }
         let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
         if (!time || time < 1689091200000) {
             time = 1689091200000
@@ -599,8 +594,13 @@ export class UserStart extends plugin {
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[2w]*5,[顶级仙石]*5`
+                `领取第${sign}天馈赠成功！获得【2w】*5,【顶级仙石】*5`
             ]
+            let yijie = await yijie_existplayer(usr_qq)
+            if (yijie) {
+                await Add_星魂币(usr_qq, 500);
+                msg.push("领取异界奖励成功，获得500星魂币！")
+            }
             e.reply(msg);
             return;
         }
@@ -610,8 +610,14 @@ export class UserStart extends plugin {
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[甜酿丹]*10,[顶级仙石]*10`
+                `领取第${sign}天馈赠成功！获得【甜酿丹】*10,【顶级仙石】*10`
             ]
+            let yijie = await yijie_existplayer(usr_qq)
+            if (yijie) {
+                await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", 5)
+                await Add_yijie_beibao_thing(usr_qq, "玄蛛网", "道具", 5)
+                msg.push("领取异界奖励成功，获得【幽静谷】*5,【玄蛛网】*5")
+            }
             e.reply(msg);
             return;
         }
@@ -621,8 +627,13 @@ export class UserStart extends plugin {
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[摘榜令]*3,[顶级仙石]*10 `
+                `领取第${sign}天馈赠成功！获得【摘榜令】*3,【顶级仙石】*10 `
             ]
+            let yijie = await yijie_existplayer(usr_qq)
+            if (yijie) {
+                await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", 15)
+                msg.push("领取异界奖励成功，获得【仙鼎历练券】*15")
+            }
             e.reply(msg);
             return;
         }
@@ -632,41 +643,63 @@ export class UserStart extends plugin {
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[2w]*15,[顶级仙石]*15`
+                `领取第${sign}天馈赠成功！获得【2w】*15,【顶级仙石】*15`
             ]
+            let yijie = await yijie_existplayer(usr_qq)
+            if (yijie) {
+                await Add_星魂币(usr_qq, 1000);
+                msg.push("领取异界奖励成功，获得1000星魂币！")
+            }
             e.reply(msg);
             return;
         }
         if (sign == 5) {
             await Add_najie_thing(usr_qq, "2w", "道具", "30");
-            xianshi = xianshi + 20
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
-            let msg = [
-                segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[2w]*30,[顶级仙石]*20`
-            ]
-            e.reply(msg);
-            return;
-        }
-        if (sign == 6) {
-            await Add_najie_thing(usr_qq, "西游记", "功法", "1");
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[西游记]*1,[顶级仙石]*15`
+                `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*15`
             ]
+            let yijie = await yijie_existplayer(usr_qq)
+            if (yijie) {
+                await Add_yijie_beibao_thing(usr_qq, "烤肉", "食材", 25)
+                msg.push("领取异界奖励成功，获得【烤肉】*25")
+            }
+            e.reply(msg);
+            return;
+        }
+        if (sign == 6) {
+            await Add_najie_thing(usr_qq, "七星玄元丹", "丹药", "1");
+            xianshi = xianshi + 15
+            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
+            let msg = [
+                segment.at(usr_qq),
+                `领取第${sign}天馈赠成功！获得【七星玄元丹】*1,【顶级仙石】*15`
+            ]
+            let yijie = await yijie_existplayer(usr_qq)
+            if (yijie) {
+                await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", 5)
+                await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", 5)
+                msg.push("领取异界奖励成功，获得【深邃矿洞】*5,【铁镐】*5")
+            }
             e.reply(msg);
             return;
         }
         if (sign == 7) {
             await Add_najie_thing(usr_qq, "七星玄元丹", "丹药", "2");
-            xianshi = xianshi + 15
+            xianshi = xianshi + 30
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得[七星玄元丹]*2,[顶级仙石]*15`
+                `领取第${sign}天馈赠成功！获得【七星玄元丹】*2,【顶级仙石】*30`
             ]
+            let yijie = await yijie_existplayer(usr_qq)
+            if (yijie) {
+                await Add_yijie_beibao_thing(usr_qq, "高级装备箱", "箱子", 10)
+                await Add_星魂币(1500)
+                msg.push("领取异界奖励成功，获得1500星魂币,【深邃矿洞】*5")
+            }
             e.reply(msg);
             return;
         }
