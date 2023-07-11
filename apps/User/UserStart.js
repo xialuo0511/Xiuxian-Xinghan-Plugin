@@ -557,7 +557,7 @@ export class UserStart extends plugin {
         let Today = await shijianc(nowTime);
         //7-12 0点开启
         if (nowTime < 1689091200000) {
-            e.reply(`「七日馈赠」活动暂未开启！`);
+            e.reply(`「七日馈赠 · 异界珍宝」活动暂未开启！`);
             return;
         }
         let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
@@ -567,7 +567,7 @@ export class UserStart extends plugin {
         let lastsign_time = await shijianc(parseInt(time))//获得上次签到日期
 
         if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
-            e.reply(`今日已经领取过了`);
+            e.reply(`你今日已经领取过「七日馈赠 · 异界珍宝」了`);
             return;
         }
         await redis.set("xiuxian:player:" + usr_qq + ":huodonglastsign_time", nowTime);//redis设置签到时间
@@ -584,7 +584,7 @@ export class UserStart extends plugin {
         sign = sign + 1
         await redis.set("xiuxian:player:" + usr_qq + ":huodongsign", sign);//redis设置签到
         if (sign > 7) {//签到连续7天或者昨天没有签到,连续签到天数清零
-            e.reply(`「七日馈赠」已领取完毕！`);
+            e.reply(`「七日馈赠 · 异界珍宝」已领取完毕！`);
             return;
         }
 
