@@ -647,6 +647,9 @@ export class TreasureCabinet extends plugin {
         let i = 0
         let action = await redis.get("xiuxian:player:" + 10 + ":biguang");
         action = await JSON.parse(action);
+        if (!action) {
+            action = {}
+        }
         for (i = 0; i < action.length; i++) {
             if (action[i].qq == usr_qq) {
                 if (action[i].beiyong2 > 0) {
