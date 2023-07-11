@@ -1284,11 +1284,11 @@ export async function instead_equipment(usr_qq, equipment_data) {
 
 //计算战力
 export async function yijie_zhanlijisuan(yijie_player) {
-    let hp = yijie_player.血量上限
-    let atk = yijie_player.攻击
-    let def = yijie_player.防御
-    let baoji = yijie_player.暴击率
-    let baoshang = yijie_player.暴击伤害
+    let hp = yijie_player["血量上限"]
+    let atk = yijie_player["攻击"]
+    let def = yijie_player["防御"]
+    let baoji = yijie_player["暴击率"]
+    let baoshang = yijie_player["暴击伤害"]
     if (!baoshang) {
         baoshang = 0.5
     }
