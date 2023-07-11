@@ -2,7 +2,7 @@ import plugin from "../../../../lib/plugins/plugin.js";
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 import data from '../../model/XiuxianData.js'
-import { __PATH } from "../Xiuxian/xiuxian.js"
+import { Read_yijie_player, __PATH } from "../Xiuxian/xiuxian.js"
 import { get_gongfa_img, get_danyao_img, get_wuqi_img, get_fabao_img, get_huju_img, get_daoju_img, get_XianChong_img, get_huanying_img } from '../ShowImeg/showData.js'
 /**
  * 生图模块
@@ -329,6 +329,7 @@ export async function get_liulishop_img(e, thing_type) {
     if (!ifexistplay) {
         return;
     }
+    let player = await Read_yijie_player(usr_qq)
     let liuli = data.yijie_liuli;
     if (thing_type != "") {
         if (thing_type == "装备" || thing_type == "道具" || thing_type == "箱子") {
@@ -340,6 +341,7 @@ export async function get_liulishop_img(e, thing_type) {
         }
     }
     let ningmenghome_data = {
+        player,
         user_id: usr_qq,
         commodities_list: liuli
     }
