@@ -117,10 +117,10 @@ export class yijieSecretPlace extends plugin {
  * 地点查询
  */
 export async function Goweizhi(e, weizhi) {
-    let log_data = {
+    let data = {
         weizhi,
     };
-    const data1 = await new Show(e).get_yijiemijingData(log_data);
+    const data1 = await new Show(e).get_yijiemijingData(data);
     let img = await puppeteer.screenshot('yijiemijing', {
         ...data1,
     });
