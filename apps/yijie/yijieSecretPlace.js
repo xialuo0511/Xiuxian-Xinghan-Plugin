@@ -11,7 +11,7 @@ import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
  * 秘境模块
  */
 let allaction = false;
-const versionData = Config.getdefSet("version", "version");
+const versionData = config.getdefSet("version", "version");
 
 export class yijieSecretPlace extends plugin {
     constructor() {
