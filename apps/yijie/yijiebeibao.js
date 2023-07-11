@@ -100,7 +100,7 @@ export class yijiebeibao extends plugin {
         if (thing_amount < 1 || thing_amount == null || thing_amount == undefined || thing_amount == NaN) {
             thing_amount = 1;
         }
-        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class, pj);
+        let x = await exist_yijie_beibao_thing(usr_qq, thing_name, thing_exist.class);
         //判断戒指中是否存在
         if (!x) {
             //没有
