@@ -1284,19 +1284,23 @@ export async function instead_equipment(usr_qq, equipment_data) {
 
 //计算战力
 export async function yijie_zhanlijisuan(yijie_player) {
-    let hp = yijie_player["血量上限"]
-    let atk = yijie_player["攻击"]
-    let def = yijie_player["防御"]
-    let baoji = yijie_player["暴击率"]
-    let baoshang = yijie_player["暴击伤害"]
-    if (!baoshang) {
-        baoshang = 0.5
+    if (yijie_player) {
+        let hp = yijie_player["血量上限"]
+        let atk = yijie_player["攻击"]
+        let def = yijie_player["防御"]
+        let baoji = yijie_player["暴击率"]
+        let baoshang = yijie_player["暴击伤害"]
+        if (!baoshang) {
+            baoshang = 0.5
+        }
+        let heji = hp * 0.8 + atk * 1.5 + def * 1.2
+        let zhanli = heji * baoji * (1 + baoshang)
+        zhanli = zhanli + heji * (1 - baoji)
+        zhanli = parseInt(zhanli)
+        return zhanli;
+    } else {
+        return 0;
     }
-    let heji = hp * 0.8 + atk * 1.5 + def * 1.2
-    let zhanli = heji * baoji * (1 + baoshang)
-    zhanli = zhanli + heji * (1 - baoji)
-    zhanli = parseInt(zhanli)
-    return zhanli;
 }
 
 /*
