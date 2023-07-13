@@ -119,7 +119,7 @@ export class yijiebeibao extends plugin {
         if (ifexist.islockd == 0) {
             if (un_lock == "锁定") {
                 ifexist.islockd = 1;
-                await Write_yijie_beibao(usr_qq, najie);
+                await Write_yijie_beibao(usr_qq, beibao);
                 e.reply(`${thing_exist.class}:${thing_name}已锁定`);
                 return;
             } else if (un_lock == "解锁") {
@@ -129,7 +129,7 @@ export class yijiebeibao extends plugin {
         } else if (ifexist.islockd == 1) {
             if (un_lock == "解锁") {
                 ifexist.islockd = 0;
-                await Write_yijie_beibao(usr_qq, najie);
+                await Write_yijie_beibao(usr_qq, beibao);
                 e.reply(`${thing_exist.class}:${thing_name}已解锁`);
                 return;
             } else if (un_lock == "锁定") {
