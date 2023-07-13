@@ -1,6 +1,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
+import fs from "fs"
 import {
     Write_yijie_player,
     Write_yijie_beibao,
