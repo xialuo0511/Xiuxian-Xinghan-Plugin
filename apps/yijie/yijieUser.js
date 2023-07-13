@@ -102,7 +102,7 @@ export class yijieUser extends plugin {
         for (var i = 0; i < File_length; i++) {
             let this_qq = File[i].replace(".json", '');
             this_qq = parseInt(this_qq);
-            let player = await Read_player(this_qq);
+            let player = await Read_yijie_player(this_qq);
             let lingshi = player.星魂币
             temp[i] = {
                 ls2: player.星魂币,
