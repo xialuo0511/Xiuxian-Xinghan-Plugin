@@ -32,8 +32,8 @@
     },
     {
         "name": "铁镐",
-        "class": "材料",
-        "type": "材料",
+        "class": "道具",
+        "type": "道具",
         "amount": 1,
         "materials": [
             {
