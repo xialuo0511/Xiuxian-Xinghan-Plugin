@@ -1805,6 +1805,23 @@ export async function get_ranking_money_img(e, Data, usr_paiming, thisplayer, th
     });
 }
 
+export async function get_ranking_xinghunbi_img(e, Data, usr_paiming, thisplayer) {
+    let usr_qq = e.user_id;
+    const lingshi = Math.trunc(thisplayer.星魂币);
+    let ranking_money_data = {
+        user_id: usr_qq,
+        nickname: thisplayer.名号,
+        lingshi: lingshi,
+        najie_lingshi: najie_lingshi,
+        usr_paiming: usr_paiming,
+        allplayer: Data
+    }
+    const data1 = await new Show(e).get_ranking_xinghunbiData(ranking_money_data);
+    return await puppeteer.screenshot("ranking_xinghunbi", {
+        ...data1,
+    });
+}
+
 async function getPlayerAction(usr_qq) {
     let arr = {};
     let action = await redis.get("xiuxian:player:" + usr_qq + ":action");

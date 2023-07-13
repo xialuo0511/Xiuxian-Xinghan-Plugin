@@ -17,7 +17,7 @@ import {
     Add_星魂币,
     isNotNull
 } from '../Xiuxian/xiuxian.js'
-import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
+import { get_yijie_player_img, get_ranking_xinghunbi_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
@@ -75,10 +75,57 @@ export class yijieUser extends plugin {
                 {
                     reg: '#查询异界(装备套装|套装效果)?$',
                     fnc: 'find_zb'
+                },
+                {
+                    reg: '#星魂币榜$',
+                    fnc: 'xinghunbi'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async xinghunbi(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) { return; }
+        let usr_paiming;
+        let File = fs.readdirSync(__PATH.yijie_player_path);
+        File = File.filter(file => file.endsWith(".json"));
+        let File_length = File.length;
+        let temp = [];
+        for (var i = 0; i < File_length; i++) {
+            let this_qq = File[i].replace(".json", '');
+            this_qq = parseInt(this_qq);
+            let player = await Read_player(this_qq);
+            let lingshi = player.星魂币
+            temp[i] = {
+                ls2: player.星魂币,
+                星魂币: lingshi,
+                名号: player.名号,
+                qq: this_qq
+            }
+        }
+        //排序
+        temp.sort(sortBy("星魂币"));
+        let Data = [];
+        usr_paiming = temp.findIndex(temp => temp.qq === usr_qq) + 1;
+        if (File_length > 10) { File_length = 10; }//最多显示前十
+        for (var i = 0; i < File_length; i++) {
+            temp[i].名次 = i + 1;
+            Data[i] = temp[i];
+        }
+        await sleep(500);
+        let thisplayer = await data.getData("yijie_player", usr_qq);
+        let img = await get_ranking_xinghunbi_img(e, Data, usr_paiming, thisplayer);
+        e.reply(img);
+        return;
+
     }
 
     async find_zb(e) {

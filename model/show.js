@@ -421,6 +421,15 @@ export default class Game extends base {
     };
   }
 
+  async get_ranking_xinghunbiData(myData) {
+    this.model = 'ranking_xinghunbi';
+    return {
+      ...this.screenData,
+      saveId: 'ranking_xinghunbi',
+      ...myData,
+    };
+  }
+
   //修仙版本
   async get_updataData(myData) {
     this.model = 'updata';
