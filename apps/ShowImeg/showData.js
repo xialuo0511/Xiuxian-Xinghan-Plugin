@@ -1812,7 +1812,6 @@ export async function get_ranking_xinghunbi_img(e, Data, usr_paiming, thisplayer
         user_id: usr_qq,
         nickname: thisplayer.名号,
         lingshi: lingshi,
-        najie_lingshi: najie_lingshi,
         usr_paiming: usr_paiming,
         allplayer: Data
     }
