@@ -1675,6 +1675,29 @@ export async function yijie_tongbu(e) {
       beibao.箱子[i] = data.yijie_box.find(item => item.id == beibao.箱子[i].id);
       delete beibao.箱子[i].contents;
       beibao.箱子[i].数量 = shuliang
+      if (!beibao.箱子[i].islockd) {
+        beibao.箱子[i].islockd = 0;
+      }
+    }
+    for (let i = 0; i < beibao.道具.length; i++) {
+      if (!beibao.道具[i].islockd) {
+        beibao.道具[i].islockd = 0;
+      }
+    }
+    for (let i = 0; i < beibao.材料.length; i++) {
+      if (!beibao.材料[i].islockd) {
+        beibao.材料[i].islockd = 0;
+      }
+    }
+    for (let i = 0; i < beibao.装备.length; i++) {
+      if (!beibao.装备[i].islockd) {
+        beibao.装备[i].islockd = 0;
+      }
+    }
+    for (let i = 0; i < beibao.食材.length; i++) {
+      if (!beibao.食材[i].islockd) {
+        beibao.食材[i].islockd = 0;
+      }
     }
     await Write_yijie_player(usr_qq, player);
     await Write_yijie_beibao(usr_qq, beibao);
@@ -1683,4 +1706,3 @@ export async function yijie_tongbu(e) {
 
   return;
 }
-

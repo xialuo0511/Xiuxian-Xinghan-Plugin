@@ -15,6 +15,9 @@
     - icon: help-icon_2
       title: '#异界装备'
       desc: '装备'
+    - icon: help-icon_2
+      title: '#背包(锁定|解锁)xxx'
+      desc: '解锁或锁定某个物品不一键出售'
     - icon: help-icon_1
       title: '#异界合成xxx'
       desc: '合成物品'

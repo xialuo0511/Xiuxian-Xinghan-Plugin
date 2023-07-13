@@ -1086,6 +1086,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
             return;
         }
         najie.装备.find(item => item.name == name).数量 += x;
+        najie.装备.find(item => item.name == name).islockd = 0;
         if (najie.装备.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.装备 = najie.装备.filter(item => item.name != name);
@@ -1113,6 +1114,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
             return;
         }
         najie.道具.find(item => item.name == name).数量 += x;
+        najie.道具.find(item => item.name == name).islockd = 0;
         if (najie.道具.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.道具 = najie.道具.filter(item => item.name != name);
@@ -1141,6 +1143,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
             return;
         }
         najie.箱子.find(item => item.name == name).数量 += x;
+        najie.箱子.find(item => item.name == name).islockd = 0;
         if (najie.箱子.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.箱子 = najie.箱子.filter(item => item.name != name);
@@ -1168,6 +1171,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
             return;
         }
         najie.材料.find(item => item.name == name).数量 += x;
+        najie.材料.find(item => item.name == name).islockd = 0;
         if (najie.材料.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.材料 = najie.材料.filter(item => item.name != name);
@@ -1195,6 +1199,7 @@ export async function Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n)
             return;
         }
         najie.食材.find(item => item.name == name).数量 += x;
+        najie.食材.find(item => item.name == name).islockd = 0;
         if (najie.食材.find(item => item.name == name).数量 < 1) {
             //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
             najie.食材 = najie.食材.filter(item => item.name != name);

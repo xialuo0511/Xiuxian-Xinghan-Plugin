@@ -62,10 +62,81 @@ export class yijiebeibao extends plugin {
                 {
                     reg: '^#异界一键出售.*$',
                     fnc: 'Sell_all_comodities'
+                },
+                {
+                    reg: '^#背包(锁定|解锁)(装备|道具|材料|食材|箱子).*$',
+                    fnc: 'locked'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async locked(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        //命令判断
+        let msg = e.msg.replace("#背包", '');
+        let un_lock = msg.substr(0, 2);
+        let thing = msg.substr(4).split("\*");
+        let thing_name = thing[0];
+        let thing_exist = await yijie_foundthing(thing_name);
+        if (!thing_exist) {
+            e.reply(`异界不存在${thing_name}`);
+            return;
+        }
+
+
+        let beibao = await Read_yijie_beibao(usr_qq);
+        let ifexist;
+        if (thing_exist.class == "装备") {
+            ifexist = beibao.装备.find(item => (item.name == thing_name));
+        }
+        if (thing_exist.class == "道具") {
+            ifexist = beibao.道具.find(item => item.name == thing_name);
+        }
+        if (thing_exist.class == "材料") {
+            ifexist = beibao.材料.find(item => item.name == thing_name);
+        }
+        if (thing_exist.class == "食材") {
+            ifexist = beibao.食材.find(item => item.name == thing_name);
+        }
+        if (thing_exist.class == "箱子") {
+            ifexist = beibao.箱子.find(item => item.name == thing_name);
+        }
+        if (!ifexist) {//没有
+            e.reply(`你没有【${thing_name}】这样的${thing_exist.class}`);
+            return;
+        }
+        if (ifexist.islockd == 0) {
+            if (un_lock == "锁定") {
+                ifexist.islockd = 1;
+                await Write_yijie_beibao(usr_qq, najie);
+                e.reply(`${thing_exist.class}:${thing_name}已锁定`);
+                return;
+            } else if (un_lock == "解锁") {
+                e.reply(`${thing_exist.class}:${thing_name}本就是未锁定的`);
+                return;
+            }
+        } else if (ifexist.islockd == 1) {
+            if (un_lock == "解锁") {
+                ifexist.islockd = 0;
+                await Write_yijie_beibao(usr_qq, najie);
+                e.reply(`${thing_exist.class}:${thing_name}已解锁`);
+                return;
+            } else if (un_lock == "锁定") {
+                e.reply(`${thing_exist.class}:${thing_name}本就是锁定的`);
+                return;
+            }
+        }
     }
 
     async Sell_all_comodities(e) {
@@ -102,20 +173,22 @@ export class yijiebeibao extends plugin {
         for (var i of wupin) {
             console.log(najie[i]);
             for (let l of najie[i]) {
-                //纳戒中的数量
-                let quantity = l.数量;
-                let t;
-                let y = await yijie_foundjinmaithing(l.name);
-                if (y) {
-                    str.push(`【${l.name}】禁止出售`)
-                    return;
+                if (l.islockd == 0) {
+                    //纳戒中的数量
+                    let quantity = l.数量;
+                    let t;
+                    let y = await yijie_foundjinmaithing(l.name);
+                    if (y) {
+                        str.push(`【${l.name}】禁止出售`)
+                        return;
+                    }
+                    await Add_yijie_beibao_thing(usr_qq, l.name, l.class, -quantity);
+                    t = `【${l.name}*${l.数量}】出售成功,`;
+                    commodities_price = commodities_price + l.出售价 * quantity;
+                    let money = l.出售价 * quantity;
+                    t = t + `共${money} 星魂币`;
+                    str.push(t);
                 }
-                await Add_yijie_beibao_thing(usr_qq, l.name, l.class, -quantity);
-                t = `【${l.name}*${l.数量}】出售成功,`;
-                commodities_price = commodities_price + l.出售价 * quantity;
-                let money = l.出售价 * quantity;
-                t = t + `共${money} 星魂币`;
-                str.push(t);
             }
         }
         await Add_星魂币(usr_qq, commodities_price);
