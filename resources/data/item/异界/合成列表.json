@@ -73,7 +73,7 @@
         "amount": 1,
         "materials": [
             {
-                "name": "原金矿",
+                "name": "金矿",
                 "class": "材料",
                 "amount": 64
             }
