@@ -399,7 +399,7 @@ export class yijieUser extends plugin {
             if (mugao > 0) {
                 await Add_yijie_饱食度(usr_qq, -100)
                 await redis.set("xiuxian:yijie:player:" + usr_qq + "xunbaocd", now_Time);
-                await Add_yijie_beibao_thing(usr_qq, "", "玄蛛网", -1);
+                await Add_yijie_beibao_thing(usr_qq, "玄蛛网", "道具", -1);
                 await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", -1);
                 if (math > 0.90 && math < 1) {
                     e.reply(`${fanbei}你在【幽静谷】发现了${1000 * beilv}个星魂币，之后迅速跑走了！`)
