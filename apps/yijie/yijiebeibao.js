@@ -107,7 +107,7 @@ export class yijiebeibao extends plugin {
                 let t;
                 let y = await yijie_foundjinmaithing(l.name);
                 if (y) {
-                    str.push(`【${thing_name}】禁止出售`)
+                    str.push(`【${l.name}】禁止出售`)
                     return;
                 }
                 await Add_yijie_beibao_thing(usr_qq, l.name, l.class, -quantity);
