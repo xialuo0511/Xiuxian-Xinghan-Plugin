@@ -3432,3 +3432,12 @@ export async function foundhuishouthing(thing_name) {
     }
     return false
 }
+
+export async function yijie_foundjinmaithing(thing_name) {
+    for (var i = 0; i < data.yijie_jinmai.length; i++) {
+        if (thing_name == data.yijie_jinmai[i].name) {
+            return data.yijie_jinmai[i];
+        }
+    }
+    return false
+}

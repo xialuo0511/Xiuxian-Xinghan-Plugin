@@ -102,6 +102,8 @@ class XiuxianData {
         this.yijie_hecheng = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/合成列表.json`));
         //套装列表
         this.yijie_taozhuang = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/套装效果.json`));
+        //套装列表
+        this.yijie_jinmai = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/禁卖列表.json`));
         //异界怪物列表
         //其零
         this.yijie_guaiwu0 = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境怪物/level0.json`));

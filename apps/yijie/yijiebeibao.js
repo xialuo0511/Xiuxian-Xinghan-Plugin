@@ -2,7 +2,7 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import {
-    Write_yijie_player,
+    yijie_foundjinmaithing,
     Write_yijie_beibao,
     yijie_existplayer,
     yijie_zhanlijisuan,
@@ -105,6 +105,11 @@ export class yijiebeibao extends plugin {
                 //纳戒中的数量
                 let quantity = l.数量;
                 let t;
+                let y = await yijie_foundjinmaithing(l.name);
+                if (y) {
+                    str.push(`【${thing_name}】禁止出售`)
+                    return;
+                }
                 await Add_yijie_beibao_thing(usr_qq, l.name, l.class, -quantity);
                 t = `【${l.name}*${l.数量}】出售成功,`;
                 commodities_price = commodities_price + l.出售价 * quantity;
@@ -173,6 +178,11 @@ export class yijiebeibao extends plugin {
         if (!x) {
             //没有
             e.reply(`你的背包里没有【${thing_name}】这样的${thing_exist.class}`);
+            return;
+        }
+        let y = await yijie_foundjinmaithing(thing_name);
+        if (y) {
+            e.reply(`【${thing_name}】禁止出售`);
             return;
         }
         //判断戒指中的数量
