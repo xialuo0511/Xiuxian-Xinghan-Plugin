@@ -35,7 +35,12 @@
                 <div class="user_top_font_right">
                     生命：{{(player.血量上限).toFixed(0)}}
                 </div>
-                <div class="user_top_font_right">星魂币：{{player.星魂币}}</div>
+                <div class="item_title font_left">
+                    攻击：{{player.攻击}}
+                </div>
+                <div class="item_title font_left">
+                    防御：{{player.防御}}
+                </div>
             </div>
         </div>
         <!--下-->
@@ -44,11 +49,8 @@
                 <div class="user_font user_font_title">【基础信息】</div>
                 <div class="user_font wupin">
                     <div class="item">
-                        <div class="item_title font_left">
-                            攻击：{{player.攻击}}
-                        </div>
-                        <div class="item_title font_left">
-                            防御：{{player.防御}}
+                        <div class="user_top_font_right">
+                            星魂币：{{player.星魂币}}
                         </div>
                         <div class="item_title font_left">
                             暴击：{{(player.暴击率*100).toFixed(0)}}%

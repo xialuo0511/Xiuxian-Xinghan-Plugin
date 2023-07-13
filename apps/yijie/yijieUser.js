@@ -369,7 +369,7 @@ export class yijieUser extends plugin {
                     e.reply(`${fanbei}你在【幽静谷】捡到了${100 * beilv}个星魂币，此外啥也没看到！`)
                     Add_星魂币(usr_qq, 100 * beilv)
                     return;
-                } else if (math > 0.1 && math <= 0.45) {
+                } else if (math >= 0.1 && math <= 0.45) {
                     e.reply(`${fanbei}你在【幽静谷】捡到了${50 * beilv}个星魂币，此外啥也没看到！`)
                     Add_星魂币(usr_qq, 50 * beilv)
                     return;
