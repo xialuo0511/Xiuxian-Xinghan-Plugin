@@ -12,7 +12,8 @@ import {
     foundthing,
     Write_player,
     Locked_najie_thing,
-    yijie_foundthing
+    yijie_foundthing,
+    Add_星魂币
 } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_najie_thing, convert2integer, Check_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -61,7 +62,7 @@ export class MoneyOperation extends plugin {
                     fnc: 'wup_all'
                 },
                 {
-                    reg: '^#异界发(装备|道具|材料|箱子|食材).*\\*-?[1-9]\d*',
+                    reg: '^#异界发(装备|道具|材料|箱子|食材|星魂币).*\\*-?[1-9]\d*',
                     fnc: 'yijie_wup'
                 },
                 {
@@ -225,6 +226,14 @@ export class MoneyOperation extends plugin {
         let amount = 1;
         amount = Number(thing_name_pinji_amount[1]);
         if (amount == NaN) {
+            return;
+        }
+        if (thing_name == "星魂币") {
+            for (let i = 0; i < File_length; i++) {
+                let this_qq = File[i].replace(".json", '');
+                await Add_星魂币(this_qq, amount)
+            }
+            e.reply(`发放成功,目前共有${File_length}个玩家,每人增加${thing_name}*${amount}`);
             return;
         }
         //判断列表中是否存在，不存在不能卖,并定位是什么物品
