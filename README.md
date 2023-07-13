@@ -1,4 +1,4 @@
-# 绝云间修仙
+# 绝云间修仙2.0.0 【荒芜异界，仙鼎至尊】
 ## 玩家攻略：
 [修仙攻略](https://docs.qq.com/doc/DSUhqZWdpZXJuUndZ?&u=4bd0757f64094c48b02d7cfc4eaeb44b)  
 ## 访问量：        
