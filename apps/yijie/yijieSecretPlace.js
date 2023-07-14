@@ -6,6 +6,7 @@ import { __PATH, Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_t
 import { exist_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
+import fs from "fs"
 
 /**
  * 秘境模块
