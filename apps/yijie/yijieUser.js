@@ -559,7 +559,7 @@ export class yijieUser extends plugin {
         }
         quantity = await convert2integer(quantity)
         let baoshidu = 0
-        let eat = data.yijie_taozhuang.find(item => item.name == thing_name);
+        let eat = data.yijie_shichai.find(item => item.name == thing_name);
         if (eat) {
             baoshidu = eat.饱食度
         }
