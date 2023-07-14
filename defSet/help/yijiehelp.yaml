@@ -39,6 +39,12 @@
     - icon: help-icon_14
       title: '#异界一键出售+物品类型'
       desc: '一键出售物品'
+    - icon: help-icon_14
+      title: '#刷怪xxx分钟'
+      desc: '挂机刷怪领代币'
+    - icon: help-icon_14
+      title: '#异界逃离'
+      desc: '怪打不过跑得过'
 
 - group: 异界秘境|寻宝
   list:
