@@ -129,11 +129,11 @@ export class yijieUser extends plugin {
         let start_time = action.end_time - action.time;
         let now_time = new Date().getTime();
         let time;
-        var y = this.xiuxianConfigData.work.time;//固定时间
+        var y = 30;//固定时间
         var x = this.xiuxianConfigData.work.cycle;//循环次数
 
         if (end_time > now_time) {//属于提前结束
-            time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
+            time = parseInt((new Date().getTime() - start_time) / 1000 / 60 / 30);
             //超过就按最低的算，即为满足30分钟才结算一次
             //如果是 >=16*33 ----   >=30
             for (var i = x; i > 0; i--) {
@@ -142,12 +142,11 @@ export class yijieUser extends plugin {
                     break;
                 }
             }
-            //如果<15，不给收益
             if (time < y) {
                 time = 0;
             }
         } else {//属于结束了未结算
-            time = parseInt((action.time) / 1000 / 60);
+            time = parseInt((action.time) / 1000 / 60 / 30);
             //超过就按最低的算，即为满足30分钟才结算一次
             //如果是 >=16*33 ----   >=30
             for (var i = x; i > 0; i--) {
@@ -156,14 +155,13 @@ export class yijieUser extends plugin {
                     break;
                 }
             }
-            //如果<15，不给收益
             if (time < y) {
                 time = 0;
             }
         }
 
         if (e.isGroup) {
-            await this.dagong_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+            await this.dagong_jiesuan(e.user_id, time / 30, false, e.group_id);//提前闭关结束不会触发随机事件
         } else {
             await this.dagong_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
         }
@@ -895,13 +893,12 @@ export class yijieUser extends plugin {
 
         let usr_qq = user_id;
         let player = data.getData("yijie_player", usr_qq);
-        let now_level_id;
         if (!isNotNull(player.xianding_level)) {
             return;
         }
         let xinghunbi = 15 * Number(player.xianding_level)
         let other_xinghunbi = 0;
-        let time = (parseInt(action.time) / 1000 / 60 / 30) * 2;//分钟
+        let Time = time * 2;//分钟
         let msg = [segment.at(usr_qq)];
         if (is_random) {//随机事件预留空间
             let rand = Math.random();
@@ -915,7 +912,7 @@ export class yijieUser extends plugin {
                 msg.push("\n刷怪的时候被人抢了一只，因此你得到的报酬也减少了，获取的星魂币减少" + a);
             }
         }
-        let get_xinghunbi = Math.floor(xinghunbi * time + other_xinghunbi);
+        let get_xinghunbi = Math.floor(xinghunbi * Time + other_xinghunbi);
         await Add_星魂币(player_id, get_xinghunbi);
 
         //给出消息提示
