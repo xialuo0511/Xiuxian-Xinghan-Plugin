@@ -55,6 +55,21 @@
       title: '#食用'
       desc: '吃点好的'
 
+- group: 交易所
+  list:
+    - icon: help-icon_14
+      title: '#交易所'
+      desc: '查看交易所别人在卖什么'
+    - icon: help-icon_14
+      title: '#异界上架xxx'
+      desc: '在交易所上架你想出售的东西'
+    - icon: help-icon_79
+      title: '#异界下架xxx'
+      desc: '在交易所下架你当前不想出售的东西'
+    - icon: help-icon_79
+      title: '#异界选购+编号'
+      desc: '购买你想要的东西'
+
 
 - group: 仙鼎
   list:

@@ -200,6 +200,10 @@ export class yijieExchange extends plugin {
             e.reply(`你目前只有【${thing_name}】*${x}`);
             return;
         }
+        if (thing_value < 100) {
+            e.reply("至少需定价100才能在此出售物品")
+            return;
+        }
         let Exchange;
         try {
             Exchange = await Read_yijie_Exchange();
