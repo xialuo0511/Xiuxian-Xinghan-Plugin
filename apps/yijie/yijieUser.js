@@ -93,7 +93,7 @@ export class yijieUser extends plugin {
                     fnc: 'shuaguai'
                 },
                 {
-                    reg: '#异界逃离$',
+                    reg: '#跑路$',
                     fnc: 'Giveup'
                 }
             ]
@@ -110,13 +110,6 @@ export class yijieUser extends plugin {
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
             e.reply("没存档你逃个锤子!");
-            return;
-        }
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
             return;
         }
         //查询redis中的人物动作
@@ -157,15 +150,6 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
-            return;
-        }
-
-
         //获取时间
         let time = e.msg.replace("#", "");
         time = time.replace("刷怪", "");
