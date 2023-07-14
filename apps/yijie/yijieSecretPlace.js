@@ -85,11 +85,11 @@ export class yijieSecretPlace extends plugin {
 
         }
         if (didian.xinghunbi) {
-            if (player.星魂币 < Number(didian.xinghunbi)) {
-                e.reply(`需要至少${didian.xinghunbi}星魂币才能进入，你只有${player.星魂币}`)
+            if (player.星魂币 < Number(weizhi.xinghunbi)) {
+                e.reply(`需要至少${weizhi.xinghunbi}星魂币才能进入，你只有${player.星魂币}`)
                 return;
             }
-            await Add_星魂币(usr_qq, -1 * Number(didian.xinghunbi))
+            await Add_星魂币(usr_qq, -1 * Number(weizhi.xinghunbi))
         }
 
         //记录时间
