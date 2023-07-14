@@ -54,7 +54,7 @@ export class yijieSecretPlace extends plugin {
         File = File.filter(file => file.endsWith(".json"));
         let File_length = File.length;
         for (var i = 0; i < File_length; i++) {
-            let dir = File[i]
+            let dir = __PATH.yijie_guaiwu_path + File[i]
             let guaiwu = fs.readFileSync(dir, 'utf8', (err, data) => {
                 if (err) {
                     console.log(err)
