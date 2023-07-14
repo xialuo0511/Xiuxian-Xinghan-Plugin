@@ -913,7 +913,7 @@ export class yijieUser extends plugin {
             }
         }
         let get_xinghunbi = Math.floor(xinghunbi * Time + other_xinghunbi);
-        await Add_星魂币(player_id, get_xinghunbi);
+        await Add_星魂币(user_id, get_xinghunbi);
 
         //给出消息提示
         if (is_random) {
