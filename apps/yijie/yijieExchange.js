@@ -433,7 +433,7 @@ export async function get_supermarket_img(e) {
     try {
         Exchange_list = await Read_yijie_Exchange();
     } catch {
-        await Write_Exchange([]);
+        await Write_yijie_Exchange([]);
         Exchange_list = await Read_yijie_Exchange();
     }
     let supermarket_data = {
