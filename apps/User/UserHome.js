@@ -172,7 +172,7 @@ export class UserHome extends plugin {
         } else {
             let c = []
             var b = eval(a);
-            for (var i = 0; i < b.length; i++) {
+            for (var i = b.length - 1; i >= 0; i--) {
                 c.push(`【${b[i].问题状态}】问题：${b[i].反馈内容}`)
             }
             let log_data = {
