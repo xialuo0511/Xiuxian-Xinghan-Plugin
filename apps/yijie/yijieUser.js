@@ -131,38 +131,10 @@ export class yijieUser extends plugin {
         let now_time = new Date().getTime();
         let time;
         var y = 30;//固定时间
-        var x = this.xiuxianConfigData.work.cycle;//循环次数
-
-        if (end_time > now_time) {//属于提前结束
-            time = parseInt((new Date().getTime() - start_time) / 1000 / 60 / 30);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
-            if (time < y) {
-                time = 0;
-            }
-        } else {//属于结束了未结算
-            time = parseInt((action.time) / 1000 / 60 / 30);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
-            if (time < y) {
-                time = 0;
-            }
-        }
+        time = parseInt((new Date().getTime() - start_time) / 1000 / 60 / 30);
 
         if (e.isGroup) {
-            await this.dagong_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+            await this.dagong_jiesuan(e.user_id, time, true, e.group_id);//提前闭关结束不会触发随机事件
         } else {
             await this.dagong_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
         }
