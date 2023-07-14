@@ -84,7 +84,7 @@ export class yijieSecretPlace extends plugin {
             }
 
         }
-        if (didian.xinghunbi) {
+        if (weizhi.xinghunbi) {
             if (player.星魂币 < Number(weizhi.xinghunbi)) {
                 e.reply(`需要至少${weizhi.xinghunbi}星魂币才能进入，你只有${player.星魂币}`)
                 return;
@@ -116,7 +116,11 @@ export class yijieSecretPlace extends plugin {
             arr.group_id = e.group_id
         }
         await redis.set("xiuxian:yijie:player:" + usr_qq + ":action", JSON.stringify(arr));
-        e.reply("开始探寻异界秘境【" + didian + "】," + time + "分钟后归来!");
+        if (weizhi.xinghunbi) {
+            e.reply("消耗星魂币" + weizhi.xinghunbi + "，开始探寻异界秘境【" + didian + "】," + time + "分钟后归来!");
+        } else {
+            e.reply("开始探寻异界秘境【" + didian + "】," + time + "分钟后归来!");
+        }
         return;
     }
 }
