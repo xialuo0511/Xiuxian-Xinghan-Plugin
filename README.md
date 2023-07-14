@@ -28,6 +28,7 @@ git fetch
 ## 更新完后一定要发【#一键同步】，不要偷懒直接保存data文件夹
 ## 更新内容
 要获取最新更新内容发"#查看日志"即可查看
+目前最活跃分支为dev分支，canary短暂时间内不会维护，请注意查看！
 ## 配置与存档   
 >xiuxian-emulator-plugin/ config / xiuxian / xiuxian.yaml       
 >xiuxian-emulator-plugin/ resources / data          
