@@ -1,4 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js'
+import common from "../../../../lib/common/common.js"
 import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
@@ -929,6 +930,24 @@ export class yijieUser extends plugin {
         }
 
         return;
+    }
+
+    /**
+     * 推送消息，群消息推送群，或者推送私人
+     * @param id
+     * @param is_group
+     * @returns {Promise<void>}
+     */
+    async pushInfo(id, is_group, msg) {
+        if (is_group) {
+            await Bot.pickGroup(id)
+                .sendMsg(msg)
+                .catch((err) => {
+                    Bot.logger.mark(err);
+                });
+        } else {
+            await common.relpyPrivate(id, msg);
+        }
     }
 }
 
