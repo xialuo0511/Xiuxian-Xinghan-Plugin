@@ -65,7 +65,7 @@ export class yijieSecretPlace extends plugin {
             //将字符串数据转变成数组格式
             guaiwu = JSON.parse(guaiwu);
             //for (var i = 0; i < guaiwu.length; i++) {
-            let a = guaiwu.find(item => item.name == name);
+            let a = guaiwu.find(item => item.名号 == name);
             if (a) {
                 let play_guaiwu = guaiwu[i]
                 let zhanli = await yijie_zhanlijisuan(play_guaiwu)
