@@ -87,10 +87,153 @@ export class yijieUser extends plugin {
                 {
                     reg: '#异界改名.*$',
                     fnc: 'Change_player_name'
+                },
+                {
+                    reg: '#(^#刷怪$)|(^#刷怪(.*)(分|分钟)$)$',
+                    fnc: 'shuaguai'
+                },
+                {
+                    reg: '#异界逃离$',
+                    fnc: 'Giveup'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async Giveup(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            e.reply("没存档你逃个锤子!");
+            return;
+        }
+        //获取游戏状态
+        let game_action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":game_action");
+        //防止继续其他娱乐行为
+        if (game_action == 0) {
+            e.reply("修仙：游戏进行中...");
+            return;
+        }
+        //查询redis中的人物动作
+        let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
+        action = JSON.parse(action);
+        //不为空，有状态
+        if (action != null) {
+            //是在秘境状态
+            if (action.Place_action == "0" || action.Place_actionplus == "0" || action.mojie == "0") {
+                //把状态都关了
+                let arr = action;
+                arr.is_jiesuan = 1;//结算状态
+                arr.shutup = 1;//闭关状态
+                arr.working = 1;//降妖状态
+                arr.power_up = 1;//渡劫状态
+                arr.Place_action = 1;//秘境
+                arr.Place_actionplus = 1;//沉迷状态
+                arr.mojie = 1;
+                arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
+                delete arr.group_id;//结算完去除group_id
+                await redis.set("xiuxian:yijie:player:" + usr_qq + ":action", JSON.stringify(arr));
+                e.reply("你已逃离！");
+                return;
+            }
+        }
+        return;
+    }
+
+    //闭关
+    async shuaguai(e) {
+        let usr_qq = e.user_id;//用户qq
+        //有无存档
+        if (!await yijie_existplayer(usr_qq)) {
+            return;
+        }
+        //不开放私聊
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        //获取游戏状态
+        let game_action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":game_action");
+        //防止继续其他娱乐行为
+        if (game_action == 0) {
+            e.reply("修仙：游戏进行中...");
+            return;
+        }
+
+
+        //获取时间
+        let time = e.msg.replace("#", "");
+        time = time.replace("刷怪", "");
+        time = time.replace("分", "");
+        time = time.replace("钟", "");
+        if (parseInt(time) == parseInt(time)) {
+            time = parseInt(time);
+            var y = 30;//时间
+            var x = 240;//循环次数
+            //如果是 >=16*33 ----   >=30
+            for (var i = x; i > 0; i--) {
+                if (time >= y * i) {
+                    time = y * i;
+                    break;
+                }
+            }
+            //如果<30，修正。
+            if (time < 30) {
+                time = 30;
+            }
+        }
+        else {
+            //不设置时间默认60分钟
+            time = 30;
+        }
+
+        //查询redis中的人物动作
+        let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
+        action = JSON.parse(action);
+        if (action != null) {
+            //人物有动作查询动作结束时间
+            let action_end_time = action.end_time;
+            let now_time = new Date().getTime();
+            if (now_time <= action_end_time) {
+                let m = parseInt((action_end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("【异界】正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
+                return;
+            }
+        }
+
+        let action_time = time * 60 * 1000;//持续时间，单位毫秒
+        let arr = {
+            "action": "刷怪",//动作
+            "end_time": new Date().getTime() + action_time,//结束时间
+            "time": action_time,//持续时间
+            "plant": "1",//采药-关闭
+            "shutup": "0",//闭关状态-开启
+            "working": "1",//降妖状态-关闭
+            "Place_action": "1",//秘境状态---关闭
+            "Place_actionplus": "1",//沉迷---关闭
+            "power_up": "1",//渡劫状态--关闭
+            "power_up": "1",//渡劫状态--关闭
+            "mojie": "1",//魔界状态---关闭
+            "power_up": "1",//渡劫状态--关闭
+            "xijie": "1", //洗劫状态开启
+            "plant": "1",//采药-开启
+            "mine": "1",//采矿-开启
+        };
+        if (e.isGroup) {
+            arr.group_id = e.group_id
+        }
+
+        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
+        e.reply(`现在开始刷怪${time}分钟,刷完回来领取报酬`);
+
+        return true;
+
     }
 
     async Change_player_name(e) {
