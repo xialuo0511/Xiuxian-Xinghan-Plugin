@@ -67,24 +67,6 @@
         ]
     },
     {
-        "name": "金矿",
-        "class": "材料",
-        "type": "材料",
-        "amount": 8,
-        "materials": [
-            {
-                "name": "原金矿",
-                "class": "材料",
-                "amount": 8
-            },
-            {
-                "name": "煤矿",
-                "class": "材料",
-                "amount": 1
-            }
-        ]
-    },
-    {
         "name": "压缩金矿",
         "class": "材料",
         "type": "材料",
@@ -94,24 +76,6 @@
                 "name": "金矿",
                 "class": "材料",
                 "amount": 64
-            }
-        ]
-    },
-    {
-        "name": "钻石",
-        "class": "材料",
-        "type": "材料",
-        "amount": 8,
-        "materials": [
-            {
-                "name": "钻石矿石",
-                "class": "材料",
-                "amount": 8
-            },
-            {
-                "name": "煤矿",
-                "class": "材料",
-                "amount": 1
             }
         ]
     },

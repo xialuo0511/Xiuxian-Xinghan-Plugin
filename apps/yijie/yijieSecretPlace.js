@@ -2,7 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing, Read_yijie_player } from '../Xiuxian/xiuxian.js'
+import { Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing, Read_yijie_player, Add_星魂币 } from '../Xiuxian/xiuxian.js'
 import { exist_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
@@ -83,6 +83,13 @@ export class yijieSecretPlace extends plugin {
                 }
             }
 
+        }
+        if (didian.xinghunbi) {
+            if (player.星魂币 < Number(didian.xinghunbi)) {
+                e.reply(`需要至少${didian.xinghunbi}星魂币才能进入，你只有${player.星魂币}`)
+                return;
+            }
+            await Add_星魂币(usr_qq, -1 * Number(didian.xinghunbi))
         }
 
         //记录时间
