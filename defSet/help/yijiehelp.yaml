@@ -63,6 +63,9 @@
     - icon: help-icon_79
       title: '#食用'
       desc: '吃点好的'
+    - icon: help-icon_79
+      title: '#计算怪物战力xxx'
+      desc: '计算某个怪物的战力，看看自己会不会被薄纱'
 
 - group: 交易所
   list:
