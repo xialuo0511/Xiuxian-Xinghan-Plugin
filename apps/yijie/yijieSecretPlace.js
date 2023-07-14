@@ -69,7 +69,7 @@ export class yijieSecretPlace extends plugin {
             if (a) {
                 let play_guaiwu = a
                 let zhanli = await yijie_zhanlijisuan(play_guaiwu)
-                e.reply("当前怪物战力为" + zhanli + JSON.stringify(play_guaiwu))
+                e.reply("【" + a.名号 + "】战力为" + zhanli)
                 return;
             }
             //}
