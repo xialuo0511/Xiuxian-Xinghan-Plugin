@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/yijiesupermarket/yijiesupermarket.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="../../html/player/player.css" /> -->
+	<link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
+	<!-- <link rel="preload" href="../../img/player/xiuxian-01.png" as="image" /> -->
+	<link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+	<div>
+		<div class="user_bottom1">
+			<!-- 你要是闲得无聊,每个装备可以搞个icon -->
+			<div class="use_data">
+				<div class="user_font use_data_head" style="text-align: center;padding-left: 0px;">
+					<div>交易所</div>
+					<div style="font-size:0.8em;">上架指令：#异界上架+物品名*价格*数量</div>
+					<div style="font-size:0.8em;">选购指令：#异界选购+编号*数量</div>
+					<div style="font-size:0.8em;">下架指令：#异界下架+编号</div>
+				</div>
+				<div class="use_data_body">
+					{{each Exchange_list}}
+					<div class="user_font">
+						<div>
+							<div style="display:inline-block;">
+								【{{$value.name.class}}】{{$value.name.name}}</div>
+							<div class="number">No.{{$index+1}}</div>
+						</div>
+						<div class="info">单价：{{$value.price}}</div>
+						<div class="info">数量：{{$value.aconut}}</div>
+						<div class="info">总价：{{$value.whole}}</div>
+					</div>
+					{{/each}}
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<style>
+
+	</style>
+
+</body>
+
+</html>

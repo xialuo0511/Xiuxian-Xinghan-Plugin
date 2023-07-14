@@ -494,6 +494,16 @@ export default class Game extends base {
       ...myData,
     };
   }
+
+  async get_yijie_supermarketData(myData) {
+    this.model = 'yijiesupermarket';
+    return {
+      ...this.screenData,
+      saveId: 'yijiesupermarket',
+      ...myData,
+    };
+  }
+
   //斩首堂
   async get_yuansu(myData) {
     this.model = 'tujian';
