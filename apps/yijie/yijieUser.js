@@ -229,7 +229,7 @@ export class yijieUser extends plugin {
             arr.group_id = e.group_id
         }
 
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
+        await redis.set("xiuxian:yijie:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
         e.reply(`现在开始刷怪${time}分钟,刷完回来领取报酬`);
 
         return true;
