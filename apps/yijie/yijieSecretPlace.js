@@ -47,9 +47,8 @@ export class yijieSecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-        let player = await Read_yijie_player(usr_qq)
         let name = e.msg.replace("#计算怪物战力", '');
-        name = didian.trim();
+        name = name.trim();
         let File = fs.readdirSync(__PATH.yijie_guaiwu_path);
         File = File.filter(file => file.endsWith(".json"));
         let File_length = File.length;
@@ -63,7 +62,7 @@ export class yijieSecretPlace extends plugin {
                 return data;
             })
             //将字符串数据转变成数组格式
-            guaiwu = JSON.parse(player);
+            guaiwu = JSON.parse(guaiwu);
             for (var i = 0; i < guaiwu.length; i++) {
                 let a = await guaiwu[i].find(item => item.name == name);
                 if (a) {
