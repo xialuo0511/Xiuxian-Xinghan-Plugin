@@ -43,6 +43,9 @@
       title: '#刷怪xxx分钟'
       desc: '挂机刷怪领代币'
     - icon: help-icon_14
+      title: '#结束刷怪'
+      desc: '提前结束领福利'
+    - icon: help-icon_14
       title: '#跑路'
       desc: '怪打不过跑得过'
 
