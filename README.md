@@ -3,6 +3,9 @@
 [修仙攻略](https://docs.qq.com/doc/DSUhqZWdpZXJuUndZ?&u=4bd0757f64094c48b02d7cfc4eaeb44b)  
 ## 访问量：        
 <br><img src="https://count.getloli.com/get/@:xiuxian-emulator-plugin?theme=rule34" /> <br>       
+
+## 如需查看大版本更新日志，请前往官网xialuo.top(补偿仅对本人开的服务器)
+
 ## 安装      
 
 > Yunzai-Bot/目录下执行  
