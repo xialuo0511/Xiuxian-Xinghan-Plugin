@@ -571,7 +571,7 @@ export class yijieUser extends plugin {
         if (shicai >= quantity) {
             await Add_yijie_beibao_thing(usr_qq, thing_name, "食材", -quantity);
             await Add_yijie_饱食度(usr_qq, baoshidu * quantity)
-            e.reply(`服用成功,增加了${baoshidu * quantity}点饱食度`)
+            e.reply(`食用成功,增加了${baoshidu * quantity}点饱食度`)
             return;
         } else {
             e.reply(`你没有那么多的【${thing_name}】`)

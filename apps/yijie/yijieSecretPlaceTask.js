@@ -124,7 +124,7 @@ export class yijieSecretPlaceTask extends plugin {
               thing_name = weizhi.thing[random2].name;
               thing_class = weizhi.thing[random2].class;
               let shu = 1
-              if (!weizhi.name.includes("仙鼎历练") && m == "探险者的春天" && random1 <= 0.25) {
+              if (!weizhi.name.includes("仙鼎历练") && m == "探险者的春天" && random1 >= 0.8) {
                 msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！`)
                 shu = 2
               }
