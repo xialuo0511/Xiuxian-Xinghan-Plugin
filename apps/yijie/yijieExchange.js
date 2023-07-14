@@ -333,7 +333,7 @@ export class yijieExchange extends plugin {
             return;
         }
         //查灵石
-        if (player.星魂币 > money) {
+        if (player.星魂币 >= money) {
             //加物品
             await Add_yijie_beibao_thing(usr_qq, thing_name, thing_class, n, pinji);
             //扣钱
