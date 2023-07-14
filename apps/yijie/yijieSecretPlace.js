@@ -2,7 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing, Read_yijie_player, Add_星魂币 } from '../Xiuxian/xiuxian.js'
+import { __PATH, Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing, Read_yijie_player, Add_星魂币, yijie_zhanlijisuan } from '../Xiuxian/xiuxian.js'
 import { exist_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
@@ -31,10 +31,51 @@ export class yijieSecretPlace extends plugin {
                 {
                     reg: '^#探寻异界秘境.*$',
                     fnc: 'Gosecretplace'
+                },
+                {
+                    reg: '^#计算怪物战力.*$',
+                    fnc: 'jisuan'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async jisuan(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        let player = await Read_yijie_player(usr_qq)
+        let name = e.msg.replace("#计算怪物战力", '');
+        name = didian.trim();
+        let File = fs.readdirSync(__PATH.yijie_guaiwu_path);
+        File = File.filter(file => file.endsWith(".json"));
+        let File_length = File.length;
+        for (var i = 0; i < File_length; i++) {
+            let dir = File[i]
+            let guaiwu = fs.readFileSync(dir, 'utf8', (err, data) => {
+                if (err) {
+                    console.log(err)
+                    return "error";
+                }
+                return data;
+            })
+            //将字符串数据转变成数组格式
+            guaiwu = JSON.parse(player);
+            for (var i = 0; i < guaiwu.length; i++) {
+                let a = await guaiwu[i].find(item => item.name == name);
+                if (a) {
+                    let play_guaiwu = guaiwu[i]
+                    let zhanli = await yijie_zhanlijisuan(play_guaiwu)
+                    e.reply("当前怪物战力为" + zhanli)
+                    return;
+                }
+            }
+        }
+        e.reply("查无此怪")
+        return;
     }
 
     //秘境地点

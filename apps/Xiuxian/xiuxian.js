@@ -15,6 +15,8 @@ export const __PATH = {
     updata_log_path: path.join(__dirname, "补丁日志.txt"),
     //用户数据
     player_path: path.join(__dirname, "/resources/data/xiuxian_player"),
+    //异界全部怪物数据
+    yijie_guaiwu_path: path.join(__dirname, "/resources/data/item/异界/秘境怪物"),
     //异界用户数据
     yijie_player_path: path.join(__dirname, "/resources/data/yijie/player"),
     //装备
