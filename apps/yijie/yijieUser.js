@@ -82,10 +82,62 @@ export class yijieUser extends plugin {
                 {
                     reg: '#星魂币榜$',
                     fnc: 'xinghunbi'
+                },
+                {
+                    reg: '#异界改名.*$',
+                    fnc: 'Change_player_name'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async Change_player_name(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无存档
+        let ifexistplay = await yijie_existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let new_name = e.msg.replace("#异界改名", '');
+        new_name = new_name.replace(" ", '');
+        new_name = new_name.replace("+", '');
+        if (new_name.length == 0) {
+            e.reply("改名格式为:【#异界改名张三】请输入正确名字");
+            return;
+        } else if (new_name.length > 8) {
+            e.reply("玩家名字最多八字");
+            return;
+        }
+        let player = {};
+        let now = new Date();
+        let nowTime = now.getTime(); //获取当前日期的时间戳
+        //let Yesterday = await shijianc(nowTime - 24 * 60 * 60 * 1000);//获得昨天日期
+        let Today = await shijianc(nowTime);
+        let lastsetname_time = await redis.get("xiuxian:yijie:player:" + usr_qq + ":last_setname_time");//获得上次改名日期,
+        lastsetname_time = parseInt(lastsetname_time);
+        lastsetname_time = await shijianc(lastsetname_time);
+        if (Today.Y == lastsetname_time.Y && Today.M == lastsetname_time.M && Today.D == lastsetname_time.D) {
+            e.reply("每日只能改名一次");
+            return;
+        }
+        player = await Read_yijie_player(usr_qq);
+        if (player.星魂币 < 100) {
+            e.reply("改名需要100星魂币");
+            return;
+        }
+        player.名号 = new_name;
+        redis.set("xiuxian:yijie:player:" + usr_qq + ":last_setname_time", nowTime);//redis设置本次改名时间戳
+        player.星魂币 -= 100;
+        await Write_yijie_player(usr_qq, player);
+        //Add_灵石(usr_qq, -100);
+        this.Show_player(e);
+        return;
     }
 
     async xinghunbi(e) {

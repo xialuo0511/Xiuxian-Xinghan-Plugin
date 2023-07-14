@@ -9,9 +9,12 @@
     - icon: help-icon_1
       title: '#我的背包'
       desc: '查看异界背包'
-    - icon: help-icon_3
+    - icon: help-icon_2
       title: '#我的异界战力'
       desc: '查询异界战力'
+    - icon: help-icon_3
+      title: '#异界改名xxx'
+      desc: '更改异界名号，一天只能更改一次，更改需消耗100星魂币'
     - icon: help-icon_2
       title: '#异界装备'
       desc: '装备'
