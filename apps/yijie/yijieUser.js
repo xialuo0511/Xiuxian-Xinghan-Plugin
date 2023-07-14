@@ -93,12 +93,91 @@ export class yijieUser extends plugin {
                     fnc: 'shuaguai'
                 },
                 {
+                    reg: '#结束刷怪$',
+                    fnc: 'shuaguaiend'
+                },
+                {
                     reg: '#跑路$',
                     fnc: 'Giveup'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    /*
+     * 人物结束刷怪
+     * @param e
+     * @returns {Promise<void>}
+     */
+    async shuaguaiend(e) {
+        //不开放私聊功能
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let action = await this.getPlayerAction(e.user_id);
+        let state = await this.getPlayerState(action);
+        if (state == "空闲") {
+            return;
+        }
+        if (action.action != "刷怪") {
+            return;
+        }
+        //结算
+        let end_time = action.end_time;
+        let start_time = action.end_time - action.time;
+        let now_time = new Date().getTime();
+        let time;
+        var y = this.xiuxianConfigData.work.time;//固定时间
+        var x = this.xiuxianConfigData.work.cycle;//循环次数
+
+        if (end_time > now_time) {//属于提前结束
+            time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
+            //超过就按最低的算，即为满足30分钟才结算一次
+            //如果是 >=16*33 ----   >=30
+            for (var i = x; i > 0; i--) {
+                if (time >= y * i) {
+                    time = y * i;
+                    break;
+                }
+            }
+            //如果<15，不给收益
+            if (time < y) {
+                time = 0;
+            }
+        } else {//属于结束了未结算
+            time = parseInt((action.time) / 1000 / 60);
+            //超过就按最低的算，即为满足30分钟才结算一次
+            //如果是 >=16*33 ----   >=30
+            for (var i = x; i > 0; i--) {
+                if (time >= y * i) {
+                    time = y * i;
+                    break;
+                }
+            }
+            //如果<15，不给收益
+            if (time < y) {
+                time = 0;
+            }
+        }
+
+        if (e.isGroup) {
+            await this.dagong_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+        } else {
+            await this.dagong_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
+        }
+
+        let arr = action;
+        arr.is_jiesuan = 1;//结算状态
+        arr.shutup = 1;//闭关状态
+        arr.working = 1;//降妖状态
+        arr.power_up = 1;//渡劫状态
+        arr.Place_action = 1;//秘境
+        //结束的时间也修改为当前时间
+        arr.end_time = new Date().getTime();
+        delete arr.group_id;//结算完去除group_id
+        await redis.set("xiuxian:yijie:player:" + e.user_id + ":action", JSON.stringify(arr));
     }
 
     async Giveup(e) {
@@ -286,10 +365,10 @@ export class yijieUser extends plugin {
             let this_qq = File[i].replace(".json", '');
             this_qq = parseInt(this_qq);
             let player = await Read_yijie_player(this_qq);
-            let lingshi = player.星魂币
+            let xinghunbi = player.星魂币
             temp[i] = {
                 ls2: player.星魂币,
-                星魂币: lingshi,
+                星魂币: xinghunbi,
                 名号: player.名号,
                 qq: this_qq
             }
@@ -769,6 +848,89 @@ export class yijieUser extends plugin {
         let thing_type = e.msg.replace("#查询异界合成列表", "");
         let img = await get_yijie_hecheng_img(e, thing_type);
         e.reply(img);
+        return;
+    }
+
+    /**
+     * 获取缓存中的人物状态信息
+     * @param usr_qq
+     * @returns {Promise<void>}
+     */
+    async getPlayerAction(usr_qq) {
+        let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
+        action = JSON.parse(action);//转为json格式数据
+        return action;
+    }
+
+    /**
+     * 获取人物的状态，返回具体的状态或者空闲
+     * @param action
+     * @returns {Promise<void>}
+     */
+    async getPlayerState(action) {
+        if (action == null) {
+            return "空闲";
+        }
+        let now_time = new Date().getTime();
+        let end_time = action.end_time;
+        //当前时间>=结束时间，并且未结算 属于已经完成任务，却并没有结算的
+        //当前时间<=完成时间，并且未结算 属于正在进行
+        if (!((now_time >= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0)) || (now_time <= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0)))) {
+
+            return "空闲";
+        }
+        return action.action;
+    }
+
+    /**
+     * 刷怪结算
+     * @param usr_qq
+     * @param time持续时间(单位用分钟)
+     * @param is_random是否触发随机事件  true,false
+     * @param group_id  回复消息的地址，如果为空，则私聊
+     * @returns {Promise<void>}
+     */
+    async dagong_jiesuan(user_id, time, is_random, group_id) {
+
+
+        let usr_qq = user_id;
+        let player = data.getData("yijie_player", usr_qq);
+        let now_level_id;
+        if (!isNotNull(player.xianding_level)) {
+            return;
+        }
+        let xinghunbi = 15 * Number(player.xianding_level)
+        let other_xinghunbi = 0;
+        let time = (parseInt(action.time) / 1000 / 60 / 30) * 2;//分钟
+        let msg = [segment.at(usr_qq)];
+        if (is_random) {//随机事件预留空间
+            let rand = Math.random();
+            if (rand < 0.2) {
+                let a = Math.floor(Math.random() * (30)) + 1;
+                other_xinghunbi = a;
+                msg.push("\n刷怪的时候不小心被地上的石头绊了一跤，你把石头挖开一看，发现了星魂币" + a);
+            } else if (rand > 0.8) {
+                let a = Math.floor(Math.random() * (15)) + 1;
+                other_xinghunbi = -1 * a;
+                msg.push("\n刷怪的时候被人抢了一只，因此你得到的报酬也减少了，获取的星魂币减少" + a);
+            }
+        }
+        let get_xinghunbi = Math.floor(xinghunbi * time + other_xinghunbi);
+        await Add_星魂币(player_id, get_xinghunbi);
+
+        //给出消息提示
+        if (is_random) {
+            msg.push("\n本次刷怪获得星魂币" + get_xinghunbi);
+        } else {
+            msg.push("\n本次刷怪获得星魂币" + get_xinghunbi);
+        }
+
+        if (group_id) {
+            await this.pushInfo(group_id, true, msg)
+        } else {
+            await this.pushInfo(usr_qq, false, msg);
+        }
+
         return;
     }
 }

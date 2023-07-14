@@ -87,7 +87,6 @@ export class yijietask extends plugin {
                         //
                         data.setData("yijie_player", player_id, player);
                         let get_xinghunbi = Math.floor(xinghunbi * time + other_xinghunbi);//最后获取到的灵石
-                        //
                         await Add_星魂币(player_id, get_xinghunbi);
                         //redis动作
                         if (action.acount == null) {
