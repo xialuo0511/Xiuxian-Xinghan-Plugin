@@ -167,20 +167,16 @@ export class UserHome extends plugin {
         }
         let a = await redis.get('xiuxian:wtfk')
         if (!a) {
-            a = '当前无已反馈问题'
-            let log_data = {
-                log: a,
-            };
-            const data1 = await new Show(e).get_logData(log_data);
-            let img = await puppeteer.screenshot('log', {
-                ...data1,
-            });
-            e.reply(img);
+            e.reply('当前无已反馈问题')
             return;
         } else {
+            let c = []
             var b = eval(a);
+            for (var i = 0; i < b.length; i++) {
+                c.push(`【${b[i].问题状态}】问题：${b[i].反馈内容}`)
+            }
             let log_data = {
-                log: b,
+                log: c,
             };
             const data1 = await new Show(e).get_logData(log_data);
             let img = await puppeteer.screenshot('log', {
