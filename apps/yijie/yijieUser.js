@@ -162,7 +162,7 @@ export class yijieUser extends plugin {
         }
 
         if (e.isGroup) {
-            await this.dagong_jiesuan(e.user_id, time / 30, false, e.group_id);//提前闭关结束不会触发随机事件
+            await this.dagong_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
         } else {
             await this.dagong_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
         }
