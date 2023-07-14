@@ -64,15 +64,15 @@ export class yijieSecretPlace extends plugin {
             })
             //将字符串数据转变成数组格式
             guaiwu = JSON.parse(guaiwu);
-            for (var i = 0; i < guaiwu.length; i++) {
-                let a = await guaiwu[i].find(item => item.name == name);
-                if (a) {
-                    let play_guaiwu = guaiwu[i]
-                    let zhanli = await yijie_zhanlijisuan(play_guaiwu)
-                    e.reply("当前怪物战力为" + zhanli)
-                    return;
-                }
+            //for (var i = 0; i < guaiwu.length; i++) {
+            let a = guaiwu.find(item => item.name == name);
+            if (a) {
+                let play_guaiwu = guaiwu[i]
+                let zhanli = await yijie_zhanlijisuan(play_guaiwu)
+                e.reply("当前怪物战力为" + zhanli)
+                return;
             }
+            //}
         }
         e.reply("查无此怪")
         return;
