@@ -67,6 +67,24 @@
         ]
     },
     {
+        "name": "金矿",
+        "class": "材料",
+        "type": "材料",
+        "amount": 8,
+        "materials": [
+            {
+                "name": "原金矿",
+                "class": "材料",
+                "amount": 8
+            },
+            {
+                "name": "煤矿",
+                "class": "材料",
+                "amount": 1
+            }
+        ]
+    },
+    {
         "name": "压缩金矿",
         "class": "材料",
         "type": "材料",
@@ -143,6 +161,24 @@
                 "name": "压缩金矿",
                 "class": "材料",
                 "amount": 8
+            }
+        ]
+    },
+    {
+        "name": "烤肉",
+        "class": "食材",
+        "type": "食物",
+        "amount": 8,
+        "materials": [
+            {
+                "name": "生肉",
+                "class": "食材",
+                "amount": 8
+            },
+            {
+                "name": "煤矿",
+                "class": "材料",
+                "amount": 1
             }
         ]
     }

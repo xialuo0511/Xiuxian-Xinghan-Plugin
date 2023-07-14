@@ -131,7 +131,7 @@ export class yijieUser extends plugin {
                 arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
                 delete arr.group_id;//结算完去除group_id
                 await redis.set("xiuxian:yijie:player:" + usr_qq + ":action", JSON.stringify(arr));
-                e.reply("你已逃离！");
+                e.reply("跑路成功，正在删库（");
                 return;
             }
         }
