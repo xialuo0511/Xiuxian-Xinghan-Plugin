@@ -18,7 +18,8 @@ import {
     Read_yijie_player,
     convert2integer,
     Add_星魂币,
-    isNotNull
+    isNotNull,
+    shijianc
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_ranking_xinghunbi_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
