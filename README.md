@@ -4,7 +4,7 @@
 ## 访问量：        
 <br><img src="https://count.getloli.com/get/@:xiuxian-emulator-plugin?theme=rule34" /> <br>       
 
-## 如需查看大版本更新日志，请前往官网xialuo.top(补偿仅对本人开的服务器)
+## 如需查看大版本更新日志，请前往[官网](http://xialuo.top/)(补偿仅对本人开的服务器)
 
 ## 安装      
 
