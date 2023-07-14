@@ -1261,6 +1261,7 @@ export async function get_yijie_player_img(e) {
         taozhuang = "【" + find_tz.name + "】" + find_tz.context
     }
     let player_data = {
+        status: status,
         strand_xianding: strand_xianding,
         xianding_exp_max: xianding_exp_max,
         xianding: xianding,
@@ -1840,7 +1841,7 @@ async function getPlayerAction(usr_qq) {
     return arr;
 }
 
-async function yijieGetPlayAction(usr_qq) {
+async function getyijiePlayerAction(usr_qq) {
     let arr = {};
     let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
     action = JSON.parse(action);
@@ -1859,7 +1860,7 @@ async function yijieGetPlayAction(usr_qq) {
     return arr;
 }
 
-async function getYijiePlayerAction(usr_qq) {
+async function yijieGetPlayAction(usr_qq) {
     let arr = {};
     let action = await redis.get("xiuxian:yijie:player:" + usr_qq + ":action");
     action = JSON.parse(action);
