@@ -558,31 +558,25 @@ export class yijieUser extends plugin {
             return;
         }
         quantity = await convert2integer(quantity)
-        if (thing_name == "烤肉") {
-            let shicai = await exist_yijie_beibao_thing(usr_qq, thing_name, "食材")
-            if (shicai >= quantity) {
-                await Add_yijie_beibao_thing(usr_qq, thing_name, "食材", -quantity);
-                await Add_yijie_饱食度(usr_qq, 20 * quantity)
-                e.reply(`服用成功,增加了${20 * quantity}点饱食度`)
-                return;
-            } else {
-                e.reply(`你没有那么多的【${thing_name}】`)
-                return;
-            }
+        let baoshidu = 0
+        let eat = data.yijie_taozhuang.find(item => item.name == thing_name);
+        if (eat) {
+            baoshidu = eat.饱食度
         }
-        if (thing_name == "白粥") {
-            let shicai = await exist_yijie_beibao_thing(usr_qq, thing_name, "食材")
-            if (shicai >= quantity) {
-                await Add_yijie_beibao_thing(usr_qq, thing_name, "食材", -quantity);
-                await Add_yijie_饱食度(usr_qq, 5 * quantity)
-                e.reply(`服用成功,增加了${5 * quantity}点饱食度`)
-                return;
-            } else {
-                e.reply(`你没有那么多的【${thing_name}】`)
-                return;
-            }
+        if (baoshidu == 0) {
+            e.reply(`不要随随便便什么东西都往嘴里送啊喂！`)
+            return
         }
-        e.reply(`不要随随便便什么东西都往嘴里送啊喂！`)
+        let shicai = await exist_yijie_beibao_thing(usr_qq, thing_name, "食材")
+        if (shicai >= quantity) {
+            await Add_yijie_beibao_thing(usr_qq, thing_name, "食材", -quantity);
+            await Add_yijie_饱食度(usr_qq, baoshidu * quantity)
+            e.reply(`服用成功,增加了${baoshidu * quantity}点饱食度`)
+            return;
+        } else {
+            e.reply(`你没有那么多的【${thing_name}】`)
+            return;
+        }
     }
 
     async yijie_hecheng(e) {
