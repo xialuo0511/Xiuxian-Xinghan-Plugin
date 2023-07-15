@@ -122,7 +122,7 @@ export class yijieSecretPlaceTask extends plugin {
             let rand = Math.random();
             let rate = 0;
             let m = await find_yijie_taozhuang(player_id);
-            let contents = weizhi.contens
+            let contents = weizhi.contents
             if (A_player < B_player) {
               msg.push(B_win + "\n")
               msg.push(`战力不够，被异界的怪物薄纱，建议提升后再来`)
