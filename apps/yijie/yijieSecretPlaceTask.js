@@ -131,7 +131,6 @@ export class yijieSecretPlaceTask extends plugin {
                 rate += contents[i].rate;
                 if (rand < rate) {
                   let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
-                  await Add_yijie_beibao_thing(player_id, item.name, item.class, item.amount);
                   thing_name = item.name;
                   thing_class = item.class;
                   break;
