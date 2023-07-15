@@ -119,15 +119,23 @@ export class yijieSecretPlaceTask extends plugin {
             var thing_name;
             var thing_class;
             let random1 = Math.random();
-            let random2;
+            let rand = Math.random();
+            let rate = 0;
             let m = await find_yijie_taozhuang(player_id);
             if (A_player < B_player) {
               msg.push(B_win + "\n")
               msg.push(`战力不够，被异界的怪物薄纱，建议提升后再来`)
             } else {
-              random2 = Math.floor(Math.random() * weizhi.thing.length);
-              thing_name = weizhi.thing[random2].name;
-              thing_class = weizhi.thing[random2].class;
+              for (let i in contents) {
+                rate += contents[i].rate;
+                if (rand < rate) {
+                  let item = contents[i].items[Math.floor(Math.random() * contents[i].items.length)];
+                  await Add_yijie_beibao_thing(usr_qq, item.name, item.class, item.amount);
+                  thing_name = item.name;
+                  thing_class = item.class;
+                  break;
+                }
+              }
               let shu = 1
               if (weizhi.name.includes("仙鼎历练")) {
                 msg.push(A_win + "\n")
