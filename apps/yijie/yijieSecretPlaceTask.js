@@ -145,7 +145,7 @@ export class yijieSecretPlaceTask extends plugin {
                 msg.push(A_win + "\n")
                 if (!weizhi.name.includes("仙鼎历练") && m == "探险者的春天" && random1 >= 0.8) {
                   msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！\n`)
-                  shu = 2
+                  shu *= 2
                 }
                 msg.push(`在秘境探索的中途，收获了【${thing_name}】*${shu}`)
               }
