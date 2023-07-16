@@ -164,8 +164,8 @@ export class yijieSecretPlaceTask extends plugin {
               //结算完去除group_id
               delete arr.group_id;
             } else {
-              action.cishu = Number(arr.cishu) - 1
-              msg.push(`秘境沉迷中，剩余${cishu}次`)
+              arr.cishu = Number(arr.cishu) - 1
+              msg.push(`秘境沉迷中，剩余${arr.cishu}次`)
             }
             //写入redis
             await redis.set(
