@@ -231,7 +231,7 @@ export class yijieSecretPlace extends plugin {
 
         //记录时间
         const time = this.xiuxianConfigData.CD.yijiesecretplace;//时间（分钟）
-        let action_time = 60000 * time;//持续时间，单位毫秒
+        let action_time = 60000 * time * i * dancicishu;//持续时间，单位毫秒
         let arr = {
             "action": "历练",//动作
             "end_time": new Date().getTime() + action_time,//结束时间
