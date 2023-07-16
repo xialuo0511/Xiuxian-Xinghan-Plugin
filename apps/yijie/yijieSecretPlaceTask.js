@@ -152,7 +152,7 @@ export class yijieSecretPlaceTask extends plugin {
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, shu)
             }
             let arr = action;
-            if (Number(action.cishu) = 1 || !action.cishu) {
+            if (Number(arr.cishu) = 1 || !arr.cishu) {
               //把状态都关了
               arr.shutup = 1; //闭关状态
               arr.working = 1; //降妖状态
@@ -164,7 +164,7 @@ export class yijieSecretPlaceTask extends plugin {
               //结算完去除group_id
               delete arr.group_id;
             } else {
-              action.cishu = Number(action.cishu) - 1
+              action.cishu = Number(arr.cishu) - 1
               msg.push(`秘境沉迷中，剩余${cishu}次`)
             }
             //写入redis
