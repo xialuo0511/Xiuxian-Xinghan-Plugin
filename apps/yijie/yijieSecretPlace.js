@@ -170,7 +170,7 @@ export class yijieSecretPlace extends plugin {
         return;
     }
 
-    //降临秘境
+    //沉迷秘境
     async Gosecretplace_all(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
