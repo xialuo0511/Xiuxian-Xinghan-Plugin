@@ -36,6 +36,10 @@ export class yijieSecretPlace extends plugin {
                 {
                     reg: '^#计算怪物战力.*$',
                     fnc: 'jisuan'
+                },
+                {
+                    reg: '^#沉迷异界秘境.*$',
+                    fnc: 'Gosecretplace_all'
                 }
             ]
         })
@@ -149,6 +153,7 @@ export class yijieSecretPlace extends plugin {
             "xijie": "1", //洗劫状态开启
             "plant": "1",//采药-开启
             "mine": "1",//采矿-开启
+            "cishu": 1,
             //这里要保存秘境特别需要留存的信息
             "Place_address": weizhi,
         };
@@ -164,6 +169,99 @@ export class yijieSecretPlace extends plugin {
         }
         return;
     }
+
+    //降临秘境
+    async Gosecretplace_all(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        await Go(e);
+        if (allaction) {
+        } else {
+            return;
+        }
+        let dancicishu = 8
+        let player = await Read_yijie_player(usr_qq)
+        allaction = false;
+        let didian = e.msg.replace("#沉迷异界秘境", '');
+        let code = didian.split("\*");
+        didian = code[0];
+        let i = code[1];
+        if (!i) {
+            i = 1
+        }
+        i = Number(i)
+        let daibi = await exist_yijie_beibao_thing(usr_qq, "水晶卷轴", "道具");
+        if (!daibi || daibi < i) {
+            e.reply("您的【水晶卷轴】不足！")
+            return;
+        } else {
+            await Add_yijie_beibao_thing(usr_qq, "水晶卷轴", "道具", -i)
+        }
+
+        let weizhi = await data.yijie_mijing.find(item => item.name == didian);
+        if (!isNotNull(weizhi)) {
+            e.reply("请检查你输入的秘境名字是否正确！")
+            return;
+        }
+        if (didian.includes("仙鼎历练")) {
+            if (player.xianding_level < weizhi.tuijian) {
+                e.reply(`进入本历练秘境至少需要仙鼎等级：${weizhi.tuijian},您当前仙鼎等级为：${player.xianding_level},请提升后再来！`)
+                return;
+            } else {
+                let shuliang = await exist_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具");
+                if (!shuliang || shuliang < dancicishu * i) {
+                    e.reply("您的【仙鼎历练券】不足！")
+                    return;
+                } else {
+                    await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", -1 * dancicishu * i)
+                }
+            }
+
+        }
+        if (weizhi.xinghunbi) {
+            if (player.星魂币 < Number(weizhi.xinghunbi) * dancicishu * i) {
+                e.reply(`需要至少${Number(weizhi.xinghunbi) * dancicishu * i}星魂币才能进入，你只有${player.星魂币}`)
+                return;
+            }
+            await Add_星魂币(usr_qq, -1 * i * dancicishu * Number(weizhi.xinghunbi))
+        }
+
+        //记录时间
+        const time = this.xiuxianConfigData.CD.yijiesecretplace;//时间（分钟）
+        let action_time = 60000 * time;//持续时间，单位毫秒
+        let arr = {
+            "action": "历练",//动作
+            "end_time": new Date().getTime() + action_time,//结束时间
+            "time": action_time,//持续时间
+            "shutup": "1",//闭关
+            "working": "1",//降妖
+            "Place_action": "0",//秘境状态---开启
+            "Place_actionplus": "1",//沉迷秘境状态---关闭
+            "power_up": "1",//渡劫状态--关闭
+            "mojie": "1",//魔界状态---关闭
+            "xijie": "1", //洗劫状态开启
+            "plant": "1",//采药-开启
+            "mine": "1",//采矿-开启
+            "cishu": dancicishu * i,
+            //这里要保存秘境特别需要留存的信息
+            "Place_address": weizhi,
+        };
+        arr["action"] = "探寻异界秘境【" + didian + "】"
+        if (e.isGroup) {
+            arr.group_id = e.group_id
+        }
+        await redis.set("xiuxian:yijie:player:" + usr_qq + ":action", JSON.stringify(arr));
+        if (weizhi.xinghunbi) {
+            e.reply("消耗星魂币" + weizhi.xinghunbi * dancicishu * i + "，开始沉迷异界秘境【" + didian + "】," + time * dancicishu * i + "分钟后归来!");
+        } else {
+            e.reply("开始沉迷异界秘境【" + didian + "】," + time * dancicishu * i + "分钟后归来!");
+        }
+        return;
+    }
+
 }
 
 /**
