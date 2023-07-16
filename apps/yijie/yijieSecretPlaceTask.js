@@ -74,7 +74,7 @@ export class yijieSecretPlaceTask extends plugin {
           //这里改一改,要在结束时间的前两分钟提前结算
           end_time = end_time - 60000 * 2;
           //时间过了
-          if (now_time > end_time) {
+          if (now_time > end_time || Number(action.cishu) > 1) {
             let weizhi = action.Place_address;
             let A_player = await yijie_zhanlijisuan(player)
             let monster;

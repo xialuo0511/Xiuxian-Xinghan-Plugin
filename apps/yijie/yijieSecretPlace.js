@@ -249,7 +249,7 @@ export class yijieSecretPlace extends plugin {
             //这里要保存秘境特别需要留存的信息
             "Place_address": weizhi,
         };
-        arr["action"] = "探寻异界秘境【" + didian + "】"
+        arr["action"] = "沉迷异界秘境【" + didian + "】"
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
