@@ -193,6 +193,10 @@ export class yijieSecretPlace extends plugin {
             i = 1
         }
         i = Number(i)
+        if (i > 5) {
+            e.reply("单次沉迷上限5次！")
+            return;
+        }
         let daibi = await exist_yijie_beibao_thing(usr_qq, "水晶卷轴", "道具");
         if (!daibi || daibi < i) {
             e.reply("您的【水晶卷轴】不足！")
