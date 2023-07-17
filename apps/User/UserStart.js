@@ -510,13 +510,13 @@ export class UserStart extends plugin {
         }
         await redis.set("xiuxian:player:" + usr_qq + ":lastsign_time", nowTime);//redis设置签到时间
         let player = await data.getData("player", usr_qq);
-        if (player.连续签到天数 == 7 || !Sign_Yesterday) {//签到连续7天或者昨天没有签到,连续签到天数清零
+        if (player.连续签到天数 == 14 || !Sign_Yesterday) {//签到连续14天或者昨天没有签到,连续签到天数清零
             player.连续签到天数 = 0;
         }
         player.连续签到天数 += 1;
         data.setData("player", usr_qq, player);
         //给奖励
-        let gift_xiuwei = player.连续签到天数 * 3000;
+        let gift_xiuwei = player.连续签到天数 * 15000;
         let yijie = await yijie_existplayer(usr_qq)
         if (yijie) {
             await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
