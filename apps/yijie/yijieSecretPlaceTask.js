@@ -150,6 +150,8 @@ export class yijieSecretPlaceTask extends plugin {
               } else if (m == "探险者的春天" && random1 >= 0.8) {
                 shu *= 2
                 msg.push(`${shu}\n本次探索触发了【探险者的春天】效果，收益翻倍！`)
+              } else {
+                msg.push(shu)
               }
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, shu)
             }
