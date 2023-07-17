@@ -76,7 +76,7 @@ export class SecretPlace extends plugin {
                     fnc: 'Goyijiplace'
                 },
                 {
-                    reg: '^#活动商店',
+                    reg: '^#遗迹商店',
                     fnc: 'huodongshop'
                 },
                 {
@@ -569,16 +569,6 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let now = new Date();
-        let nowTime = now.getTime(); //获取当前日期的时间戳
-        if (nowTime < 1682265600000) {
-            e.reply(`「遗迹寻宝」活动暂未开启！`);
-            return;
-        }
-        if (nowTime > 1684166399999) {
-            e.reply(`「遗迹寻宝」已结束！`);
-            return;
-        }
         let addres = "遗迹";
         let weizhi = data.yiji_list;
         await Goyiji(e, weizhi, addres);
@@ -588,16 +578,6 @@ export class SecretPlace extends plugin {
     async Goyijiplace(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        let now = new Date();
-        let nowTime = now.getTime(); //获取当前日期的时间戳
-        if (nowTime < 1682265600000) {
-            e.reply(`「遗迹寻宝」活动暂未开启！`);
-            return;
-        }
-        if (nowTime > 1684166399999) {
-            e.reply(`「遗迹寻宝」已结束！`);
             return;
         }
         let usr_qq = e.user_id;
@@ -661,16 +641,6 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let now = new Date();
-        let nowTime = now.getTime(); //获取当前日期的时间戳
-        if (nowTime < 1682265600000) {
-            e.reply(`「遗迹寻宝」活动暂未开启！`);
-            return;
-        }
-        if (nowTime > 1684166399999) {
-            e.reply(`「遗迹寻宝」已结束！`);
-            return;
-        }
         let usr_qq = e.user_id;
         await Go(e);
 
@@ -680,19 +650,19 @@ export class SecretPlace extends plugin {
         //返回大于等于0的整数值，若不包含"Text"则返回"-1。
         //分割文本变数组
         let code = [];
-        if(bool>0){
+        if (bool > 0) {
             code = msg.split("*");
-        }else{
+        } else {
             code.push(msg);
             code.push(1);
         }
-        
+
         //获取物品名和数量
         let thing_name = code[0];
         let shuliang = code[1];
         //获取活动商店数据
         let commodities_list = data.huodongshop_list;
-        commodities_list = commodities_list.filter(function(commodities_list){
+        commodities_list = commodities_list.filter(function (commodities_list) {
             return commodities_list.name === thing_name;
         });
         commodities_list = commodities_list.filter(name => thing_name);
