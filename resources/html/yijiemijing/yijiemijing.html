@@ -44,7 +44,11 @@
                 {{each weizhi item}}
                 <div class="item">
                     <div class="item_title font_left">{{item.name}}</div>
+                    {{if item.name.includes("仙鼎历练")}}
+                    <div class="item_int">需要仙鼎等级：{{item.tuijian}}</div>
+                    {{else}}
                     <div class="item_int">推荐仙鼎等级：{{item.tuijian}}</div>
+                    {{/if}}
                     {{if item.xinghunbi}}
                     <div class="item_int">此秘境需消耗门票：{{item.xinghunbi}}星魂币</div>
                     {{/if}}
