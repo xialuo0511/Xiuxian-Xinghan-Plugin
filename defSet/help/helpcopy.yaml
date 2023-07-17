@@ -62,6 +62,7 @@
     - icon: help-icon_43
       title: "#喂给仙宠+食物名称"
       desc: "升级仙宠"
+
 - group: 魔/神界
   list:
     - icon: help-icon_43
@@ -85,6 +86,22 @@
     - icon: help-icon_43
       title: "#敲开闪闪发光的石头"
       desc: ""
+
+- group: 遗迹
+  list:
+    - icon: help-icon_14
+      title: "#探寻遗迹xxx"
+      desc: "前往探索遗迹"
+    - icon: help-icon_14
+      title: "#遗迹"
+      desc: "查看遗迹列表"
+    - icon: help-icon_14
+      title: "#遗迹商店"
+      desc: "查看遗迹商店内容"
+    - icon: help-icon_14
+      title: "#代币兑换xxx*123"
+      desc: "在遗迹商店兑换商品"
+
 - grop: -塔-
   list:
     - icon: help-icon_19
