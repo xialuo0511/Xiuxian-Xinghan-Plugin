@@ -153,15 +153,17 @@ export class yijieSecretPlaceTask extends plugin {
                 shu *= 2
                 msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！\n`)
               }
-              //随机事件1
-              if (random2 < 0.01) {
-                shu *= 2
-                msg.push(`探索途中意外得到了秘境神灵的祝福，收益翻倍！\n`)
-              }
-              //随机事件2
-              if (random3 < 0.01) {
-                await Add_yijie_beibao_thing(player_id, "水晶卷轴", "道具", 1)
-                msg.push(`探索途中碰到了俩人在打架，你渔翁得利，顺走了一个人的一张水晶卷轴！\n`)
+              if (!weizhi.name.includes("仙鼎历练")) {
+                //随机事件1
+                if (random2 < 0.01) {
+                  shu *= 2
+                  msg.push(`探索途中意外得到了秘境神灵的祝福，收益翻倍！\n`)
+                }
+                //随机事件2
+                if (random3 < 0.01) {
+                  await Add_yijie_beibao_thing(player_id, "水晶卷轴", "道具", 1)
+                  msg.push(`探索途中碰到了俩人在打架，你渔翁得利，顺走了一个人的一张水晶卷轴！\n`)
+                }
               }
               if (weizhi.best == thing_name) {
                 msg.push(`在秘境探索的中途，天上掉下一道金光！收获了【${thing_name}】*${shu}`)
