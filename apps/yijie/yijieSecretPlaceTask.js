@@ -149,7 +149,7 @@ export class yijieSecretPlaceTask extends plugin {
                 await Add_星魂币(player_id, 10)
               } else if (m == "探险者的春天" && random1 >= 0.8) {
                 shu *= 2
-                msg.push(`\n本次探索触发了【探险者的春天】效果，收益翻倍！\n`)
+                msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！\n`)
               }
               if (weizhi.best == thing_name) {
                 msg.push(`在秘境探索的中途，天上掉下一道金光！收获了【${thing_name}】*${shu}`)

@@ -668,8 +668,7 @@ export class TreasureCabinet extends plugin {
                 console.log(flag);
 
                 if (action[i].beiyong2 == 0) {
-                    action[i].beiyong3 = 0
-                        ;
+                    action[i].beiyong3 = 0;
                 }
                 console.log(action[i])
             }
