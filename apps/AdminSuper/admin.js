@@ -42,7 +42,7 @@ export class admin extends plugin {
         if (!this.e.isMaster) {
             return;
         }
-        oldCommitId = await this.getcommitId(plugin)
+        let oldCommitId = await this.getcommitId(plugin)
         const isForce = this.e.msg.includes("强制");
         let command = "git  pull";
         if (isForce) {
