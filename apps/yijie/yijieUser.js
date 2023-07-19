@@ -669,7 +669,11 @@ export class yijieUser extends plugin {
                 await redis.set("xiuxian:yijie:player:" + usr_qq + "xunbaocd", now_Time);
                 await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", -1);
                 await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", -1);
-                if (math > 0.8 && math < 1) {
+                if (math >= 0.95) {
+                    e.reply(`${fanbei}你在【深邃矿洞】捡到了【箱子*初级材料箱】*${2 * beilv}`)
+                    await Add_yijie_beibao_thing(usr_qq, "初级材料箱", "箱子", 2 * beilv)
+                    return;
+                } else if (math > 0.8 && math < 0.95) {
                     e.reply(`${fanbei}你在【深邃矿洞】挖出了【材料*原金矿】*${10 * beilv}`)
                     await Add_yijie_beibao_thing(usr_qq, "原金矿", "材料", 10 * beilv)
                     return;
