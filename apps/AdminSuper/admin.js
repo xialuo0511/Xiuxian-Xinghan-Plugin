@@ -73,7 +73,7 @@ export class admin extends plugin {
                 let cm = 'git log  -20 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
                 if (plugin) { cm = `cd ./plugins/xiuxian-emulator-plugin/ && ${cm}` }
                 let logAll
-                try { logAll = execSync(cm, { encoding: 'utf-8' }) } catch (error) { this.reply(error.toString(), true) }
+                try { logAll = execSync(cm, { encoding: 'utf-8' }) } catch (error) { that.e.reply(error.toString(), true) }
                 if (!logAll) return false
                 logAll = logAll.split('\n')
                 let log = []
