@@ -26,6 +26,10 @@ import {
 import { Read_Exchange, Write_Exchange } from '../Exchange/Exchange.js';
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
 import { Read_Forum, Write_Forum } from '../Help/Forum.js';
+import { createRequire } from "module"
+
+const require = createRequire(import.meta.url)
+const { execSync } = require("child_process")
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
@@ -265,36 +269,26 @@ export class AdminSuper extends plugin {
   }
 
   async show_log(e) {
-    let j;
-    const reader = await Read_updata_log();
-    let str = [];
-    let line_log = reader.trim().split('\n'); //读取数据并按行分割
-    line_log.forEach((item, index) => {
+    let cm = 'git log  -20 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
+    if (plugin) { cm = `cd ./plugins/xiuxian-emulator-plugin/ && ${cm}` }
+    let logAll
+    try { logAll = execSync(cm, { encoding: 'utf-8' }) } catch (error) { that.e.reply(error.toString(), true) }
+    if (!logAll) return false
+    logAll = logAll.split('\n')
+    let log = []
+    for (let str of logAll) {
+      str = str.split('||')
+      if (str[1].includes('Merge branch')) continue
+      log.push(str[1])
+    }
+    log.forEach((item, index) => {
       // 删除空项
       if (!item) {
-        line_log.splice(index, 1);
+        log.splice(index, 1);
       }
     });
-    for (let y = 0; y < line_log.length; y++) {
-      let temp = line_log[y].trim().split(/\s+/); //读取数据并按空格分割
-      let i = 0;
-      if (temp.length == 4) {
-        str.push(temp[0]);
-        i = 1;
-      }
-      let t = '';
-      for (let x = i; x < temp.length; x++) {
-        t += temp[x];
-        //console.log(t)
-        if (x == temp.length - 2 || x == temp.length - 3) {
-          t += '\t';
-        }
-      }
-      str.push(t);
-      //str += "\n";
-    }
     let log_data = {
-      log: str,
+      log,
     };
     const data1 = await new Show(e).get_logData(log_data);
     let img = await puppeteer.screenshot('log', {
