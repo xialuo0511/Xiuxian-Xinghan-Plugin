@@ -87,7 +87,7 @@ export class admin extends plugin {
                 let line = log.length
                 log = log.join('\n')
                 if (log.length <= 0) return ''
-                that.e.reply(`修仙插件更新成功!更新日志如下，共${line}条：\n${log}\n正在尝试重新启动Yunzai以应用更新...`);
+                that.e.reply(`修仙插件更新成功!更新日志如下，共${line}条：\n\n${log}\n\n正在尝试重新启动Yunzai以应用更新...`);
                 timer && clearTimeout(timer);
                 timer = setTimeout(async () => {
                     try {
