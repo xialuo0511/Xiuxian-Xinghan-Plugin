@@ -155,12 +155,12 @@ export class yijieSecretPlaceTask extends plugin {
               }
               if (!weizhi.name.includes("仙鼎历练")) {
                 //随机事件1
-                if (random2 < 0.01) {
+                if (random2 < 0.02) {
                   shu *= 2
                   msg.push(`探索途中意外得到了秘境神灵的祝福，收益翻倍！\n`)
                 }
                 //随机事件2
-                if (random3 < 0.01) {
+                if (random3 < 0.02) {
                   await Add_yijie_beibao_thing(player_id, "水晶卷轴", "道具", 1)
                   msg.push(`探索途中碰到了俩人在打架，你渔翁得利，顺走了一个人的一张水晶卷轴！\n`)
                 }
