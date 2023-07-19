@@ -42,7 +42,7 @@ export class admin extends plugin {
         if (!this.e.isMaster) {
             return;
         }
-        this.oldCommitId = await this.getcommitId(plugin)
+        oldCommitId = await this.getcommitId(plugin)
         const isForce = this.e.msg.includes("强制");
         let command = "git  pull";
         if (isForce) {
@@ -80,7 +80,7 @@ export class admin extends plugin {
 
                 for (let str of logAll) {
                     str = str.split('||')
-                    if (str[0] === this.oldCommitId) break
+                    if (str[0] === oldCommitId) break
                     if (str[1].includes('Merge branch')) continue
                     log.push(str[1])
                 }
