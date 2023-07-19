@@ -6,7 +6,7 @@ import lodash from 'lodash'
  * 全局
  */
 const require = createRequire(import.meta.url)
-const { exec } = require("child_process")
+const { exec, execSync } = require("child_process")
 const _path = process.cwd()
 let timer
 
