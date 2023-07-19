@@ -32,7 +32,7 @@ export class admin extends plugin {
 
     async getcommitId(plugin = '') {
         let cm = 'git rev-parse --short HEAD'
-        if (plugin) { cm = `git -C ./plugins/${plugin}/ rev-parse --short HEAD` }
+        if (plugin) { cm = `git -C ./plugins/xiuxian-emulator-plugin/ rev-parse --short HEAD` }
         let commitId = execSync(cm, { encoding: 'utf-8' })
         commitId = lodash.trim(commitId)
         return commitId
