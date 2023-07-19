@@ -1,11 +1,11 @@
 import plugin from '../../../../lib/plugins/plugin.js'
-import {createRequire} from "module"
+import { createRequire } from "module"
 
 /**
  * 全局
  */
 const require = createRequire(import.meta.url)
-const {exec} = require("child_process")
+const { exec } = require("child_process")
 const _path = process.cwd()
 let timer
 
@@ -44,7 +44,7 @@ export class admin extends plugin {
         const that = this;
         exec(
             command,
-            {cwd: `${_path}/plugins/xiuxian-emulator-plugin/`},
+            { cwd: `${_path}/plugins/xiuxian-emulator-plugin/` },
             function (error, stdout, stderr) {
                 if (/(Already up[ -]to[ -]date|已经是最新的)/.test(stdout)) {
                     that.e.reply("目前已经是最新版修仙插件了~");
@@ -60,7 +60,23 @@ export class admin extends plugin {
                     );
                     return;
                 }
-                that.e.reply("修仙插件更新成功，正在尝试重新启动Yunzai以应用更新...");
+                let cm = 'git log  -20 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
+                if (plugin) { cm = `cd ./plugins/xiuxian-emulator-plugin/ && ${cm}` }
+                let logAll
+                try { logAll = execSync(cm, { encoding: 'utf-8' }) } catch (error) { this.reply(error.toString(), true) }
+                if (!logAll) return false
+                logAll = logAll.split('\n')
+                let log = []
+                for (let str of logAll) {
+                    str = str.split('||')
+                    if (str[0] === this.oldCommitId) break
+                    if (str[1].includes('Merge branch')) continue
+                    log.push(str[1])
+                }
+                let line = log.length
+                log = log.join('\n')
+                if (log.length <= 0) return ''
+                that.e.reply(`修仙插件更新成功!更新日志如下，共${line}条：\n${log}\n正在尝试重新启动Yunzai以应用更新...`);
                 timer && clearTimeout(timer);
                 timer = setTimeout(async () => {
                     try {
@@ -68,7 +84,7 @@ export class admin extends plugin {
                             isGroup: !!that.e.isGroup,
                             id: that.e.isGroup ? that.e.group_id : that.e.user_id,
                         });
-                        await redis.set(that.key, data, {EX: 120});
+                        await redis.set(that.key, data, { EX: 120 });
                         let cm = "npm run start";
                         if (process.argv[1].includes("pm2")) {
                             cm = "npm run restart";
