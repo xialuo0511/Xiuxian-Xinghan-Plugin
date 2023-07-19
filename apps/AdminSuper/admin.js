@@ -1,5 +1,6 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import { createRequire } from "module"
+import lodash from 'lodash'
 
 /**
  * 全局
@@ -29,10 +30,19 @@ export class admin extends plugin {
         this.key = "xiuxian:restart";
     }
 
+    async getcommitId(plugin = '') {
+        let cm = 'git rev-parse --short HEAD'
+        if (plugin) { cm = `git -C ./plugins/${plugin}/ rev-parse --short HEAD` }
+        let commitId = execSync(cm, { encoding: 'utf-8' })
+        commitId = lodash.trim(commitId)
+        return commitId
+    }
+
     async checkout() {
         if (!this.e.isMaster) {
             return;
         }
+        this.oldCommitId = await this.getcommitId(plugin)
         const isForce = this.e.msg.includes("强制");
         let command = "git  pull";
         if (isForce) {
@@ -67,6 +77,7 @@ export class admin extends plugin {
                 if (!logAll) return false
                 logAll = logAll.split('\n')
                 let log = []
+
                 for (let str of logAll) {
                     str = str.split('||')
                     if (str[0] === this.oldCommitId) break
