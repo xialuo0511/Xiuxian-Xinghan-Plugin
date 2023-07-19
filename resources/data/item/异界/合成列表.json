@@ -81,7 +81,7 @@
     },
     {
         "name": "压缩金剑",
-        "class": "武器",
+        "class": "装备",
         "type": "武器",
         "amount": 1,
         "materials": [
@@ -99,7 +99,7 @@
     },
     {
         "name": "压缩金盾",
-        "class": "护具",
+        "class": "装备",
         "type": "护具",
         "amount": 1,
         "materials": [
@@ -117,7 +117,7 @@
     },
     {
         "name": "压缩金葫芦",
-        "class": "法宝",
+        "class": "装备",
         "type": "法宝",
         "amount": 1,
         "materials": [
