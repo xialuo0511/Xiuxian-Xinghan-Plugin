@@ -127,37 +127,8 @@ export class UserHome extends plugin {
     }
 
     async wtfk(e) {
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        let usr_qq = e.user_id;
-        let thing = e.msg.replace("#", '');
-        thing = thing.replace("问题反馈", '');
-        if (thing.length < 15) {
-            e.reply('为避免刷屏，问题反馈至少15字')
-        } else if (thing.length > 100) {
-            e.reply('为避免服务器异常，请减少反馈字数')
-        } else {
-            let a = await redis.get('xiuxian:wtfk')
-            if (!a) {
-                a = [{ "问题状态": "处理中", "反馈用户": usr_qq, "反馈内容": thing }]
-                redis.set('xiuxian:wtfk', JSON.stringify(a))
-                e.reply('问题反馈成功，请在 #查询已反馈问题 中查看进度')
-            } else {
-                var b = eval(a);
-                for (var i = 0; i < b.length; i++) {
-                    if (b[i].反馈内容 == thing) {
-                        e.reply('问题已被其他人反馈，可在 #查询已反馈问题 中查看')
-                        return;
-                    }
-                }
-                b.push({ "问题状态": "处理中", "反馈用户": usr_qq, "反馈内容": thing });
-                redis.set('xiuxian:wtfk', JSON.stringify(b))
-                e.reply('问题反馈成功，请在 #查询已反馈问题 中查看进度')
-            }
-            return;
-        }
+        e.reply("本功能已停止维护，如修仙插件有问题，请前往【https://gitee.com/xialuo03/xiuxian-emulator-plugin/issues】提交issues")
+        return;
     }
 
     async cxwtfk(e) {
