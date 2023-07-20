@@ -846,7 +846,7 @@ export class Occupation extends plugin {
         for (let i in materials) {
             let material = materials[i];
             tmp_msg += `${material.name}×${material.amount * n}，`;
-            await Add_najie_thing(usr_qq, material.name, "草药", -material.amount * n);
+            await Add_najie_thing(usr_qq, material.name, "草药", -Number(material.amount) * n);
         }
         let res_n = 0;
         let total_exp = 0;
