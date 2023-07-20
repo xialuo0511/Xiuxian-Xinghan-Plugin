@@ -50,10 +50,6 @@ export class Level extends plugin {
                     fnc: 'fate_up'
                 },
                 {
-                    reg: '^#服用$',
-                    fnc: 'Useitems'
-                },
-                {
                     reg: '^#羽化登仙$',
                     fnc: 'Level_up_Max'
                 },
