@@ -107,9 +107,6 @@ export class UserHome extends plugin {
                 reg: '^#问题反馈.*$',
                 fnc: 'wtfk'
             }, {
-                reg: '^#查询已反馈问题$',
-                fnc: 'cxwtfk'
-            }, {
                 reg: '^#查看公告$',
                 fnc: 'ckgg'
             }]
@@ -129,33 +126,6 @@ export class UserHome extends plugin {
     async wtfk(e) {
         e.reply("本功能已停止维护，如修仙插件有问题，请前往【https://gitee.com/xialuo03/xiuxian-emulator-plugin/issues】提交issues")
         return;
-    }
-
-    async cxwtfk(e) {
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        let a = await redis.get('xiuxian:wtfk')
-        if (!a) {
-            e.reply('当前无已反馈问题')
-            return;
-        } else {
-            let c = []
-            var b = eval(a);
-            for (var i = b.length - 1; i >= 0; i--) {
-                c.push(`【${b[i].问题状态}】问题：${b[i].反馈内容}`)
-            }
-            let log_data = {
-                log: c,
-            };
-            const data1 = await new Show(e).get_logData(log_data);
-            let img = await puppeteer.screenshot('log', {
-                ...data1,
-            });
-            e.reply(img);
-            return;
-        }
     }
 
     async find_najiething(e) {
