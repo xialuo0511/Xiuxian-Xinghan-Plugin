@@ -146,6 +146,8 @@ export class yijieSecretPlaceTask extends plugin {
                 }
               }
               let shu = 1
+              let tianfu_level = await get_tianfu_level(player_id)
+              tianfu_level = Number(tianfu_level)
               msg.push(A_win + "\n")
               if (weizhi.name.includes("仙鼎历练")) {
                 msg.push(`本次探寻仙鼎历练秘境，获得异界使者的奖励10星魂币！\n`)
@@ -166,6 +168,21 @@ export class yijieSecretPlaceTask extends plugin {
                   msg.push(`探索途中碰到了俩人在打架，你渔翁得利，顺走了一个人的一张水晶卷轴！\n`)
                 }
               }
+
+              //天赋效果
+              let tianfu_random1 = Math.random();
+              if (tianfu_level > 0 && tianfu_level < 3) {
+                if (tianfu_random1 < 0.01) {
+                  shu += 1
+                  msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                }
+              } else if (tianfu_level > 2) {
+                if (tianfu_random1 < 0.025) {
+                  shu += 1
+                  msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                }
+              }
+
               if (weizhi.best == thing_name) {
                 msg.push(`在秘境探索的中途，天上掉下一道金光！收获了【${thing_name}】*${shu}`)
               } else {
