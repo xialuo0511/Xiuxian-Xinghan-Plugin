@@ -9,7 +9,8 @@ import {
   Add_yijie_beibao_thing,
   yijie_zhanlijisuan,
   Add_星魂币,
-  find_yijie_taozhuang
+  find_yijie_taozhuang,
+  get_tianfu_level
 } from '../Xiuxian/xiuxian.js';
 
 /**

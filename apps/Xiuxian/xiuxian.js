@@ -344,6 +344,20 @@ export async function Add_星魂币(usr_qq, 星魂币数量 = 0) {
     await Write_yijie_player(usr_qq, player);
     return;
 }
+
+//使用时记得加await
+export async function Add_tianfu_exp(usr_qq, exp = 0) {
+    let player = await Read_yijie_player(usr_qq);
+    player.tianfu_exp += Math.trunc(exp);
+    await Write_yijie_player(usr_qq, player);
+    return;
+}
+
+//使用时记得加await
+export async function get_tianfu_level(usr_qq) {
+    let player = await Read_yijie_player(usr_qq);
+    return Number(player.tianfu_level);
+}
 //使用时记得加await
 export async function Add_yijie_饱食度(usr_qq, 饱食度 = 0) {
     let player = await Read_yijie_player(usr_qq);
