@@ -472,6 +472,8 @@ export class yijieUser extends plugin {
             "xianding_level": 1,//仙鼎等级
             "xianding_exp": 0,//仙鼎经验
             "xianding_jieduan": 1,//仙鼎阶段
+            "tianfu_level": 0,
+            "tianfu_exp": 0,
             "血量上限": 0,
             "攻击": 0,
             "防御": 0,

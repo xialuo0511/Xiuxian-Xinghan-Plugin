@@ -1658,11 +1658,9 @@ export async function yijie_tongbu(e) {
     //   player.境界 = undefined;
     // }
     //补
-    if (!isNotNull(player.星魂币)) {
-      player.星魂币 = 0;
-    }
-    if (!isNotNull(beibao.箱子)) {
-      beibao.箱子 = [];
+    if (!isNotNull(player.tianfu_level)) {
+      player.tianfu_level = 0;
+      player.tianfu_exp = 0;
     }
     for (let i = 0; i < beibao.箱子.length; i++) {
       let shuliang = beibao.箱子[i].数量
