@@ -28,12 +28,15 @@
           <div class="user_font">
             <div> 等级【{{item.level}}】</div>
             <div> 突破所需经验【{{item.exp}}】</div>
+            {{if item.level > 0}}
+            <div> </div>
             {{if item.tianfu_level >1}}
             <div> 天赋升级【{{item.name}}*LV{{item.tianfu_level}}】</div>
             {{else}}
             <div> 获得天赋【{{item.name}}*LV{{item.tianfu_level}}】</div>
             {{/if}}
             <div> 等级效果：{{item.list}}</div>
+            {{/if}}
           </div>
         </div>
       </div>
