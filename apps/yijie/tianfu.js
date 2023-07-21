@@ -83,7 +83,7 @@ export class tianfu extends plugin {
         player["tianfu_level"] += 1
         player["tianfu_exp"] = new_exp
         await Write_yijie_player(usr_qq, player);
-        e.reply(`突破成功！天赋升到了${player.xianding_level}级！可前往【我的面板】查看,前往【天赋等级】查看效果`)
+        e.reply(`突破成功！天赋升到了${player.tianfu_level}级！\n获得效果：【${chushi.name}*LV${chushi.tianfu_level}】${chushi.list}`)
         return;
     }
 
