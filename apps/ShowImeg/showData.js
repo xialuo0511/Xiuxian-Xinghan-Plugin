@@ -1246,11 +1246,18 @@ export async function get_yijie_player_img(e) {
     }
     data.setData('yijie_player', usr_qq, player);
     let PowerMini = await yijie_zhanlijisuan(player)
+    //仙鼎等级显示
     let xianding = "仙鼎等级：" + player.xianding_level
     let xianding_exp_max = data.yijie_xianding.find(
         item => item.level == player.xianding_level
     ).exp;
     let strand_xianding = Strand(player.xianding_exp, xianding_exp_max);
+    //天赋等级显示
+    let tianfu = "天赋等级：" + player.tianfu_level
+    let tianfu_exp_max = data.tianfujieduan_list.find(
+        item => item.level == player.tianfu_level
+    ).exp;
+    let strand_tianfu = Strand(player.tianfu_exp, tianfu_exp_max);
 
     let wuqi = player.武器
     let huju = player.护具
@@ -1261,6 +1268,9 @@ export async function get_yijie_player_img(e) {
         taozhuang = "【" + find_tz.name + "】" + find_tz.context
     }
     let player_data = {
+        tianfu: tianfu,
+        strand_tianfu: strand_tianfu,
+        tianfu_exp_max: tianfu_exp_max,
         status: status,
         strand_xianding: strand_xianding,
         xianding_exp_max: xianding_exp_max,
@@ -1617,6 +1627,38 @@ export async function get_xianding_level_img(e, all_level) {
     }
     const data1 = await new Show(e).get_xianding_level_Data(state_data);
     return await puppeteer.screenshot("xianding", {
+        ...data1,
+    });
+}
+
+/**
+ * 返回天赋列表图片
+ * @return image
+ */
+export async function get_tianfu_level_img(e, all_level) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData("yijie_player", usr_qq);
+    if (!ifexistplay) {
+        return;
+    }
+    let player = await data.getData("yijie_player", usr_qq);
+    let Level_id = player.tianfu_level;
+    let Level_list = data.tianfujieduan_list;
+    //循环删除表信息
+    if (!all_level) {
+        for (let i = 1; i <= 60; i++) {
+            if (i > Level_id - 6 && i < Level_id + 6) {
+                continue;
+            }
+            Level_list = await Level_list.filter(item => item.level_id != i);
+        }
+    }
+    let state_data = {
+        user_id: usr_qq,
+        Level_list: Level_list
+    }
+    const data1 = await new Show(e).get_tianfu_level_Data(state_data);
+    return await puppeteer.screenshot("tianfu", {
         ...data1,
     });
 }

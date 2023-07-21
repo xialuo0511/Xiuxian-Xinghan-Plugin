@@ -181,6 +181,15 @@ export default class Game extends base {
     };
   }
 
+  async get_tianfu_level_Data(myData) {
+    this.model = 'tianfulevel';
+    return {
+      ...this.screenData,
+      saveId: 'tianfulevel',
+      ...myData,
+    };
+  }
+
   async get_stateDatazhiye(myData) {
     this.model = 'statezhiye';
     return {

@@ -83,6 +83,21 @@
                         <div class="item_int">{{player.xianding_exp}}/{{xianding_exp_max}}</div>
                     </div>
                 </div>
+                <div class="user_font wupin">
+                    <div class="item">
+                        <div class="item_title font_left">
+                            {{tianfu}}{{if player.tianfu_exp >= tianfu_exp_max}}[UP]{{/if}}
+                        </div>
+                        <div class="item_int">
+                            <div class="xuetiao">
+                                <div class="xueliang font_volume" {{strand_tianfu.style}}>
+                                    {{strand_tianfu.num}}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item_int">{{player.tianfu_exp}}/{{tianfu_exp_max}}</div>
+                    </div>
+                </div>
             </div>
         </div>
         <!--下-->

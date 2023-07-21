@@ -81,6 +81,8 @@ class XiuxianData {
         this.yijie_zhuangbei_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/装备列表.json`));
         //仙鼎阶段
         this.xiandingjieduan_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/仙鼎阶段.json`));
+        //天赋阶段
+        this.tianfujieduan_list = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/天赋阶段.json`));
         //异界秘境
         this.yijie_mijing = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境/秘境列表.json`));
         //异界道具
