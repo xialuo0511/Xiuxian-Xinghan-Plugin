@@ -71,16 +71,16 @@ export class yijietask extends plugin {
                         if (!isNotNull(player.xianding_level)) {
                             return;
                         }
-                        let xinghunbi = 15 * Number(player.xianding_level)
+                        let xinghunbi = Math.floor(15 * Number(player.xianding_level) * 0.8)
                         let time = (parseInt(action.time) / 1000 / 60 / 30) * 2;//分钟
                         let other_xinghunbi = 0;
                         let rand = Math.random();
                         if (rand < 0.2) {
-                            let a = Math.floor(Math.random() * (30)) + 1;
+                            let a = Math.floor(Math.random() * (xinghunbi - 30)) + 1;
                             other_xinghunbi = a;
                             msg.push("\n刷怪的时候不小心被地上的石头绊了一跤，你把石头挖开一看，发现了星魂币" + a);
-                        } else if (rand > 0.8) {
-                            let a = Math.floor(Math.random() * (15)) + 1;
+                        } else if (rand > 0.7) {
+                            let a = Math.floor(Math.random() * (xinghunbi - 15)) + 1;
                             other_xinghunbi = -1 * a;
                             msg.push("\n刷怪的时候被人抢了一只，因此你得到的报酬也减少了，获取的星魂币减少" + a);
                         }
