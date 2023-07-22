@@ -36,12 +36,10 @@ export class Battle extends plugin {
       event: 'message',
       priority: 600,
       rule: [
-        /*
         {
-        reg: '^打劫$',
-        fnc: 'Dajie',
+          reg: '^打劫$',
+          fnc: 'Dajie',
         },
-        */
         {
           reg: '^(以武会友)$',
           fnc: 'biwu',
@@ -258,6 +256,8 @@ export class Battle extends plugin {
     //获取之前攻击力，防止结束时写入过多攻击力
     let now_A_atk = A_player.攻击;
     let now_B_atk = B_player.攻击;
+    let now_A_def = A_player.防御;
+    let now_B_def = B_player.防御;
 
     if (isBbusy) {
       //如果B忙碌,自动扣一瓶隐身水强行打架,奔着人道主义关怀,提前判断了不是重伤
@@ -305,13 +305,14 @@ export class Battle extends plugin {
     if (msg.find(item => item == A_win)) {
       let mdzJL = A_player.魔道值;
       let lingshi = Math.trunc(B_player.灵石 / 5);
-      let qixue = Math.trunc(100 * now_level_idAA);
       let mdz = Math.trunc(lingshi / 10000);
       if (lingshi >= B_player.灵石) {
         lingshi = B_player.灵石 / 2;
       }
       A_player.攻击 = now_A_atk;
       B_player.攻击 = now_B_atk;
+      A_player.防御 = now_A_def;
+      B_player.防御 = now_B_def;
       A_player.灵石 += lingshi;
       B_player.灵石 -= lingshi;
       A_player.魔道值 += mdz;
@@ -325,7 +326,8 @@ export class Battle extends plugin {
       if (A_player.灵石 < 30002) {
         A_player.攻击 = now_A_atk;
         B_player.攻击 = now_B_atk;
-        let qixue = Math.trunc(100 * now_level_idBB);
+        A_player.防御 = now_A_def;
+        B_player.防御 = now_B_def;
         await Write_player(B, B_player);
         var time2 = 60; //时间（分钟）
         var action_time2 = 60000 * time2; //持续时间，单位毫秒
@@ -342,12 +344,13 @@ export class Battle extends plugin {
         );
       } else {
         let lingshi = Math.trunc(A_player.灵石 / 4);
-        let qixue = Math.trunc(100 * now_level_idBB);
         if (lingshi <= 0) {
           lingshi = 0;
         }
         A_player.攻击 = now_A_atk;
         B_player.攻击 = now_B_atk;
+        A_player.防御 = now_A_def;
+        B_player.防御 = now_B_def;
         A_player.灵石 -= lingshi;
         B_player.灵石 += lingshi;
         await Write_player(A, A_player);
