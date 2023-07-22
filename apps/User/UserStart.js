@@ -697,7 +697,7 @@ export class UserStart extends plugin {
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
                 await Add_yijie_beibao_thing(usr_qq, "高级装备箱", "箱子", 10)
-                await Add_星魂币(1500)
+                await Add_星魂币(usr_qq, 1500)
                 msg.push("领取异界奖励成功，获得1500星魂币,【深邃矿洞】*5")
             }
             e.reply(msg);
