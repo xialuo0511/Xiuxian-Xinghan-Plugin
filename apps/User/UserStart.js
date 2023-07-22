@@ -599,7 +599,7 @@ export class UserStart extends plugin {
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
                 await Add_星魂币(usr_qq, 500);
-                msg.push(",领取异界奖励成功，获得500星魂币！")
+                msg.push("\n领取异界奖励成功，获得500星魂币！")
             }
             e.reply(msg);
             return;
@@ -616,7 +616,7 @@ export class UserStart extends plugin {
             if (yijie) {
                 await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", 5)
                 await Add_yijie_beibao_thing(usr_qq, "玄蛛网", "道具", 5)
-                msg.push("领取异界奖励成功，获得【幽静谷】*5,【玄蛛网】*5")
+                msg.push("\n领取异界奖励成功，获得【幽静谷】*5,【玄蛛网】*5")
             }
             e.reply(msg);
             return;
@@ -632,7 +632,7 @@ export class UserStart extends plugin {
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
                 await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", 15)
-                msg.push("领取异界奖励成功，获得【仙鼎历练券】*15")
+                msg.push("\n领取异界奖励成功，获得【仙鼎历练券】*15")
             }
             e.reply(msg);
             return;
@@ -648,7 +648,7 @@ export class UserStart extends plugin {
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
                 await Add_星魂币(usr_qq, 1000);
-                msg.push("领取异界奖励成功，获得1000星魂币！")
+                msg.push("\n领取异界奖励成功，获得1000星魂币！")
             }
             e.reply(msg);
             return;
@@ -664,7 +664,7 @@ export class UserStart extends plugin {
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
                 await Add_yijie_beibao_thing(usr_qq, "烤肉", "食材", 25)
-                msg.push("领取异界奖励成功，获得【烤肉】*25")
+                msg.push("\n领取异界奖励成功，获得【烤肉】*25")
             }
             e.reply(msg);
             return;
@@ -681,7 +681,7 @@ export class UserStart extends plugin {
             if (yijie) {
                 await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", 5)
                 await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", 5)
-                msg.push("领取异界奖励成功，获得【深邃矿洞】*5,【铁镐】*5")
+                msg.push("\n领取异界奖励成功，获得【深邃矿洞】*5,【铁镐】*5")
             }
             e.reply(msg);
             return;
@@ -698,7 +698,7 @@ export class UserStart extends plugin {
             if (yijie) {
                 await Add_yijie_beibao_thing(usr_qq, "高级装备箱", "箱子", 10)
                 await Add_星魂币(usr_qq, 1500)
-                msg.push("领取异界奖励成功，获得1500星魂币,【高级装备箱】*10")
+                msg.push("\n领取异界奖励成功，获得1500星魂币,【高级装备箱】*10")
             }
             e.reply(msg);
             return;
