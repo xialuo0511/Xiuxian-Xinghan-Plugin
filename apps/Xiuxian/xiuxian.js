@@ -200,7 +200,7 @@ export async function Write_yijie_player(usr_qq, player) {
     player["攻击"] = Math.floor(chushi["初始攻击"] * atk_beilv) + wuqi["atk"]
     player["防御"] = Math.floor(chushi["初始防御"] * def_beilv) + huju["def"]
     player["血量上限"] = Math.floor(chushi["初始生命"] * hp_beilv) + fabao["HP"]
-    player["暴击率"] = 0.05 + bao
+    player["暴击率"] = 0.05 + fabao["bao"]
     player["暴击率"] = Number(player["暴击率"].toFixed(3))
     let new_ARR = JSON.stringify(player, "", "\t");
     fs.writeFileSync(dir, new_ARR, 'utf8', (err) => {
