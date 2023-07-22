@@ -405,27 +405,6 @@ export class yijieUser extends plugin {
         }
         let change = player[sf.type]
         player[sf.type] = sf
-
-        let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"])
-        let wuqi = player["武器"]
-        let atk = wuqi.atk
-        let huju = player["护具"]
-        let def = huju.def
-        let fabao = player["法宝"]
-        let hp = fabao.HP
-        let bao = fabao.bao
-        let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name);
-        if (find_tz && find_tz.name == "隐忍的刺客") {
-            atk = Math.floor(atk * 1.15)
-        }
-        if (find_tz && find_tz.name == "冒险家的历练") {
-            hp = Math.floor(hp * 1.25)
-        }
-        player["攻击"] = chushi["初始攻击"] + atk
-        player["防御"] = chushi["初始防御"] + def
-        player["血量上限"] = chushi["初始生命"] + hp
-        player["暴击率"] = 0.05 + bao
-        player["暴击率"] = Number(player["暴击率"].toFixed(3))
         await Add_yijie_beibao_thing(usr_qq, sf.name, sf.class, -1)
         await Add_yijie_beibao_thing(usr_qq, change.name, change.class, 1)
         await Write_yijie_player(usr_qq, player)
@@ -485,19 +464,6 @@ export class yijieUser extends plugin {
             "护具": data.yijie_zhuangbei_list.find(item => item.name == "木盾"),
             "法宝": data.yijie_zhuangbei_list.find(item => item.name == "葫芦")
         }
-        let wuqi = new_player["武器"]
-        let huju = new_player["护具"]
-        let fabao = new_player["法宝"]
-        let chushi = data.xiandingjieduan_list.find(item => item.level == new_player["xianding_level"])
-        // chushi = JSON.parse(chushi)
-        // wuqi = JSON.parse(wuqi)
-        // huju = JSON.parse(huju)
-        // fabao = JSON.parse(fabao)
-        new_player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
-        new_player["防御"] = chushi["初始防御"] + huju["def"]
-        new_player["血量上限"] = chushi["初始生命"] + fabao["HP"]
-        new_player["暴击率"] = new_player["暴击率"] + fabao["bao"]
-        new_player["暴击率"] = Number(new_player["暴击率"].toFixed(3))
         await Write_yijie_player(usr_qq, new_player);
         //初始化背包
         let new_beibao = {

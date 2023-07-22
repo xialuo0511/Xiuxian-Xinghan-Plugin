@@ -74,12 +74,6 @@ export class xianding extends plugin {
         }
         let new_exp = player.xianding_exp - xianding_exp_max
         player["xianding_level"] += 1
-        let wuqi = player["武器"]
-        let huju = player["护具"]
-        let fabao = player["法宝"]
-        player["攻击"] = chushi["初始攻击"] + wuqi["atk"]
-        player["防御"] = chushi["初始防御"] + huju["def"]
-        player["血量上限"] = chushi["初始生命"] + fabao["HP"]
         player["xianding_exp"] = new_exp
         await Write_yijie_player(usr_qq, player);
         e.reply(`突破成功！仙鼎升到了${player.xianding_level}级，为你提供的力量提高了！可前往【我的面板】查看`)

@@ -176,6 +176,32 @@ export async function Write_player(usr_qq, player) {
 //写入异界存档信息,第二个参数是一个JavaScript对象
 export async function Write_yijie_player(usr_qq, player) {
     let dir = path.join(__PATH.yijie_player_path, `${usr_qq}.json`);
+    let tianfu = Number(player.tianfu_level)
+    let chushi = data.xiandingjieduan_list.find(item => item.level == player["xianding_level"])
+    let atk_beilv = 1
+    let def_beilv = 1
+    let hp_beilv = 1
+    let wuqi = player["武器"]
+    let huju = player["护具"]
+    let fabao = player["法宝"]
+    let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name);
+    if (find_tz && find_tz.name == "隐忍的刺客") {
+        atk_beilv += 0.15
+    }
+    if (find_tz && find_tz.name == "冒险家的历练") {
+        hp += 0.25
+    }
+    if (tianfu >= 4) {
+        atk_beilv += 0.02
+    }
+    if (def_beilv >= 5) {
+        def_beilv += 0.02
+    }
+    player["攻击"] = Math.floor(chushi["初始攻击"] * atk_beilv) + wuqi["atk"]
+    player["防御"] = Math.floor(chushi["初始防御"] * def_beilv) + huju["def"]
+    player["血量上限"] = Math.floor(chushi["初始生命"] * hp_beilv) + fabao["HP"]
+    player["暴击率"] = 0.05 + bao
+    player["暴击率"] = Number(player["暴击率"].toFixed(3))
     let new_ARR = JSON.stringify(player, "", "\t");
     fs.writeFileSync(dir, new_ARR, 'utf8', (err) => {
         console.log('写入成功', err)
