@@ -80,13 +80,14 @@ export class Level extends plugin {
             return;
         }
         now_level_id = data.LevelMax_list.find(item => item.level_id == player.Physique_id).level_id;
+        let next_level_id = data.LevelMax_list.find(item => item.level_id == (Number(player.Physique_id) + 1));
         let now_exp = player.血气;
         let need_exp = data.LevelMax_list.find(item => item.level_id == player.Physique_id).exp;
         if (now_exp < need_exp) {
             e.reply(`血气不足,再积累${need_exp - now_exp}血气后方可突破`);
             return;
         }
-        if (now_level_id == 54) {
+        if (!next_level_id) {
             e.reply(`你已突破至最高境界`);
             return;
         }
@@ -191,6 +192,7 @@ export class Level extends plugin {
         let player = await Read_player(usr_qq);
         //境界
         let now_level = data.Level_list.find(item => item.level_id == player.level_id).level;
+        let next_level = data.Level_list.find(item => item.level_id == (Number(player.level_id) + 1));
         //拦截渡劫期
         if (now_level == "渡劫期") {
             //检查仙门是否开启！
