@@ -226,18 +226,18 @@ export class Level extends plugin {
         // 	redis.set("xiuxian:player:" + usr_qq + ":levelup", 0);
         // }
         //超凡入圣突破
-        if (now_level_id == 64) {
-            //检查是否已有凡人境
-            let LevelUP = await fanren();
-            if (LevelUP != 1) {
-                e.reply(`这方世界已有化凡！`);
-                return;
-            }
-        }
-        //凡人突破
-        if (now_level_id == 64) {
-            return;
-        }
+        // if (now_level_id == 64) {
+        //     //检查是否已有凡人境
+        //     let LevelUP = await fanren();
+        //     if (LevelUP != 1) {
+        //         e.reply(`这方世界已有化凡！`);
+        //         return;
+        //     }
+        // }
+        // //凡人突破
+        // if (now_level_id == 64) {
+        //     return;
+        // }
         let now_exp = player.修为;
         //修为
         let need_exp = data.Level_list.find(item => item.level_id == player.level_id).exp;
