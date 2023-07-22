@@ -1,40 +1,40 @@
 [
     {
         "level": 0,
-        "exp": 100,
+        "exp": 50,
         "list": "无"
     },
     {
         "level": 1,
-        "exp": 300,
+        "exp": 120,
         "name": "奇运",
         "tianfu_level": 1,
         "list": "秘境有1%的概率额外获得一个掉落物(不参与双倍，后同)"
     },
     {
         "level": 2,
-        "exp": 500,
+        "exp": 180,
         "name": "灵敏",
         "tianfu_level": 1,
         "list": "寻宝有1%的概率额外获得一个掉落物(不参与双倍，后同)"
     },
     {
         "level": 3,
-        "exp": 700,
+        "exp": 260,
         "name": "奇运",
         "tianfu_level": 2,
         "list": "秘境有2.5%的概率额外获得一个掉落物"
     },
     {
         "level": 4,
-        "exp": 1000,
+        "exp": 350,
         "name": "战狂",
         "tianfu_level": 1,
         "list": "攻击力提升2%"
     },
     {
         "level": 5,
-        "exp": 1500,
+        "exp": 450,
         "name": "抵抗",
         "tianfu_level": 1,
         "list": "防御力提升2%"

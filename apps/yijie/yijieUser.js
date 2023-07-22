@@ -20,7 +20,8 @@ import {
     convert2integer,
     Add_星魂币,
     isNotNull,
-    shijianc
+    shijianc,
+    Add_tianfu_exp
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_ranking_xinghunbi_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -588,6 +589,7 @@ export class yijieUser extends plugin {
                 fanbei = "您触发了【寻宝者的期许】套装效果，本次寻宝收益翻倍！\n"
             }
         }
+        await Add_tianfu_exp(usr_qq, 3)
         if (thing_name == "幽静谷") {
             if (player.饱食度 < 100) {
                 e.reply('你快饿死了,还是先吃点东西吧');

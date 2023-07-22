@@ -10,7 +10,8 @@ import {
   yijie_zhanlijisuan,
   Add_星魂币,
   find_yijie_taozhuang,
-  get_tianfu_level
+  get_tianfu_level,
+  Add_tianfu_exp
 } from '../Xiuxian/xiuxian.js';
 
 /**
@@ -188,6 +189,7 @@ export class yijieSecretPlaceTask extends plugin {
               } else {
                 msg.push(`在秘境探索的中途，收获了【${thing_name}】*${shu}`)
               }
+              await Add_tianfu_exp(player_id, 1)
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, shu)
             }
             let arr = action;
