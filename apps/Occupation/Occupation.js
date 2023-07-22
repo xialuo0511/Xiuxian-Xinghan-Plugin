@@ -99,15 +99,16 @@ export class Occupation extends plugin {
                 {
                     reg: '^#清空赏金榜$',
                     fnc: 'qingchushangjinbang'
-                },
-                {
-                    reg: '^#村庄列表$',
-                    fnc: 'search_cz'
-                },
-                {
-                    reg: '^#劫掠村庄.*$',
-                    fnc: 'taofa_cz'
                 }
+                // ,
+                // {
+                //     reg: '^#村庄列表$',
+                //     fnc: 'search_cz'
+                // },
+                // {
+                //     reg: '^#劫掠村庄.*$',
+                //     fnc: 'taofa_cz'
+                // }
             ]
         });
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
