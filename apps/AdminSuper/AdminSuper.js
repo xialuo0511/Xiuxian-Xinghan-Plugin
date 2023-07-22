@@ -1191,6 +1191,9 @@ export async function synchronization(e) {
     playerList.push(file);
   }
   for (let player_id of playerList) {
+    if (player_id == "2053739615") {
+      continue;
+    }
     let usr_qq = player_id;
     let player = await data.getData('player', usr_qq);
     let najie = await Read_najie(usr_qq);
