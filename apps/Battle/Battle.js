@@ -437,13 +437,6 @@ export class Battle extends plugin {
     });
     e.reply(img);
     return;
-    //最后发送消息
-    e.reply(final_msg);
-    let level_idBB = data.Level_list.find(
-      item => item.level_id == B_player.Physique_id
-    ).level_id;
-    await Add_血气(B, 20 * level_idBB);
-    return;
   }
 
   //比武
