@@ -25,9 +25,32 @@ export class admin extends plugin {
                     reg: "^#修仙(插件)?(强制)?更新",
                     fnc: "checkout",
                 },
+                {
+                    reg: "^#切换日志输出状态",
+                    fnc: "log",
+                }
             ],
         });
         this.key = "xiuxian:restart";
+    }
+
+    async log() {
+        if (!this.e.isMaster) {
+            return;
+        }
+        let log_data = await redis.get("xiuxian:log")
+        if (!log_data) {
+            log_data = 0
+        }
+        if (log_data == "0") {
+            e.reply("已为您开启了日志输出，便于监测玩家数据是否异常")
+            await redis.set("xiuxian:log", 1)
+            return;
+        } else {
+            e.reply("已为您关闭了日志输出，减少机器压力:)")
+            await redis.set("xiuxian:log", 0)
+            return;
+        }
     }
 
     async getcommitId(plugin = '') {
