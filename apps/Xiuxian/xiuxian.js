@@ -335,6 +335,16 @@ export async function Read_yijie_beibao(usr_qq) {
 }
 
 //写入纳戒信息,第二个参数是一个JavaScript对象
+export async function log_return(usr_qq, name, number) {
+    let log_data = await redis.get("xiuxian:log")
+    log_data = Number(log_data)
+    if (log_data == 1) {
+        logger.info(`【修仙日志】玩家${usr_qq}增加了${name}${number}`)
+    }
+    return;
+}
+
+//写入纳戒信息,第二个参数是一个JavaScript对象
 export async function Write_najie(usr_qq, najie) {
     let dir = path.join(__PATH.najie_path, `${usr_qq}.json`);
     let new_ARR = JSON.stringify(najie, "", "\t");
@@ -359,10 +369,7 @@ export async function Write_yijie_beibao(usr_qq, najie) {
 export async function Add_灵石(usr_qq, 灵石数量 = 0) {
     let player = await Read_player(usr_qq);
     player.灵石 += Math.trunc(灵石数量);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了灵石${灵石数量}`)
-    }
+    await log_return(usr_qq, "灵石", 灵石数量)
     await Write_player(usr_qq, player);
     return;
 }
@@ -371,10 +378,7 @@ export async function Add_灵石(usr_qq, 灵石数量 = 0) {
 export async function Add_星魂币(usr_qq, 星魂币数量 = 0) {
     let player = await Read_yijie_player(usr_qq);
     player.星魂币 += Math.trunc(星魂币数量);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了星魂币${星魂币数量}`)
-    }
+    await log_return(usr_qq, "星魂币", 星魂币数量)
     await Write_yijie_player(usr_qq, player);
     return;
 }
@@ -383,10 +387,7 @@ export async function Add_星魂币(usr_qq, 星魂币数量 = 0) {
 export async function Add_tianfu_exp(usr_qq, exp = 0) {
     let player = await Read_yijie_player(usr_qq);
     player.tianfu_exp += Math.trunc(exp);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了天赋经验${exp}`)
-    }
+    await log_return(usr_qq, "天赋经验", exp)
     await Write_yijie_player(usr_qq, player);
     return;
 }
@@ -400,10 +401,7 @@ export async function get_tianfu_level(usr_qq) {
 export async function Add_yijie_饱食度(usr_qq, 饱食度 = 0) {
     let player = await Read_yijie_player(usr_qq);
     player.饱食度 += Math.trunc(饱食度);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了饱食度${饱食度}`)
-    }
+    await log_return(usr_qq, "饱食度", 饱食度)
     await Write_yijie_player(usr_qq, player);
     return;
 }
@@ -415,10 +413,7 @@ export async function Add_顶级仙石(usr_qq, 仙石数量 = 0) {
     }
     dingjixianshi = Number(dingjixianshi);
     dingjixianshi += Math.trunc(仙石数量);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了顶级仙石${仙石数量}`)
-    }
+    await log_return(usr_qq, "顶级仙石", 仙石数量)
     await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", dingjixianshi);
     return;
 }
@@ -426,10 +421,7 @@ export async function Add_顶级仙石(usr_qq, 仙石数量 = 0) {
 export async function Add_热量(usr_qq, 热量 = 0) {
     let player = await Read_player(usr_qq);
     player.热量 += Math.trunc(热量);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了热量${热量}`)
-    }
+    await log_return(usr_qq, "热量", 热量)
     await Write_player(usr_qq, player);
     return;
 }
@@ -437,10 +429,7 @@ export async function Add_热量(usr_qq, 热量 = 0) {
 export async function Add_xianding_exp(usr_qq, exp = 0) {
     let player = await Read_yijie_player(usr_qq);
     player.xianding_exp += Math.trunc(exp);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了仙鼎经验${exp}`)
-    }
+    await log_return(usr_qq, "仙鼎经验", exp)
     await Write_yijie_player(usr_qq, player);
     return;
 }
@@ -448,40 +437,28 @@ export async function Add_xianding_exp(usr_qq, exp = 0) {
 export async function Add_修为(usr_qq, 修为数量 = 0) {
     let player = await Read_player(usr_qq);
     player.修为 += Math.trunc(修为数量);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了修为${修为数量}`)
-    }
+    await log_return(usr_qq, "修为", 修为数量)
     await Write_player(usr_qq, player);
     return;
 }
 export async function Add_魔道值(usr_qq, 魔道值 = 0) {
     let player = await Read_player(usr_qq);
     player.魔道值 += Math.trunc(魔道值);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了魔道值${魔道值}`)
-    }
+    await log_return(usr_qq, "魔道值", 魔道值)
     await Write_player(usr_qq, player);
     return;
 }
 export async function Add_饱食度(usr_qq, 饱食度 = 0) {
     let player = await Read_player(usr_qq);
     player.饱食度 += Math.trunc(饱食度);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了饱食度${饱食度}`)
-    }
+    await log_return(usr_qq, "饱食度", 饱食度)
     await Write_player(usr_qq, player);
     return;
 }
 export async function Add_血气(usr_qq, 血气 = 0) {
     let player = await Read_player(usr_qq);
     player.血气 += Math.trunc(血气);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了血气${血气}`)
-    }
+    await log_return(usr_qq, "血气", 血气)
     await Write_player(usr_qq, player);
     return;
 }
@@ -489,10 +466,6 @@ export async function change_神之心(usr_qq) {
     let player = await Read_player(usr_qq);
     player.灵根 = await get_神之心_random();
     data.setData('player', usr_qq, player);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}改变了神之心`)
-    }
     await player_efficiency(usr_qq);
     return;
 }
@@ -505,10 +478,7 @@ export async function Add_HP(usr_qq, blood = 0) {
     if (player.当前血量 < 0) {
         player.当前血量 = 0;
     }
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}修改了血量${blood}`)
-    }
+    await log_return(usr_qq, "当前血量", blood)
     await Write_player(usr_qq, player);
     return;
 }
@@ -541,10 +511,7 @@ export async function Add_职业经验(usr_qq, exp = 0) {
     }
     player.occupation_exp = exp;
     player.occupation_level = level;
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了职业经验${exp}`)
-    }
+    await log_return(usr_qq, "职业经验", exp)
     await Write_player(usr_qq, player);
     return;
 }
@@ -552,10 +519,7 @@ export async function Add_职业经验(usr_qq, exp = 0) {
 export async function Add_najie_灵石(usr_qq, lingshi) {
     let najie = await Read_najie(usr_qq);
     najie.灵石 += Math.trunc(lingshi);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}增加了纳戒灵石${lingshi}`)
-    }
+    await log_return(usr_qq, "纳戒灵石", lingshi)
     await Write_najie(usr_qq, najie);
     return;
 }
@@ -564,10 +528,7 @@ export async function Add_player_学习功法(usr_qq, gongfa_name) {
     let player = await Read_player(usr_qq);
     player.学习的功法.push(gongfa_name);
     data.setData("player", usr_qq, player);
-    let log_data = await redis.get("xiuxian:log")
-    if (log_data && log_data == "1") {
-        console.log(`【修仙日志】玩家${usr_qq}学习了功法${gongfa_name}`)
-    }
+    await log_return(usr_qq, "学习功法", gongfa_name)
     await player_efficiency(usr_qq);
     return;
 }
