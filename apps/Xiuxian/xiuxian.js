@@ -339,7 +339,7 @@ export async function log_return(usr_qq, name, number) {
     let log_data = await redis.get("xiuxian:log")
     log_data = Number(log_data)
     if (log_data == 1) {
-        logger.info(`【修仙日志】玩家${usr_qq}增加了${name}${number}`)
+        logger.mark(`【修仙日志】玩家${usr_qq}增加了${name}${number}`)
     }
     return;
 }
