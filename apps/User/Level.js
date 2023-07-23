@@ -193,6 +193,10 @@ export class Level extends plugin {
         //境界
         let now_level = data.Level_list.find(item => item.level_id == player.level_id).level;
         let next_level = data.Level_list.find(item => item.level_id == (Number(player.level_id) + 1));
+        if (!next_level) {
+            e.reply("您已达到当前等级上限")
+            return;
+        }
         //拦截渡劫期
         if (now_level == "渡劫期") {
             //检查仙门是否开启！
@@ -216,28 +220,6 @@ export class Level extends plugin {
             e.reply(`你灵根不齐，无成帝的资格！请先夺天地之造化，修补灵根后再来突破吧`);
             return;
         }
-        let lvup = await redis.get("xiuxian:player:" + usr_qq + ":levelup");
-        // if(now_level_id==21 && lvup!=1){
-        // 	e.reply("突破后灵根将被固化，无法使用【洗根水】进行洗髓！回复:【】或者【先不突破】进行选择");
-        // 	this.setContext('yes');
-        //     return;
-        // }
-        // else if(now_level_id==21&&lvup==1){
-        // 	redis.set("xiuxian:player:" + usr_qq + ":levelup", 0);
-        // }
-        //超凡入圣突破
-        // if (now_level_id == 64) {
-        //     //检查是否已有凡人境
-        //     let LevelUP = await fanren();
-        //     if (LevelUP != 1) {
-        //         e.reply(`这方世界已有化凡！`);
-        //         return;
-        //     }
-        // }
-        // //凡人突破
-        // if (now_level_id == 64) {
-        //     return;
-        // }
         let now_exp = player.修为;
         //修为
         let need_exp = data.Level_list.find(item => item.level_id == player.level_id).exp;
