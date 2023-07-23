@@ -185,7 +185,7 @@ export async function Write_yijie_player(usr_qq, player) {
     let huju = player["护具"]
     let fabao = player["法宝"]
     let find_tz = data.yijie_taozhuang.find(item => item.wuqi == wuqi.name && item.huju == huju.name && item.fabao == fabao.name);
-    if (find_tz && find_tz.name == "隐忍的刺客") {
+    if (find_tz && find_tz.name == "刺客的隐忍") {
         atk_beilv += 0.15
     }
     if (find_tz && find_tz.name == "冒险家的历练") {
