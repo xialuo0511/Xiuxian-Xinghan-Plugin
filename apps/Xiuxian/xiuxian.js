@@ -189,7 +189,7 @@ export async function Write_yijie_player(usr_qq, player) {
         atk_beilv += 0.15
     }
     if (find_tz && find_tz.name == "冒险家的历练") {
-        hp += 0.25
+        hp_beilv += 0.25
     }
     if (tianfu >= 4) {
         atk_beilv += 0.02
