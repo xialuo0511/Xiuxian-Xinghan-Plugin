@@ -43,11 +43,11 @@ export class admin extends plugin {
             log_data = 0
         }
         if (log_data == "0") {
-            e.reply("已为您开启了日志输出，便于监测玩家数据是否异常")
+            this.e.reply("已为您开启了日志输出，便于监测玩家数据是否异常")
             await redis.set("xiuxian:log", 1)
             return;
         } else {
-            e.reply("已为您关闭了日志输出，减少机器压力:)")
+            this.e.reply("已为您关闭了日志输出，减少机器压力:)")
             await redis.set("xiuxian:log", 0)
             return;
         }
