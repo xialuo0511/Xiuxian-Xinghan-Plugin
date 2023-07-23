@@ -85,7 +85,6 @@ export class shituxitong extends plugin {
           reg: '^#师徒同步$',
           fnc: 'tongbu'
         }
-
       ],
     });
   }
@@ -95,9 +94,9 @@ export class shituxitong extends plugin {
   async okshoutu(e) {
     //禁止私聊
     if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let usr_qq = e.user_id;
     let player1 = await data.getData('player', usr_qq);
     let player = await Read_player(usr_qq);
@@ -167,9 +166,9 @@ export class shituxitong extends plugin {
   async noshoutu(e) {
     //禁止私聊
     if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let usr_qq = e.user_id;
     let player1 = await data.getData('player', usr_qq);
     let player = await Read_player(usr_qq);
@@ -209,9 +208,9 @@ export class shituxitong extends plugin {
   async rendie(e) {
     //禁止私聊
     if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let usr_qq = e.user_id;
     let player1 = await data.getData('player', usr_qq);
     let player = await Read_player(usr_qq);
@@ -297,9 +296,9 @@ export class shituxitong extends plugin {
   async buzairendie(e) {
     //禁止私聊
     if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let usr_qq = e.user_id;
     let player = await Read_player(usr_qq);
     let user_A;
@@ -378,9 +377,9 @@ export class shituxitong extends plugin {
     let tudi = await find_tudi(A);
     //不开放私聊功能
     if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     if (tudi != 0) {
       e.reply('等你先出师再说吧');
       return;
@@ -396,9 +395,9 @@ export class shituxitong extends plugin {
     let tudi = await find_tudi(A);
     //不开放私聊功能
     if (!e.isGroup) {
-                  e.reply('修仙游戏请在群聊中游玩');
-                  return;
-            }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     if (tudi == 0) {
       e.reply('你先拜个师再来吧');
       return;
@@ -423,9 +422,9 @@ export class shituxitong extends plugin {
     let tudi = await find_tudi(A);
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     //判断对方有没有存档
     if (shifu == 0 && tudi == 0) {
       e.reply('你还没拜师&收徒过！');
@@ -449,16 +448,16 @@ export class shituxitong extends plugin {
     let kaiqi = await found3();
     let shoutu = ``
     let suiji = 0;
-    if(kaiqi == 1){
+    if (kaiqi == 1) {
       shoutu = `师傅列表：\n(仅显示随机的五个可拜师师傅)\n`
-    }else if(kaiqi == 0){
+    } else if (kaiqi == 0) {
       shoutu = `暂时还没有开启收徒的师傅`
     }
-for(i = 0 ;i<shitu.length;i++){
-      if(shitu[i].收徒 == 1) v++
+    for (i = 0; i < shitu.length; i++) {
+      if (shitu[i].收徒 == 1) v++
     }
     suiji = Math.floor(Math.random() * shitu.length);
-    if(v<6)suiji = 0
+    if (v < 6) suiji = 0
     for (i = suiji; i < shitu.length; i++) {
       if (shitu[i].收徒 == 1) {
         let player = await Read_player(shitu[i].师傅);
@@ -470,17 +469,17 @@ for(i = 0 ;i<shitu.length;i++){
         }
       }
     }
-    if(t!=5 && v> 5){
+    if (t != 5 && v > 5) {
       for (i = 0; i < shitu.length; i++) {
         if (shitu[i].收徒 == 1) {
-          if(i == suiji){
+          if (i == suiji) {
             break
           }
           let player = await Read_player(shitu[i].师傅);
           let daohao = player.名号
           shoutu += `道号:${daohao}\nQQ:${shitu[i].师傅}\n`;
           A++
-          if (A == 5-t) {
+          if (A == 5 - t) {
             break
           }
         }
@@ -493,9 +492,9 @@ for(i = 0 ;i<shitu.length;i++){
   async looklookshop(e) {
     let usr_qq = e.user_id;
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     //无存档
     let ifexistplay = data.existData('player', usr_qq);
     if (!ifexistplay) {
@@ -508,9 +507,9 @@ for(i = 0 ;i<shitu.length;i++){
   //兑换物品
   async duihuan(e) {
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     let usr_qq = e.user_id;
     //查看存档
     let ifexistplay = await existplayer(usr_qq);
@@ -551,7 +550,7 @@ for(i = 0 ;i<shitu.length;i++){
     return;
   }
   /*师徒boss */
-async jijian(e) {
+  async jijian(e) {
     let usr_qq = e.user_id;
     let player = await Read_player(usr_qq);
     let user_A;
@@ -569,9 +568,9 @@ async jijian(e) {
     let gaoji
     //不开放私聊功能
     if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
     //判断对方有没有存档
     if (shifu == 0 && tudi == 0) {
       e.reply('你还没拜师&收徒过！');
@@ -759,7 +758,7 @@ async jijian(e) {
     }
   }
   /*师徒同步 */
-    async tongbu(e) {
+  async tongbu(e) {
     let shitu = await Read_shitu();
     let user_A;
     let A = e.user_id;
@@ -795,7 +794,7 @@ async jijian(e) {
 }
 export function isNotNull(obj) {
   if (obj == undefined || obj == null)
-      return false;
+    return false;
   return true;
 }
 export async function get_shitujifen_img(e) {

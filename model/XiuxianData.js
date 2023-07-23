@@ -31,6 +31,7 @@ class XiuxianData {
         this.Timelimit = this.filePathMap.Timelimit;
         this.Level = this.filePathMap.Level;
         this.Occupation = this.filePathMap.occupation;
+        this.Whitelist = JSON.parse(fs.readFileSync(`${this.lib_path}/白名单.json`));
 
         /**
         * 回收数据
