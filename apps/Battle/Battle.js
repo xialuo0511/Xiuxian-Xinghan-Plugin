@@ -292,12 +292,6 @@ export class Battle extends plugin {
 
     let Data_battle = await zd_battle(A_player, B_player);
     let msg = Data_battle.msg;
-    //战斗回合过长会导致转发失败报错，所以超过30回合的就不转发了
-    if (msg.length > 35) {
-    } else {
-      await ForwardMsg(e, msg);
-    }
-    //下面的战斗超过100回合会报错
     await Add_HP(A, Data_battle.A_xue);
     await Add_HP(B, Data_battle.B_xue);
     let A_win = `${A_player.名号}击败了${B_player.名号}`;
