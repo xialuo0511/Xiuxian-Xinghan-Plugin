@@ -415,18 +415,18 @@ export class Battle extends plugin {
     let msg = Data_battle.msg;
     let A_win = `${A_player.名号}击败了${B_player.名号}`;
     let B_win = `${B_player.名号}击败了${A_player.名号}`;
-    // if (msg.find(item => item == A_win)) {
-    // } else if (msg.find(item => item == B_win)) {
-    // } else {
-    //   e.reply(`战斗过程出错`);
-    //   return;
-    // }
+    if (msg.find(item => item == A_win)) {
+    } else if (msg.find(item => item == B_win)) {
+    } else {
+      e.reply(`战斗过程出错`);
+      return;
+    }
 
     let log_data = {
       log: msg,
     };
     const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshots('log', {
+    let img = await puppeteer.screenshot('log', {
       ...data1,
     });
     e.reply(img);
@@ -495,22 +495,6 @@ export class Battle extends plugin {
     });
     e.reply(img);
     return;
-
-    let A_win = `${A_player.名号}击败了${B_player.名号}`;
-    let B_win = `${B_player.名号}击败了${A_player.名号}`;
-    if (msg.find(item => item == A_win)) {
-    } else if (msg.find(item => item == B_win)) {
-    } else {
-      e.reply(`战斗过程出错`);
-      return;
-    }
-    //最后发送消息
-    e.reply(final_msg);
-    let level_idBB = data.Level_list.find(
-      item => item.level_id == B_player.Physique_id
-    ).level_id;
-    await Add_血气(B, 20 * level_idBB);
-    return;
   }
 }
 
@@ -535,10 +519,15 @@ export async function zd_battle(AA_player, BB_player) {
   let jineng1 = data.jineng1;
   let jineng2 = data.jineng2;
   while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
-    // if (cnt2 > 48) {
-    //   msg.push("长时间的战斗让你俩觉得无比劳累，本次对战和局");
-    //   break;
-    // }
+    if (cnt2 > 20) {
+      msg.push("回合数超过20，自动通过血量结算");
+      if (A_player.当前血量 > B_player.当前血量 > 0) {
+        msg.push(`${A_player.名号}击败了${B_player.名号}`);
+      } else {
+        msg.push(`${B_player.名号}击败了${A_player.名号}`);
+      }
+      break;
+    }
     cnt2 = Math.trunc(cnt / 2);
     let Random = Math.random();
     let random = Math.random();
