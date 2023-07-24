@@ -422,14 +422,14 @@ export class Battle extends plugin {
     //   return;
     // }
 
-    let log_data = {
-      log: msg,
-    };
-    const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshot('log', {
-      ...data1,
-    });
-    e.reply(img);
+    // let log_data = {
+    //   log: msg,
+    // };
+    // const data1 = await new Show(e).get_logData(log_data);
+    // let img = await puppeteer.screenshot('log', {
+    //   ...data1,
+    // });
+    e.reply(msg.toString());
     return;
   }
 
