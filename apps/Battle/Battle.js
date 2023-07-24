@@ -415,12 +415,12 @@ export class Battle extends plugin {
     let msg = Data_battle.msg;
     let A_win = `${A_player.名号}击败了${B_player.名号}`;
     let B_win = `${B_player.名号}击败了${A_player.名号}`;
-    if (msg.find(item => item == A_win)) {
-    } else if (msg.find(item => item == B_win)) {
-    } else {
-      e.reply(`战斗过程出错`);
-      return;
-    }
+    // if (msg.find(item => item == A_win)) {
+    // } else if (msg.find(item => item == B_win)) {
+    // } else {
+    //   e.reply(`战斗过程出错`);
+    //   return;
+    // }
 
     let log_data = {
       log: msg,
