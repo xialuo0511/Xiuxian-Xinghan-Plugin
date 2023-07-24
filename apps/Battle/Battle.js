@@ -429,7 +429,7 @@ export class Battle extends plugin {
     let img = await puppeteer.screenshot('log', {
       ...data1,
     });
-    e.reply(msg.toString());
+    e.reply(img);
     return;
   }
 
