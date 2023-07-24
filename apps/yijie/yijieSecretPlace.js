@@ -201,15 +201,13 @@ export class yijieSecretPlace extends plugin {
         if (!daibi || daibi < i) {
             e.reply("您的【水晶卷轴】不足！")
             return;
-        } else {
-            await Add_yijie_beibao_thing(usr_qq, "水晶卷轴", "道具", -i)
         }
-
         let weizhi = await data.yijie_mijing.find(item => item.name == didian);
         if (!isNotNull(weizhi)) {
             e.reply("请检查你输入的秘境名字是否正确！")
             return;
         }
+        let xianding = false
         if (didian.includes("仙鼎历练")) {
             if (player.xianding_level < weizhi.tuijian) {
                 e.reply(`进入本历练秘境至少需要仙鼎等级：${weizhi.tuijian},您当前仙鼎等级为：${player.xianding_level},请提升后再来！`)
@@ -220,7 +218,7 @@ export class yijieSecretPlace extends plugin {
                     e.reply("您的【仙鼎历练券】不足！")
                     return;
                 } else {
-                    await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", -1 * dancicishu * i)
+                    xianding = true
                 }
             }
 
@@ -232,7 +230,10 @@ export class yijieSecretPlace extends plugin {
             }
             await Add_星魂币(usr_qq, -1 * i * dancicishu * Number(weizhi.xinghunbi))
         }
-
+        if (xianding) {
+            await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", -1 * dancicishu * i)
+        }
+        await Add_yijie_beibao_thing(usr_qq, "水晶卷轴", "道具", -i)
         //记录时间
         const time = this.xiuxianConfigData.CD.yijiesecretplace;//时间（分钟）
         let action_time = 60000 * time * i * dancicishu;//持续时间，单位毫秒
