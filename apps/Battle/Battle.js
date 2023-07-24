@@ -422,13 +422,13 @@ export class Battle extends plugin {
     //   return;
     // }
 
-    // let log_data = {
-    //   log: msg,
-    // };
-    // const data1 = await new Show(e).get_logData(log_data);
-    // let img = await puppeteer.screenshot('log', {
-    //   ...data1,
-    // });
+    let log_data = {
+      log: msg,
+    };
+    const data1 = await new Show(e).get_logData(log_data);
+    let img = await puppeteer.screenshot('log', {
+      ...data1,
+    });
     e.reply(msg.toString());
     return;
   }
@@ -535,6 +535,10 @@ export async function zd_battle(AA_player, BB_player) {
   let jineng1 = data.jineng1;
   let jineng2 = data.jineng2;
   while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
+    if (cnt2 > 98) {
+      msg.push("长时间的战斗让你俩觉得无比劳累，本次对战和局");
+      break;
+    }
     cnt2 = Math.trunc(cnt / 2);
     let Random = Math.random();
     let random = Math.random();
