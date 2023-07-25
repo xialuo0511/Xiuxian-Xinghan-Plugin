@@ -3,6 +3,9 @@
     - icon: help-icon_59
       title: '#造访异界'
       desc: '前往异界'
+    - icon: help-icon_59
+      title: '#异界攻略'
+      desc: '查询异界攻略'
     - icon: help-icon_1
       title: '#我的面板'
       desc: '查看异界面板'
@@ -94,6 +97,15 @@
     - icon: help-icon_82
       title: '#仙鼎突破'
       desc: '提升仙鼎等级'
+
+  - group: 天赋
+  list:
+    - icon: help-icon_82
+      title: '#天赋等级'
+      desc: '查看最近几级的天赋效果'
+    - icon: help-icon_82
+      title: '#天赋突破'
+      desc: '提升天赋等级'
 
 - group: 商店
   list:

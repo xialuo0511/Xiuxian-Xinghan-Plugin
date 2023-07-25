@@ -101,10 +101,19 @@ export class yijieUser extends plugin {
                 {
                     reg: '#跑路$',
                     fnc: 'Giveup'
+                },
+                {
+                    reg: '#异界攻略$',
+                    fnc: 'glve'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+    }
+
+    async glve(e) {
+        e.reply('【腾讯文档】修仙插件异界攻略v2.0.0https://docs.qq.com/doc/DU1pmVFNReVlvdEJP')
+        return;
     }
 
     /*
