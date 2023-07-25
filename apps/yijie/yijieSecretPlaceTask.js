@@ -146,7 +146,7 @@ export class yijieSecretPlaceTask extends plugin {
                   break;
                 }
               }
-              let shu = 1
+              let shu = 2
               let tianfu_level = await get_tianfu_level(player_id)
               tianfu_level = Number(tianfu_level)
               msg.push(A_win + "\n")
@@ -168,19 +168,19 @@ export class yijieSecretPlaceTask extends plugin {
                   await Add_yijie_beibao_thing(player_id, "水晶卷轴", "道具", 1)
                   msg.push(`探索途中碰到了俩人在打架，你渔翁得利，顺走了一个人的一张水晶卷轴！\n`)
                 }
-              }
 
-              //天赋效果
-              let tianfu_random1 = Math.random();
-              if (tianfu_level > 0 && tianfu_level < 3) {
-                if (tianfu_random1 < 0.01) {
-                  shu += 1
-                  msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
-                }
-              } else if (tianfu_level > 2) {
-                if (tianfu_random1 < 0.025) {
-                  shu += 1
-                  msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                //天赋效果
+                let tianfu_random1 = Math.random();
+                if (tianfu_level > 0 && tianfu_level < 3) {
+                  if (tianfu_random1 < 0.01) {
+                    shu += 1
+                    msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                  }
+                } else if (tianfu_level > 2) {
+                  if (tianfu_random1 < 0.025) {
+                    shu += 1
+                    msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                  }
                 }
               }
 
