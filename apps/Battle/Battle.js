@@ -519,7 +519,7 @@ export async function zd_battle(AA_player, BB_player) {
   let jineng1 = data.jineng1;
   let jineng2 = data.jineng2;
   while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
-    if (cnt2 > 20) {
+    if (cnt2 > 18) {
       msg.push("回合数超过20，自动通过血量结算");
       if (A_player.当前血量 > B_player.当前血量 > 0) {
         msg.push(`${A_player.名号}击败了${B_player.名号}`);
