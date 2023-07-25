@@ -126,9 +126,6 @@ export class yijieSecretPlaceTask extends plugin {
             let B_win = `被【${monster.名号}】击败了`;
             var thing_name;
             var thing_class;
-            let random1 = Math.random();
-            let random2 = Math.random();
-            let random3 = Math.random();
             let rand = Math.random();
             let rate = 0;
             let m = await find_yijie_taozhuang(player_id);
@@ -146,18 +143,31 @@ export class yijieSecretPlaceTask extends plugin {
                   break;
                 }
               }
-              let shu = 2
+              let now = new Date();
+              let nowTime = now.getTime(); //获取当前日期的时间戳
+              let shu = 1
+              if (nowTime < 1690646400000) {
+                shu = 2
+              }
               let tianfu_level = await get_tianfu_level(player_id)
               tianfu_level = Number(tianfu_level)
               msg.push(A_win + "\n")
               if (weizhi.name.includes("仙鼎历练")) {
                 msg.push(`本次探寻仙鼎历练秘境，获得异界使者的奖励10星魂币！\n`)
                 await Add_星魂币(player_id, 10)
-              } else if (m == "探险者的春天" && random1 >= 0.8) {
-                shu *= 2
-                msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！\n`)
               }
               if (!weizhi.name.includes("仙鼎历练")) {
+                //随机数
+                let random1 = Math.random();
+                let random2 = Math.random();
+                let random3 = Math.random();
+
+                //套装
+                if (m == "探险者的春天" && random1 >= 0.8) {
+                  shu *= 2
+                  msg.push(`本次探索触发了【探险者的春天】效果，收益翻倍！\n`)
+                }
+
                 //随机事件1
                 if (random2 < 0.02) {
                   shu *= 2
