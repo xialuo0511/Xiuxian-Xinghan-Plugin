@@ -137,11 +137,11 @@ export class yijieUser extends plugin {
         }
         //结算
         let end_time = action.end_time;
-        let start_time = action.end_time - action.time;
+        let start_time = end_time - action.time;
         let now_time = new Date().getTime();
         let time;
         var y = 30;//固定时间
-        time = parseInt((new Date().getTime() - start_time) / 1000 / 60 / 30);
+        time = parseInt((action.time) / 1000 / 60 / 30);
 
         if (e.isGroup) {
             await this.dagong_jiesuan(e.user_id, time, true, e.group_id);//提前闭关结束不会触发随机事件
