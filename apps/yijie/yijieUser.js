@@ -856,6 +856,10 @@ export class yijieUser extends plugin {
         let xinghunbi = Math.floor(15 * Number(player.xianding_level) * 0.8)
         let num1 = xinghunbi - 30
         let num2 = xinghunbi - 15
+        if (player.xianding_level < 3) {
+            num1 = 30
+            num2 = 15
+        }
         let Time = (parseInt(time) / 1000 / 60 / 30) * 2;//分钟
         let other_xinghunbi = 0;
         let rand = Math.random();
