@@ -852,7 +852,6 @@ export class yijieUser extends plugin {
         if (!isNotNull(player.xianding_level)) {
             return;
         }
-        let msg = []
         let xinghunbi = Math.floor(15 * Number(player.xianding_level) * 0.8)
         let num1 = xinghunbi - 30
         let num2 = xinghunbi - 15
@@ -860,7 +859,8 @@ export class yijieUser extends plugin {
             num1 = 30
             num2 = 15
         }
-        let Time = (parseInt(time) / 1000 / 60 / 30) * 2;//分钟
+        let Time = time * 2;//分钟
+        let msg = [segment.at(usr_qq)];
         let other_xinghunbi = 0;
         let rand = Math.random();
         if (rand < 0.2 && num1 > 0 && num2 > 0) {
