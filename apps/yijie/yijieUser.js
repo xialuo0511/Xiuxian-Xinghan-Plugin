@@ -852,6 +852,7 @@ export class yijieUser extends plugin {
         if (!isNotNull(player.xianding_level)) {
             return;
         }
+        let msg = []
         let xinghunbi = Math.floor(15 * Number(player.xianding_level) * 0.8)
         let num1 = xinghunbi - 30
         let num2 = xinghunbi - 15
