@@ -141,7 +141,7 @@ export class yijieUser extends plugin {
         let now_time = new Date().getTime();
         let time;
         var y = 30;//固定时间
-        time = parseInt((action.time) / 1000 / 60 / 30);
+        time = parseInt((start_time - now_time) / 1000 / 60 / 30);
 
         if (e.isGroup) {
             await this.dagong_jiesuan(e.user_id, time, true, e.group_id);//提前闭关结束不会触发随机事件
