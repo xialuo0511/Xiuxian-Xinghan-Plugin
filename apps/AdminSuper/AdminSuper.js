@@ -269,7 +269,7 @@ export class AdminSuper extends plugin {
   }
 
   async show_log(e) {
-    let cm = 'git log  -20 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
+    let cm = 'git log -100 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
     if (plugin) { cm = `cd ./plugins/xiuxian-emulator-plugin/ && ${cm}` }
     let logAll
     try { logAll = execSync(cm, { encoding: 'utf-8' }) } catch (error) { that.e.reply(error.toString(), true) }
