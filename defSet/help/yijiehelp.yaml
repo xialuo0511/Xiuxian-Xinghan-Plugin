@@ -98,7 +98,7 @@
       title: '#仙鼎突破'
       desc: '提升仙鼎等级'
 
-  - group: 天赋
+- group: 天赋
   list:
     - icon: help-icon_82
       title: '#天赋等级'
