@@ -11,7 +11,8 @@ import {
     Add_yijie_beibao_thing,
     Add_xianding_exp,
     exist_yijie_beibao_thing,
-    yijie_foundthing
+    yijie_foundthing,
+    Add_星魂币
 } from '../Xiuxian/xiuxian.js'
 import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -74,9 +75,20 @@ export class xianding extends plugin {
         }
         let new_exp = player.xianding_exp - xianding_exp_max
         player["xianding_level"] += 1
+        let a = player["xianding_level"]
+        let msg = `突破成功！仙鼎升到了${player.xianding_level}级，为你提供的力量提高了！可前往【我的面板】查看`
+        if (a = 10) {
+            msg += `\n恭喜您仙鼎提升到了10级，获得奖励1500星魂币`
+            Add_星魂币(usr_qq, 1500)
+        }
+        if (a = 11) {
+            msg += `\n恭喜您仙鼎提升到了11级，获得奖励2500星魂币、烤肉*20`
+            Add_星魂币(usr_qq, 2500)
+            Add_yijie_beibao_thing(usr_qq, "烤肉", "食材", 20)
+        }
         player["xianding_exp"] = new_exp
         await Write_yijie_player(usr_qq, player);
-        e.reply(`突破成功！仙鼎升到了${player.xianding_level}级，为你提供的力量提高了！可前往【我的面板】查看`)
+        e.reply(msg)
         return;
     }
 
