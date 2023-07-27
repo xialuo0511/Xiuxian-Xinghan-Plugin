@@ -145,5 +145,38 @@
                 "amount": 1
             }
         ]
+    },
+    {
+        "name": "龙皇之剑",
+        "class": "装备",
+        "type": "武器",
+        "amount": 1,
+        "materials": [
+            {
+                "name": "碧玉仙心杯",
+                "class": "材料",
+                "amount": 5
+            },
+            {
+                "name": "幻云流光帕",
+                "class": "材料",
+                "amount": 5
+            },
+            {
+                "name": "金莲润心露",
+                "class": "材料",
+                "amount": 5
+            },
+            {
+                "name": "紫霄凝息丹",
+                "class": "材料",
+                "amount": 5
+            },
+            {
+                "name": "琉璃明魂镜",
+                "class": "材料",
+                "amount": 5
+            }
+        ]
     }
 ]
