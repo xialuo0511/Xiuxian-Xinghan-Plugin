@@ -114,7 +114,7 @@ class XiuxianData {
         //其三
         this.yijie_guaiwu3 = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境怪物/level3.json`));
         //其四
-        this.yijie_guaiwu3 = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境怪物/level4.json`));
+        this.yijie_guaiwu4 = JSON.parse(fs.readFileSync(`${this.lib_path}/异界/秘境怪物/level4.json`));
 
 
         //加载丹药列表
