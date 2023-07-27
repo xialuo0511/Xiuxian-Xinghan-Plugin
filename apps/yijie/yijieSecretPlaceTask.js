@@ -185,16 +185,21 @@ export class yijieSecretPlaceTask extends plugin {
 
                 //天赋效果
                 let tianfu_random1 = Math.random();
-                if (tianfu_level > 0 && tianfu_level < 3) {
-                  if (tianfu_random1 < 0.01) {
-                    shu += 1
-                    msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
-                  }
-                } else if (tianfu_level > 2) {
-                  if (tianfu_random1 < 0.025) {
-                    shu += 1
-                    msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
-                  }
+                if (tianfu_level >= 1 && tianfu_level <= 2 && tianfu_random1 < 0.01) {
+                  shu += 1
+                  msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                }
+                if (tianfu_level >= 3 && tianfu_level <= 6 && tianfu_random1 < 0.025) {
+                  shu += 1
+                  msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                }
+                if (tianfu_level >= 7 && tianfu_level <= 9 && tianfu_random1 < 0.04) {
+                  shu += 1
+                  msg.push(`本次探索触发天赋效果，额外获得一份收益！\n`)
+                }
+                if (tianfu_level >= 10 && tianfu_level <= 11 && tianfu_random1 < 0.05) {
+                  shu += 2
+                  msg.push(`本次探索触发天赋效果，额外获得两份收益！\n`)
                 }
               }
 

@@ -38,5 +38,40 @@
         "name": "抵抗",
         "tianfu_level": 1,
         "list": "防御力提升2%"
+    },
+    {
+        "level": 6,
+        "exp": 570,
+        "name": "灵敏",
+        "tianfu_level": 2,
+        "list": "寻宝有2.5%的概率额外获得一个掉落物"
+    },
+    {
+        "level": 7,
+        "exp": 700,
+        "name": "奇运",
+        "tianfu_level": 3,
+        "list": "秘境有4%的概率额外获得一个掉落物"
+    },
+    {
+        "level": 8,
+        "exp": 850,
+        "name": "战狂",
+        "tianfu_level": 2,
+        "list": "攻击力提升5%"
+    },
+    {
+        "level": 9,
+        "exp": 1000,
+        "name": "抵抗",
+        "tianfu_level": 2,
+        "list": "防御力提升5%"
+    },
+    {
+        "level": 10,
+        "exp": 450,
+        "name": "奇运",
+        "tianfu_level": 4,
+        "list": "秘境有5%的概率额外获得两个掉落物"
     }
 ]

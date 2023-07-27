@@ -191,11 +191,19 @@ export async function Write_yijie_player(usr_qq, player) {
     if (find_tz && find_tz.name == "冒险家的历练") {
         hp_beilv += 0.25
     }
-    if (tianfu >= 4) {
+    //天赋攻击
+    if (tianfu >= 4 && tianfu <= 7) {
         atk_beilv += 0.02
     }
-    if (def_beilv >= 5) {
+    if (tianfu >= 8) {
+        atk_beilv += 0.05
+    }
+    //天赋防御
+    if (def_beilv >= 5 && tianfu <= 8) {
         def_beilv += 0.02
+    }
+    if (def_beilv >= 9) {
+        def_beilv += 0.05
     }
     player["攻击"] = Math.floor(chushi["初始攻击"] * atk_beilv) + wuqi["atk"]
     player["防御"] = Math.floor(chushi["初始防御"] * def_beilv) + huju["def"]
