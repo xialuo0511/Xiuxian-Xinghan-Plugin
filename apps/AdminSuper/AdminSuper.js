@@ -27,7 +27,7 @@ import { Read_Exchange, Write_Exchange } from '../Exchange/Exchange.js';
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
 import { Read_Forum, Write_Forum } from '../Help/Forum.js';
 import { createRequire } from "module"
-import { get_beibao_img } from '../ShowImeg/showData.js'
+import { get_yijie_player_img } from '../ShowImeg/showData.js'
 
 const require = createRequire(import.meta.url)
 const { execSync } = require("child_process")
@@ -35,6 +35,9 @@ const { execSync } = require("child_process")
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+
+//定义一个版本信息的常量,获取默认文件配置文件信息
+const versionData = Config.getdefSet("version", "version");
 
 /**
  * 修仙设置
@@ -132,16 +135,15 @@ export class AdminSuper extends plugin {
           fnc: 'tiaoshi',
         },
         {
-          reg: '#查看玩家背包.*$',
-          fnc: 'beibao',
+          reg: '#查看玩家面板.*$',
+          fnc: 'mianban',
         }
       ],
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
   }
 
-  //修为补偿
-  async beibao(e) {
+  async mianban(e) {
     if (!e.isMaster) {
       return;
     }
@@ -152,20 +154,9 @@ export class AdminSuper extends plugin {
     if (!ifexistplay) {
       return;
     }
-    let najie = await data.getData("yijie_beibao", usr_qq);
-    let player_data = {
-      user_id: usr_qq,
-      najie: najie,
-      najie_equipment: najie.装备,
-      najie_daoju: najie.道具,
-      najie_cailiao: najie.材料,
-      najie_shicai: najie.食材,
-      修仙版本: versionData,
-    }
-    const data1 = await new Show(e).get_beibaoData(player_data);
-    let img = await puppeteer.screenshot("beibao", {
-      ...data1,
-    });
+    let a = {}
+    a.user_id = usr_qq
+    let img = await get_yijie_player_img(a)
     e.reply(img);
     return;
   }
