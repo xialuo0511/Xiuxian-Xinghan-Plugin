@@ -686,6 +686,43 @@ export class yijieUser extends plugin {
                 return;
             }
         }
+        if (thing_name == "仙石迷幻阵") {
+            if (player.饱食度 < 200) {
+                e.reply('你快饿死了,还是先吃点东西吧');
+                return;
+            }
+            let mugao = await exist_yijie_beibao_thing(usr_qq, "铁镐", "道具")
+            if (mugao > 0) {
+                await Add_yijie_饱食度(usr_qq, -100)
+                await redis.set("xiuxian:yijie:player:" + usr_qq + "xunbaocd", now_Time);
+                await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", -1);
+                await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", -1);
+                if (math >= 0.95) {
+                    e.reply(`${tianfu}${fanbei}你在【深邃矿洞】捡到了【箱子*初级材料箱】*${2 * beilv + other}`)
+                    await Add_yijie_beibao_thing(usr_qq, "初级材料箱", "箱子", 2 * beilv + other)
+                    return;
+                } else if (math > 0.8 && math < 0.95) {
+                    e.reply(`${tianfu}${fanbei}你在【深邃矿洞】挖出了【材料*原金矿】*${10 * beilv + other}`)
+                    await Add_yijie_beibao_thing(usr_qq, "原金矿", "材料", 10 * beilv + other)
+                    return;
+                } else if (math > 0.6 && math <= 0.8) {
+                    e.reply(`${tianfu}${fanbei}你在【深邃矿洞】挖出了【材料*原铁矿】*${20 * beilv + other}`)
+                    await Add_yijie_beibao_thing(usr_qq, "原铁矿", "材料", 20 * beilv + other)
+                    return;
+                } else if (math > 0.4 && math <= 0.6) {
+                    e.reply(`${tianfu}${fanbei}你在【深邃矿洞】挖出了【材料*钻石】*${1 * beilv + other}`)
+                    await Add_yijie_beibao_thing(usr_qq, "钻石", "材料", 1 * beilv + other)
+                    return;
+                } else {
+                    e.reply(`${tianfu}${fanbei}你在【深邃矿洞】挖出了【材料*煤矿】*${5 * beilv + other}`)
+                    await Add_yijie_beibao_thing(usr_qq, "煤矿", "材料", 5 * beilv + other)
+                    return;
+                }
+            } else {
+                e.reply('你没有铁镐，无法在矿洞里搜寻宝贝！')
+                return;
+            }
+        }
     }
 
     async yijie_eat(e) {

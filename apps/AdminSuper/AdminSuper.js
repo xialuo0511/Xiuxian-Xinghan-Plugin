@@ -27,6 +27,7 @@ import { Read_Exchange, Write_Exchange } from '../Exchange/Exchange.js';
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
 import { Read_Forum, Write_Forum } from '../Help/Forum.js';
 import { createRequire } from "module"
+import { get_beibao_img } from '../ShowImeg/showData.js'
 
 const require = createRequire(import.meta.url)
 const { execSync } = require("child_process")
@@ -129,10 +130,44 @@ export class AdminSuper extends plugin {
         {
           reg: '#调试图片',
           fnc: 'tiaoshi',
+        },
+        {
+          reg: '#查看玩家背包.*$',
+          fnc: 'beibao',
         }
       ],
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  //修为补偿
+  async beibao(e) {
+    if (!e.isMaster) {
+      return;
+    }
+    //获取发送修为数量
+    let usr_qq = e.msg.replace('#', '');
+    usr_qq = usr_qq.replace('查看玩家背包', '');
+    let ifexistplay = data.existData("yijie_player", usr_qq);
+    if (!ifexistplay) {
+      return;
+    }
+    let najie = await data.getData("yijie_beibao", usr_qq);
+    let player_data = {
+      user_id: usr_qq,
+      najie: najie,
+      najie_equipment: najie.装备,
+      najie_daoju: najie.道具,
+      najie_cailiao: najie.材料,
+      najie_shicai: najie.食材,
+      修仙版本: versionData,
+    }
+    const data1 = await new Show(e).get_beibaoData(player_data);
+    let img = await puppeteer.screenshot("beibao", {
+      ...data1,
+    });
+    e.reply(img);
+    return;
   }
 
   async off_xiuwei(e) {
