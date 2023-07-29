@@ -36,9 +36,6 @@ const { execSync } = require("child_process")
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 
-//定义一个版本信息的常量,获取默认文件配置文件信息
-const versionData = Config.getdefSet("version", "version");
-
 /**
  * 修仙设置
  */
