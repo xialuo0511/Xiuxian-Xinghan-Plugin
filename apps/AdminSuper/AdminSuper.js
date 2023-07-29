@@ -145,8 +145,7 @@ export class AdminSuper extends plugin {
       return;
     }
     //获取发送修为数量
-    let usr_qq = e.msg.replace('#', '');
-    usr_qq = usr_qq.replace('查看玩家背包', '');
+    let usr_qq = e.msg.replace('#查看玩家面板', '');
     let ifexistplay = data.existData("yijie_player", usr_qq);
     if (!ifexistplay) {
       return;
