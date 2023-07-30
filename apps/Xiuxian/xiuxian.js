@@ -199,10 +199,10 @@ export async function Write_yijie_player(usr_qq, player) {
         atk_beilv += 0.05
     }
     //天赋防御
-    if (def_beilv >= 5 && tianfu <= 8) {
+    if (tianfu >= 5 && tianfu <= 8) {
         def_beilv += 0.02
     }
-    if (def_beilv >= 9) {
+    if (tianfu >= 9) {
         def_beilv += 0.05
     }
     player["攻击"] = Math.floor(chushi["初始攻击"] * atk_beilv) + wuqi["atk"]
