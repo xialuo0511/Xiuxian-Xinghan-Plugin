@@ -131,6 +131,16 @@ export class yijieSecretPlaceTask extends plugin {
               monster_index = Math.trunc(Math.random() * monster_length);
               monster = data.yijie_guaiwu3[monster_index];
             }
+            if (weizhi.id == 20008005) {
+              monster_length = data.yijie_guaiwu4.length;
+              monster_index = Math.trunc(Math.random() * monster_length);
+              monster = data.yijie_guaiwu3[monster_index];
+            }
+            if (weizhi.id == 20008006) {
+              monster_length = data.yijie_guaiwu4.length;
+              monster_index = Math.trunc(Math.random() * monster_length);
+              monster = data.yijie_guaiwu3[monster_index];
+            }
             let B_player = await yijie_zhanlijisuan(monster)
             let A_win = `击败了【${monster.名号}】`;
             let B_win = `被【${monster.名号}】击败了`;
