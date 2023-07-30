@@ -1,7 +1,9 @@
-# 绝云间修仙2.0.0 【荒芜异界，仙鼎至尊】
+# 绝云间修仙2.1.0 【荒芜异界，仙鼎至尊】
 ## QQ游玩反馈群：906061358
+## 有问题可反馈issues
 ## 玩家攻略：
 [修仙攻略](https://docs.qq.com/doc/DSUhqZWdpZXJuUndZ?&u=4bd0757f64094c48b02d7cfc4eaeb44b)  
+[异界攻略](https://docs.qq.com/doc/DU1pmVFNReVlvdEJP)
 ## 访问量：        
 <br><img src="https://count.getloli.com/get/@:xiuxian-emulator-plugin?theme=rule34" /> <br>       
 
@@ -27,8 +29,8 @@ git fetch
 存档位置  
 ```
 \Yunzai-Bot\plugins\xiuxian-emulator-plugin\resources\data
+由于异界版本，请在转移存档的同时转移data下yijie文件夹，否则会数据丢失！
 ```      
-> 由于异界版本，请在转移存档的同时转移data下yijie文件夹，否则会数据丢失！
 
 若要转移存档，将上面画框的文件保存，将修仙插件删除，执行上面安装命令
 
@@ -46,5 +48,3 @@ git fetch
 ## 原作者信息
 原插件：[@ningmengchongshui](https://gitee.com/ningmengchongshui)  
 原作者：[@DDZS](https://gitee.com/hutao222)
-
-有问题可反馈issues。
