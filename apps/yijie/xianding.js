@@ -79,11 +79,11 @@ export class xianding extends plugin {
         let msg = `突破成功！仙鼎升到了${player.xianding_level}级，为你提供的力量提高了！可前往【我的面板】查看`
         if (a == 10) {
             msg += `\n恭喜您仙鼎提升到了10级，获得奖励1500星魂币`
-            Add_星魂币(usr_qq, 1500)
+            player.星魂币 += 1500
         }
         if (a == 11) {
             msg += `\n恭喜您仙鼎提升到了11级，获得奖励2500星魂币、烤肉*20`
-            Add_星魂币(usr_qq, 2500)
+            player.星魂币 += 2500
             Add_yijie_beibao_thing(usr_qq, "烤肉", "食材", 20)
         }
         player["xianding_exp"] = new_exp
