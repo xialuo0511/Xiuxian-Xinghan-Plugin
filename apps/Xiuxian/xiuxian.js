@@ -105,6 +105,139 @@ export async function Check_thing(data) {
     return state;
 }
 
+export async function Go(e) {
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await channel(usr_qq)
+    //不开放私聊
+    if (!e.isGroup) {
+        return 0;
+    }
+    //有无存档
+    let ifexistplay = await existplayer(usr_qq);
+    if (!ifexistplay) {
+        return 0;
+    }
+    //获取游戏状态
+    let game_action = await redis.get('xiuxian:player:' + usr_qq + ':game_action');
+    //防止继续其他娱乐行为
+    if (game_action == 0) {
+        e.reply('修仙：游戏进行中...');
+        return 0;
+    }
+    //查询redis中的人物动作
+    let action = await redis.get('xiuxian:player:' + usr_qq + ':action');
+    action = JSON.parse(action);
+    if (action != null) {
+        //人物有动作查询动作结束时间
+        let action_end_time = action.end_time;
+        let now_time = new Date().getTime();
+
+        var i = usr_qq;
+        var l = 0;
+        while (i >= 1) {
+            i = i / 10;
+            l++;
+        }
+
+        if (now_time <= action_end_time) {
+            let m = parseInt((action_end_time - now_time) / 1000 / 60);
+            let s = parseInt((action_end_time - now_time - m * 60 * 1000) / 1000);
+            e.reply('正在' + action.action + '中,剩余时间:' + m + '分' + s + '秒');
+            return 0;
+        }
+
+
+        // if(action.Place_action==0){
+        //   action=action.toString()
+        //   e.reply(`降临秘境${action.Place_address}已完成,等待结算中`)
+        //   return 0;
+        // }
+
+        // if(action.Place_actionplus==0){
+        //   action=action.toString()
+        //   e.reply(`沉迷秘境${action.Place_address}x${action.cishu}次已完成,等待结算中`)
+        //   return 0;
+        // }
+    }
+    if (action != null) {
+        if (null != action.start_time) {
+            if ("镶嵌" === action.action) {
+                let now_time = new Date().getTime();
+                const need_time = 180000;
+                const random = Math.random();
+                const shi = action.Place_address;
+                const player = await Read_player(usr_qq);
+                let equipment = await Read_equipment(usr_qq);
+                const time = now_time - action.start_time;
+                const days = Math.floor(time / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
+
+                if (time <= need_time) {
+                    const m = Math.floor(time / 1000 / 60);
+                    const s = Math.floor((time - m * 60 * 1000) / 1000);
+                    e.reply(`正在镶嵌${action.Place_address.name}中，已过:${m}分${s}秒`);
+                    return;
+                }
+
+                async function embedGem(e, equipment, usr_qq, action, shi, equipmentType) {
+                    const gemSuccessRate = {
+                        低级宝石: 0.8,
+                        中级宝石: 0.5,
+                        高级宝石: 0.3
+                    };
+
+                    // 在这里定义 gemSlotMap 变量
+                    const gemSlotMap = {
+                        宝石位1: "宝石位1",
+                        宝石位2: "宝石位2",
+                        宝石位3: "宝石位3"
+                    };
+
+                    const gemSlot = gemSlotMap[action.wei]; // 将此行移动到正确的位置
+                    if (random < gemSuccessRate[action.Place_address.type]) {
+                        e.reply(`已成功镶嵌${action.Place_address.name}`);
+                        const equipmentType = action.thing.type;
+                        console.log("0" + equipment[equipmentType])
+                        console.log("0" + equipment)
+                        console.log("0" + equipment[0])
+                        console.log("0" + equipment["武器"])
+                        console.log("0" + equipment["武器"].name)
+                        console.log(equipmentType);
+                        if (equipment[equipmentType]?.宝石位?.hasOwnProperty(gemSlot)) {
+                            console.log("0" + equipment[equipmentType])
+                            equipment[equipmentType].宝石位[gemSlot] = action.Place_address;
+                            equipment[equipmentType].atk += shi.攻击加成;
+                            equipment[equipmentType].bao += shi.暴击加成;
+                            equipment[equipmentType].HP += shi.生命加成;
+                            console.log("1" + equipment[equipmentType].HP);
+                            console.log("2" + equipment[equipmentType].bao);
+                            console.log("3" + equipment[equipmentType].atk);
+                            console.log("4" + equipment[equipmentType].宝石位[gemSlot]);
+                            console.log("5" + action.Place_address.name);
+                            await Write_equipment(usr_qq, equipment);
+                        }
+                    } else {
+                        e.reply("手一滑，镶嵌失败");
+                    }
+                }
+
+                const gemTypes = ["低级宝石", "中级宝石", "高级宝石"];
+                if (gemTypes.includes(action.type)) {
+                    const equipmentType = action.thing.type;
+                    await embedGem(e, equipment, usr_qq, action, shi, equipmentType);
+                    await Write_equipment(usr_qq, equipment);
+                }
+
+                await Write_equipment(usr_qq, equipment);
+
+                await redis.del(`xiuxian:player:${usr_qq}:action`);
+                return;
+            }
+        }
+    }
+}
+
 /**
  * 
  * @param {*} amount 输入数量
