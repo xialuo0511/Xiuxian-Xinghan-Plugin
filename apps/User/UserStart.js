@@ -118,7 +118,7 @@ export class UserStart extends plugin {
             "race": 1,//种族
             "修为": 1,//练气经验
             "血气": 1,//练体经验
-            "灵石": 1000,
+            "灵石": 10000,
             "灵根": talent,
             "神石": 0,
             "favorability": 0,
