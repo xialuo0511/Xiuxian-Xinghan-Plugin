@@ -283,8 +283,8 @@ export async function Goweizhi(e, weizhi) {
         didian_list: weizhi,
         addres: `异界秘境`
     }
-    const data1 = await new Show(e).get_secret_placeData(get_data);
-    let img = await puppeteer.screenshot('get_secret_placeData', {
+    const data1 = await new Show(e).get_yijie_secret_placeData(get_data);
+    let img = await puppeteer.screenshot('get_yijie_secret_placeData', {
         ...data1,
     });
     e.reply(img);
