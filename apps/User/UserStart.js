@@ -518,8 +518,9 @@ export class UserStart extends plugin {
         data.setData("player", usr_qq, player);
         //给奖励
         let gift_xiuwei = player.连续签到天数 * 15000;
-        let yijie = await Read_yijie_player(usr_qq)
-        if (yijie) {
+        let yijie_bl = await yijie_existplayer(usr_qq)
+        if (yijie_bl) {
+            let yijie = await Read_yijie_player(usr_qq)
             await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
             await Add_修为(usr_qq, gift_xiuwei);
             let xianding = 16
