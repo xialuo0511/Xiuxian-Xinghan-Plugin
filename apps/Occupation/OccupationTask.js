@@ -258,50 +258,33 @@ export class OccupationTask extends plugin {
                     //时间过了
                     end_time = end_time - 60000 * 2;
                     if (now_time > end_time) {
+                        time = parseInt((now_time - end_time) / 1000 / 60);
+                        //超过就按最低的算，即为满足30分钟才结算一次
+                        if (time < y) {
+                            time = 0;
+                        }
                         log_mag += "当前人物未结算，结算状态";
                         let player = data.getData("player", player_id);
-                        let now_level_id;
                         if (!isNotNull(player.level_id)) {
                             return;
                         }
-
-                        // var size=this.xiuxianConfigData.shoulie.size;
-                        let time = parseInt(action.time) / 1000 / 60;//最高480分钟
-                        //以下1到5为每种的数量
-                        let shoulie_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
-                        let shoulie_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
-                        let shoulie_amount3 = Math.floor(time / 30);//时间除30
-                        let shoulie_amount4 = Math.floor(time / 30);//时间除30
-                        let shoulie_amount5 = Math.floor(time / 30);//时间除30
+                        let msg = [segment.at(usr_qq)];
+                        //返回数目
+                        let shoulie_amount = Math.floor((1.6 + Math.random() * 0.4) * time * 12);
+                        //职业经验
                         let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
                         let exp = 0;
                         let ext = "";
                         if (player.occupation == "猎户") {
-                            exp = time * 10;
-                            time *= rate;
-                            ext = `你是猎户，获得狩猎经验${exp}，额外获得猎物${Math.floor(rate * 100)}%，`;
-                        }
-                        let end_amount = Math.floor(4 * (rate + 1) * (shoulie_amount1))//普通矿石
-                        let end_amount2 = Math.floor(4 * (rate + 1) * (shoulie_amount3))//稀有
-                        if (player.level_id <= 21) {
-
-                            end_amount *= player.level_id / 40
-                            end_amount2 *= player.level_id / 40
-                        } else {
-                            end_amount *= player.level_id / 30
-                            end_amount2 *= player.level_id / 30
+                            exp = time * 12;
+                            ext = `你是猎户，获得狩猎经验${exp}，`;
                         }
 
-                        //shoulie_amount1 = parseInt(shoulie_amount1 * time);
-                        //shoulie_amount2 = parseInt(shoulie_amount2 * time);
-                        //shoulie_amount3 = parseInt(shoulie_amount3 * time);
-                        //shoulie_amount4 = parseInt(shoulie_amount4 * time);
-                        let usr_qq = player.id
-                        end_amount = Math.floor(end_amount) / 40;
+                        let end_amount = Math.floor(shoulie_amount)
+                        end_amount *= player.level_id / 60
                         end_amount = Math.floor(end_amount);
-                        if (end_amount > 5000) (
-                            end_amount = 5000
-                        )
+
+
                         await Add_najie_thing(usr_qq, "野兔", "食材", end_amount);
                         await Add_najie_thing(usr_qq, "野鸡", "食材", end_amount);
                         await Add_najie_thing(usr_qq, "野猪", "食材", end_amount);
