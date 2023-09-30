@@ -1557,13 +1557,15 @@ export class Occupation extends plugin {
 
         //结算
         let end_time = action.end_time;
-        let start_time = action.end_time - action.time;
+        //开始时间
+        let start_time = end_time - action.time;
+        //现在时间
         let now_time = new Date().getTime();
         let time;
         var y = this.xiuxianConfigData.mine.time;//固定时间
 
         if (end_time > now_time) {//属于提前结束
-            time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
+            time = parseInt((now_time - start_time) / 1000 / 60);
             //超过就按最低的算，即为满足30分钟才结算一次
             if (time < y) {
                 time = 0;
@@ -1618,7 +1620,7 @@ export class Occupation extends plugin {
         }
 
         let end_amount = Math.floor(shoulie_amount)
-        end_amount *= player.level_id / 60
+        end_amount *= player.occupation_level / 60
         end_amount = Math.floor(end_amount);
 
 

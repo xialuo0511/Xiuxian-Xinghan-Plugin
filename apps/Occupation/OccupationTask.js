@@ -281,7 +281,7 @@ export class OccupationTask extends plugin {
                         }
 
                         let end_amount = Math.floor(shoulie_amount)
-                        end_amount *= player.level_id / 60
+                        end_amount *= player.occupation_level / 60
                         end_amount = Math.floor(end_amount);
 
 
