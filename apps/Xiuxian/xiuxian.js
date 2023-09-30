@@ -1846,8 +1846,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     let fyjiachen = 0//防御加成
     //AB灵根
 
-    let A_gongfa = []
-    A_gongfa = A_player.学习的功法
+    let A_gongfa = Object.values(A_player.学习的功法)
     let lunhuijing = A_gongfa.indexOf("轮回经")
 
 
