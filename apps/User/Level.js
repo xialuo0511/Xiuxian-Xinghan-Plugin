@@ -254,6 +254,7 @@ export class Level extends plugin {
         }
         if (rand > prob) {
             let bad_time = Math.random();//增加多种突破失败情况，顺滑突破丢失修为曲线
+            prob = prob.toFixed(2)
             if (bad_time > 0.9) {
                 await Add_修为(usr_qq, -1 * need_exp * 0.3);
                 await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);//获得上次的时间戳
