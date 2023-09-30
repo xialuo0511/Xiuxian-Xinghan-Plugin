@@ -410,7 +410,7 @@ export class Level extends plugin {
             return;
         }
         //随机数
-        let prob = 1 - now_level_id / 70;
+        let prob = 1 - now_level_id / 60;
         prob = prob.toFixed(2)
         e.reply(`（本次突破成功概率：${prob}）`)
         return;
