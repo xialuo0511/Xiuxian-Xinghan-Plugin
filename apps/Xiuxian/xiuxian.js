@@ -105,6 +105,12 @@ export async function Check_thing(data) {
     return state;
 }
 
+export async function sleep(time) {
+    return new Promise(resolve => {
+        setTimeout(resolve, time);
+    });
+}
+
 export async function Go(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '');
     usr_qq = await channel(usr_qq)

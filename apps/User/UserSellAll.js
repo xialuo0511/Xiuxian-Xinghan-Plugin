@@ -7,7 +7,8 @@ import {
     instead_equipment,
     foundthing,
     Write_najie, Read_najie, isNotNull,
-    foundhuishouthing
+    foundhuishouthing,
+    sleep
 } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_najie_thing, Add_修为, Add_player_学习功法, Add_血气, Locked_najie_thing, Check_thing } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
