@@ -1845,11 +1845,14 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     let att = last_att;//最终伤害,last_att为原伤害
     let fyjiachen = 0//防御加成
     //AB灵根
-
-    let A_gongfa = Object.values(A_player.学习的功法)
-    let lunhuijing = A_gongfa.indexOf("轮回经")
-
-
+    let A_gongfa
+    let lunhuijing
+    if (A_player.学习的功法) {
+        A_gongfa = Object.values(A_player.学习的功法)
+    }
+    if (A_gongfa) {
+        lunhuijing = A_gongfa.indexOf("轮回经")
+    }
     let A_lin = A_player.灵根.name
     let B_lin = B_player.灵根.name
     let chufa = false//是否触发
