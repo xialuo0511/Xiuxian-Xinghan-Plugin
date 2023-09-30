@@ -278,15 +278,12 @@ export async function Goweizhi(e, weizhi) {
     if (!lilianquan) {
         lilianquan = 0
     }
-    let data = {
-        user_id: e.user_id,
-        lilianquan: lilianquan,
-        weizhi,
-        player,
-        修仙版本: versionData,
-    };
-    const data1 = await new Show(e).get_yijiemijingData(data);
-    let img = await puppeteer.screenshot('yijiemijing', {
+    let get_data = {
+        didian_list: weizhi,
+        addres: `异界秘境`
+    }
+    const data1 = await new Show(e).get_secret_placeData(get_data);
+    let img = await puppeteer.screenshot('get_secret_placeData', {
         ...data1,
     });
     e.reply(img);
