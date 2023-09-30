@@ -287,7 +287,6 @@ export class OccupationTask extends plugin {
 
                             end_amount *= player.level_id / 40
                             end_amount2 *= player.level_id / 40
-                            msg.push("由于你境界不足化神,在狗熊岭遇见熊大熊二，摆脱他们花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
                         } else {
                             end_amount *= player.level_id / 30
                             end_amount2 *= player.level_id / 30

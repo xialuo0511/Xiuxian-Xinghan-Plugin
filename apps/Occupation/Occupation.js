@@ -1561,32 +1561,16 @@ export class Occupation extends plugin {
         let now_time = new Date().getTime();
         let time;
         var y = this.xiuxianConfigData.mine.time;//固定时间
-        var x = this.xiuxianConfigData.mine.cycle;//循环次数
 
         if (end_time > now_time) {//属于提前结束
             time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
             //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
-            //如果<15，不给收益
             if (time < y) {
                 time = 0;
             }
         } else {//属于结束了未结算
             time = parseInt((action.time) / 1000 / 60);
             //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
             //如果<15，不给收益
             if (time < y) {
                 time = 0;
@@ -1594,9 +1578,9 @@ export class Occupation extends plugin {
         }
 
         if (e.isGroup) {
-            await this.shoulie_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+            await this.shoulie_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
         } else {
-            await this.shoulie_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
+            await this.shoulie_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
         }
 
         let arr = action;
@@ -1611,53 +1595,30 @@ export class Occupation extends plugin {
         arr.end_time = new Date().getTime();
         delete arr.group_id;//结算完去除group_id
         await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
-
-        //e.reply("出现bug，请等待修复");
     }
 
 
-    async shoulie_jiesuan(user_id, time, is_random, group_id) {
-
+    async shoulie_jiesuan(user_id, time, group_id) {
+        //time的单位是min
         let usr_qq = user_id;
         let player = data.getData("player", usr_qq);
-        let now_level_id;
-
         if (!isNotNull(player.level_id)) {
             return;
         }
         let msg = [segment.at(usr_qq)];
-        var size = this.xiuxianConfigData.mine.size;
-        let shoulie_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);
-        let shoulie_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);
-        let shoulie_amount3 = Math.floor(time / 20);
-        let shoulie_amount4 = Math.floor(time / 20);
-        let shoulie_amount5 = Math.floor(time / 20);
+        //返回数目
+        let shoulie_amount = Math.floor((1.6 + Math.random() * 0.4) * time * 12);
+        //职业经验
         let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
         let exp = 0;
         let ext = "";
         if (player.occupation == "猎户") {
-            exp = time * 10;
-            time *= rate;
-            ext = `你是猎户，获得狩猎经验${exp}，额外获得猎物${Math.floor(rate * 100)}%，`;
+            exp = time * 12;
+            ext = `你是猎户，获得狩猎经验${exp}，`;
         }
 
-        let end_amount = Math.floor(4 * (rate + 1) * (shoulie_amount1))//稀有
-        if (player.level_id <= 21) {
-
-            end_amount *= player.level_id / 15
-
-            msg.push("由于你境界不足化神,在狗熊岭遇见熊大熊二，摆脱他们花了很多时间，收入降低" + (1 - player.level_id / 30) * 50 + "%\n")
-        } else {
-            end_amount *= player.level_id / 15
-
-        }
-
-
-        //shoulie_amount1 = parseInt(shoulie_amount1 * time);
-        //shoulie_amount2 = parseInt(shoulie_amount2 * time);
-        //shoulie_amount3 = parseInt(shoulie_amount3 * time);
-        //shoulie_amount4 = parseInt(shoulie_amount4 * time);
-        end_amount = Math.floor(end_amount) / 15;
+        let end_amount = Math.floor(shoulie_amount)
+        end_amount *= player.level_id / 60
         end_amount = Math.floor(end_amount);
 
 
