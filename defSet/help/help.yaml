@@ -70,6 +70,9 @@
       title: '#突破 #幸运突破'
       desc: '打破浩劫-幸运草增加成功率'
     - icon: help-icon_38
+      title: '#突破概率'
+      desc: '查询本次突破成功率'
+    - icon: help-icon_38
       title: '#破体 #幸运破体'
       desc: '提高体境-幸运草增加成功率'
     - icon: help-icon_44

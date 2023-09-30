@@ -34,6 +34,10 @@ export class Level extends plugin {
                     fnc: 'Level_up_normal'
                 },
                 {
+                    reg: '^#突破概率$',
+                    fnc: 'Level_up_normal_other'
+                },
+                {
                     reg: '^#幸运突破$',
                     fnc: 'Level_up_luck'
                 },
@@ -353,6 +357,62 @@ export class Level extends plugin {
 
     async LevelMax_up_normal(e) {
         this.LevelMax_up(e, false);
+    }
+
+    async Level_up_normal_other(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id;
+        //有无账号
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        //获取游戏状态
+        let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
+        //防止继续其他娱乐行为
+        if (game_action == 0) {
+            e.reply("修仙：游戏进行中...");
+            return;
+        }
+        //读取信息
+        let player = await Read_player(usr_qq);
+        //境界
+        let now_level = data.Level_list.find(item => item.level_id == player.level_id).level;
+        let next_level = data.Level_list.find(item => item.level_id == (Number(player.level_id) + 1));
+        if (!next_level) {
+            e.reply("您已达到当前等级上限")
+            return;
+        }
+        //拦截渡劫期
+        if (now_level == "渡劫期") {
+            //检查仙门是否开启！
+            if (player.power_place == 0) {
+                e.reply("你已度过雷劫，请感应仙门#羽化登仙");
+            } else {
+                e.reply(`请先渡劫！`);
+            }
+            return;
+        }
+        //根据名字取找境界id
+        //根据名字找，不是很合适了！
+        let now_level_id;
+        if (!isNotNull(player.level_id)) {
+            e.reply("请先#刷新信息");
+            return;
+        }
+        now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
+        //真仙突破
+        if (now_level_id >= 51 && player.灵根.name != "天五灵根" && player.灵根.name != "垃圾五灵根" && player.灵根.name != "九转轮回体" && player.灵根.name != "九重魔功" && player.灵根.name != "仙之心·火" && player.灵根.name != "仙之心·水" && player.灵根.name != "仙之心·雷" && player.灵根.name != "仙之心·冰" && player.灵根.name != "仙之心·岩" && player.灵根.name != "仙之心·风" && player.灵根.name != "仙之心·木") {
+            e.reply(`你灵根不齐，无成帝的资格！请先夺天地之造化，修补灵根后再来突破吧`);
+            return;
+        }
+        //随机数
+        let prob = 1 - now_level_id / 70;
+        e.reply(`（本次突破成功概率：${prob}）`)
+        return;
     }
 
     async Level_up_luck(e) {
