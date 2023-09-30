@@ -1,15 +1,16 @@
 //插件加载
 import plugin from '../../../../lib/plugins/plugin.js'
-import fs, {write} from "fs"
+import fs, { write } from "fs"
 import path from "path"
-import {Add_najie_thing, 
-    Add_灵石, Read_najie, 
-    __PATH, 
+import {
+    Add_najie_thing,
+    Add_灵石, Read_najie,
+    __PATH,
     foundthing,
-     Locked_najie_thing,
-     Check_thing
-    } from "../Xiuxian/xiuxian.js"
-import {existplayer, Read_player, isNotNull, exist_najie_thing} from "../Xiuxian/xiuxian.js"
+    Locked_najie_thing,
+    Check_thing
+} from "../Xiuxian/xiuxian.js"
+import { existplayer, Read_player, isNotNull, exist_najie_thing } from "../Xiuxian/xiuxian.js"
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
 /**
@@ -91,10 +92,10 @@ async function Pu(e, x) {
             "绝": 5,
             "顶": 6
         }
-        if (thingless.pinji!=null) {
+        if (thingless.pinji != null) {
             pj = pj[thingless.pinji];
         }
-        let najieNumber = await exist_najie_thing(usr_qq, thingless.thing.name, thingless.thing.class,pj)
+        let najieNumber = await exist_najie_thing(usr_qq, thingless.thing.name, thingless.thing.class, pj)
         if (najieNumber == false) {
             najieNumber = 0
         }
@@ -208,7 +209,7 @@ export class Forum extends plugin {
             e.reply("凯瑟琳:这好像不是你的委托。");
             return;
         }
-        let player=await Read_player(usr_qq)
+        let player = await Read_player(usr_qq)
         let guihuan = 0;
         let jiage;
         //找到并删掉
@@ -220,7 +221,7 @@ export class Forum extends plugin {
             time = Math.ceil(time);
             if (time <= 0) {
                 const thingless = F[title0 - 1];
-                jiage = Number(thingless.thingJIAGE*0.8);
+                jiage = Number(thingless.thingJIAGE * 0.8);
                 guihuan += jiage;
                 await Add_灵石(usr_qq, jiage);
                 F.splice(title0 - 1, 1);//删除
@@ -231,7 +232,7 @@ export class Forum extends plugin {
             }
         }
         await genxinliebiao(F)
-         e.reply("成功取消该委托，已归还委托金" + guihuan+"收取委托管理费用"+guihuan*0.1)
+        e.reply("成功取消该委托，已归还委托金" + guihuan + "收取委托管理费用" + guihuan * 0.1)
     }
 
     async Put(e) {
@@ -258,7 +259,7 @@ export class Forum extends plugin {
         allaction = false;
         //防并发cd
         var time0 = 1;//分钟cd
-        let player=await Read_player(usr_qq)
+        let player = await Read_player(usr_qq)
         //获取当前时间
         let now_time = new Date().getTime();
         let ForumCD = await redis.get("xiuxian:player:" + usr_qq + ":ForumCD");
@@ -342,7 +343,7 @@ export class Forum extends plugin {
             await Write_Forum([]);
             Forum = await Read_Forum();
         }
-        let player=await Read_player(usr_qq)
+        let player = await Read_player(usr_qq)
         //标题
         let title0 = e.msg.replace("#", '');
         title0 = title0.replace("发布委托", '');
@@ -355,7 +356,7 @@ export class Forum extends plugin {
         if (thing_name.length == 0) {
             e.reply("未填写需求");
             return;
-        } 
+        }
         if (
             thing_amount < 1 ||
             thing_amount == null ||
@@ -378,7 +379,7 @@ export class Forum extends plugin {
             return;
         }
         thing_amount = Math.ceil(thing_amount);
-        thing_value =  Math.ceil(thing_value);
+        thing_value = Math.ceil(thing_value);
 
         console.log(player.灵石)
         if (thing_value > player.灵石 || player.灵石 < 0) {
@@ -405,7 +406,7 @@ export class Forum extends plugin {
             e.reply(`这方世界没有这样的东西:${thing_name}`);
             return;
         }
-        if (await Check_thing(thing_exist)==1) {
+        if (await Check_thing(thing_exist) == 1) {
             e.reply(`${thing_exist.name}特殊！`);
             return;
         }
@@ -432,7 +433,7 @@ export class Forum extends plugin {
             e.reply('价格过低');
             return;
         }
-        if (thing_value >= thing_exist.出售价 * 3 * thing_amount && thing_exist.出售价 != 1) {
+        if (thing_value >= thing_exist.出售价 * 10 * thing_amount && thing_exist.出售价 != 1) {
             e.reply('价格过高');
             return;
         }
