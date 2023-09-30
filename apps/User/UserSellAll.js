@@ -362,7 +362,8 @@ export class UserSellAll extends plugin {
                 }
             }
             await Add_灵石(usr_qq, commodities_price);
-            let str = `出售成功!  获得${commodities_price}灵石 `
+            let str = []
+            str.push(`出售成功!  获得${commodities_price}灵石 `)
             //返回图片
             let log_data = {
                 log: str,
@@ -384,7 +385,7 @@ export class UserSellAll extends plugin {
                     let quantity = l.数量;
                     let thing_exist = await foundhuishouthing(l.name);
                     if (thing_exist) {
-                        str.push(`【${l.name}】只可回收，不可出售`);
+                        goods.push(`【${l.name}】只可回收，不可出售`);
                     } else {
                         goods.push('\n' + l.name + '*' + quantity);
                     }
@@ -452,7 +453,8 @@ export class UserSellAll extends plugin {
             }
         }
         await Add_灵石(usr_qq, commodities_price);
-        let str = `出售成功!  获得${commodities_price}灵石 `
+        let str = []
+        str.push(`出售成功!  获得${commodities_price}灵石 `)
         //返回图片
         let log_data = {
             log: str,
