@@ -1,6 +1,4 @@
 //插件加载
-import plugin from '../../../../lib/plugins/plugin.js'
-import data from '../../model/XiuxianData.js'
 import { plugin, verc, data } from '../../api/api.js';
 import {
     Read_player,
