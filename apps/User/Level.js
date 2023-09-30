@@ -310,6 +310,7 @@ export class Level extends plugin {
         await Add_HP(usr_qq, 99999999);
         //查境界名
         let level = data.Level_list.find(item => item.level_id == player.level_id).level;
+        prob = prob.toFixed(2)
         e.reply(`（本次突破成功概率：${prob}）\n突破成功,当前境界为${level}`);
         //记录cd
         await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);
