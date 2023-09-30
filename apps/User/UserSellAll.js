@@ -1,6 +1,7 @@
 //插件加载
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
+import { plugin, verc, data } from '../../api/api.js';
 import {
     Read_player,
     existplayer,
@@ -313,70 +314,147 @@ export class UserSellAll extends plugin {
     }
 
     async Sell_all_comodities(e) {
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
-        }
-        let str = [];
-        let najie = await data.getData("najie", usr_qq);
-        let commodities_price = 0
-        let wupin = ['装备', '丹药', '道具', '功法', '草药', '材料', '盒子', '仙宠', '仙宠口粮', '食材'];
-        let wupin1 = []
+        if (!ifexistplay) return false;
+        let commodities_price = 0;
+        let najie = await data.getData('najie', usr_qq);
+        let wupin = [
+            '装备',
+            '丹药',
+            '道具',
+            '功法',
+            '草药',
+            '材料',
+            '仙宠',
+            '仙宠口粮',
+        ];
+        let wupin1 = [];
         if (e.msg != '#一键出售') {
-            let thing = e.msg.replace("#一键出售", '');
+            let thing = e.msg.replace('#一键出售', '');
             for (var i of wupin) {
-                if (thing.includes(i)) {
-                    wupin1.push(i)
-                    thing = thing.replace(i, "")
+                if (thing == i) {
+                    wupin1.push(i);
+                    thing = thing.replace(i, '');
                 }
             }
             if (thing.length == 0) {
-                wupin = wupin1
+                wupin = wupin1;
             } else {
-                return;
+                return false;
             }
+
+            for (let i of wupin) {
+                for (let l of najie[i]) {
+                    if (l && l.islockd == 0) {
+                        let thing_exist = await foundhuishouthing(l.name);
+                        //纳戒中的数量
+                        let quantity = l.数量;
+                        if (l.name != "秘境之匙" && !thing_exist) {
+                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
+                            commodities_price = commodities_price + l.出售价 * quantity;
+                        } else {
+                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
+                            commodities_price = commodities_price + 500000 * quantity;
+                        }
+
+                    }
+                }
+            }
+            await Add_灵石(usr_qq, commodities_price);
+            let str = `出售成功!  获得${commodities_price}灵石 `
+            //返回图片
+            let log_data = {
+                log: str,
+            };
+            const data1 = await new Show(e).get_logData(log_data);
+            let img = await puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
+            return;
         }
-        console.log(wupin);
-        for (var i of wupin) {
-            console.log(najie[i]);
+        let goodsNum = 0;
+        let goods = [];
+        goods.push('正在出售:');
+        for (let i of wupin) {
             for (let l of najie[i]) {
-                if (l && l.islockd == 0 && !(l.id >= 400991 && l.id <= 400999)) {
-                    //判断是否为回收物品
+                if (l && l.islockd == 0) {
+                    //纳戒中的数量
+                    let quantity = l.数量;
                     let thing_exist = await foundhuishouthing(l.name);
                     if (thing_exist) {
                         str.push(`【${l.name}】只可回收，不可出售`);
                     } else {
-                        //纳戒中的数量
-                        let quantity = l.数量;
-                        /*console.log(l);
-                        console.log(l.class);
-                        console.log(quantity);*/
-                        let pinji = ['劣', '普', '优', '精', '极', '绝']
-                        let t;
-                        if (l.class == "装备") {
-                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
-                            t = `【${l.name}（` + pinji[l.pinji] + `）*${l.数量}】出售成功,`;
-                        } else {
-                            await Add_najie_thing(usr_qq, l.name, l.class, -quantity);
-                            t = `【${l.name}*${l.数量}】出售成功,`;
-                        }
+                        goods.push('\n' + l.name + '*' + quantity);
+                    }
+                    goodsNum++;
+                }
+            }
+        }
+        if (goodsNum == 0) {
+            e.reply('没有东西可以出售', false, { at: true });
+            return false;
+        }
+        goods.push('\n回复[1]出售,回复[0]取消出售');
+        /** 设置上下文 */
+        this.setContext('noticeSellAllGoods');
+        for (let i = 0; i < goods.length; i += 8) {
+            e.reply(goods.slice(i, i + 8), false, { at: true });
+            await sleep(500);
+        }
+        /** 回复 */
+        return false;
+    }
+    async noticeSellAllGoods(e) {
+        if (!verc({ e })) return false;
+        let reg = new RegExp(/^1$/);
+        let new_msg = this.e.msg;
+        let difficulty = reg.exec(new_msg);
+        if (!difficulty) {
+            e.reply('已取消出售', false, { at: true });
+            /** 结束上下文 */
+            this.finish('noticeSellAllGoods');
+            return false;
+        }
+        /** 结束上下文 */
+        this.finish('noticeSellAllGoods');
+        /**出售*/
+
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        //有无存档
+        let najie = await data.getData('najie', usr_qq);
+        let commodities_price = 0;
+        let wupin = [
+            '装备',
+            '丹药',
+            '道具',
+            '功法',
+            '草药',
+            '材料',
+            '仙宠',
+            '仙宠口粮',
+        ];
+        for (let i of wupin) {
+            for (let l of najie[i]) {
+                if (l && l.islockd == 0) {
+                    console.log(await foundthing(l.name).出售价)
+                    //纳戒中的数量
+                    let quantity = l.数量;
+                    if (l.name != "秘境之匙") {
+                        await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
                         commodities_price = commodities_price + l.出售价 * quantity;
-                        let money = l.出售价 * quantity;
-                        t = t + `共${money} 灵石`;
-                        str.push(t);
+                    } else {
+                        await Add_najie_thing(usr_qq, l.name, l.class, -quantity, l.pinji);
+                        commodities_price = commodities_price + 2000000 * quantity;
                     }
                 }
             }
         }
         await Add_灵石(usr_qq, commodities_price);
-        str.push(`出售成功!出售共获得${commodities_price}灵石 `);
-
+        let str = `出售成功!  获得${commodities_price}灵石 `
         //返回图片
         let log_data = {
             log: str,
@@ -386,7 +464,7 @@ export class UserSellAll extends plugin {
             ...data1,
         });
         e.reply(img);
-        return;
+        return false;
     }
 
     async all_xiuweidan(e) {
