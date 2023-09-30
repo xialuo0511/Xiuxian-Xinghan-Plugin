@@ -55,7 +55,8 @@ export class UserStart extends plugin {
                 {
                     reg: '^#修仙签到$',
                     fnc: 'daily_gift'
-                },
+                }
+                ,
                 {
                     reg: '^#领取七日馈赠$',
                     fnc: 'huodong_gift'

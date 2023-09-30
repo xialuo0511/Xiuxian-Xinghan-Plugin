@@ -257,26 +257,26 @@ export class Level extends plugin {
             if (bad_time > 0.9) {
                 await Add_修为(usr_qq, -1 * need_exp * 0.3);
                 await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);//获得上次的时间戳
-                e.reply(`突然听到一声鸡叫,鸡..鸡..鸡...鸡你太美！！！是翠翎恐蕈，此地不适合突破，快跑！险些走火入魔，丧失了` + (need_exp) * 0.3 + "修为");
+                e.reply(`（本次突破成功概率：${prob}）\n突然听到一声鸡叫,鸡..鸡..鸡...鸡你太美！！！是翠翎恐蕈，此地不适合突破，快跑！险些走火入魔，丧失了` + (need_exp) * 0.3 + "修为");
                 return;
             } else if (bad_time > 0.8) {
                 await Add_修为(usr_qq, -1 * need_exp * 0.2);
                 await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);//获得上次的时间戳
-                e.reply(`突破瓶颈时想到树脂满了,险些走火入魔，丧失了` + (need_exp) * 0.2 + "修为");
+                e.reply(`（本次突破成功概率：${prob}）\n突破瓶颈时想到树脂满了,险些走火入魔，丧失了` + (need_exp) * 0.2 + "修为");
                 return;
             } else if (bad_time > 0.7) {
                 await Add_修为(usr_qq, -1 * need_exp * 0.1);
                 await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);//获得上次的时间戳
-                e.reply(`突破瓶颈时想起背后是药园，刚种下掣电树种子，不能被破坏了，打断突破，嘴角流血，丧失了` + (need_exp) * 0.1 + "修为");
+                e.reply(`（本次突破成功概率：${prob}）\n突破瓶颈时想起背后是药园，刚种下掣电树种子，不能被破坏了，打断突破，嘴角流血，丧失了` + (need_exp) * 0.1 + "修为");
                 return;
             } else if (bad_time > 0.1) {
                 await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);//获得上次的时间戳
-                e.reply(`突破失败，不要气馁,等到${Time}分钟后再尝试吧`);
+                e.reply(`（本次突破成功概率：${prob}）\n突破失败，不要气馁,等到${Time}分钟后再尝试吧`);
                 return;
             } else {
                 await Add_修为(usr_qq, -1 * need_exp * 0.2);
                 await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);//获得上次的时间戳
-                e.reply(`突破瓶颈时想起怡红院里的放肆,想起了金银坊里的狂热,险些走火入魔，丧失了` + (need_exp) * 0.2 + "修为");
+                e.reply(`（本次突破成功概率：${prob}）\n突破瓶颈时想起怡红院里的放肆,想起了金银坊里的狂热,险些走火入魔，丧失了` + (need_exp) * 0.2 + "修为");
                 return;
             }
         }
@@ -309,7 +309,7 @@ export class Level extends plugin {
         await Add_HP(usr_qq, 99999999);
         //查境界名
         let level = data.Level_list.find(item => item.level_id == player.level_id).level;
-        e.reply(`突破成功,当前境界为${level}`);
+        e.reply(`（本次突破成功概率：${prob}）\n突破成功,当前境界为${level}`);
         //记录cd
         await redis.set("xiuxian:player:" + usr_qq + ":last_Levelup_time", now_Time);
         return;
