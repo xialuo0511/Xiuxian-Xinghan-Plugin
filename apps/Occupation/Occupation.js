@@ -1609,7 +1609,7 @@ export class Occupation extends plugin {
         }
         let msg = [segment.at(usr_qq)];
         //返回数目
-        let shoulie_amount = Math.floor((1.6 + Math.random() * 0.4) * time * 12);
+        let shoulie_amount = Math.floor((1.6 + Math.random() * 0.35) * time * 12);
         //职业经验
         let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
         let exp = 0;
