@@ -401,10 +401,15 @@ export class UserSellAll extends plugin {
         goods.push('\n回复[1]出售,回复[0]取消出售');
         /** 设置上下文 */
         this.setContext('noticeSellAllGoods');
-        for (let i = 0; i < goods.length; i += 8) {
-            e.reply(goods.slice(i, i + 8), false, { at: true });
-            await sleep(500);
-        }
+        //返回图片
+        let log_data = {
+            log: goods,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot('log', {
+            ...data1,
+        });
+        e.reply(img);
         /** 回复 */
         return false;
     }
