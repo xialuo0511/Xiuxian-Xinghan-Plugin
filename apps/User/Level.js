@@ -107,7 +107,7 @@ export class Level extends plugin {
             return;
         }
         let rand = Math.random();
-        let prob = 1 - now_level_id / 60;
+        let prob = 1 - now_level_id / 80;
         if (luck) {
             e.reply("你使用了幸运草，减少50%失败概率。");
             prob = prob + (1 - prob) * 0.5;
@@ -244,7 +244,7 @@ export class Level extends plugin {
         }
         //随机数
         let rand = Math.random();
-        let prob = 1 - now_level_id / 60;
+        let prob = 1 - now_level_id / 80;
         if (luck) {
             e.reply("你使用了幸运草，减少50%失败概率。");
             prob = prob + (1 - prob) * 0.5;
@@ -410,9 +410,9 @@ export class Level extends plugin {
             return;
         }
         //随机数
-        let prob = 1 - now_level_id / 60;
+        let prob = 1 - now_level_id / 80;
         prob = prob.toFixed(2)
-        e.reply(`（本次突破成功概率：${prob}）`)
+        e.reply(`本次突破成功概率：${prob}`)
         return;
     }
 
