@@ -279,6 +279,7 @@ export async function Goweizhi(e, weizhi) {
         lilianquan = 0
     }
     let get_data = {
+        lilianquan: lilianquan,
         didian_list: weizhi,
         addres: `异界秘境`
     }
