@@ -725,18 +725,12 @@ export async function Goyiji(e, weizhi, addres) {
  * 地点查询
  */
 export async function Goweizhi(e, weizhi, addres) {
-    let adr = addres;
-    let msg = [
-        "***" + adr + "***"
-    ];
-    for (let i = 0; i < weizhi.length; i++) {
-        msg.push(weizhi[i].name + "\n" + "掉落：" + weizhi[i].Grade + "\n" + "极品：" + weizhi[i].Best[0] + "\n" + "所需：" + weizhi[i].Price + "灵石")
-    }
-    let log_data = {
-        log: msg,
-    };
-    const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshot('log', {
+    // let adr = addres;
+    // let msg = [
+    //     "***" + adr + "***"
+    // ];
+    const data1 = await new Show(e).get_secret_placeData(weizhi);
+    let img = await puppeteer.screenshot('get_secret_placeData', {
         ...data1,
     });
     e.reply(img);

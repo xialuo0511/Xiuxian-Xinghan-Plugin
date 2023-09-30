@@ -273,6 +273,16 @@ export default class Game extends base {
   }
 
   //log
+  async get_secret_placeData(myData) {
+    this.model = 'secret_place copy';
+    return {
+      ...this.screenData,
+      saveId: 'get_secret_placeData',
+      ...myData,
+    };
+  }
+
+  //log
   async get_yijiemijingData(myData) {
     this.model = 'yijiemijing';
     return {
