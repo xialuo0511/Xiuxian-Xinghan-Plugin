@@ -1847,7 +1847,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     //AB灵根
 
     let A_gongfa = A_player.学习的功法
-    let lunhuijing = A_gongfa.prototype.includes("轮回经")
+    let lunhuijing = A_gongfa.indexOf("轮回经")
 
 
     let A_lin = A_player.灵根.name
