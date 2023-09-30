@@ -549,22 +549,22 @@ async function reward(e) {
     let lingshi = 0;
     switch (logfile.difficulty) {
         case "简单":
-            lingshi = 1000;
+            lingshi = 10000;
             break;
         case "中等":
-            lingshi = 2000;
+            lingshi = 50000;
             break;
         case "困难":
-            lingshi = 3000;
+            lingshi = 100000;
             break;
     }
     let allqq = logfile.participants;
     for (let i in allqq) {
-        let ifexistplay = await data.existData("player", allqq[i]);
+        let ifexistplay = data.existData("player", allqq[i]);
         if (!ifexistplay) { continue; }
         let player_data = await data.getData("player", allqq[i]);
         player_data.灵石 += lingshi;
-        await data.setData("player", allqq[i], player_data);
+        data.setData("player", allqq[i], player_data);
         e.reply([segment.at(allqq[i]), ` 你参与完成了${logfile.difficulty}级棋局,获得${lingshi}灵石`])
     }
     return;
