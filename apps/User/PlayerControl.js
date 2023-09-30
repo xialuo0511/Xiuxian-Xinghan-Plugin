@@ -606,7 +606,7 @@ export class PlayerControl extends plugin {
             await Bot.pickGroup(id)
                 .sendMsg(msg)
                 .catch((err) => {
-                    Bot.logger.mark(err);
+                    logger.mark(err);
                 });
         } else {
             await common.relpyPrivate(id, msg);
@@ -629,7 +629,7 @@ export class PlayerControl extends plugin {
             new_num = user_data.血量上限;//治疗血量需要判读上限
         }
         user_data[type] = new_num;
-        await data.setData("player", user_qq, user_data);
+        data.setData("player", user_qq, user_data);
         return;
     }
 
