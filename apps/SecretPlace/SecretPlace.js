@@ -725,11 +725,11 @@ export async function Goyiji(e, weizhi, addres) {
  * 地点查询
  */
 export async function Goweizhi(e, weizhi, addres) {
-    // let adr = addres;
-    // let msg = [
-    //     "***" + adr + "***"
-    // ];
-    const data1 = await new Show(e).get_secret_placeData(weizhi);
+    let get_data = {
+        didian_list: weizhi,
+        addres: addres
+    }
+    const data1 = await new Show(e).get_secret_placeData(get_data);
     let img = await puppeteer.screenshot('get_secret_placeData', {
         ...data1,
     });
