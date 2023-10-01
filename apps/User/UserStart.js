@@ -524,8 +524,8 @@ export class UserStart extends plugin {
             await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
             await Add_修为(usr_qq, gift_xiuwei);
             let xianding = 16
-            if (yijie.xianding_level > 10) {
-                xianding = 128
+            if (Number(yijie.xianding_level) > 10) {
+                xianding = 64
             }
             await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", xianding)
             let msg = [
