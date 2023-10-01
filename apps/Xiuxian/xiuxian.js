@@ -1846,13 +1846,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     let fyjiachen = 0//防御加成
     //AB灵根
     let A_gongfa
-    let lunhuijing
-    if (A_player.学习的功法) {
-        A_gongfa = Object.values(A_player.学习的功法)
-    }
-    if (A_gongfa) {
-        lunhuijing = A_gongfa.indexOf("轮回经")
-    }
+    let lunhuijing = A_player.学习的功法.indexOf('八品·鬼帝功')
     let A_lin = A_player.灵根.name
     let B_lin = B_player.灵根.name
     let chufa = false//是否触发
@@ -2900,7 +2894,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
 
     //功法
     //轮回经
-    if (lunhuijing) {
+    if (lunhuijing && lunhuijing > -1) {
         if (random > 0.2) {
             msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
             donjie = true
