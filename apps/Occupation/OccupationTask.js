@@ -81,10 +81,9 @@ export class OccupationTask extends plugin {
 
 
                         let time = parseInt(action.time) / 1000 / 60;
-                        // let plant_amount1 = Math.floor((0.07+Math.random()*0.04)*time);
-                        // let plant_amount2 = Math.floor((0.07+Math.random()*0.04)*time);
-                        // let plant_amount3 = Math.floor((0.07+Math.random()*0.04)*time);
-                        // let plant_amount4 = Math.floor((0.07+Math.random()*0.04)*time);
+                        if (time > 720) {
+                            time = 720
+                        }
                         let exp = 0;
                         let ext = "";
                         let rate = 0;
@@ -191,7 +190,10 @@ export class OccupationTask extends plugin {
                         }
 
                         // var size=this.xiuxianConfigData.mine.size;
-                        let time = parseInt(action.time) / 1000 / 60;//最高480分钟
+                        let time = parseInt(action.time) / 1000 / 60;//最高720分钟
+                        if (time > 720) {
+                            time = 720
+                        }
                         //以下1到5为每种的数量
                         let mine_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
                         let mine_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
@@ -260,6 +262,9 @@ export class OccupationTask extends plugin {
                     if (now_time > end_time) {
                         var y = this.xiuxianConfigData.mine.time;//固定时间
                         let time = parseInt((now_time - end_time) / 1000 / 60);
+                        if (time > 720) {
+                            time = 720
+                        }
                         //超过就按最低的算，即为满足30分钟才结算一次
                         if (time < y) {
                             time = 0;
