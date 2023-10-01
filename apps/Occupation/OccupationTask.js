@@ -269,7 +269,7 @@ export class OccupationTask extends plugin {
                         if (!isNotNull(player.level_id)) {
                             return;
                         }
-                        let msg = [segment.at(usr_qq)];
+                        let msg = [segment.at(player_id)];
                         //返回数目
                         let shoulie_amount = Math.floor((1.6 + Math.random() * 0.35) * time * 12);
                         //职业经验
@@ -286,12 +286,12 @@ export class OccupationTask extends plugin {
                         end_amount = Math.floor(end_amount);
 
 
-                        await Add_najie_thing(usr_qq, "野兔", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野鸡", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野猪", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野牛", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野羊", "食材", end_amount);
-                        await Add_职业经验(usr_qq, exp);
+                        await Add_najie_thing(player_id, "野兔", "食材", end_amount);
+                        await Add_najie_thing(player_id, "野鸡", "食材", end_amount);
+                        await Add_najie_thing(player_id, "野猪", "食材", end_amount);
+                        await Add_najie_thing(player_id, "野牛", "食材", end_amount);
+                        await Add_najie_thing(player_id, "野羊", "食材", end_amount);
+                        await Add_职业经验(player_id, exp);
                         msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
 
                         let arr = action;
