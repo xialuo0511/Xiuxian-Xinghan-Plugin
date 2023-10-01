@@ -329,6 +329,7 @@ export class UserSellAll extends plugin {
             '材料',
             '仙宠',
             '仙宠口粮',
+            '食材'
         ];
         let wupin1 = [];
         if (e.msg != '#一键出售') {
@@ -441,6 +442,7 @@ export class UserSellAll extends plugin {
             '材料',
             '仙宠',
             '仙宠口粮',
+            '食材'
         ];
         for (let i of wupin) {
             for (let l of najie[i]) {
