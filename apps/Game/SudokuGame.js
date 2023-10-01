@@ -57,6 +57,15 @@ export class SudokuGame extends plugin {
             return;
         }
         let usr_qq = e.user_id;
+        //获取上次游戏时间
+        let lasttime = Number(await redis.get("xiuxian:shudu:lasttime"))
+        let nowtime = new Date().getTime();
+        let othertime = nowtime - lasttime
+        othertime = othertime / 60 / 1000
+        if (othertime < 30) {
+            e.reply('棋局尚需准备，请稍等片刻');
+            return;
+        }
         //获取游戏状态
         let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
         //防止继续其他娱乐行为
@@ -217,6 +226,8 @@ export class SudokuGame extends plugin {
         }
 
         e.reply(`恭喜,棋局完成!`);
+        let nowTime = now.getTime(); //获取当前日期的时间戳
+        redis.set("xiuxian:shudu:lasttime", nowTime)
         board = null;
         sudokukey = false;
         reward(e)
