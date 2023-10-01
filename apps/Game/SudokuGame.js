@@ -226,7 +226,7 @@ export class SudokuGame extends plugin {
         }
 
         e.reply(`恭喜,棋局完成!`);
-        let nowTime = now.getTime(); //获取当前日期的时间戳
+        let nowTime = new Date().getTime();
         await redis.set("xiuxian:shudu:lasttime", nowTime)
         board = null;
         sudokukey = false;
