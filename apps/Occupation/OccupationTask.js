@@ -258,6 +258,7 @@ export class OccupationTask extends plugin {
                     //时间过了
                     end_time = end_time - 60000 * 2;
                     if (now_time > end_time) {
+                        var y = this.xiuxianConfigData.mine.time;//固定时间
                         let time = parseInt((now_time - end_time) / 1000 / 60);
                         //超过就按最低的算，即为满足30分钟才结算一次
                         if (time < y) {
