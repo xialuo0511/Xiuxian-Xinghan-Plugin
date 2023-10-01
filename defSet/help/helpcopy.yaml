@@ -110,9 +110,6 @@
     - icon: help-icon_17
       title: "#炼神魄"
       desc: "试炼自己获取血气"
-    - icon: help-icon_10
-      title: "乞讨xx"
-      desc: "请至少先带100灵石给某大爷、某宅女付债"
 - group: 礼尚往来(?)
   list:
     - icon: help-icon_18
