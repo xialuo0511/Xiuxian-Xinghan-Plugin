@@ -697,7 +697,7 @@ export async function Reduse_player_学习功法(usr_qq, gongfa_name) {
 //---------------------------------------------分界线------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //修炼效率综合
 export async function player_efficiency(usr_qq) {
-    let player = Read_player(usr_qq);//修仙个人信息
+    let player = await Read_player(usr_qq);//修仙个人信息
     let ass;
     let Assoc_efficiency;        //宗门效率加成
     let linggen_efficiency;      //灵根效率加成
