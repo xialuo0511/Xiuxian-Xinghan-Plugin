@@ -1843,7 +1843,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     let yuansu = ["仙之心·火", "仙之心·水", "仙之心·雷", "仙之心·岩", "仙之心·冰", "仙之心·风", "仙之心·木"]
     let att = last_att;//最终伤害,last_att为原伤害
     let fyjiachen = 0//防御加成
-    let player = Read_player(A_player.id);//修仙个人信息
+    //let player = Read_player(A_player.id);//修仙个人信息
     //let lunhuijing = player.学习的功法.indexOf('轮回经');
     let A_lin = A_player.灵根.name
     let B_lin = B_player.灵根.name
