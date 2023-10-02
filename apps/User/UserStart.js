@@ -676,12 +676,12 @@ export class UserStart extends plugin {
             return;
         }
         if (sign == 6) {
-            await Add_najie_thing(usr_qq, "七星玄元丹", "丹药", "1");
-            xianshi = xianshi + 15
+            await Add_najie_thing(usr_qq, "2w", "道具", "30");
+            xianshi = xianshi + 20
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得【七星玄元丹】*1,【顶级仙石】*15`
+                `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*20`
             ]
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
@@ -693,12 +693,12 @@ export class UserStart extends plugin {
             return;
         }
         if (sign == 7) {
-            await Add_najie_thing(usr_qq, "七星玄元丹", "丹药", "2");
-            xianshi = xianshi + 30
+            await Add_najie_thing(usr_qq, "2w", "道具", "30");
+            xianshi = xianshi + 35
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(usr_qq),
-                `领取第${sign}天馈赠成功！获得【七星玄元丹】*2,【顶级仙石】*30`
+                `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*35`
             ]
             let yijie = await yijie_existplayer(usr_qq)
             if (yijie) {
