@@ -64,7 +64,8 @@ export class SudokuGame extends plugin {
         let nowtime = new Date().getTime();
         let othertime = nowtime - lasttime
         othertime = othertime / 60 / 1000
-        if (othertime < Number(this.xiuxianConfigData.SudukuGame.time)) {
+        var y = this.xiuxianConfigData.SudukuGame.time;//固定时间
+        if (othertime < y) {
             e.reply('棋局尚需准备，请稍等片刻');
             return;
         }
