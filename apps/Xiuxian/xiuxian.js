@@ -1846,7 +1846,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     let fyjiachen = 0//防御加成
     //AB灵根
     let A_gongfa
-    let lunhuijing = Object.Array(A_player.学习的功法).indexOf('轮回经');
+    let lunhuijing = await Object.Array(A_player.学习的功法).indexOf('轮回经');
     let A_lin = A_player.灵根.name
     let B_lin = B_player.灵根.name
     let chufa = false//是否触发
