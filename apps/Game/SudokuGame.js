@@ -4,6 +4,7 @@ import data from '../../model/XiuxianData.js'
 import Show from "../../model/show.js"
 import path from "path"
 import fs from "fs"
+import config from "../../model/Config.js"
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
