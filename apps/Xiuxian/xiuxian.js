@@ -1844,7 +1844,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     let att = last_att;//最终伤害,last_att为原伤害
     let fyjiachen = 0//防御加成
     let player = Read_player(A_player.id);//修仙个人信息
-    let lunhuijing = player.学习的功法.indexOf('轮回经');
+    //let lunhuijing = player.学习的功法.indexOf('轮回经');
     let A_lin = A_player.灵根.name
     let B_lin = B_player.灵根.name
     let chufa = false//是否触发
@@ -2892,16 +2892,16 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
 
     //功法
     //轮回经
-    if (lunhuijing && lunhuijing > -1) {
-        if (random > 0.2) {
-            msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
-            donjie = true
+    // if (lunhuijing && lunhuijing > -1) {
+    //     if (random > 0.2) {
+    //         msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
+    //         donjie = true
 
-        } else if (random > 0.1) {
-            msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
-            att = last_att * 2
-        }
-    }
+    //     } else if (random > 0.1) {
+    //         msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
+    //         att = last_att * 2
+    //     }
+    // }
 
 
 
