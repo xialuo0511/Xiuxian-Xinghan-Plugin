@@ -669,10 +669,10 @@ export class MoneyOperation extends plugin {
             Worldmoney = 1;
         }
         Worldmoney = Number(Worldmoney);
-        if (Worldmoney <= lingshi * File_length) {
-            e.reply("共有" + File_length + "名玩家，需要消耗" + lingshi * File_length + ",你的世界财富不足！");
-            return;
-        }
+        // if (Worldmoney <= lingshi * File_length) {
+        //     e.reply("共有" + File_length + "名玩家，需要消耗" + lingshi * File_length + ",你的世界财富不足！");
+        //     return;
+        // }
         Worldmoney = Worldmoney - lingshi * File_length;
         if (Worldmoney == null || Worldmoney == undefined || Worldmoney <= 0 || Worldmoney == NaN) {
             Worldmoney = 1;
