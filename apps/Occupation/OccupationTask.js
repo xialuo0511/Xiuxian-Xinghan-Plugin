@@ -261,7 +261,7 @@ export class OccupationTask extends plugin {
                     end_time = end_time - 60000 * 2;
                     if (now_time > end_time) {
                         var y = this.xiuxianConfigData.mine.time;//固定时间
-                        let time = parseInt((now_time - end_time) / 1000 / 60);
+                        let time = parseInt(action.time) / 1000 / 60;//最高720分钟
                         if (time > 720) {
                             time = 720
                         }
