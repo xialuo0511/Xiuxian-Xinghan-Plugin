@@ -4,8 +4,8 @@ import plugin from '../../../../lib/plugins/plugin.js'
 import common from "../../../../lib/common/common.js"
 import config from "../../model/Config.js"
 import fs from "node:fs"
-import { Read_Exchange,Write_Exchange } from './Exchange.js'
-import { Add_najie_thing} from "../Xiuxian/xiuxian.js"
+import { Read_Exchange, Write_Exchange } from './Exchange.js'
+import { Add_najie_thing } from "../Xiuxian/xiuxian.js"
 /**
  * 定时任务
  */
@@ -30,23 +30,23 @@ export class ExchangeTask extends plugin {
 
     async Exchangetask() {
         let Exchange;
-        try{
-            Exchange=await Read_Exchange();
+        try {
+            Exchange = await Read_Exchange();
         }
-        catch{
+        catch {
             //没有表要先建立一个！
             await Write_Exchange([]);
-            Exchange=await Read_Exchange();
+            Exchange = await Read_Exchange();
         }
-
         for (var i = 0; i < Exchange.length; i++) {
-                //自我清除
-				let tmp_exchange = Exchange.filter(item=>item.qq==Exchange[i].qq);
-				for(let ex of tmp_exchange){
-					Add_najie_thing(item.qq,item.name.name,item.name.class,item.amount);
-				}
-                Exchange = Exchange.filter(item => item.qq != Exchange[i].qq);
-                await Write_Exchange(Exchange);
+            let item;
+            //自我清除
+            let tmp_exchange = Exchange.filter(item => item.qq == Exchange[i].qq);
+            for (let ex of tmp_exchange) {
+                Add_najie_thing(item.qq, item.name.name, item.name.class, item.amount);
+            }
+            Exchange = Exchange.filter(item => item.qq != Exchange[i].qq);
+            await Write_Exchange(Exchange);
         }
 
         //遍历所有人，清除redis
@@ -59,7 +59,7 @@ export class ExchangeTask extends plugin {
             playerList.push(file);
         }
         for (let player_id of playerList) {
-            await redis.set("xiuxian:player:" + player_id + ":Exchange",0);
+            await redis.set("xiuxian:player:" + player_id + ":Exchange", 0);
         }
         return;
     }
