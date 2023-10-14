@@ -732,10 +732,10 @@ export class MoneyOperation extends plugin {
             Worldmoney = 1;
         }
         Worldmoney = Number(Worldmoney);
-        if (Worldmoney <= lingshi) {
-            e.reply("世界财富不足！");
-            return;
-        }
+        // if (Worldmoney <= lingshi) {
+        //     e.reply("世界财富不足！");
+        //     return;
+        // }
         Worldmoney = Worldmoney - lingshi;
         if (Worldmoney == null || Worldmoney == undefined || Worldmoney <= 0 || Worldmoney == NaN) {
             Worldmoney = 1;
