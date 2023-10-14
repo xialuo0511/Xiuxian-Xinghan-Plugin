@@ -3117,6 +3117,7 @@ export class UserHome extends plugin {
                     }
                     await Add_najie_thing(usr_qq, "层岩巨渊", "道具", -1);
                     await Add_najie_thing(usr_qq, "火把", "道具", -60);
+                    await Add_灵石(usr_qq, 200000)
                     await Add_血气(usr_qq, xueqi)
                     await Add_修为(usr_qq, xiuwei)
                     if (math > 0.9 && math <= 1) {
