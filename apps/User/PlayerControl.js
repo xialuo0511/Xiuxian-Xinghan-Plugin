@@ -460,15 +460,15 @@ export class PlayerControl extends plugin {
         //给出消息提示
         if (transformation == "血气") {
             await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);//丹药修正
-            msg.push("\n受到炼神之力的影响,增加血气:" + xiuwei * time, "  获得治疗,血量增加:" + blood * time);
+            msg.push("\n受到炼神之力的影响,增加血气:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
         }
         else {
             await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
             if (is_random) {
 
-                msg.push("\n增加气血:" + xiuwei * time, "  获得治疗,血量增加:" + blood * time + "炼神之力消散了");
+                msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
             } else {
-                msg.push("\n增加修为:" + xiuwei * time, "  获得治疗,血量增加:" + blood * time);
+                msg.push("\n增加修为:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
             }
         }
 
