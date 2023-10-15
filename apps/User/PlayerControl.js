@@ -129,6 +129,7 @@ export class PlayerControl extends plugin {
         }
 
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
+        await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));//redis设置动作
         e.reply(`现在开始闭关${time}分钟,两耳不闻窗外事了`);
 
         return true;
