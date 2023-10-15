@@ -2171,7 +2171,8 @@ export class UserHome extends plugin {
                 e.reply("使用成功,发送#我的装备查看属性")
                 return
             }
-            if (data.daoju_list.find(item => item.name == thing_name).type == "洗髓") {
+            let daoju = data.daoju_list.find(item => item.name == thing_name)
+            if (daoju && daoju.type == "洗髓") {
                 if (await player.linggenshow != 0) {
                     await e.reply("你未开灵根，无法洗髓！");
                     return;
