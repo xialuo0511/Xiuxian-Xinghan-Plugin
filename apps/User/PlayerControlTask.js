@@ -61,31 +61,15 @@ export class PlayerControlTask extends plugin {
                 let now_time = new Date().getTime();
                 //闭关状态
                 if (action.shutup == "0") {
-                    let player = data.getData("player", player_id);
-                    let now_level_id;
-                    let xiuwei = parseInt((size * now_level_id) * (player.修炼效率提升 + 1));//增加的修为
-                    let blood = parseInt(player.血量上限 * 0.02);
-                    let time = parseInt(action.time) / 1000 / 60;//分钟
-                    let xueqi = 0;
-                    let other_xiuwei = 0;
-                    //炼丹师丹药修正
-                    let transformation = "修为"
-                    //这里改一改,要在结束时间的前一分钟提前结算
                     //时间过了
                     end_time = end_time - 60000 * 2;
                     if (now_time > end_time) {
                         log_mag += "当前人物未结算，结算状态";
 
-                        if (!isNotNull(player.level_id)) {
-                            return;
-                        }
-                        now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-                        var size = this.xiuxianConfigData.biguan.size;
-
-                        let rand = Math.random();
-
-                        let player = data.getData("player", usr_qq);
-                        let now_level_id;
+                        var usr_qq = user_id;
+                        await player_efficiency(usr_qq);
+                        var player = data.getData("player", usr_qq);
+                        var now_level_id;
                         if (!isNotNull(player.level_id)) {
                             return;
                         }
@@ -93,16 +77,16 @@ export class PlayerControlTask extends plugin {
                         //闭关收益倍率计算 倍率*境界id*天赋*时间
                         var size = this.xiuxianConfigData.biguan.size;
                         //增加的修为
-                        let xiuwei = parseInt((size * now_level_id) * (player.修炼效率提升 + 1));
+                        var xiuwei = parseInt((size * now_level_id) * (player.修炼效率提升 + 1));
                         //恢复的血量
-                        let blood = parseInt(player.血量上限 * 0.02);
+                        var blood = parseInt(player.血量上限 * 0.02);
                         //额外修为
-                        let other_xiuwei = 0;
+                        var other_xiuwei = 0;
 
-                        let msg = [segment.at(usr_qq)];
+                        var msg = [segment.at(usr_qq)];
                         //炼丹师丹药修正
-                        let transformation = "修为"
-                        let xueqi = 0
+                        var transformation = "修为"
+                        var xueqi = 0
                         //随机事件预留空间
                         if (is_random) {
                             let rand = Math.random();
