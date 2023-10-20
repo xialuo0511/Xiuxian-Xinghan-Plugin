@@ -94,7 +94,7 @@ export class AuctionTask extends plugin {
       await Bot.pickGroup(id)
         .sendMsg(msg)
         .catch(err => {
-          logger.mark(err);
+          Bot.logger.mark(err);
         });
     } else {
       await common.relpyPrivate(id, msg);
