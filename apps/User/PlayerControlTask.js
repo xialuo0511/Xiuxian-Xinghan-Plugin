@@ -82,8 +82,6 @@ export class PlayerControlTask extends plugin {
                         var blood = parseInt(player.血量上限 * 0.02);
                         //额外修为
                         var other_xiuwei = 0;
-
-                        var msg = [segment.at(usr_qq)];
                         //炼丹师丹药修正
                         var transformation = "修为"
                         var xueqi = 0

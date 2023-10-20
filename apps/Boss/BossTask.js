@@ -151,7 +151,7 @@ export class BossTask extends plugin {
             await Bot.pickGroup(id)
                 .sendMsg(msg)
                 .catch((err) => {
-                    Bot.logger.mark(err);
+                    logger.mark(err);
                 });
         }
         else {
