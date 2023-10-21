@@ -99,7 +99,7 @@ export class UserStart extends plugin {
             s = s + String.fromCharCode(97 + tmp);
         }
         await fstadd_Gulid(nowid, 0, s)
-        e.reply("您的密钥为:" + s + "请于QQ私聊管理发送#频道绑定" + s)
+        e.reply("您的密钥为:" + s + "\n请于QQ私聊管理发送#频道绑定" + s)
         return;
     }
 
