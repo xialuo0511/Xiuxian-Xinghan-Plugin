@@ -138,12 +138,7 @@ export class PlayerControlTask extends plugin {
                     }
                     else {
                         await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
-                        if (is_random) {
-
-                            msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
-                        } else {
-                            msg.push("\n增加修为:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
-                        }
+                        msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
                     }
                     await this.pushInfo(push_address, true, msg)
                     return;
