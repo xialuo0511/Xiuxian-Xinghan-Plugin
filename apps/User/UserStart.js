@@ -7,6 +7,7 @@ import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.j
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import { get_player_img, get_gongfa_img } from '../ShowImeg/showData.js'
+import { Gulid, Read_Gulid, Write_Gulid } from '../../api/api.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
@@ -14,16 +15,13 @@ import { __PATH } from "../Xiuxian/xiuxian.js"
  * 全局
  */
 let allaction = false;//全局状态判断
-/**
- * 交易系统
- */
 export class UserStart extends plugin {
     constructor() {
         super({
             /** 功能名称 */
             name: 'UserStart',
             /** 功能描述 */
-            dsc: '交易模块',
+            dsc: '初始模块',
             event: 'message',
             /** 优先级，数字越小等级越高 */
             priority: 600,
@@ -60,27 +58,55 @@ export class UserStart extends plugin {
                 {
                     reg: '^#领取七日馈赠$',
                     fnc: 'huodong_gift'
+                },
+                {
+                    reg: '^#绑定频道密钥.*$',
+                    fnc: 'bangding'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
     }
 
-    //#我的功法
-    /*async Show_GongFa(e) {
-        if (!e.isGroup) {
-          return;
+    async bangding(e) {
+        if (e.isGroup) {
+            e.reply('此功能暂时不开放在群');
+            return false;
         }
-        let usr_qq = e.user_id;
-        //有无存档
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
+        let nowid = e.user_id.toString().replace('qg_', '')
+
+        let Gulid;
+        try {
+            Gulid = await Read_Gulid();
+        } catch {
+            //没有建立一个
+            await Write_Gulid([]);
+            Gulid = await Read_Gulid();
         }
-        let img = await get_gongfa_img(e);
-        e.reply(img);
+        for (let i = 0; i < Gulid.length; i++) {
+            if (Gulid[i].QQ_ID == nowid || Gulid[i].频道_ID == nowid) {
+                e.reply("你已经发送或绑定过频道了，密钥为:" + Gulid[i].密钥)
+                return
+            }
+        }
+        var num = 15
+        var amm = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        var tmp = Math.floor(Math.random() * num);
+        var s = tmp;//密钥
+        s = s + amm[tmp];
+        for (let i = 0; i < Math.floor(num / 2) - 1; i++) {
+            tmp = Math.floor(Math.random() * 26);
+            s = s + String.fromCharCode(65 + tmp);
+        }
+        for (let i = 0; i < (num - Math.floor(num / 2) - 1); i++) {
+            tmp = Math.floor(Math.random() * 26);
+            s = s + String.fromCharCode(97 + tmp);
+        }
+        await fstadd_channel(nowid, 0, s)
+        e.reply("您的密钥为:" + s + "请于QQ私聊管理发送#频道绑定" + s)
         return;
-    }*/
+    }
+
 
     //#踏入仙途
     async Create_player(e) {
@@ -98,11 +124,6 @@ export class UserStart extends plugin {
         let ifexistplay = await existplayer(usr_qq);
         if (ifexistplay) {
             this.Show_player(e);
-            return;
-        }
-        //判断是否为黑名单
-        if (usr_qq == 392852264 || usr_qq == 1027447951 || usr_qq == 1825945633 || usr_qq == 3478593180 || usr_qq == 1259766981) {
-            e.reply("您已被作者拉至黑名单")
             return;
         }
         //初始化玩家信息
