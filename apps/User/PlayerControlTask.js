@@ -68,7 +68,7 @@ export class PlayerControlTask extends plugin {
                     if (time > 7200) {
                         time = 7200
                     }
-                    let usr_qq = user_id;
+                    let usr_qq = player_id;
                     let player = data.getData("player", usr_qq);
                     let now_level_id;
                     if (!isNotNull(player.level_id)) {
