@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import path from 'path';
 
 import config from '../model/Config.js';
 import data from '../model/XiuxianData.js';
