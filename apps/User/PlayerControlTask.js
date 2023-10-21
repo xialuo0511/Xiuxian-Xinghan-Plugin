@@ -141,6 +141,15 @@ export class PlayerControlTask extends plugin {
                         msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
                     }
                     await this.pushInfo(push_address, true, msg)
+                    let arr = action;
+                    //把状态都关了
+                    arr.shutup = 1;//闭关状态
+                    arr.working = 1;//降妖状态
+                    arr.power_up = 1;//渡劫状态
+                    arr.Place_action = 1;//秘境
+                    arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
+                    delete arr.group_id;//结算完去除group_id
+                    await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
                     return;
                 }
                 //降妖
