@@ -4,6 +4,7 @@ import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
 import config from "../../model/Config.js"
 import Config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
+import { Gulid } from "../../api/api.js"
 import {
     __PATH,
     get_random_talent,
@@ -971,7 +972,8 @@ export async function get_player_img(e) {
     let 法宝评级;
     let 护具评级;
     let 武器评级;
-    let usr_qq = e.user_id;
+    let usr_qq = e.user_id.toString().replace('qg_', '')
+    usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData('player', usr_qq);
     if (!ifexistplay) {
         return;

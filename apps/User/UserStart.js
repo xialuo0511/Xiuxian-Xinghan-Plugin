@@ -373,7 +373,6 @@ export class UserStart extends plugin {
         //不开放私聊功能
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
-        e.reply(usr_qq)
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
