@@ -108,7 +108,7 @@ export class UserStart extends plugin {
             return;
         }
         let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = Gulid(nowid);
+        let usr_qq = await Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -242,7 +242,7 @@ export class UserStart extends plugin {
             return;
         }
         let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = Gulid(nowid);
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -295,7 +295,7 @@ export class UserStart extends plugin {
             return;
         }
         let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = Gulid(nowid);
+        let usr_qq = await Gulid(nowid);
         /** 内容 */
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
@@ -372,7 +372,7 @@ export class UserStart extends plugin {
     async Show_player(e) {
         //不开放私聊功能
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = Gulid(usr_qq);
+        usr_qq = await Gulid(usr_qq);
         e.reply(usr_qq)
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
@@ -390,7 +390,7 @@ export class UserStart extends plugin {
             return;
         }
         let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = Gulid(nowid);
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -420,7 +420,7 @@ export class UserStart extends plugin {
             return;
         }
         let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = Gulid(nowid);
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -509,7 +509,7 @@ export class UserStart extends plugin {
             return;
         }
         let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = Gulid(nowid);
+        let usr_qq = await Gulid(nowid);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -574,7 +574,7 @@ export class UserStart extends plugin {
             return;
         }
         let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = Gulid(nowid);
+        let usr_qq = await Gulid(nowid);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -739,7 +739,7 @@ export class UserStart extends plugin {
  */
 export async function Go(e) {
     let nowid = e.user_id.toString().replace('qg_', '')
-    let usr_qq = Gulid(nowid);
+    let usr_qq = await Gulid(nowid);
     //有无存档
     let ifexistplay = await existplayer(usr_qq);
     if (!ifexistplay) {
