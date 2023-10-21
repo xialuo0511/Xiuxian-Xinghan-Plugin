@@ -5,8 +5,8 @@ import fs from "fs"
 import { Read_player, existplayer, get_random_talent, getLastsign, Read_yijie_player, yijie_existplayer, Add_星魂币 } from '../Xiuxian/xiuxian.js'
 import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.js'
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
-import { Add_灵石, Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
-import { get_player_img, get_gongfa_img } from '../ShowImeg/showData.js'
+import { Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
+import { get_player_img } from '../ShowImeg/showData.js'
 import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid } from '../../api/api.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
@@ -46,10 +46,6 @@ export class UserStart extends plugin {
                     reg: '^#(改名.*)|(设置道宣.*)$',
                     fnc: 'Change_player_name'
                 },
-                /*{
-                    reg: '^#我的功法$',
-                    fnc: 'Show_GongFa'
-                },*/
                 {
                     reg: '^#修仙签到$',
                     fnc: 'daily_gift'
@@ -111,7 +107,8 @@ export class UserStart extends plugin {
             e.reply("请在群聊内发送此信息")
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -244,7 +241,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -296,7 +294,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         /** 内容 */
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
@@ -372,7 +371,8 @@ export class UserStart extends plugin {
     //#我的练气
     async Show_player(e) {
         //不开放私聊功能
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -388,7 +388,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -417,7 +418,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -505,7 +507,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -569,7 +572,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = Gulid(nowid);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -733,7 +737,8 @@ export class UserStart extends plugin {
  * 状态
  */
 export async function Go(e) {
-    let usr_qq = e.user_id;
+    let nowid = e.user_id.toString().replace('qg_', '')
+    let usr_qq = Gulid(nowid);
     //有无存档
     let ifexistplay = await existplayer(usr_qq);
     if (!ifexistplay) {
