@@ -60,7 +60,7 @@ export class UserStart extends plugin {
                     fnc: 'huodong_gift'
                 },
                 {
-                    reg: '^#绑定频道密钥.*$',
+                    reg: '^#绑定频道密钥$',
                     fnc: 'bangding'
                 }
             ]
@@ -69,10 +69,6 @@ export class UserStart extends plugin {
     }
 
     async bangding(e) {
-        if (e.isGroup) {
-            e.reply('此功能暂时不开放在群');
-            return false;
-        }
         let nowid = e.user_id.toString().replace('qg_', '')
 
         let Gulid;
