@@ -74,7 +74,7 @@ export async function Read_Gulid() {
 }
 
 export async function Write_Gulid(Gulid) {
-  let dir = path.join(__PATH.Gulid_path, `Gulid.json`);
+  let dir = path.join(`${__PATH.Gulid_path}/Gulid.json`);
   let new_ARR = JSON.stringify(Gulid, '', '\t');
   fs.writeFileSync(dir, new_ARR, 'utf8', err => {
     console.log('写入成功', err);
