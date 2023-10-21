@@ -88,32 +88,29 @@ export class PlayerControlTask extends plugin {
                     //炼丹师丹药修正
                     let transformation = "修为"
                     let xueqi = 0
-                    //随机事件预留空间
-                    if (is_random) {
-                        let rand = Math.random();
-                        //顿悟
-                        if (rand < 0.2) {
-                            rand = Math.trunc(rand * 10) + 45;
-                            other_xiuwei = rand * time;
-                            xueqi = Math.trunc(rand * time);
-                            if (transformation == "血气") {
-                                msg.push("\n本次闭关顿悟,受到炼神之力修正,额外增加血气:" + xueqi);
+                    let rand = Math.random();
+                    //顿悟
+                    if (rand < 0.2) {
+                        rand = Math.trunc(rand * 10) + 45;
+                        other_xiuwei = rand * time;
+                        xueqi = Math.trunc(rand * time);
+                        if (transformation == "血气") {
+                            msg.push("\n本次闭关顿悟,受到炼神之力修正,额外增加血气:" + xueqi);
 
-                            } else {
-                                msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
-                            }
+                        } else {
+                            msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
                         }
-                        //走火入魔
-                        else if (rand > 0.8) {
-                            rand = Math.trunc(rand * 10) + 5;
-                            other_xiuwei = -1 * rand * time;
-                            xueqi = Math.trunc(rand * time);
-                            if (transformation == "血气") {
-                                msg.push("\n,由于你闭关时隔壁装修,导致你差点走火入魔,受到炼神之力修正,血气下降" + xueqi);
+                    }
+                    //走火入魔
+                    else if (rand > 0.8) {
+                        rand = Math.trunc(rand * 10) + 5;
+                        other_xiuwei = -1 * rand * time;
+                        xueqi = Math.trunc(rand * time);
+                        if (transformation == "血气") {
+                            msg.push("\n,由于你闭关时隔壁装修,导致你差点走火入魔,受到炼神之力修正,血气下降" + xueqi);
 
-                            } else {
-                                msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * time);
-                            }
+                        } else {
+                            msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * time);
                         }
                     }
                     let other_x = 0;
