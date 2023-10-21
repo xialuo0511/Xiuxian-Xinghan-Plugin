@@ -7,7 +7,7 @@ import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.j
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import { get_player_img, get_gongfa_img } from '../ShowImeg/showData.js'
-import { Gulid, Read_Gulid, Write_Gulid } from '../../api/api.js'
+import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid } from '../../api/api.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
@@ -98,7 +98,7 @@ export class UserStart extends plugin {
             tmp = Math.floor(Math.random() * 26);
             s = s + String.fromCharCode(97 + tmp);
         }
-        await fstadd_channel(nowid, 0, s)
+        await fstadd_Gulid(nowid, 0, s)
         e.reply("您的密钥为:" + s + "请于QQ私聊管理发送#频道绑定" + s)
         return;
     }
