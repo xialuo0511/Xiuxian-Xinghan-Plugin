@@ -129,7 +129,6 @@ export async function fstadd_Gulid(A, B, key) {
 }
 
 export default new class Api {
-  xiuxianConfigData = config.getConfig("Gulid", "Gulid");
   /* 获取当前用户信息 */
   async me(id) {
     let { data } = await Bot[id].client.meApi.me()

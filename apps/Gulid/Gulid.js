@@ -27,10 +27,11 @@ export class Gulid extends plugin {
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+        this.GulidConfigData = config.getConfig("Gulid", "Gulid");
     }
 
     async test(e) {
-        e.reply(e.user_id)
+        e.reply(Api.me(this.GulidConfigData.BotAppID))
         return;
     }
 }
