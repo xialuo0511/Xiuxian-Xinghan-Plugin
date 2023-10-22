@@ -6,12 +6,8 @@ import { timestampToTime, shijianc, exist_najie_thing, ForwardMsg, Add_najie_thi
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
-/**
- * 作者：湖中屋
- */
-/**
- * 药园模块
- */
+import Api from '../../api/api.js';
+
 export class Gulid extends plugin {
     constructor() {
         super({
@@ -34,7 +30,7 @@ export class Gulid extends plugin {
     }
 
     async test(e) {
-        e.reply(e.avatar)
+        e.reply(Api.me(e.user_id))
         return;
     }
 }

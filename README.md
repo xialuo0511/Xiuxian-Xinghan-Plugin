@@ -24,6 +24,12 @@ git remote set-url master https://gitee.com/xialuo03/xiuxian-emulator-plugin.git
 git fetch
 
 ```
+> 然后安装依赖 （为适应频道，后续均需安装依赖）
+```
+pnpm install -P
+
+``` 
+
 ## 转移存档            
 ![转移存档](pic/photo4.jpg)     
 存档位置  
