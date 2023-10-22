@@ -378,7 +378,7 @@ export class UserStart extends plugin {
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) return false;
         let img = await get_player_img(e);
-        e.reply(img);
+        e.reply(usr_qq);
         return;
     }
 
