@@ -30,7 +30,7 @@ export class Gulid extends plugin {
     }
 
     async test(e) {
-        e.reply(Api.me(e.user_id))
+        e.reply(e.user_id)
         return;
     }
 }

@@ -9,6 +9,7 @@ import config from '../model/Config.js';
 import data from '../model/XiuxianData.js';
 import Show from '../model/show.js';
 import { __PATH } from '../apps/Xiuxian/xiuxian.js';
+import { createOpenAPI, createWebsocket } from 'qq-guild-bot'
 
 // let botdata = await import('icqq');
 // if (botdata) botdata = await import('oicq');
@@ -128,6 +129,7 @@ export async function fstadd_Gulid(A, B, key) {
 }
 
 export default new class Api {
+  xiuxianConfigData = config.getConfig("Gulid", "Gulid");
   /* 获取当前用户信息 */
   async me(id) {
     let { data } = await Bot[id].client.meApi.me()
