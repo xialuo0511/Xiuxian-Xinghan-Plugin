@@ -372,7 +372,7 @@ export class UserStart extends plugin {
     async Show_player(e) {
         if (!verc({ e })) return false;
         let usr_qq = e.user_id.toString().replace('qg_', '');
-        usr_qq = await channel(usr_qq);
+        usr_qq = await Gulid(usr_qq);
 
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
