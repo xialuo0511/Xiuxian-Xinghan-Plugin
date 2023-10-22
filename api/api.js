@@ -49,7 +49,7 @@ export async function Gulid(usr_qq) {
     }
   } else {
     for (let record of allRecords) {
-      if (record.频道_ID == usr_qq) {
+      if (record.QQ_ID == usr_qq) {
         usr_qq = record.QQ_ID; // 使用存档的 usr_qq
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
