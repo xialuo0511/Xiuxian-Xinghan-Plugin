@@ -7,7 +7,7 @@ import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.j
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import { get_player_img } from '../ShowImeg/showData.js'
-import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid } from '../../api/api.js'
+import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid, verc } from '../../api/api.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
@@ -370,14 +370,13 @@ export class UserStart extends plugin {
 
     //#我的练气
     async Show_player(e) {
-        //不开放私聊功能
-        let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(usr_qq);
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await channel(usr_qq);
+
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
-        }
+        if (!ifexistplay) return false;
         let img = await get_player_img(e);
         e.reply(img);
         return;
