@@ -975,7 +975,7 @@ export async function get_player_img(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '')
     let head_pic
     if (usr_qq.length > 16) {
-        head_pic = e.getAvatarUrl()
+        head_pic = await e.getAvatarUrl()
     } else {
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
