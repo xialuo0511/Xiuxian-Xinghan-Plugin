@@ -131,7 +131,6 @@ export async function fstadd_Gulid(A, B, key) {
 export default new class Api {
   /* 获取当前用户信息 */
   async me(id) {
-    Bot[id].client = createOpenAPI(Bot[id])
     let { data } = await Bot[id].client.meApi.me()
     return data
   }

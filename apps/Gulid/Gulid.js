@@ -31,7 +31,8 @@ export class Gulid extends plugin {
     }
 
     async test(e) {
-        e.reply(Api.me(this.GulidConfigData.BotAppID))
+        const bot = await Api.me(this.GulidConfigData.BotAppID)
+        e.reply(bot)
         return;
     }
 }
