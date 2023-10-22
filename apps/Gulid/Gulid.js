@@ -7,6 +7,8 @@ import { timestampToTime, shijianc, exist_najie_thing, ForwardMsg, Add_najie_thi
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import Api from '../../api/api.js';
+import { createOpenAPI, createWebsocket } from 'qq-guild-bot'
+import chalk from "chalk"
 
 export class Gulid extends plugin {
     constructor() {
@@ -31,8 +33,7 @@ export class Gulid extends plugin {
     }
 
     async test(e) {
-        const bot = await Api.me(this.GulidConfigData.BotAppID)
-        e.reply(bot)
+        e.reply(e.member.getAvatarUrl())
         return;
     }
 }
