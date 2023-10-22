@@ -28,7 +28,7 @@ export class Gulid extends plugin {
     }
 
     async GetHeadUrl(e) {
-        e.reply(e.getAvatarUrl())
+        e.reply(e.member.getAvatarUrl())
         return;
     }
 
