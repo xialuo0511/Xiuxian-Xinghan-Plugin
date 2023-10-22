@@ -27,7 +27,7 @@ export class Gulid extends plugin {
         this.GulidConfigData = config.getConfig("Gulid", "Gulid");
     }
 
-    async GetHead(e) {
+    async GetHeadUrl(e) {
         e.reply(e.getAvatarUrl())
         return;
     }

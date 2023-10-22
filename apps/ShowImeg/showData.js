@@ -973,267 +973,265 @@ export async function get_player_img(e) {
     let 护具评级;
     let 武器评级;
     let usr_qq = e.user_id.toString().replace('qg_', '')
-    let head_pic
-    if (usr_qq.length > 16) {
-        head_pic = await e.getAvatarUrl()
-    } else {
+    let head_pic = e.getAvatarUrl()
+    if (usr_qq.length <= 16)
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
-    }
-    let ifexistplay = data.existData('player', usr_qq);
-    if (!ifexistplay) {
-        return;
-    }
-    let player = await data.getData('player', usr_qq);
-    let equipment = await data.getData('equipment', usr_qq);
-    let player_status = await getPlayerAction(usr_qq);
-    let status = '空闲';
-    if (player_status.time != null) {
-        status = player_status.action + '(剩余时间:' + player_status.time + ')';
-    }
-    let lingshi = Math.trunc(player.灵石);
-    if (player.灵石 > 999999999999) {
-        lingshi = 999999999999;
-    }
-    if (player.宣言 == null || player.宣言 == undefined) {
-        player.宣言 = '这个人很懒什么都没写';
-    }
-    if (player.灵根 == null || player.灵根 == undefined) {
-        player.灵根 = await get_random_talent();
-    }
-    data.setData('player', usr_qq, player);
-    await player_efficiency(usr_qq); // 注意这里刷新了修炼效率提升
-    if ((await player.linggenshow) != 0) {
-        player.灵根.type = '无';
-        player.灵根.name = '未知';
-        player.灵根.法球倍率 = '0';
-        player.修炼效率提升 = '0';
-    }
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#一键同步');
-        return;
-    }
-    if (!isNotNull(player.sex)) {
-        e.reply('请先#一键同步');
-        return;
-    }
-    let nd = '无';
-    if (player.隐藏灵根) nd = player.隐藏灵根.name;
-    let zd = ['攻击', '防御', '生命加成', '防御加成', '攻击加成'];
-    let num = [];
-    let p = [];
-    let kxjs = [];
-    let count = 0;
-    for (let j of zd) {
-        if (player[j] == 0) {
-            p[count] = '';
-            kxjs[count] = 0;
-            count++;
-            continue;
-        }
-        p[count] = Math.floor(Math.log(player[j]) / Math.LN10);
-        num[count] = player[j] * 10 ** -p[count];
-        kxjs[count] = `${num[count].toFixed(2)} x 10`;
+}
+let ifexistplay = data.existData('player', usr_qq);
+if (!ifexistplay) {
+    return;
+}
+let player = await data.getData('player', usr_qq);
+let equipment = await data.getData('equipment', usr_qq);
+let player_status = await getPlayerAction(usr_qq);
+let status = '空闲';
+if (player_status.time != null) {
+    status = player_status.action + '(剩余时间:' + player_status.time + ')';
+}
+let lingshi = Math.trunc(player.灵石);
+if (player.灵石 > 999999999999) {
+    lingshi = 999999999999;
+}
+if (player.宣言 == null || player.宣言 == undefined) {
+    player.宣言 = '这个人很懒什么都没写';
+}
+if (player.灵根 == null || player.灵根 == undefined) {
+    player.灵根 = await get_random_talent();
+}
+data.setData('player', usr_qq, player);
+await player_efficiency(usr_qq); // 注意这里刷新了修炼效率提升
+if ((await player.linggenshow) != 0) {
+    player.灵根.type = '无';
+    player.灵根.name = '未知';
+    player.灵根.法球倍率 = '0';
+    player.修炼效率提升 = '0';
+}
+if (!isNotNull(player.level_id)) {
+    e.reply('请先#一键同步');
+    return;
+}
+if (!isNotNull(player.sex)) {
+    e.reply('请先#一键同步');
+    return;
+}
+let nd = '无';
+if (player.隐藏灵根) nd = player.隐藏灵根.name;
+let zd = ['攻击', '防御', '生命加成', '防御加成', '攻击加成'];
+let num = [];
+let p = [];
+let kxjs = [];
+let count = 0;
+for (let j of zd) {
+    if (player[j] == 0) {
+        p[count] = '';
+        kxjs[count] = 0;
         count++;
+        continue;
     }
-    //境界名字需要查找境界名
-    let level = data.Level_list.find(
-        item => item.level_id == player.level_id
-    ).level;
-    let power =
-        (player.攻击 * 0.9 +
-            player.防御 * 1.1 +
-            player.血量上限 * 0.6 +
-            player.暴击率 * player.攻击 * 0.5 +
-            player.灵根.法球倍率 * player.攻击) /
-        10000;
-    power = Number(power);
-    power = power.toFixed(2);
-    let power2 =
-        (player.攻击 + player.防御 * 1.1 + player.血量上限 * 0.5) / 10000;
-    power2 = Number(power2);
-    power2 = power2.toFixed(2);
-    let level2 = data.LevelMax_list.find(
-        item => item.level_id == player.Physique_id
-    ).level;
-    let need_exp = data.Level_list.find(
-        item => item.level_id == player.level_id
-    ).exp;
-    let need_exp2 = data.LevelMax_list.find(
-        item => item.level_id == player.Physique_id
-    ).exp;
-    let occupation = player.occupation;
-    let occupation_level;
-    let occupation_level_name;
-    let occupation_exp;
-    let occupation_need_exp;
-    if (!isNotNull(player.occupation)) {
-        occupation = '无';
-        occupation_level_name = '-';
-        occupation_exp = '-';
-        occupation_need_exp = '-';
-    } else {
-        occupation_level = player.occupation_level;
-        occupation_level_name = data.occupation_exp_list.find(
-            item => item.id == occupation_level
-        ).name;
-        occupation_exp = player.occupation_exp;
-        occupation_need_exp = data.occupation_exp_list.find(
-            item => item.id == occupation_level
-        ).experience;
-    }
-    let this_association;
-    if (!isNotNull(player.宗门)) {
-        this_association = {
-            宗门名称: '无',
-            职位: '无',
-        };
-    } else {
-        this_association = player.宗门;
-    }
-    let pinji = ['劣', '普', '优', '精', '极', '绝', '顶'];
-    if (!isNotNull(equipment.武器.pinji)) {
-        武器评级 = '无';
-    } else {
-        武器评级 = pinji[equipment.武器.pinji];
-    }
-    if (!isNotNull(equipment.护具.pinji)) {
-        护具评级 = '无';
-    } else {
-        护具评级 = pinji[equipment.护具.pinji];
-    }
-    if (!isNotNull(equipment.法宝.pinji)) {
-        法宝评级 = '无';
-    } else {
-        法宝评级 = pinji[equipment.法宝.pinji];
-    }
-    let rank_lianqi = data.Level_list.find(
-        item => item.level_id == player.level_id
-    ).level;
-    let expmax_lianqi = data.Level_list.find(
-        item => item.level_id == player.level_id
-    ).exp;
-    let rank_llianti = data.LevelMax_list.find(
-        item => item.level_id == player.Physique_id
-    ).level;
-    let expmax_llianti = need_exp2;
-    let rank_liandan = occupation_level_name;
-    let expmax_liandan = occupation_need_exp;
-    let strand_hp = Strand(player.当前血量, player.血量上限);
-    let strand_lianqi = Strand(player.修为, expmax_lianqi);
-    let strand_llianti = Strand(player.血气, expmax_llianti);
-    let strand_liandan = Strand(occupation_exp, expmax_liandan);
-    let Power = GetPower(
-        player.攻击,
-        player.防御,
-        player.血量上限,
-        player.暴击率
-    );
-    let PowerMini = bigNumberTransform(Power);
-    let bao = parseInt(player.暴击率 * 100) + '%';
-    equipment.武器.bao = parseInt(equipment.武器.bao * 100) + '%';
-    equipment.护具.bao = parseInt(equipment.护具.bao * 100) + '%';
-    equipment.法宝.bao = parseInt(equipment.法宝.bao * 100) + '%';
-    lingshi = bigNumberTransform(lingshi);
-    let hunyin = '未知';
-    let A = usr_qq;
-    let qinmidu;
-    try {
-        qinmidu = await Read_qinmidu();
-    } catch {
-        //没有建立一个
-        await Write_qinmidu([]);
-        qinmidu = await Read_qinmidu();
-    }
-    for (let i = 0; i < qinmidu.length; i++) {
-        if (qinmidu[i].QQ_A == A || qinmidu[i].QQ_B == A) {
-            if (qinmidu[i].婚姻 > 0) {
-                if (qinmidu[i].QQ_A == A) {
-                    let B = await Read_player(qinmidu[i].QQ_B);
-                    hunyin = B.名号;
-                } else {
-                    let A = await Read_player(qinmidu[i].QQ_A);
-                    hunyin = A.名号;
-                }
-                break;
+    p[count] = Math.floor(Math.log(player[j]) / Math.LN10);
+    num[count] = player[j] * 10 ** -p[count];
+    kxjs[count] = `${num[count].toFixed(2)} x 10`;
+    count++;
+}
+//境界名字需要查找境界名
+let level = data.Level_list.find(
+    item => item.level_id == player.level_id
+).level;
+let power =
+    (player.攻击 * 0.9 +
+        player.防御 * 1.1 +
+        player.血量上限 * 0.6 +
+        player.暴击率 * player.攻击 * 0.5 +
+        player.灵根.法球倍率 * player.攻击) /
+    10000;
+power = Number(power);
+power = power.toFixed(2);
+let power2 =
+    (player.攻击 + player.防御 * 1.1 + player.血量上限 * 0.5) / 10000;
+power2 = Number(power2);
+power2 = power2.toFixed(2);
+let level2 = data.LevelMax_list.find(
+    item => item.level_id == player.Physique_id
+).level;
+let need_exp = data.Level_list.find(
+    item => item.level_id == player.level_id
+).exp;
+let need_exp2 = data.LevelMax_list.find(
+    item => item.level_id == player.Physique_id
+).exp;
+let occupation = player.occupation;
+let occupation_level;
+let occupation_level_name;
+let occupation_exp;
+let occupation_need_exp;
+if (!isNotNull(player.occupation)) {
+    occupation = '无';
+    occupation_level_name = '-';
+    occupation_exp = '-';
+    occupation_need_exp = '-';
+} else {
+    occupation_level = player.occupation_level;
+    occupation_level_name = data.occupation_exp_list.find(
+        item => item.id == occupation_level
+    ).name;
+    occupation_exp = player.occupation_exp;
+    occupation_need_exp = data.occupation_exp_list.find(
+        item => item.id == occupation_level
+    ).experience;
+}
+let this_association;
+if (!isNotNull(player.宗门)) {
+    this_association = {
+        宗门名称: '无',
+        职位: '无',
+    };
+} else {
+    this_association = player.宗门;
+}
+let pinji = ['劣', '普', '优', '精', '极', '绝', '顶'];
+if (!isNotNull(equipment.武器.pinji)) {
+    武器评级 = '无';
+} else {
+    武器评级 = pinji[equipment.武器.pinji];
+}
+if (!isNotNull(equipment.护具.pinji)) {
+    护具评级 = '无';
+} else {
+    护具评级 = pinji[equipment.护具.pinji];
+}
+if (!isNotNull(equipment.法宝.pinji)) {
+    法宝评级 = '无';
+} else {
+    法宝评级 = pinji[equipment.法宝.pinji];
+}
+let rank_lianqi = data.Level_list.find(
+    item => item.level_id == player.level_id
+).level;
+let expmax_lianqi = data.Level_list.find(
+    item => item.level_id == player.level_id
+).exp;
+let rank_llianti = data.LevelMax_list.find(
+    item => item.level_id == player.Physique_id
+).level;
+let expmax_llianti = need_exp2;
+let rank_liandan = occupation_level_name;
+let expmax_liandan = occupation_need_exp;
+let strand_hp = Strand(player.当前血量, player.血量上限);
+let strand_lianqi = Strand(player.修为, expmax_lianqi);
+let strand_llianti = Strand(player.血气, expmax_llianti);
+let strand_liandan = Strand(occupation_exp, expmax_liandan);
+let Power = GetPower(
+    player.攻击,
+    player.防御,
+    player.血量上限,
+    player.暴击率
+);
+let PowerMini = bigNumberTransform(Power);
+let bao = parseInt(player.暴击率 * 100) + '%';
+equipment.武器.bao = parseInt(equipment.武器.bao * 100) + '%';
+equipment.护具.bao = parseInt(equipment.护具.bao * 100) + '%';
+equipment.法宝.bao = parseInt(equipment.法宝.bao * 100) + '%';
+lingshi = bigNumberTransform(lingshi);
+let hunyin = '未知';
+let A = usr_qq;
+let qinmidu;
+try {
+    qinmidu = await Read_qinmidu();
+} catch {
+    //没有建立一个
+    await Write_qinmidu([]);
+    qinmidu = await Read_qinmidu();
+}
+for (let i = 0; i < qinmidu.length; i++) {
+    if (qinmidu[i].QQ_A == A || qinmidu[i].QQ_B == A) {
+        if (qinmidu[i].婚姻 > 0) {
+            if (qinmidu[i].QQ_A == A) {
+                let B = await Read_player(qinmidu[i].QQ_B);
+                hunyin = B.名号;
+            } else {
+                let A = await Read_player(qinmidu[i].QQ_A);
+                hunyin = A.名号;
             }
+            break;
         }
     }
-    let dingjixianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
-    if (!dingjixianshi) {
-        dingjixianshi = 0
-    }
-    let action = player.练气皮肤;
-    let player_data = {
-        head_pic: head_pic,
-        dingjixianshi: dingjixianshi,
-        pifu: action,
-        user_id: usr_qq,
-        player, // 玩家数据
-        rank_lianqi, // 练气境界
-        expmax_lianqi, // 练气需求经验
-        rank_llianti, // 炼体境界
-        expmax_llianti, // 炼体需求经验
-        rank_liandan, // 炼丹境界
-        expmax_liandan, // 炼丹需求经验
-        equipment, // 装备数据
-        talent: parseInt(player.修炼效率提升 * 100), //
-        player_action: status, // 当前状态
-        this_association, // 宗门信息
-        strand_hp,
-        strand_lianqi,
-        strand_llianti,
-        strand_liandan,
-        PowerMini, // 玩家战力
-        bao,
-        nickname: player.名号,
-        linggen: player.灵根, //
-        declaration: player.宣言,
-        need_exp: need_exp,
-        need_exp2: need_exp2,
-        exp: player.修为,
-        exp2: player.血气,
-        zdl: power,
-        镇妖塔层数: player.镇妖塔层数,
-        sh: player.神魄段数,
-        mdz: player.魔道值,
-        hgd: player.favorability,
-        jczdl: power2,
-        level: level,
-        level2: level2,
-        lingshi: lingshi,
-        player_maxHP: player.血量上限,
-        player_nowHP: player.当前血量,
-        player_atk: kxjs[0],
-        player_atk2: p[0],
-        player_def: kxjs[1],
-        player_def2: p[1],
-        生命加成: kxjs[2],
-        生命加成_t: p[2],
-        防御加成: kxjs[3],
-        防御加成_t: p[3],
-        攻击加成: kxjs[4],
-        攻击加成_t: p[4],
-        player_bao: player.暴击率,
-        player_bao2: player.暴击伤害,
-        occupation: occupation,
-        occupation_level: occupation_level_name,
-        occupation_exp: occupation_exp,
-        occupation_need_exp: occupation_need_exp,
-        arms: equipment.武器,
-        armor: equipment.护具,
-        treasure: equipment.法宝,
-        association: this_association,
-        learned_gongfa: player.学习的功法,
-        婚姻状况: hunyin,
-        武器评级: 武器评级,
-        护具评级: 护具评级,
-        法宝评级: 法宝评级,
-        修仙版本: versionData,
-    };
-    const data1 = await new Show(e).get_playerData(player_data);
-    return await puppeteer.screenshot('player', {
-        ...data1,
-    });
+}
+let dingjixianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
+if (!dingjixianshi) {
+    dingjixianshi = 0
+}
+let action = player.练气皮肤;
+let player_data = {
+    head_pic: head_pic,
+    dingjixianshi: dingjixianshi,
+    pifu: action,
+    user_id: usr_qq,
+    player, // 玩家数据
+    rank_lianqi, // 练气境界
+    expmax_lianqi, // 练气需求经验
+    rank_llianti, // 炼体境界
+    expmax_llianti, // 炼体需求经验
+    rank_liandan, // 炼丹境界
+    expmax_liandan, // 炼丹需求经验
+    equipment, // 装备数据
+    talent: parseInt(player.修炼效率提升 * 100), //
+    player_action: status, // 当前状态
+    this_association, // 宗门信息
+    strand_hp,
+    strand_lianqi,
+    strand_llianti,
+    strand_liandan,
+    PowerMini, // 玩家战力
+    bao,
+    nickname: player.名号,
+    linggen: player.灵根, //
+    declaration: player.宣言,
+    need_exp: need_exp,
+    need_exp2: need_exp2,
+    exp: player.修为,
+    exp2: player.血气,
+    zdl: power,
+    镇妖塔层数: player.镇妖塔层数,
+    sh: player.神魄段数,
+    mdz: player.魔道值,
+    hgd: player.favorability,
+    jczdl: power2,
+    level: level,
+    level2: level2,
+    lingshi: lingshi,
+    player_maxHP: player.血量上限,
+    player_nowHP: player.当前血量,
+    player_atk: kxjs[0],
+    player_atk2: p[0],
+    player_def: kxjs[1],
+    player_def2: p[1],
+    生命加成: kxjs[2],
+    生命加成_t: p[2],
+    防御加成: kxjs[3],
+    防御加成_t: p[3],
+    攻击加成: kxjs[4],
+    攻击加成_t: p[4],
+    player_bao: player.暴击率,
+    player_bao2: player.暴击伤害,
+    occupation: occupation,
+    occupation_level: occupation_level_name,
+    occupation_exp: occupation_exp,
+    occupation_need_exp: occupation_need_exp,
+    arms: equipment.武器,
+    armor: equipment.护具,
+    treasure: equipment.法宝,
+    association: this_association,
+    learned_gongfa: player.学习的功法,
+    婚姻状况: hunyin,
+    武器评级: 武器评级,
+    护具评级: 护具评级,
+    法宝评级: 法宝评级,
+    修仙版本: versionData,
+};
+const data1 = await new Show(e).get_playerData(player_data);
+return await puppeteer.screenshot('player', {
+    ...data1,
+});
 }
 
 /**
