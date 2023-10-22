@@ -42,7 +42,7 @@ export class UserAction extends plugin {
 
     //#我的纳戒
     async Show_najie(e) {
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
         usr_qq = await Gulid(usr_qq)
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
