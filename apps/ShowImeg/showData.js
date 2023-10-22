@@ -973,7 +973,12 @@ export async function get_player_img(e) {
     let 护具评级;
     let 武器评级;
     let usr_qq = e.user_id.toString().replace('qg_', '')
-    usr_qq = await Gulid(usr_qq);
+    let head_pic
+    if (usr_qq.length > 16) {
+        head_pic = e.getAvatarUrl()
+    } else {
+        head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
+    }
     let ifexistplay = data.existData('player', usr_qq);
     if (!ifexistplay) {
         return;
@@ -1159,6 +1164,7 @@ export async function get_player_img(e) {
     }
     let action = player.练气皮肤;
     let player_data = {
+        head_pic: head_pic,
         dingjixianshi: dingjixianshi,
         pifu: action,
         user_id: usr_qq,
