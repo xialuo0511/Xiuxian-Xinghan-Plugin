@@ -36,7 +36,7 @@ export async function Gulid(usr_qq) {
   const dir = path.join(`${__PATH.Gulid_path}/Gulid.json`);
   const logfile = fs.readFileSync(dir, 'utf8');
   const allRecords = JSON.parse(logfile);
-  if (usr_qq.length > 16) {
+  if (usr_qq.length >= 16) {
     for (let record of allRecords) {
       if (record.频道_ID == usr_qq) {
         usr_qq = record.QQ_ID; // 使用存档的 usr_qq
