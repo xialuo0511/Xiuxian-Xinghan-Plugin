@@ -139,8 +139,8 @@ export class admin extends plugin {
                             } else if (stdout) {
                                 that.e.reply("重启成功，新版修仙插件已应用");
                                 logger.mark("重启成功，运行已转为后台");
-                                logger.mark("查看日志请用命令：npm run log");
-                                logger.mark("停止后台运行命令：npm stop");
+                                logger.mark("查看日志请用命令：npm run log 或 pnpm run log");
+                                logger.mark("停止后台运行命令：npm stop 或 pnpm stop");
                                 process.exit();
                             }
                         });
