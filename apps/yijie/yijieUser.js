@@ -27,6 +27,7 @@ import { get_yijie_player_img, get_ranking_xinghunbi_img } from '../ShowImeg/sho
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
+import { verc, Gulid } from '../../api/api.js'
 
 /**
  * 全局
@@ -127,7 +128,10 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let action = await this.getPlayerAction(e.user_id);
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
+        let action = await this.getPlayerAction(usr_qq);
         let state = await this.getPlayerState(action);
         if (state == "空闲") {
             return;
@@ -144,9 +148,9 @@ export class yijieUser extends plugin {
         time = parseInt((now_time - start_time) / 1000 / 60 / 30);
 
         if (e.isGroup) {
-            await this.dagong_jiesuan(e.user_id, time, true, e.group_id);//提前闭关结束不会触发随机事件
+            await this.dagong_jiesuan(usr_qq, time, true, e.group_id);//提前闭关结束不会触发随机事件
         } else {
-            await this.dagong_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
+            await this.dagong_jiesuan(usr_qq, time, false);//提前闭关结束不会触发随机事件
         }
 
         let arr = action;
@@ -158,7 +162,7 @@ export class yijieUser extends plugin {
         //结束的时间也修改为当前时间
         arr.end_time = new Date().getTime();
         delete arr.group_id;//结算完去除group_id
-        await redis.set("xiuxian:yijie:player:" + e.user_id + ":action", JSON.stringify(arr));
+        await redis.set("xiuxian:yijie:player:" + usr_qq + ":action", JSON.stringify(arr));
     }
 
     async Giveup(e) {
@@ -166,7 +170,9 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
             e.reply("没存档你逃个锤子!");
@@ -200,7 +206,9 @@ export class yijieUser extends plugin {
 
     //闭关
     async shuaguai(e) {
-        let usr_qq = e.user_id;//用户qq
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         if (!await yijie_existplayer(usr_qq)) {
             return;
@@ -286,7 +294,9 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
@@ -334,7 +344,9 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) { return; }
         let usr_paiming;
@@ -393,7 +405,9 @@ export class yijieUser extends plugin {
     }
 
     async zb(e) {
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
@@ -423,7 +437,9 @@ export class yijieUser extends plugin {
     }
 
     async myzhanli(e) {
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
@@ -442,7 +458,9 @@ export class yijieUser extends plugin {
             e.reply("请在群聊内发送此信息")
             return;
         }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -516,9 +534,11 @@ export class yijieUser extends plugin {
         }
         return;
     }
-    //#我的练气
+
     async Show_player(e) {
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
@@ -535,7 +555,9 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
@@ -731,7 +753,9 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
@@ -794,7 +818,9 @@ export class yijieUser extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await yijie_existplayer(usr_qq);
         if (!ifexistplay) {
@@ -963,7 +989,9 @@ export class yijieUser extends plugin {
  * 状态
  */
 export async function Go(e) {
-    let usr_qq = e.user_id;
+    if (!verc({ e })) return false;
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await Gulid(usr_qq);
     //有无存档
     let ifexistplay = await yijie_existplayer(usr_qq);
     if (!ifexistplay) {
@@ -996,7 +1024,9 @@ export async function Go(e) {
 
 
 export async function get_yijie_hecheng_img(e, thing_type) {
-    let usr_qq = e.user_id;
+    if (!verc({ e })) return false;
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData("yijie_player", usr_qq);
     if (!ifexistplay) {
         return;

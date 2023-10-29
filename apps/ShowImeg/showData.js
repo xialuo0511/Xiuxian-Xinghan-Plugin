@@ -1236,7 +1236,9 @@ export async function get_player_img(e) {
  * @return image
  */
 export async function get_yijie_player_img(e) {
-    let usr_qq = e.user_id;
+    if (!verc({ e })) return false;
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData('yijie_player', usr_qq);
     if (!ifexistplay) {
         return;
