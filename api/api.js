@@ -55,6 +55,25 @@ export async function Gulid(usr_qq) {
   return usr_qq; // 返回转换后的 usr_qq 值
 }
 
+export async function Gulid2(usr_qq) {
+  const dir = path.join(`${__PATH.Gulid_path}/Gulid.json`);
+  const logfile = fs.readFileSync(dir, 'utf8');
+  const allRecords = JSON.parse(logfile);
+  if (usr_qq.length < 16) {
+    for (let record of allRecords) {
+      if (record.QQ_ID == usr_qq) {
+        usr_qq = record.频道_ID; // 使用存档的 usr_qq
+        let ifexistplay = data.existData("player", usr_qq);
+        if (!ifexistplay) {
+          usr_qq = record.QQ_ID; // 使用存档的 usr_qq
+        }
+        break;
+      }
+    }
+  }
+  return usr_qq; // 返回转换后的 usr_qq 值
+}
+
 export async function Read_Gulid() {
   let dir = path.join(`${__PATH.Gulid_path}/Gulid.json`);
   let Gulid = fs.readFileSync(dir, 'utf8', (err, data) => {
