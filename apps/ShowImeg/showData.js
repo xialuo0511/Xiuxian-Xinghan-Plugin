@@ -1496,7 +1496,7 @@ export async function get_equipment_img2(e) {
  * @return image
  */
 export async function get_najie_img(e) {
-    let usr_qq = e.user_id;
+    let usr_qq = e.user_id.toString().replace('qg_', '');;
     usr_qq = await Gulid(usr_qq)
     let player = await data.getData("player", usr_qq);
     let najie = await data.getData("najie", usr_qq);

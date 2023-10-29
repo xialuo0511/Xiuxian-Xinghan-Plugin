@@ -49,7 +49,6 @@ export class UserAction extends plugin {
         if (!ifexistplay) {
             return;
         }
-        e.reply(usr_qq)
         let img = await get_najie_img(e);
         e.reply(img);
         return;
