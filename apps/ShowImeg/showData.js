@@ -1501,7 +1501,7 @@ export async function get_equipment_img2(e) {
  */
 export async function get_najie_img(e) {
     let usr_qq = e.user_id;
-    usr_qq = await Gulid(usr_qq)
+    usr_qq = 2531606029
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
         return;
