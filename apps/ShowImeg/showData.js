@@ -1501,11 +1501,7 @@ export async function get_equipment_img2(e) {
  */
 export async function get_najie_img(e) {
     let usr_qq = e.user_id;
-    usr_qq = 2531606029
-    let ifexistplay = data.existData("player", usr_qq);
-    if (!ifexistplay) {
-        return;
-    }
+    usr_qq = await Gulid(usr_qq)
     let player = await data.getData("player", usr_qq);
     let najie = await data.getData("najie", usr_qq);
     const lingshi = Math.trunc(najie.灵石);
