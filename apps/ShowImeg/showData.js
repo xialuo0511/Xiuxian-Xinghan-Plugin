@@ -975,7 +975,7 @@ export async function get_player_img(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '');;
     usr_qq = await Gulid(usr_qq)
     let head_pic = e.member.getAvatarUrl()
-    if (usr_qq.length <= 16) {
+    if (!head_pic) {
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
     let player = await data.getData('player', usr_qq);
