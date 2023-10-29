@@ -38,22 +38,22 @@ export async function Gulid(usr_qq) {
   const allRecords = JSON.parse(logfile);
   if (usr_qq.length >= 16) {
     for (let record of allRecords) {
-      if (record.频道_ID == usr_qq) {
-        usr_qq = record.QQ_ID; // 使用存档的 usr_qq
+      if (record["频道_ID"] == usr_qq) {
+        usr_qq = record["QQ_ID"]; // 使用存档的 usr_qq
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
-          usr_qq = record.频道_ID; // 使用存档的 usr_qq
+          usr_qq = record["频道_ID"]; // 使用存档的 usr_qq
         }
         break;
       }
     }
   } else {
     for (let record of allRecords) {
-      if (record.QQ_ID == usr_qq) {
-        usr_qq = record.QQ_ID; // 使用存档的 usr_qq
+      if (record["QQ_ID"] == usr_qq) {
+        usr_qq = record["QQ_ID"]; // 使用存档的 usr_qq
         let ifexistplay = data.existData("player", usr_qq);
         if (!ifexistplay) {
-          usr_qq = record.频道_ID; // 使用存档的 usr_qq
+          usr_qq = record["频道_ID"]; // 使用存档的 usr_qq
         }
         break;
       }
