@@ -977,10 +977,6 @@ export async function get_player_img(e) {
     if (usr_qq.length <= 16) {
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
-    let ifexistplay = data.existData('player', usr_qq);
-    if (!ifexistplay) {
-        return;
-    }
     let player = await data.getData('player', usr_qq);
     let equipment = await data.getData('equipment', usr_qq);
     let player_status = await getPlayerAction(usr_qq);
