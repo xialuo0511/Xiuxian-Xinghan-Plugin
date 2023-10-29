@@ -27,7 +27,7 @@ import { get_yijie_player_img, get_ranking_xinghunbi_img } from '../ShowImeg/sho
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
-import { verc, Gulid } from '../../api/api.js'
+import { verc, Gulid2, Gulid } from '../../api/api.js'
 
 /**
  * 全局
@@ -106,6 +106,10 @@ export class yijieUser extends plugin {
                 {
                     reg: '#异界攻略$',
                     fnc: 'glve'
+                },
+                {
+                    reg: '#调试id$',
+                    fnc: 'ts'
                 }
             ]
         })
@@ -114,6 +118,11 @@ export class yijieUser extends plugin {
 
     async glve(e) {
         e.reply('【腾讯文档】修仙插件异界攻略v2.0.0https://docs.qq.com/doc/DU1pmVFNReVlvdEJP')
+        return;
+    }
+
+    async ts(e) {
+        e.reply(await Gulid2(e.user_id.toString().replace('qg_', '')))
         return;
     }
 
