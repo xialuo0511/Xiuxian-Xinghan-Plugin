@@ -51,10 +51,10 @@ export class UserStart extends plugin {
                     fnc: 'daily_gift'
                 }
                 ,
-                {
-                    reg: '^#领取七日馈赠$',
-                    fnc: 'huodong_gift'
-                },
+                // {
+                //     reg: '^#领取七日馈赠$',
+                //     fnc: 'huodong_gift'
+                // },
                 {
                     reg: '^#绑定频道密钥$',
                     fnc: 'bangding'
@@ -548,7 +548,7 @@ export class UserStart extends plugin {
             }
             await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", xianding)
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket},【仙鼎历练券】*16`
             ]
             e.reply(msg);
@@ -557,7 +557,7 @@ export class UserStart extends plugin {
             await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
             await Add_修为(usr_qq, gift_xiuwei);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket}`
             ]
             e.reply(msg);
