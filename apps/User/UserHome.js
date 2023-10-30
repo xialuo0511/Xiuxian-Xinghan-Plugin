@@ -121,6 +121,7 @@ export class UserHome extends plugin {
         });
         e.reply(img);
         return;
+
     }
 
     async wtfk(e) {
