@@ -133,7 +133,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let thing = e.msg.replace("#", '');
         thing = thing.replace("查询纳戒", '');
         let code = thing.split("\*");
@@ -159,7 +160,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             return;
@@ -294,7 +296,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -337,7 +340,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -408,7 +412,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -477,7 +482,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         var reg = new RegExp(/哪里有/);
         let msg = e.msg.replace(reg, '');
         msg = msg.replace("#", '');
@@ -783,7 +789,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -816,7 +823,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -895,7 +903,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -965,7 +974,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -3377,7 +3387,8 @@ export class UserHome extends plugin {
             return;
         }
         /** 内容 */
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
         let now = new Date();
@@ -3424,7 +3435,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         /** 内容 */
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
@@ -3459,7 +3471,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -3538,7 +3551,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -3618,7 +3632,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -3709,7 +3724,8 @@ export class UserHome extends plugin {
  * 状态
  */
 export async function Go(e) {
-    let usr_qq = e.user_id;
+    let nowid = e.user_id.toString().replace('qg_', '')
+    let usr_qq = await Gulid(nowid);
     //有无存档
     let ifexistplay = await existplayer(usr_qq);
     if (!ifexistplay) {
