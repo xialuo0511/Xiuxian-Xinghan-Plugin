@@ -353,8 +353,8 @@ export class UserStart extends plugin {
             fs.rmSync(`${__PATH.player_path}/${usr_qq}.json`);
             fs.rmSync(`${__PATH.equipment_path}/${usr_qq}.json`);
             fs.rmSync(`${__PATH.najie_path}/${usr_qq}.json`);
-            e.reply([segment.at(usr_qq), "当前存档已清空!开始重生"]);
-            e.reply([segment.at(usr_qq), "来世，信则有，不信则无，岁月悠悠，世间终会出现两朵相同的花，千百年的回眸，一花凋零，一花绽。是否为同一朵，任后人去评断！！"]);
+            e.reply([segment.at(e.user_id), "当前存档已清空!开始重生"]);
+            e.reply([segment.at(e.user_id), "来世，信则有，不信则无，岁月悠悠，世间终会出现两朵相同的花，千百年的回眸，一花凋零，一花绽。是否为同一朵，任后人去评断！！"]);
             await this.Create_player(e);
             await redis.set("xiuxian:player:" + usr_qq + ":last_reCreate_time", nowTime);//redis设置本次改名时间戳
             await redis.set("xiuxian:player:" + usr_qq + ":reCreate_acount", acount);
@@ -619,7 +619,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 5
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*5,【顶级仙石】*5`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -635,7 +635,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 10
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【甜酿丹】*10,【顶级仙石】*10`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -652,7 +652,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 10
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【摘榜令】*3,【顶级仙石】*10 `
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -668,7 +668,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*15,【顶级仙石】*15`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -684,7 +684,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*15`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -700,7 +700,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 20
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*20`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -717,7 +717,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 35
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*35`
             ]
             let yijie = await yijie_existplayer(usr_qq)
