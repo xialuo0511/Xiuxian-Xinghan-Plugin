@@ -41,6 +41,7 @@ import {
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Add_仙宠 } from "../Pokemon/Pokemon.js"
 import { get_equipment_img } from '../ShowImeg/showData.js'
+import { Gulid } from '../../api/api.js'
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
