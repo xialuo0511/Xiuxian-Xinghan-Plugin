@@ -238,6 +238,7 @@ export class SecretPlace extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
+        arr.user_id = e.user_id
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
         e.reply("开始降临" + didian + "," + time + "分钟后归来!");
         return;
@@ -328,6 +329,7 @@ export class SecretPlace extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
+        arr.user_id = e.user_id
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
         e.reply("正在前往" + weizhi.name + "," + time + "分钟后归来!");
         return;
@@ -416,6 +418,7 @@ export class SecretPlace extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id;
         }
+        arr.user_id = e.user_id
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
         await Add_修为(usr_qq, -100000);
         if (suiji == 0) {
@@ -505,6 +508,7 @@ export class SecretPlace extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
+        arr.user_id = e.user_id
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
         e.reply("开始镇守" + didian + "," + time + "分钟后归来!");
         return;
@@ -547,6 +551,7 @@ export class SecretPlace extends plugin {
                 arr.mojie = 1;
                 arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
                 delete arr.group_id;//结算完去除group_id
+                delete arr.user_id;//结算完去除user_id
                 await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
                 e.reply("你已逃离！");
                 return;

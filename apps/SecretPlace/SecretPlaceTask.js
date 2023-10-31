@@ -68,7 +68,7 @@ export class SecretPlaceTask extends plugin {
           }
         }
         //最后发送的消息
-        let msg = [segment.at(Number(player_id))];
+        let msg = [segment.at(action.user_id)];
         //动作结束时间
         let end_time = action.end_time;
         //现在的时间
