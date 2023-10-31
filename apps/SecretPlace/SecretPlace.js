@@ -177,7 +177,7 @@ export class SecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         await Go(e);
         if (allaction) {
         } else {
@@ -251,7 +251,7 @@ export class SecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         await Go(e);
         if (allaction) {
         } else {
@@ -342,7 +342,7 @@ export class SecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         await Go(e);
         if (allaction) {
         } else {
@@ -437,7 +437,7 @@ export class SecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         await Go(e);
         if (allaction) {
         } else {
@@ -520,7 +520,7 @@ export class SecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             e.reply("没存档你逃个锤子!");
@@ -583,7 +583,7 @@ export class SecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         await Go(e);
         if (allaction) {
         } else {
@@ -645,7 +645,7 @@ export class SecretPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         await Go(e);
 
         //获取输入信息
@@ -700,7 +700,7 @@ export class SecretPlace extends plugin {
  */
 export async function get_huodongshop_img(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '')
-    usr_qq = await Gulid(nowid);
+    usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
         return;
@@ -776,7 +776,7 @@ export async function jindi(e, weizhi, addres) {
  */
 export async function Go(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '')
-    usr_qq = await Gulid(nowid);
+    usr_qq = await Gulid(usr_qq);
     //不开放私聊
     if (!e.isGroup) {
         return;

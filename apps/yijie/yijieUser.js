@@ -932,7 +932,7 @@ export class yijieUser extends plugin {
 
 
         let usr_qq = e.user_id.toString().replace('qg_', '')
-        usr_qq = await Gulid(nowid);
+        usr_qq = await Gulid(usr_qq);
         let player = data.getData("yijie_player", usr_qq);
         if (!isNotNull(player.xianding_level)) {
             return;
