@@ -238,7 +238,7 @@ export class SecretPlace extends plugin {
         if (e.isGroup) {
             arr.group_id = e.group_id
         }
-        arr.user_id = e.user_id
+        arr.user_id = e.user_id.toString()
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
         e.reply("开始降临" + didian + "," + time + "分钟后归来!");
         return;
