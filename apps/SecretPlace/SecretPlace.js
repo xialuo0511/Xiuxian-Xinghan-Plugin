@@ -7,6 +7,8 @@ import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
+import { Gulid } from '../../api/api.js'
+
 /**
  * 秘境模块
  */
@@ -174,7 +176,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(nowid);
         await Go(e);
         if (allaction) {
         } else {
@@ -246,7 +249,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(nowid);
         await Go(e);
         if (allaction) {
         } else {
@@ -335,7 +339,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(nowid);
         await Go(e);
         if (allaction) {
         } else {
@@ -428,7 +433,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(nowid);
         await Go(e);
         if (allaction) {
         } else {
@@ -509,7 +515,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(nowid);
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             e.reply("没存档你逃个锤子!");
@@ -570,7 +577,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(nowid);
         await Go(e);
         if (allaction) {
         } else {
@@ -631,7 +639,8 @@ export class SecretPlace extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(nowid);
         await Go(e);
 
         //获取输入信息
@@ -685,7 +694,8 @@ export class SecretPlace extends plugin {
  *活动商店
  */
 export async function get_huodongshop_img(e) {
-    let usr_qq = e.user_id;
+    let usr_qq = e.user_id.toString().replace('qg_', '')
+    usr_qq = await Gulid(nowid);
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
         return;
@@ -760,7 +770,8 @@ export async function jindi(e, weizhi, addres) {
  * 常用查询合集
  */
 export async function Go(e) {
-    let usr_qq = e.user_id;
+    let usr_qq = e.user_id.toString().replace('qg_', '')
+    usr_qq = await Gulid(nowid);
     //不开放私聊
     if (!e.isGroup) {
         return;
