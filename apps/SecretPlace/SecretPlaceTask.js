@@ -68,7 +68,7 @@ export class SecretPlaceTask extends plugin {
           }
         }
         //最后发送的消息
-        let msg;
+        let msg = [];
         //动作结束时间
         let end_time = action.end_time;
         //现在的时间
@@ -478,7 +478,7 @@ export class SecretPlaceTask extends plugin {
             } else {
               return;
             }
-            msg.push(`\n【${player.名号}】` + last_msg + fyd_msg);
+            msg.push(`【${player.名号}】` + last_msg + fyd_msg);
             let arr = action;
             //把状态都关了
             arr.shutup = 1; //闭关状态
