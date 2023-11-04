@@ -1,4 +1,4 @@
-//插件加载
+//#tag已适配
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"

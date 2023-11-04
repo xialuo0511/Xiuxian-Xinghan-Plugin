@@ -1,3 +1,4 @@
+//#tag已适配 
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
@@ -107,8 +108,8 @@ export class UserStart extends plugin {
             e.reply("请在群聊内发送此信息")
             return;
         }
-        let nowid = e.user_id.toString().replace('qg_', '')
-        let usr_qq = await Gulid(nowid);
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
