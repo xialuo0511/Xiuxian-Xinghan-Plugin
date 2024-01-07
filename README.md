@@ -42,13 +42,15 @@ pnpm install -P
 
 ## 更新内容
 要获取最新更新内容发"#查看日志"即可查看
+
 ## 配置与存档   
 >xiuxian-emulator-plugin/ config / xiuxian / xiuxian.yaml       
 >xiuxian-emulator-plugin/ resources / data          
 >可根据需求自行修改     
+
 ## 免责声明       
-1. 功能仅限内部交流与小范围使用       
-2. 请勿用于任何以盈利为目的的场景     
+功能仅限内部交流与小范围使用    
+
 ## 原作者信息
 原插件：[@ningmengchongshui](https://gitee.com/ningmengchongshui)  
 原作者：[@DDZS](https://gitee.com/hutao222)
