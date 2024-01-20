@@ -523,7 +523,7 @@ export class Level extends plugin {
             return;
         }
         //当前系数计算
-        let x = await dujie(usr_qq);
+        let x = await dujie(e);
         //默认为3
         var y = 3;
         if (player.灵根.type == "伪灵根") {
@@ -716,7 +716,7 @@ export class Level extends plugin {
     }
 }
 
-export async function dujie(user_qq) {
+export async function dujie(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '')
     usr_qq = await Gulid(usr_qq);
     let player = await Read_player(usr_qq);
