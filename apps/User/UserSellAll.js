@@ -16,6 +16,7 @@ import { get_equipment_img } from '../ShowImeg/showData.js'
 import { synchronization, yijie_tongbu } from '../AdminSuper/AdminSuper.js'
 import { Pushforum_ASS } from '../Help/Forum.js'
 import { Synchronization_ASS } from '../Association/TreasureCabinet.js'
+import { Gulid } from '../../api/api.js';
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
@@ -314,7 +315,8 @@ export class UserSellAll extends plugin {
 
     async Sell_all_comodities(e) {
         if (!verc({ e })) return false;
-        let usr_qq = e.user_id
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) return false;
@@ -429,7 +431,8 @@ export class UserSellAll extends plugin {
         this.finish('noticeSellAllGoods');
         /**出售*/
 
-        let usr_qq = e.user_id.toString().replace('qg_', '');
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let najie = await data.getData('najie', usr_qq);
         let commodities_price = 0;
@@ -481,7 +484,8 @@ export class UserSellAll extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -509,7 +513,8 @@ export class UserSellAll extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -538,7 +543,8 @@ export class UserSellAll extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -601,7 +607,8 @@ export class UserSellAll extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -629,7 +636,8 @@ export class UserSellAll extends plugin {
     }
 }
 export async function Go(e) {
-    let usr_qq = e.user_id;
+    let nowid = e.user_id.toString().replace('qg_', '')
+    let usr_qq = await Gulid(nowid);
     //有无存档
     let ifexistplay = await existplayer(usr_qq);
     if (!ifexistplay) {

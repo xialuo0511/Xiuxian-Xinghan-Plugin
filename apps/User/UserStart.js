@@ -1,3 +1,4 @@
+//#tag已适配 
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
@@ -5,8 +6,9 @@ import fs from "fs"
 import { Read_player, existplayer, get_random_talent, getLastsign, Read_yijie_player, yijie_existplayer, Add_星魂币 } from '../Xiuxian/xiuxian.js'
 import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.js'
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
-import { Add_灵石, Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
-import { get_player_img, get_gongfa_img } from '../ShowImeg/showData.js'
+import { Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
+import { get_player_img } from '../ShowImeg/showData.js'
+import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid, verc } from '../../api/api.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
@@ -14,16 +16,13 @@ import { __PATH } from "../Xiuxian/xiuxian.js"
  * 全局
  */
 let allaction = false;//全局状态判断
-/**
- * 交易系统
- */
 export class UserStart extends plugin {
     constructor() {
         super({
             /** 功能名称 */
             name: 'UserStart',
             /** 功能描述 */
-            dsc: '交易模块',
+            dsc: '初始模块',
             event: 'message',
             /** 优先级，数字越小等级越高 */
             priority: 600,
@@ -48,39 +47,59 @@ export class UserStart extends plugin {
                     reg: '^#(改名.*)|(设置道宣.*)$',
                     fnc: 'Change_player_name'
                 },
-                /*{
-                    reg: '^#我的功法$',
-                    fnc: 'Show_GongFa'
-                },*/
                 {
                     reg: '^#修仙签到$',
                     fnc: 'daily_gift'
                 }
                 ,
+                // {
+                //     reg: '^#领取七日馈赠$',
+                //     fnc: 'huodong_gift'
+                // },
                 {
-                    reg: '^#领取七日馈赠$',
-                    fnc: 'huodong_gift'
+                    reg: '^#绑定频道密钥$',
+                    fnc: 'bangding'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
     }
 
-    //#我的功法
-    /*async Show_GongFa(e) {
-        if (!e.isGroup) {
-          return;
+    async bangding(e) {
+        let nowid = e.user_id.toString().replace('qg_', '')
+
+        let Gulid;
+        try {
+            Gulid = await Read_Gulid();
+        } catch {
+            //没有建立一个
+            await Write_Gulid([]);
+            Gulid = await Read_Gulid();
         }
-        let usr_qq = e.user_id;
-        //有无存档
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
+        for (let i = 0; i < Gulid.length; i++) {
+            if (Gulid[i].QQ_ID == nowid || Gulid[i].频道_ID == nowid) {
+                e.reply("你已经发送或绑定过频道了，密钥为:" + Gulid[i].密钥)
+                return
+            }
         }
-        let img = await get_gongfa_img(e);
-        e.reply(img);
+        var num = 15
+        var amm = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        var tmp = Math.floor(Math.random() * num);
+        var s = tmp;//密钥
+        s = s + amm[tmp];
+        for (let i = 0; i < Math.floor(num / 2) - 1; i++) {
+            tmp = Math.floor(Math.random() * 26);
+            s = s + String.fromCharCode(65 + tmp);
+        }
+        for (let i = 0; i < (num - Math.floor(num / 2) - 1); i++) {
+            tmp = Math.floor(Math.random() * 26);
+            s = s + String.fromCharCode(97 + tmp);
+        }
+        await fstadd_Gulid(nowid, 0, s)
+        e.reply("您的密钥为:" + s + "\n请于QQ私聊管理发送#频道绑定" + s)
         return;
-    }*/
+    }
+
 
     //#踏入仙途
     async Create_player(e) {
@@ -89,7 +108,8 @@ export class UserStart extends plugin {
             e.reply("请在群聊内发送此信息")
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -98,11 +118,6 @@ export class UserStart extends plugin {
         let ifexistplay = await existplayer(usr_qq);
         if (ifexistplay) {
             this.Show_player(e);
-            return;
-        }
-        //判断是否为黑名单
-        if (usr_qq == 392852264 || usr_qq == 1027447951 || usr_qq == 1825945633 || usr_qq == 3478593180 || usr_qq == 1259766981) {
-            e.reply("您已被作者拉至黑名单")
             return;
         }
         //初始化玩家信息
@@ -227,7 +242,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -279,7 +295,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         /** 内容 */
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
@@ -337,8 +354,8 @@ export class UserStart extends plugin {
             fs.rmSync(`${__PATH.player_path}/${usr_qq}.json`);
             fs.rmSync(`${__PATH.equipment_path}/${usr_qq}.json`);
             fs.rmSync(`${__PATH.najie_path}/${usr_qq}.json`);
-            e.reply([segment.at(usr_qq), "当前存档已清空!开始重生"]);
-            e.reply([segment.at(usr_qq), "来世，信则有，不信则无，岁月悠悠，世间终会出现两朵相同的花，千百年的回眸，一花凋零，一花绽。是否为同一朵，任后人去评断！！"]);
+            e.reply([segment.at(e.user_id), "当前存档已清空!开始重生"]);
+            e.reply([segment.at(e.user_id), "来世，信则有，不信则无，岁月悠悠，世间终会出现两朵相同的花，千百年的回眸，一花凋零，一花绽。是否为同一朵，任后人去评断！！"]);
             await this.Create_player(e);
             await redis.set("xiuxian:player:" + usr_qq + ":last_reCreate_time", nowTime);//redis设置本次改名时间戳
             await redis.set("xiuxian:player:" + usr_qq + ":reCreate_acount", acount);
@@ -354,13 +371,13 @@ export class UserStart extends plugin {
 
     //#我的练气
     async Show_player(e) {
-        //不开放私聊功能
-        let usr_qq = e.user_id;
+        if (!verc({ e })) return false;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
+
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
-        }
+        if (!ifexistplay) return false;
         let img = await get_player_img(e);
         e.reply(img);
         return;
@@ -371,7 +388,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -400,7 +418,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -488,7 +507,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -529,7 +549,7 @@ export class UserStart extends plugin {
             }
             await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", xianding)
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket},【仙鼎历练券】*16`
             ]
             e.reply(msg);
@@ -538,7 +558,7 @@ export class UserStart extends plugin {
             await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
             await Add_修为(usr_qq, gift_xiuwei);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket}`
             ]
             e.reply(msg);
@@ -552,7 +572,8 @@ export class UserStart extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -599,7 +620,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 5
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*5,【顶级仙石】*5`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -615,7 +636,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 10
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【甜酿丹】*10,【顶级仙石】*10`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -632,7 +653,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 10
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【摘榜令】*3,【顶级仙石】*10 `
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -648,7 +669,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*15,【顶级仙石】*15`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -664,7 +685,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 15
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*15`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -680,7 +701,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 20
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*20`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -697,7 +718,7 @@ export class UserStart extends plugin {
             xianshi = xianshi + 35
             await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
-                segment.at(usr_qq),
+                segment.at(e.user_id),
                 `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*35`
             ]
             let yijie = await yijie_existplayer(usr_qq)
@@ -716,7 +737,8 @@ export class UserStart extends plugin {
  * 状态
  */
 export async function Go(e) {
-    let usr_qq = e.user_id;
+    let nowid = e.user_id.toString().replace('qg_', '')
+    let usr_qq = await Gulid(nowid);
     //有无存档
     let ifexistplay = await existplayer(usr_qq);
     if (!ifexistplay) {

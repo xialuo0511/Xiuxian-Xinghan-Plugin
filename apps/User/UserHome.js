@@ -1,4 +1,4 @@
-//插件加载
+//#tag已适配
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
@@ -41,6 +41,7 @@ import {
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Add_仙宠 } from "../Pokemon/Pokemon.js"
 import { get_equipment_img } from '../ShowImeg/showData.js'
+import { Gulid } from '../../api/api.js'
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
@@ -121,6 +122,7 @@ export class UserHome extends plugin {
         });
         e.reply(img);
         return;
+
     }
 
     async wtfk(e) {
@@ -133,7 +135,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let thing = e.msg.replace("#", '');
         thing = thing.replace("查询纳戒", '');
         let code = thing.split("\*");
@@ -159,7 +162,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             return;
@@ -294,7 +298,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -337,7 +342,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -408,7 +414,8 @@ export class UserHome extends plugin {
             return;
         }
         //固定写法
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
             return;
@@ -477,7 +484,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         var reg = new RegExp(/哪里有/);
         let msg = e.msg.replace(reg, '');
         msg = msg.replace("#", '');
@@ -783,7 +791,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -816,7 +825,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -895,7 +905,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -965,7 +976,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -1279,7 +1291,7 @@ export class UserHome extends plugin {
                     'xiuxian:player:' + 10 + ':biguang',
                     JSON.stringify(action)
                 );
-                await data.setData('player', usr_qq, player);
+                data.setData('player', usr_qq, player);
                 return;
             }
             if (this_danyao.type == '仙缘') {
@@ -2171,7 +2183,8 @@ export class UserHome extends plugin {
                 e.reply("使用成功,发送#我的装备查看属性")
                 return
             }
-            if (data.daoju_list.find(item => item.name == thing_name).type == "洗髓") {
+            let daoju = data.daoju_list.find(item => item.name == thing_name)
+            if (daoju && daoju.type == "洗髓") {
                 if (await player.linggenshow != 0) {
                     await e.reply("你未开灵根，无法洗髓！");
                     return;
@@ -3117,6 +3130,7 @@ export class UserHome extends plugin {
                     }
                     await Add_najie_thing(usr_qq, "层岩巨渊", "道具", -1);
                     await Add_najie_thing(usr_qq, "火把", "道具", -60);
+                    await Add_灵石(usr_qq, 200000)
                     await Add_血气(usr_qq, xueqi)
                     await Add_修为(usr_qq, xiuwei)
                     if (math > 0.9 && math <= 1) {
@@ -3375,7 +3389,8 @@ export class UserHome extends plugin {
             return;
         }
         /** 内容 */
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
         let now = new Date();
@@ -3422,7 +3437,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         /** 内容 */
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
@@ -3457,7 +3473,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -3536,7 +3553,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -3616,7 +3634,8 @@ export class UserHome extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -3707,7 +3726,8 @@ export class UserHome extends plugin {
  * 状态
  */
 export async function Go(e) {
-    let usr_qq = e.user_id;
+    let nowid = e.user_id.toString().replace('qg_', '')
+    let usr_qq = await Gulid(nowid);
     //有无存档
     let ifexistplay = await existplayer(usr_qq);
     if (!ifexistplay) {

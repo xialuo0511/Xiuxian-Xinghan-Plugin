@@ -58,6 +58,9 @@ SecretPlace: #秘境出金概率
   two: 0.6
   three: 0.2 #0.2出金，0.8小金
 
+SudokuGame: # 数独游戏时间间隔
+  time: 30
+
 najie_num: # 纳戒存储量
   - 50000
   - 100000

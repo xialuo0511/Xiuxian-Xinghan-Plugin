@@ -4,6 +4,7 @@ import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
 import config from "../../model/Config.js"
 import Config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
+import { Gulid } from "../../api/api.js"
 import {
     __PATH,
     get_random_talent,
@@ -971,10 +972,11 @@ export async function get_player_img(e) {
     let 法宝评级;
     let 护具评级;
     let 武器评级;
-    let usr_qq = e.user_id;
-    let ifexistplay = data.existData('player', usr_qq);
-    if (!ifexistplay) {
-        return;
+    let usr_qq = e.user_id.toString().replace('qg_', '');;
+    usr_qq = await Gulid(usr_qq)
+    let head_pic = e.member.getAvatarUrl()
+    if (!head_pic) {
+        head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
     let player = await data.getData('player', usr_qq);
     let equipment = await data.getData('equipment', usr_qq);
@@ -1157,6 +1159,7 @@ export async function get_player_img(e) {
     }
     let action = player.练气皮肤;
     let player_data = {
+        head_pic: head_pic,
         dingjixianshi: dingjixianshi,
         pifu: action,
         user_id: usr_qq,
@@ -1233,7 +1236,8 @@ export async function get_player_img(e) {
  * @return image
  */
 export async function get_yijie_player_img(e) {
-    let usr_qq = e.user_id;
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData('yijie_player', usr_qq);
     if (!ifexistplay) {
         return;
@@ -1494,11 +1498,8 @@ export async function get_equipment_img2(e) {
  * @return image
  */
 export async function get_najie_img(e) {
-    let usr_qq = e.user_id;
-    let ifexistplay = data.existData("player", usr_qq);
-    if (!ifexistplay) {
-        return;
-    }
+    let usr_qq = e.user_id.toString().replace('qg_', '');;
+    usr_qq = await Gulid(usr_qq)
     let player = await data.getData("player", usr_qq);
     let najie = await data.getData("najie", usr_qq);
     const lingshi = Math.trunc(najie.灵石);
