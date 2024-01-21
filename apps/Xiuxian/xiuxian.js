@@ -15,6 +15,8 @@ export const __PATH = {
     updata_log_path: path.join(__dirname, "补丁日志.txt"),
     //用户数据
     player_path: path.join(__dirname, "/resources/data/xiuxian_player"),
+    //用户数据
+    Gulid_path: path.join(__dirname, "/resources/data/Gulid"),
     //异界全部怪物数据
     yijie_guaiwu_path: path.join(__dirname, "/resources/data/item/异界/秘境怪物"),
     //异界用户数据
@@ -697,7 +699,7 @@ export async function Reduse_player_学习功法(usr_qq, gongfa_name) {
 //---------------------------------------------分界线------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //修炼效率综合
 export async function player_efficiency(usr_qq) {
-    let player = await Read_player(usr_qq)
+    let player = await Read_player(usr_qq);//修仙个人信息
     let ass;
     let Assoc_efficiency;        //宗门效率加成
     let linggen_efficiency;      //灵根效率加成

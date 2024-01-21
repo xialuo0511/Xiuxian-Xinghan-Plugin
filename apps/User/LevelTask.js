@@ -1,4 +1,4 @@
-
+//#tag已适配
 import plugin from '../../../../lib/plugins/plugin.js'
 import common from "../../../../lib/common/common.js"
 import data from '../../model/XiuxianData.js'
@@ -7,6 +7,7 @@ import fs from "node:fs"
 
 import { Read_player, isNotNull, Write_player, sleep, Add_najie_thing, exist_najie_thing } from "../Xiuxian/xiuxian.js"
 import { dujie } from "./Level.js"
+import { Gulid } from '../../api/api.js'
 
 /**
  * 定时任务渡劫
@@ -41,6 +42,8 @@ export class LevelTask extends plugin {
             playerList.push(file);
         }
         for (let player_id of playerList) {
+            player_id = player_id.toString().replace('qg_', '')
+            player_id = await Gulid(player_id);
             let log_mag = "";//查询当前人物动作日志信息
             log_mag = log_mag + "查询" + player_id + "是否有动作,";
             //得到动作
@@ -256,7 +259,7 @@ export class LevelTask extends plugin {
             await Bot.pickGroup(id)
                 .sendMsg(msg)
                 .catch((err) => {
-                    Bot.logger.mark(err);
+                    logger.mark(err);
                 });
         }
         else {

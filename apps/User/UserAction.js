@@ -1,10 +1,11 @@
 
 import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
-import { Read_player, existplayer,Read_najie,Write_najie } from '../Xiuxian/xiuxian.js'
-import { Add_灵石  } from '../Xiuxian/xiuxian.js'
+import { Read_player, existplayer, Read_najie, Write_najie } from '../Xiuxian/xiuxian.js'
+import { Add_灵石 } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
-import {get_najie_img} from '../ShowImeg/showData.js'
+import { get_najie_img } from '../ShowImeg/showData.js'
+import { Gulid } from '../../api/api.js'
 
 /**
  * 全局
@@ -38,10 +39,11 @@ export class UserAction extends plugin {
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
     }
 
-    
+
     //#我的纳戒
     async Show_najie(e) {
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '');
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -52,11 +54,11 @@ export class UserAction extends plugin {
         return;
     }
 
-    
+
     //纳戒升级
     async Lv_up_najie(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -105,7 +107,7 @@ export class UserAction extends plugin {
  * 状态
  */
 
- export async function Go(e) {
+export async function Go(e) {
     let usr_qq = e.user_id;
     //有无存档
     let ifexistplay = await existplayer(usr_qq);

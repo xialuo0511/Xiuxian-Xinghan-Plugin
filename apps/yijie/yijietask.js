@@ -5,6 +5,7 @@ import config from "../../model/Config.js"
 import fs from "node:fs"
 
 import { isNotNull, Add_星魂币 } from "../Xiuxian/xiuxian.js"
+import { Gulid2 } from '../../api/api.js'
 
 /**
  * 定时任务
@@ -38,6 +39,7 @@ export class yijietask extends plugin {
             playerList.push(file);
         }
         for (let player_id of playerList) {
+            player_id = await Gulid2(player_id);
             let log_mag = "";//查询当前人物动作日志信息
             log_mag = log_mag + "查询" + player_id + "是否有动作,";
             //得到动作

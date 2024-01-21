@@ -21,7 +21,7 @@
 
 .card_box {
     margin: 20px auto 20px auto;
-    width: 800px;
+    width: 740px;
     display: flex;
     flex-wrap: nowrap;
     background: radial-gradient(at top left, #ffffff10, #d7edea10);

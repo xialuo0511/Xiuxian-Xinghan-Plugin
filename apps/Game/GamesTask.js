@@ -43,7 +43,7 @@ export class GamesTask extends plugin {
             let game_action = await redis.get("xiuxian:player:" + player_id + ":game_action");
             //防止继续其他娱乐行为
             if (game_action == 0) {
-                await redis.set("xiuxian:player:" + player_id + ":game_action",1);
+                await redis.set("xiuxian:player:" + player_id + ":game_action", 1);
                 return;
             }
         }
@@ -61,7 +61,7 @@ export class GamesTask extends plugin {
             await Bot.pickGroup(id)
                 .sendMsg(msg)
                 .catch((err) => {
-                    Bot.logger.mark(err);
+                    logger.mark(err);
                 });
         }
         else {

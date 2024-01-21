@@ -1,3 +1,4 @@
+//#tag已适配
 import plugin from '../../../../lib/plugins/plugin.js';
 import common from '../../../../lib/common/common.js';
 import config from '../../model/Config.js';
@@ -68,7 +69,7 @@ export class SecretPlaceTask extends plugin {
           }
         }
         //最后发送的消息
-        let msg = [segment.at(Number(player_id))];
+        let msg = [];
         //动作结束时间
         let end_time = action.end_time;
         //现在的时间
@@ -478,7 +479,7 @@ export class SecretPlaceTask extends plugin {
             } else {
               return;
             }
-            msg.push(`\n【${player.名号}】` + last_msg + fyd_msg);
+            msg.push(`【${player.名号}】` + last_msg + fyd_msg);
             let arr = action;
             //把状态都关了
             arr.shutup = 1; //闭关状态
@@ -522,7 +523,7 @@ export class SecretPlaceTask extends plugin {
       await Bot.pickGroup(id)
         .sendMsg(msg)
         .catch(err => {
-          Bot.logger.mark(err);
+          logger.mark(err);
         });
     } else {
       await common.relpyPrivate(id, msg);

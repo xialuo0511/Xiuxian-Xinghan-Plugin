@@ -1,4 +1,4 @@
-//插件加载
+//#tag已适配
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
@@ -14,6 +14,7 @@ import {
 } from '../Xiuxian/xiuxian.js'
 import { Read_player, Read_equipment } from '../Xiuxian/xiuxian.js'
 import { Add_HP, exist_najie_thing, Add_修为, Add_血气, Add_najie_thing, sleep } from '../Xiuxian/xiuxian.js'
+import { Gulid } from '../../api/api.js'
 
 /**
  * 全局变量
@@ -67,7 +68,8 @@ export class Level extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             return;
@@ -179,7 +181,8 @@ export class Level extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -328,7 +331,8 @@ export class Level extends plugin {
             return;
         }
         /** 内容 */
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         let new_msg = this.e.message;
         let choice = new_msg[0].text;
         let now = new Date();
@@ -364,7 +368,8 @@ export class Level extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -417,7 +422,8 @@ export class Level extends plugin {
     }
 
     async Level_up_luck(e) {
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         let x = await exist_najie_thing(usr_qq, "幸运草", "道具");
         if (!x) {
             e.reply("醒醒，你没有道具【幸运草】!");
@@ -427,7 +433,8 @@ export class Level extends plugin {
     }
 
     async LevelMax_up_luck(e) {
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         let x = await exist_najie_thing(usr_qq, "幸运草", "道具");
         if (!x) {
             e.reply("醒醒，你没有道具【幸运草】!");
@@ -438,7 +445,8 @@ export class Level extends plugin {
 
     //渡劫
     async fate_up(e) {
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -515,7 +523,7 @@ export class Level extends plugin {
             return;
         }
         //当前系数计算
-        let x = await dujie(usr_qq);
+        let x = await dujie(e);
         //默认为3
         var y = 3;
         if (player.灵根.type == "伪灵根") {
@@ -582,7 +590,8 @@ export class Level extends plugin {
     //#羽化登仙
     //专门为渡劫期设计的指令
     async Level_up_Max(e) {
-        let usr_qq = e.user_id;
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         //有无账号
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
@@ -707,8 +716,9 @@ export class Level extends plugin {
     }
 }
 
-export async function dujie(user_qq) {
-    let usr_qq = user_qq;
+export async function dujie(e) {
+    let usr_qq = e.user_id.toString().replace('qg_', '')
+    usr_qq = await Gulid(usr_qq);
     let player = await Read_player(usr_qq);
     //根据当前血量才算
     //计算系数
@@ -757,7 +767,9 @@ export async function fanren() {
     //默认为1
     let x = "1";
     for (let player_id of playerList) {
-        let player = data.getData("player", player_id);
+        let usr_qq = player_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
+        let player = data.getData("player", usr_qq);
         //搜索境界，有凡人，就变0
         let now_level_id;
         if (!isNotNull(player.level_id)) {
