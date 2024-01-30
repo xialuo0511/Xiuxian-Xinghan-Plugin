@@ -2334,6 +2334,27 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             msg.push("寒冰之枪，出鞘！\n使用了冰元素技能,伤害提高了")
         }
     }
+    //冰封巨锤
+    if (equipment.武器.name == "冰封巨锤") {
+        if (random > 0.9) {
+            msg.push("哈！" + A_player.名号 + "用力拿起了冰封巨锤,向" + B_player.名号 + "冲了过来")
+            if (A_lin == yuansu[4]) {
+                msg.push("触发冰封巨锤被动技能:[冰墙巨障],获得防御加成和伤害提升\n手中的冰元素异常贴切[冰封巨锤]," + A_player.名号 + "感到筋脉中的元素之力得到了异常增益，元素伤害获得一定提升")
+                att *= 1.3
+                fyjiachen += A_player.防御
+            } else if (A_lin == yuansu[4] && equipment.武器.fumo == "水") {
+                msg.push("触发冰封巨锤被动技能:[冰墙巨障],获得防御加成和伤害提升\n手中的冰元素异常贴切[冰封巨锤]," + A_player.名号 + "感到筋脉中的元素之力得到了异常增益，元素伤害获得一定提升,触发了冻结反应")
+                att *= 1.3
+                fyjiachen += A_player.防御
+                donjie = true
+                huihe = true
+            } else {
+                msg.push("触发冰封巨锤被动技能:[冰墙巨障],获得防御加成和伤害提升")
+                fyjiachen += A_player.防御
+                att *= 1.15
+            }
+        }
+    }
     //护摩之杖
     if (equipment.武器.name == "护摩之杖") {
         if (A_player.当前血量 < A_player.血量上限 / 2 && random > 0.8) {
