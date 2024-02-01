@@ -393,7 +393,7 @@ export class UserSellAll extends plugin {
                         goods.push(`【${l.name}】只可回收，不可出售`);
                     } else {
                         goods.push('\n' + l.name + '*' + quantity);
-                        zong += l.出售价
+                        zong += l.出售价 * quantity
                     }
                     goodsNum++;
                 }
