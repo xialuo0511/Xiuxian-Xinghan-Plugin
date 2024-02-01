@@ -1,5 +1,5 @@
 //#tag已适配
-import plugin from '../../../../lib/plugins/plugin.js'
+import { plugin, verc, data } from '../../api/api.js';
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
