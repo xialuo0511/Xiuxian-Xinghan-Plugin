@@ -717,6 +717,7 @@ export class Level extends plugin {
 }
 
 export async function dujie(e) {
+    if (!verc({ e })) return false;
     let usr_qq = e.user_id.toString().replace('qg_', '')
     usr_qq = await Gulid(usr_qq);
     let player = await Read_player(usr_qq);
