@@ -78,7 +78,7 @@ export class LevelTask extends plugin {
                         var aconut = await redis.get("xiuxian:player:" + player_id + ":power_aconut");
 
                         //当前系数计算
-                        let power_distortion = await dujie(player_id);
+                        let power_distortion = await dujie(e);
                         var xx = 1;
                         let x = power_distortion
                         let usr_qq = player_id
