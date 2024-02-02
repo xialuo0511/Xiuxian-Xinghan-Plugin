@@ -522,7 +522,7 @@ export class Level extends plugin {
             return;
         }
         //当前系数计算
-        let x = await dujie(e);
+        let x = await dujie(usr_qq);
         //默认为3
         var y = 3;
         if (player.灵根.type == "伪灵根") {
