@@ -192,8 +192,12 @@ export class UserHome extends plugin {
             }
         }
         let player = await Read_player(usr_qq);
-        if (player.level_id < Number(data.duihuan[i].level)) {
+        if (player.level_id < Number(data.duihuan[i].level_min)) {
             e.reply("您修炼等级不足，请多多修炼再来兑换！");
+            return;
+        }
+        if (player.level_id > Number(data.duihuan[i].level_max)) {
+            e.reply("您修炼等级过高，此兑换码不对您开放！");
             return;
         }
         //特殊兑换码调整
