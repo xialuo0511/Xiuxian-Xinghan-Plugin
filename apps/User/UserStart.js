@@ -59,20 +59,11 @@ export class UserStart extends plugin {
                 {
                     reg: '^#绑定频道密钥$',
                     fnc: 'bangding'
-                },
-                {
-                    reg: '^#调试$',
-                    fnc: 'ass'
                 }
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
     }
-    async ass(e) {
-        e.reply(`1.seq:${e.seq} 2.inviter_id:${e.inviter_id} 3.tips:${e.tips} 4.flag:${e.flag} 5.comment:${e.comment} 6.time:${e.time}`)
-        return;
-    }
-
     async bangding(e) {
         let nowid = e.user_id.toString().replace('qg_', '')
 

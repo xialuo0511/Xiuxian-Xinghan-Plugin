@@ -2,7 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import fs from "fs"
+import fs, { read } from "fs"
 
 import {
     Read_player,
@@ -191,6 +191,11 @@ export class UserHome extends plugin {
                 return;
             }
         }
+        let player = await Read_player(usr_qq);
+        if (player.level_id < Number(data.duihuan[i].level)) {
+            e.reply("您修炼等级不足，请多多修炼再来兑换！");
+            return;
+        }
         //特殊兑换码调整
         if (data.duihuan[i].name.includes("版本参与测试")) {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
@@ -209,7 +214,7 @@ export class UserHome extends plugin {
             e.reply("您不是测试服成员，无法使用此兑换码");
             return;
         }
-        if (data.duihuan[i].name.includes("问卷调研0602")) {
+        if (data.duihuan[i].name.includes("渡劫补偿")) {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
                 if (usr_qq == data.duihuan[i].qq[o].name) {
                     action.push(name);
@@ -219,11 +224,11 @@ export class UserHome extends plugin {
                         await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
                         msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
                     }
-                    e.reply("感谢您参与问卷！恭喜获得:" + msg);
+                    e.reply("由于bug给您带来的不快敬请谅解！恭喜获得:" + msg);
                     return;
                 }
             }
-            e.reply("您未参与问卷调研，无法使用此兑换码");
+            e.reply("您不是本兑换码的兑换人群！");
             return;
         }
         //普通兑换流程
