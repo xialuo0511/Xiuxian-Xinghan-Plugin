@@ -61,7 +61,7 @@ export class UserStart extends plugin {
                     fnc: 'bangding'
                 },
                 {
-                    reg: '^#调试￥',
+                    reg: '^#调试$',
                     fnc: 'ass'
                 }
             ]
