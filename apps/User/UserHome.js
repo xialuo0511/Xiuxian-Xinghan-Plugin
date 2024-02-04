@@ -192,12 +192,8 @@ export class UserHome extends plugin {
             }
         }
         let player = await Read_player(usr_qq);
-        if (player.level_id < Number(data.duihuan[i].level_min)) {
-            e.reply("您修炼等级不足，请多多修炼再来兑换！");
-            return;
-        }
-        if (player.level_id > Number(data.duihuan[i].level_max)) {
-            e.reply("您修炼等级过高，此兑换码不对您开放！");
+        if (player.level_id < Number(data.duihuan[i].level_min) || player.level_id > Number(data.duihuan[i].level_max)) {
+            e.reply("您修炼等级不符合这个兑换码的兑换要求，请详读布告后再来领取！");
             return;
         }
         //特殊兑换码调整
