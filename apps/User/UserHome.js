@@ -193,7 +193,7 @@ export class UserHome extends plugin {
         }
         let player = await Read_player(usr_qq);
         if (player.level_id < Number(data.duihuan[i].level_min) || player.level_id > Number(data.duihuan[i].level_max)) {
-            e.reply("您修炼等级不符合这个兑换码的兑换要求，请详读布告后再来领取！");
+            e.reply("您修炼等级不符合这个兑换码的领取要求，请详读布告后再来领取！");
             return;
         }
         //特殊兑换码调整
@@ -228,7 +228,7 @@ export class UserHome extends plugin {
                     return;
                 }
             }
-            e.reply("您不是本兑换码的兑换人群！");
+            e.reply("您不符合这个兑换码的领取要求，请详读布告后再来领取！");
             return;
         }
         //普通兑换流程
