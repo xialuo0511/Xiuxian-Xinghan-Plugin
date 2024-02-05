@@ -216,7 +216,7 @@ export async function get_huodongshop_img(e) {
     usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData("player", usr_qq);
     let shu = await exist_najie_thing(usr_qq, "愿力", "道具");
-    if (!yuanli) {
+    if (!shu) {
         shu = 0
     }
     if (!ifexistplay) {
