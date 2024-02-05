@@ -1,16 +1,8 @@
 [
 	{
 		"name": "渡劫补偿",
-		"qq": [
-			{
-				"name": 2909393130
-			},
-			{
-				"name": 3810235287
-			}
-		],
 		"level_min": 41,
-		"level_max": 41,
+		"level_max": 42,
 		"thing": [
 			{
 				"name": "2w",
