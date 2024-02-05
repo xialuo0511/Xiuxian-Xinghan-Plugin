@@ -9,7 +9,7 @@ import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
 import { Gulid } from '../../api/api.js'
 
-
+let allaction = false;
 
 export class huodong extends plugin {
     constructor() {
@@ -55,6 +55,12 @@ export class huodong extends plugin {
         if (!ifexistplay) {
             return;
         }
+        await Go(e);
+        if (allaction) {
+        } else {
+            return;
+        }
+        allaction = false;
         let player = await Read_player(usr_qq);
         let msg = e.msg.toString()
         let shu = 1
@@ -86,7 +92,17 @@ export class huodong extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
+        //有无存档
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
         await Go(e);
+        if (allaction) {
+        } else {
+            return;
+        }
+        allaction = false;
         let msg = e.msg.replace("#许愿", "");
         //搜索纳戒物品
         let shu = await exist_najie_thing(usr_qq, "霄灯", "道具");
@@ -107,7 +123,17 @@ export class huodong extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        //有无存档
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
         await Go(e);
+        if (allaction) {
+        } else {
+            return;
+        }
+        allaction = false;
         let img = await get_huodongshop_img(e);
         e.reply(img);
         return;
@@ -123,7 +149,17 @@ export class huodong extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
+        //有无存档
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
         await Go(e);
+        if (allaction) {
+        } else {
+            return;
+        }
+        allaction = false;
         let msg = e.msg.replace("#愿力兑换", "");
         var bool = msg.indexOf("*");
         //返回大于等于0的整数值，若不包含"Text"则返回"-1。
@@ -230,5 +266,6 @@ export async function Go(e) {
         e.reply("你都伤成这样了,先恢复一下再来吧！");
         return;
     }
+    allaction = true;
     return;
 }
