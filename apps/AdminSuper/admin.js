@@ -69,7 +69,7 @@ export class admin extends plugin {
         const isForce = this.e.msg.includes("强制");
         let command = "git  pull";
         if (isForce) {
-            command = "git fetch --all && git reset --hard master && git  pull";
+            command = "git fetch --all && git reset --hard dev && git  pull";
             this.e.reply("修仙插件强制更新中，请稍等");
         } else {
             this.e.reply("修仙插件更新中，请稍等");

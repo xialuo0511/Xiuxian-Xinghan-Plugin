@@ -113,7 +113,7 @@ export class huodong extends plugin {
         await Add_najie_thing(usr_qq, "霄灯", "道具", -shu);
         await Add_najie_thing(usr_qq, "愿力", "道具", shu);
         await redis.set("xiuxian:yuanwang", `/n【${usr_qq}】${msg}`)
-        e.reply(`许愿成功！新的一年愿望一定会实现！`)
+        e.reply(`你许愿之后放飞了背包中全部的霄灯\n新的一年愿望一定会实现！`)
         return;
     }
 
