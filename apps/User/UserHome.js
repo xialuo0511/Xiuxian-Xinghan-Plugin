@@ -3274,7 +3274,7 @@ export class UserHome extends plugin {
                 }
             }
         }
-        if (func == "") {
+        if (func == "合成") {
             let wupin = data.hecheng_list.find(item => item.name == thing_name);
             if (!isNotNull(wupin)) {
                 e.reply(`合成物品暂时未添加，请持续关注`);
