@@ -123,6 +123,8 @@ export class huodong extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
         //有无存档
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
