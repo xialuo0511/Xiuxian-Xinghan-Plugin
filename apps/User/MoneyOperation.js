@@ -372,10 +372,10 @@ export class MoneyOperation extends plugin {
             return;
         }
         let A_player = await data.getData("player", A_qq);
-        // if (A_player.魔道值 > 100) {
-        //     e.reply(`${A_player.名号}你一个大魔头还妄想出现在尘世？`);
-        //     return;
-        // }
+        if (A_player.level_id < 12) {
+            e.reply(`${A_player.名号}你暂未解锁赠送功能，赠送功能金丹期后解锁`);
+            return;
+        }
         let B_player = await data.getData("player", B_qq);
         //获取发送灵石数量
         let msg = e.msg.replace("赠送", "");

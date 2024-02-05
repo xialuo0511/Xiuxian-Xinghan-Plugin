@@ -64,7 +64,6 @@ export class UserStart extends plugin {
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
     }
-
     async bangding(e) {
         let nowid = e.user_id.toString().replace('qg_', '')
 

@@ -28,6 +28,9 @@ export async function existplayer(usr_qq) {
 export async function Gulid(usr_qq) {
   const dir = path.join(`${__PATH.Gulid_path}/Gulid.json`);
   const logfile = fs.readFileSync(dir, 'utf8');
+  if (!logfile) {
+    return;
+  }
   const allRecords = JSON.parse(logfile);
   if (usr_qq.length >= 16) {
     for (let record of allRecords) {

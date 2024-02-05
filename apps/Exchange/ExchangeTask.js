@@ -43,9 +43,9 @@ export class ExchangeTask extends plugin {
             //自我清除
             let tmp_exchange = Exchange.filter(item => item.qq == Exchange[i].qq);
             for (let ex of tmp_exchange) {
-                Add_najie_thing(item.qq, item.name.name, item.name.class, item.amount);
+                Add_najie_thing(ex.qq, ex.name.name, ex.name.class, ex.amount);
             }
-            Exchange = Exchange.filter(item => item.qq != Exchange[i].qq);
+            Exchange = Exchange.filter(ex => ex.qq != Exchange[i].qq);
             await Write_Exchange(Exchange);
         }
 
