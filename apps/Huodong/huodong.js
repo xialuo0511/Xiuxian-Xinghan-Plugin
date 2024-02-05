@@ -35,7 +35,7 @@ export class huodong extends plugin {
                     fnc: 'xuyuan'
                 },
                 {
-                    reg: '^#合成霄灯(*(.*))$',
+                    reg: '^#合成霄灯.*$',
                     fnc: 'hecheng'
                 }
             ]
@@ -230,6 +230,5 @@ export async function Go(e) {
         e.reply("你都伤成这样了,先恢复一下再来吧！");
         return;
     }
-    allaction = true;
     return;
 }
