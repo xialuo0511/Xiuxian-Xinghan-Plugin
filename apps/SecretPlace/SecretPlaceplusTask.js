@@ -382,7 +382,7 @@ export class SecretPlaceplusTask extends plugin {
                 'xiuxian:player:' + 10 + ':biguang'
               );
               action1 = await JSON.parse(action1);
-              if (!action1.length) {
+              if (action1.length) {
                 for (let i = 0; i < action1.length; i++) {
                   if (action1[i].qq == player_id) {
                     newrandom -= action1[i].beiyong1;
