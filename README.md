@@ -15,7 +15,12 @@
 ```
 git clone  https://gitee.com/xialuo03/xiuxian-emulator-plugin.git ./plugins/xiuxian-emulator-plugin/
 
-```         
+```
+> 如需拉取canary分支，请在Yunzai-Bot/目录下执行  
+```
+git clone  -b canary https://gitee.com/xialuo03/xiuxian-emulator-plugin.git ./plugins/xiuxian-emulator-plugin/
+
+```
 > 如需从原插件更改至本插件，可在Yunzai-Bot/plugins/xiuxian-emulator-plugin/目录下执行
 ```
 git remote set-url master https://gitee.com/xialuo03/xiuxian-emulator-plugin.git

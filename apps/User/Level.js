@@ -1,6 +1,5 @@
 //#tag已适配
-import plugin from '../../../../lib/plugins/plugin.js'
-import data from '../../model/XiuxianData.js'
+import { plugin, verc, data } from '../../api/api.js';
 import config from "../../model/Config.js"
 import fs from "fs"
 import {
@@ -523,7 +522,7 @@ export class Level extends plugin {
             return;
         }
         //当前系数计算
-        let x = await dujie(e);
+        let x = await dujie(usr_qq);
         //默认为3
         var y = 3;
         if (player.灵根.type == "伪灵根") {
@@ -716,9 +715,7 @@ export class Level extends plugin {
     }
 }
 
-export async function dujie(e) {
-    let usr_qq = e.user_id.toString().replace('qg_', '')
-    usr_qq = await Gulid(usr_qq);
+export async function dujie(usr_qq) {
     let player = await Read_player(usr_qq);
     //根据当前血量才算
     //计算系数

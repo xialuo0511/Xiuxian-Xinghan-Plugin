@@ -381,6 +381,7 @@ export class UserSellAll extends plugin {
         }
         let goodsNum = 0;
         let goods = [];
+        let zong = 0
         goods.push('正在出售:');
         for (let i of wupin) {
             for (let l of najie[i]) {
@@ -392,6 +393,7 @@ export class UserSellAll extends plugin {
                         goods.push(`【${l.name}】只可回收，不可出售`);
                     } else {
                         goods.push('\n' + l.name + '*' + quantity);
+                        zong += l.出售价 * quantity
                     }
                     goodsNum++;
                 }
@@ -401,6 +403,7 @@ export class UserSellAll extends plugin {
             e.reply('没有东西可以出售', false, { at: true });
             return false;
         }
+        goods.push('\n总计' + zong + '灵石')
         goods.push('\n回复[1]出售,回复[0]取消出售');
         /** 设置上下文 */
         this.setContext('noticeSellAllGoods');

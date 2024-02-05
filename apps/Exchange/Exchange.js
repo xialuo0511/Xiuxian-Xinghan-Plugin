@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import Show from '../../model/show.js';
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
-import {__PATH, Locked_najie_thing} from '../Xiuxian/xiuxian.js';
+import { __PATH, Locked_najie_thing } from '../Xiuxian/xiuxian.js';
 import {
     existplayer,
     exist_najie_thing,
@@ -15,7 +15,7 @@ import {
     foundthing,
     Check_thing
 } from '../Xiuxian/xiuxian.js';
-import {Add_najie_thing, Add_灵石} from '../Xiuxian/xiuxian.js';
+import { Add_najie_thing, Add_灵石 } from '../Xiuxian/xiuxian.js';
 import console from 'console';
 
 /**
@@ -194,7 +194,7 @@ export class Exchange extends plugin {
         return;
     }
 
-        //上架
+    //上架
     async onsell(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
@@ -204,6 +204,11 @@ export class Exchange extends plugin {
         let usr_qq = e.user_id;
         //判断是否为匿名创建存档
         if (usr_qq == 80000000) {
+            return;
+        }
+        let A_player = await data.getData("player", usr_qq);
+        if (A_player.level_id < 12) {
+            e.reply(`${A_player.名号}你暂未解锁上架功能，上架功能金丹期后解锁`);
             return;
         }
         //有无存档
@@ -217,7 +222,7 @@ export class Exchange extends plugin {
         let code = thing.split('*');
         let thing_name = code[0]; //物品
         let thing_value = code[1]; //价格
-        let thing_amount=code[2];//数量
+        let thing_amount = code[2];//数量
         let thing_piji; //品级
         //判断列表中是否存在，不存在不能卖,并定位是什么物品
         let thing_exist = await foundthing(thing_name);
@@ -225,7 +230,7 @@ export class Exchange extends plugin {
             e.reply(`这方世界没有[${thing_name}]`);
             return;
         }
-        if (await Check_thing(thing_exist)==1) {
+        if (await Check_thing(thing_exist) == 1) {
             e.reply(`${thing_exist.name}特殊！`);
             return;
         }
@@ -240,29 +245,25 @@ export class Exchange extends plugin {
             "顶": 6
         }
         pj = pj[code[1]]
-        if (pj!=undefined)
-        {
-            thing_piji=code[1];;
-            thing_value=code[2];//价格
-            thing_amount=code[3]//数量
+        if (pj != undefined) {
+            thing_piji = code[1];;
+            thing_value = code[2];//价格
+            thing_amount = code[3]//数量
         }
-        else
-        {
-            if (thing_exist.class=="装备")
-            {
-                let equ= najie.装备.find(item => item.name == thing_name);
-                for (var i = 0; i<najie.装备.length; i++) {//遍历列表有没有比那把强的
+        else {
+            if (thing_exist.class == "装备") {
+                let equ = najie.装备.find(item => item.name == thing_name);
+                for (var i = 0; i < najie.装备.length; i++) {//遍历列表有没有比那把强的
                     if (najie.装备[i].name == thing_name && najie.装备[i].pinji < equ.pinji) {
                         equ = najie.装备[i];
                     }
                 }
-                pj=equ.pinji;
-                let pinji2=['劣','普','优','精','极','绝','顶']
-                thing_piji=pinji2[pj]
+                pj = equ.pinji;
+                let pinji2 = ['劣', '普', '优', '精', '极', '绝', '顶']
+                thing_piji = pinji2[pj]
             }
         }
-        if (thing_value==null)
-        {
+        if (thing_value == null) {
             e.reply(`未输入价格`);
             return;
         }
@@ -279,7 +280,7 @@ export class Exchange extends plugin {
         if (thing_amount < 1 || thing_amount == null || thing_amount == undefined || thing_amount == NaN) {
             thing_amount = 1;
         }
-        let x=await exist_najie_thing(usr_qq,thing_name,thing_exist.class,pj);
+        let x = await exist_najie_thing(usr_qq, thing_name, thing_exist.class, pj);
         //判断戒指中是否存在
         if (!x) {
             //没有
@@ -287,7 +288,7 @@ export class Exchange extends plugin {
             return;
         }
         //判断戒指中的数量
-        if (x< thing_amount) {
+        if (x < thing_amount) {
             //不够
             e.reply(`你目前只有[${thing_name}]*${x}`);
             return;
@@ -315,7 +316,7 @@ export class Exchange extends plugin {
                 now_time: now_time,
                 end_time: now_time + 60000 * time,
             };
-            await Add_najie_thing(usr_qq,thing_name,thing_exist.class,-thing_amount,pj);
+            await Add_najie_thing(usr_qq, thing_name, thing_exist.class, -thing_amount, pj);
         } else {
             var wupin = {
                 qq: usr_qq,
@@ -326,7 +327,7 @@ export class Exchange extends plugin {
                 now_time: now_time,
                 end_time: now_time + 60000 * time,
             };
-            await Add_najie_thing(usr_qq,thing_name,thing_exist.class,-thing_amount);
+            await Add_najie_thing(usr_qq, thing_name, thing_exist.class, -thing_amount);
         }
         //
         Exchange.push(wupin);
