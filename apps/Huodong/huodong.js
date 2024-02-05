@@ -213,11 +213,16 @@ export async function get_huodongshop_img(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '')
     usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData("player", usr_qq);
+    let shu = await exist_najie_thing(usr_qq, "愿力", "道具");
+    if (!yuanli) {
+        shu = 0
+    }
     if (!ifexistplay) {
         return;
     }
     let commodities_list = data.huodongshop_list;
     let ningmenghome_data = {
+        yuanli: shu,
         user_id: usr_qq,
         commodities_list: commodities_list
     }
