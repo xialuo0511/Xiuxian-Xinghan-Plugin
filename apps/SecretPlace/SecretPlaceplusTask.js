@@ -353,6 +353,23 @@ export class SecretPlaceplusTask extends plugin {
                 ',剩余次数' +
                 (action.cishu - 1);
               let random = Math.random(); //万分之一出神迹
+
+              //春节活动相关代码
+
+              if (random < 0.2) {
+                last_msg += `\n本次探寻还遇见了年兽！击败它获得了【浮空石】*1`
+                await Add_najie_thing(player_id, '浮空石', '材料', 1);
+              }
+              if (random < 0.4 && random >= 0.2) {
+                last_msg += `\n本次探寻还遇见了年兽！击败它获得了【灵木】*1`
+                await Add_najie_thing(player_id, '灵木', '材料', 1);
+              }
+              if (random < 0.6 && random >= 0.4) {
+                last_msg += `\n本次探寻还遇见了年兽！击败它获得了【木浆纸】*1`
+                await Add_najie_thing(player_id, '木浆纸', '材料', 1);
+              }
+
+              //春节活动相关代码
               if (random < 0.0001) {
                 last_msg +=
                   '\n' +
