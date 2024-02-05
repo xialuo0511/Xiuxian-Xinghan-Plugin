@@ -2336,7 +2336,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     }
     //冰封巨锤
     if (equipment.武器.name == "冰封巨锤") {
-        if (random > 0.9) {
+        if (random > 0.82) {
             msg.push("哈！" + A_player.名号 + "用力拿起了冰封巨锤,向" + B_player.名号 + "冲了过来")
             if (A_lin == yuansu[4]) {
                 msg.push("触发冰封巨锤被动技能:[冰墙巨障],防御提升100%,伤害提升30%\n手中的冰元素异常贴切[冰封巨锤]," + A_player.名号 + "感到筋脉中的元素之力得到了异常增益，元素伤害获得一定提升")
