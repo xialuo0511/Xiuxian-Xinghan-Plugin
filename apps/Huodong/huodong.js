@@ -88,7 +88,7 @@ export class DSC extends plugin {
         shuliang = await convert2integer(shuliang);
 
         if (!shu) {//没有
-            e.reply(`您的愿力不足，还请多多放飞霄灯！`);
+            e.reply(`您没有愿力，还请多多放飞霄灯！`);
             return;
         }
 
