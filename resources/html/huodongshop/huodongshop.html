@@ -23,21 +23,7 @@
 							<div style="display:inline-block;">【{{item.type}}】{{item.name}}</div>
 						</div>
 						<div class="info">所需愿力:{{item.售价}}</div>
-						{{if item.class=="装备"}}
-						<div class="info" style="width:130px;">攻：{{item.atk}}</div>
-						<div class="info" style="width:130px;">防：{{item.def}}</div>
-						<div class="info" style="width:130px;">血：{{item.HP}}</div>
-						<div class="info" style="width:130px;">暴：{{item.bao*100}}%</div>
-						{{else if item.class=="丹药"}}
-						<div class="info">效果：{{item.HP/1000}}%{{item.exp}}{{item.xueqi}}</div>
-						{{else if item.class=="功法"}}
-						<div class="info">修炼加成：{{(item.修炼加成*100).toFixed(0)}}%</div>
-
-						{{else if item.class=="道具"}}
 						<div class="info">描述：{{item.desc}}</div>
-						{{else if item.class=="草药"}}
-						<div class="info">描述：{{item.desc}}</div>
-						{{/if}}
 					</div>
 					{{/each}}
 				</div>
