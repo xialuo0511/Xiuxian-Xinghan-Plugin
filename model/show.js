@@ -340,6 +340,16 @@ export default class Game extends base {
     };
   }
 
+  //遗迹商店
+  async get_yijishopData(myData) {
+    this.model = 'yijishop';
+    return {
+      ...this.screenData,
+      saveId: 'yijishop',
+      ...myData,
+    };
+  }
+
   //活动商店
   async get_huodongshopData(myData) {
     this.model = 'huodongshop';

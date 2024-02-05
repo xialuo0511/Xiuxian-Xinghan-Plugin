@@ -68,7 +68,7 @@ export class SecretPlace extends plugin {
                 {
                     reg: '^#逃离',
                     fnc: 'Giveup'
-                },//活动支持
+                },
                 {
                     reg: '^#遗迹$',
                     fnc: 'Yijiplace'
@@ -79,7 +79,7 @@ export class SecretPlace extends plugin {
                 },
                 {
                     reg: '^#遗迹商店',
-                    fnc: 'huodongshop'
+                    fnc: 'yijishop'
                 },
                 {
                     reg: '^#代币兑换(.*)*(.*)$',
@@ -91,14 +91,14 @@ export class SecretPlace extends plugin {
     }
 
     //活动
-    async huodongshop(e) {
+    async yijishop(e) {
 
         //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let img = await get_huodongshop_img(e);
+        let img = await get_yijishop_img(e);
         e.reply(img);
         return;
     }
@@ -698,20 +698,20 @@ export class SecretPlace extends plugin {
 /**
  *活动商店
  */
-export async function get_huodongshop_img(e) {
+export async function get_yijishop_img(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '')
     usr_qq = await Gulid(usr_qq);
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
         return;
     }
-    let commodities_list = data.huodongshop_list;
-    let ningmenghome_data = {
+    let commodities_list = data.yijishop_list;
+    let yijishop_data = {
         user_id: usr_qq,
         commodities_list: commodities_list
     }
-    const data1 = await new Show(e).get_huodongshopData(ningmenghome_data);
-    let img = await puppeteer.screenshot("huodongshop", {
+    const data1 = await new Show(e).get_yijishopData(yijishop_data);
+    let img = await puppeteer.screenshot("yijishop", {
         ...data1,
     });
     return img;

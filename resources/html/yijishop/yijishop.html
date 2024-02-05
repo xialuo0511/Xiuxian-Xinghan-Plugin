@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/huodongshop/huodongshop.css" />
+	<link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/yijishop/yijishop.css" />
 	<!-- <link rel="stylesheet" type="text/css" href="../../html/player/player.css" /> -->
 	<link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
 	<!-- <link rel="preload" href="../../img/player/xiuxian-01.png" as="image" /> -->
@@ -16,8 +16,8 @@
 			<!-- 你要是闲得无聊,每个装备可以搞个icon -->
 			<div class="use_data">
 				<div class="user_font use_data_head" style="text-align: center;padding-left: 0px;">
-					<div>活动商店【~明霄升海平~】</div>
-					<div style="font-size:0.8em;">购买指令：#愿力兑换+物品名*114514</div>
+					<div>遗迹商店</div>
+					<div style="font-size:0.8em;">购买指令：#代币兑换+物品名*114514</div>
 				</div>
 				<div class="use_data_body">
 					{{each commodities_list item}}
@@ -25,7 +25,7 @@
 						<div>
 							<div style="display:inline-block;">【{{item.type}}】{{item.name}}</div>
 						</div>
-						<div class="info">所需愿力:{{item.出售价}}</div>
+						<div class="info">所需代币:{{item.daibi}}*{{item.出售价}}</div>
 						{{if item.class=="装备"}}
 						<div class="info" style="width:130px;">攻：{{item.atk}}</div>
 						<div class="info" style="width:130px;">防：{{item.def}}</div>
