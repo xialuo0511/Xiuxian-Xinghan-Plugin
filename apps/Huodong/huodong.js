@@ -25,6 +25,14 @@ export class DSC extends plugin {
                 {
                     reg: '^#活动商店$',
                     fnc: 'shop'
+                },
+                {
+                    reg: '^#愿力兑换(.*)*(.*)$',
+                    fnc: 'duihuan'
+                },
+                {
+                    reg: '^#许愿.*$',
+                    fnc: 'xuyuan'
                 }
             ]
         })
@@ -39,6 +47,61 @@ export class DSC extends plugin {
         let img = await get_huodongshop_img(e);
         e.reply(img);
         return;
+    }
+
+    /**
+     * 兑换
+     */
+    async duihuan(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let usr_qq = e.user_id.toString().replace('qg_', '')
+        usr_qq = await Gulid(usr_qq);
+        await Go(e);
+        let msg = e.msg.replace("#愿力兑换", "");
+        var bool = msg.indexOf("*");
+        //返回大于等于0的整数值，若不包含"Text"则返回"-1。
+        //分割文本变数组
+        let code = [];
+        if (bool > 0) {
+            code = msg.split("*");
+        } else {
+            code.push(msg);
+            code.push(1);
+        }
+        //获取物品名和数量
+        let thing_name = code[0];
+        let shuliang = code[1];
+        //获取活动商店数据
+        let commodities_list = data.huodongshop_list;
+        commodities_list = commodities_list.filter(function (commodities_list) {
+            return commodities_list.name === thing_name;
+        });
+        commodities_list = commodities_list.filter(name => thing_name);
+        //搜索纳戒物品
+        let shu = await exist_najie_thing(usr_qq, "愿力", "道具");
+        //转为整数
+        let quantity = commodities_list[0].出售价 * shuliang
+        quantity = await convert2integer(quantity);
+        shuliang = await convert2integer(shuliang);
+
+        if (!shu) {//没有
+            e.reply(`您的愿力不足，还请多多放飞霄灯！`);
+            return;
+        }
+
+        if (shu >= quantity) {
+            await Add_najie_thing(usr_qq, "愿力", "道具", -quantity);
+            await Add_najie_thing(usr_qq, commodities_list[0].name, commodities_list[0].class, shuliang)
+            e.reply(`兑换${commodities_list[0].name}*${shuliang}成功，消耗${quantity}愿力`)
+            return;
+        } else {
+            e.reply("购买需要" + quantity + "愿力，你只有" + shu + "，多多放飞霄灯吧！")
+            return;
+        }
+
     }
 
 }

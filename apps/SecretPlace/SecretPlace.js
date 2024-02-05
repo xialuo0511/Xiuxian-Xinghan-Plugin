@@ -638,7 +638,6 @@ export class SecretPlace extends plugin {
     /**
      * 兑换
      */
-
     async daibiduihuan(e) {
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
