@@ -23,7 +23,7 @@
 	},
 	{
 		"name": "2.2更新补偿",
-		"level_min": 10,
+		"level_min": 12,
 		"level_max": 1000,
 		"thing": [
 			{
