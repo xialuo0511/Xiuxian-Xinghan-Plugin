@@ -185,7 +185,7 @@ export class huodong extends plugin {
         //搜索纳戒物品
         let shu = await exist_najie_thing(usr_qq, "愿力", "道具");
         //转为整数
-        let quantity = commodities_list[0].出售价 * shuliang
+        let quantity = commodities_list[0].售价 * shuliang
         quantity = await convert2integer(quantity);
         shuliang = await convert2integer(shuliang);
 
