@@ -1265,10 +1265,10 @@ export async function synchronization(e) {
     playerList.push(file);
   }
   for (let player_id of playerList) {
-    let Whitelist = await data.Whitelist.find(item => item.qq == player_id);
-    if (Whitelist) {
-      return;
-    }
+    // let Whitelist = await data.Whitelist.find(item => item.qq == player_id);
+    // if (Whitelist) {
+    //   return;
+    // }
     let usr_qq = player_id;
     let player = await data.getData('player', usr_qq);
     let najie = await Read_najie(usr_qq);
