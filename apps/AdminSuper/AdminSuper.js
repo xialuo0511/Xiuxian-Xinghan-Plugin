@@ -148,7 +148,7 @@ export class AdminSuper extends plugin {
     if (!e.isMaster) {
       return;
     }
-    let nowtime = Date.now()
+    let nowtime = new Date().getTime();
     //获取发送修为数量
     let usr_qq = e.msg.replace('#开通初级道法仙术', '');
     let ifexistplay = data.existData("player", usr_qq);
