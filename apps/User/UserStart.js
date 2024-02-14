@@ -539,29 +539,53 @@ export class UserStart extends plugin {
         data.setData("player", usr_qq, player);
         //给奖励
         let gift_xiuwei = player.连续签到天数 * 15000;
+        if (player.daofaxianshu_endtime > nowTime) {
+            gift_xiuwei *= 2
+        }
         let yijie_bl = await yijie_existplayer(usr_qq)
+        let lilian = this.xiuxianConfigData.Sign.ticket
+        let msg
         if (yijie_bl) {
             let yijie = await Read_yijie_player(usr_qq)
-            await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
             await Add_修为(usr_qq, gift_xiuwei);
             let xianding = 16
             if (yijie["xianding_level"] > 10) {
                 xianding = 64
             }
+            if (player.daofaxianshu_endtime > nowTime) {
+                xianding *= 2
+                lilian *= 2
+                msg = [
+                    segment.at(e.user_id),
+                    `【道法仙术】给予你赐福，签到奖励翻倍！`,
+                    `连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${lilian},【仙鼎历练券】*${xianding}`
+                ]
+            } else {
+                msg = [
+                    segment.at(e.user_id),
+                    `连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${lilian},【仙鼎历练券】*${xianding}`
+                ]
+            }
+            await Add_najie_thing(usr_qq, "秘境之匙", "道具", lilian);
             await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", xianding)
-            let msg = [
-                segment.at(e.user_id),
-                `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket},【仙鼎历练券】*16`
-            ]
             e.reply(msg);
             return;
         } else {
-            await Add_najie_thing(usr_qq, "秘境之匙", "道具", this.xiuxianConfigData.Sign.ticket);
+            if (player.daofaxianshu_endtime > nowTime) {
+                lilian *= 2
+                msg = [
+                    segment.at(e.user_id),
+                    `【道法仙术】给予你赐福，签到奖励翻倍！`,
+                    `连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${lilian}`
+                ]
+            } else {
+                msg = [
+                    segment.at(e.user_id),
+                    `连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${lilian}`
+                ]
+            }
+            await Add_najie_thing(usr_qq, "秘境之匙", "道具", lilian);
             await Add_修为(usr_qq, gift_xiuwei);
-            let msg = [
-                segment.at(e.user_id),
-                `已经连续签到${player.连续签到天数}天了，获得了${gift_xiuwei}修为,【秘境之匙】*${this.xiuxianConfigData.Sign.ticket}`
-            ]
             e.reply(msg);
             return;
         }
