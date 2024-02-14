@@ -149,8 +149,15 @@ export class AdminSuper extends plugin {
       return;
     }
     let nowtime = new Date().getTime();
-    //获取发送修为数量
-    let usr_qq = e.msg.replace('#开通初级道法仙术', '');
+    //没有at信息直接返回,不执行
+    let isat = e.message.some(item => item.type === 'at');
+    if (!isat) {
+      return;
+    }
+    //获取at信息
+    let atItem = e.message.filter(item => item.type === 'at');
+    //对方qq
+    let usr_qq = atItem[0].qq;
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
       return;
@@ -173,8 +180,15 @@ export class AdminSuper extends plugin {
       return;
     }
     let nowtime = Date.now()
-    //获取发送修为数量
-    let usr_qq = e.msg.replace('#开通高级道法仙术', '');
+    //没有at信息直接返回,不执行
+    let isat = e.message.some(item => item.type === 'at');
+    if (!isat) {
+      return;
+    }
+    //获取at信息
+    let atItem = e.message.filter(item => item.type === 'at');
+    //对方qq
+    let usr_qq = atItem[0].qq;
     let ifexistplay = data.existData("player", usr_qq);
     if (!ifexistplay) {
       return;
