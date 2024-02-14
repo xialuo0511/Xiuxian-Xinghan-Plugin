@@ -35,6 +35,7 @@ const { execSync } = require("child_process")
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import { time } from 'node:console';
 
 /**
  * 修仙设置
@@ -128,16 +129,67 @@ export class AdminSuper extends plugin {
           fnc: 'replaceThing',
         },
         {
-          reg: '#调试图片',
-          fnc: 'tiaoshi',
-        },
-        {
           reg: '#查看玩家面板.*$',
           fnc: 'mianban',
+        },
+        {
+          reg: '#开通初级道法仙术.*$',
+          fnc: 'ktdfxt',
+        }, {
+          reg: '#开通高级道法仙术.*$',
+          fnc: 'ktgjdfxt',
         }
       ],
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  async ktdfxt(e) {
+    if (!e.isMaster) {
+      return;
+    }
+    let nowtime = Date.now()
+    //获取发送修为数量
+    let usr_qq = e.msg.replace('#开通初级道法仙术', '');
+    let ifexistplay = data.existData("player", usr_qq);
+    if (!ifexistplay) {
+      return;
+    }
+    let player = await Read_player(usr_qq);
+    let daofaxianshu_endtime = 2592000000
+    if (Number(player.daofaxianshu_endtime) < nowtime) {
+      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
+    } else {
+      player.daofaxianshu += daofaxianshu_endtime
+    }
+    player.daofaxianshu = 1
+    await Write_player(usr_qq, player)
+    e.reply("开通成功！【初级道法仙术】的有效时长增加30天")
+    return;
+  }
+
+  async ktgjdfxt(e) {
+    if (!e.isMaster) {
+      return;
+    }
+    let nowtime = Date.now()
+    //获取发送修为数量
+    let usr_qq = e.msg.replace('#开通高级道法仙术', '');
+    let ifexistplay = data.existData("player", usr_qq);
+    if (!ifexistplay) {
+      return;
+    }
+    let player = await Read_player(usr_qq);
+    let daofaxianshu_endtime = 2592000000
+    if (Number(player.daofaxianshu_endtime) < nowtime) {
+      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
+    } else {
+      player.daofaxianshu += daofaxianshu_endtime
+    }
+    player.daofaxianshu = 2
+    await Write_player(usr_qq, player)
+    e.reply("开通成功！【高级道法仙术】的有效时长增加30天")
+    return;
   }
 
   async mianban(e) {
@@ -1220,178 +1272,20 @@ export async function synchronization(e) {
     let usr_qq = player_id;
     let player = await data.getData('player', usr_qq);
     let najie = await Read_najie(usr_qq);
-    if (!isNotNull(player.level_id)) {
-      e.reply('版本升级错误！重装吧，旧版本不支持1.1.6版本之前的存档升级！');
-      return;
-    }
     //删
-    if (isNotNull(player.境界)) {
-      player.境界 = undefined;
-    }
-    if (isNotNull(player.皮肤)) {
-      player.皮肤 = undefined;
-    }
-    if (isNotNull(player.基础血量)) {
-      player.基础血量 = undefined;
-    }
-    if (isNotNull(player.基础防御)) {
-      player.基础防御 = undefined;
-    }
-    if (isNotNull(player.基础攻击)) {
-      player.基础攻击 = undefined;
-    }
-    if (isNotNull(player.基础暴击)) {
-      player.基础暴击 = undefined;
-    }
-    if (isNotNull(player.now_level_id)) {
-      player.now_level_id = undefined;
-    }
-    if (isNotNull(player.攻击强化)) {
-      player.攻击强化 = undefined;
-    }
-    if (isNotNull(player.防御强化)) {
-      player.防御强化 = undefined;
-    }
-    if (isNotNull(player.生命强化)) {
-      player.生命强化 = undefined;
-    }
-    if (isNotNull(player.法球倍率)) {
-      player.法球倍率 = undefined;
-    }
-    if (isNotNull(player.热能)) {
-      player.热能 = undefined;
-    }
-    if (!isNotNull(player.热量) || player.热量 == null) {
-      player.热量 = 0;
-    }
+    // if (isNotNull(player.境界)) {
+    //   player.境界 = undefined;
+    // }
     //补
-    if (!isNotNull(najie.材料)) {
-      najie.材料 = [];
+    if (player.daofaxianshu) {
+      player.daofaxianshu = 0;
     }
-    if (!isNotNull(najie.食材)) {
-      najie.食材 = [];
-    }
-    if (!isNotNull(najie.草药)) {
-      najie.草药 = [];
-    }
-    if (!isNotNull(najie.盒子)) {
-      najie.盒子 = [];
-    }
-    if (!isNotNull(player.Physique_id)) {
-      player.Physique_id = 1;
-    }
-    if (!isNotNull(player.血气)) {
-      player.血气 = 1;
-    }
-    if (!isNotNull(player.功法倍率)) {
-      player.功法倍率 = 0;
-    }
-    if (!isNotNull(player.镇妖塔层数)) {
-      player.镇妖塔层数 = 0;
-    }
-    if (!isNotNull(player.神魄段数)) {
-      player.神魄段数 = 0;
-    }
-    if (!isNotNull(player.魔道值)) {
-      player.魔道值 = 0;
-    }
-    if (!isNotNull(player.饱食度)) {
-      player.饱食度 = 0;
-    }
-    if (!isNotNull(player.linggen)) {
-      player.linggen = [];
-    }
-    if (!isNotNull(player.师徒任务阶段)) {
-      player.师徒任务阶段 = 0;
-    }
-    if (!isNotNull(player.师徒积分)) {
-      player.师徒积分 = 0;
-    }
-    if (!isNotNull(player.linggenshow)) {
-      player.linggenshow = 1;
-    }
-    if (!isNotNull(player.power_place)) {
-      player.power_place = 1;
-    }
-    if (!isNotNull(player.occupation)) {
-      player.occupation = [];
-    }
-    if (!isNotNull(player.熔炉)) {
-      player.熔炉 = 0;
-    }
-    if (!isNotNull(player.附魔台)) {
-      player.附魔台 = 0;
-    }
-    if (!isNotNull(player.书架)) {
-      player.书架 = 0;
-    }
-    if (!isNotNull(player.favorability)) {
-      player.favorability = 0;
-    }
-    if (!isNotNull(player.breakthrough)) {
-      player.breakthrough = false;
-    }
-    if (!isNotNull(player.occupation_level)) {
-      player.occupation_level = 1;
-    }
-    if (!isNotNull(player.id)) {
-      player.id = usr_qq;
-    }
-    if (!isNotNull(player.攻击加成)) {
-      player.攻击加成 = 0;
-    }
-    if (!isNotNull(player.防御加成)) {
-      player.防御加成 = 0;
-    }
-    if (!isNotNull(player.生命加成)) {
-      player.生命加成 = 0;
-    }
-    if (!isNotNull(najie.仙宠)) {
-      najie.仙宠 = [];
-    }
-    if (!isNotNull(player.热能)) {
-      player.热能 = 0;
-    }
-    if (!isNotNull(najie.仙宠口粮)) {
-      najie.仙宠口粮 = [];
-    }
-    if (!isNotNull(player.仙宠)) {
-      player.仙宠 = [];
-    }
-    if (!isNotNull(player.幸运)) {
-      player.幸运 = 0;
-    }
-    if (!isNotNull(player.练气皮肤)) {
-      player.练气皮肤 = 0;
-    }
-    if (!isNotNull(player.装备皮肤)) {
-      player.装备皮肤 = 0;
-    }
-    if (!isNotNull(player.islucky)) {
-      player.islucky = 0;
-    }
-    if (!isNotNull(player.sex)) {
-      player.sex = 0;
+    if (player.daofaxianshu_endtime) {
+      player.daofaxianshu_endtime = 0;
     }
     // if (!isNotNull(player.辟谷丹)) {
     //     player.辟谷丹 = 0;
     // }
-    if (!isNotNull(player.addluckyNo)) {
-      player.addluckyNo = 0;
-    }
-    if (!isNotNull(player.神石)) {
-      player.神石 = 0;
-    }
-    if (player.血气 == null) {
-      player.血气 = 0;
-    }
-    if (player.Physique_id == 0) {
-      player.Physique_id = 1;
-    }
-    if (player.镇妖塔层数 >= 3000 && player.神魄段数 >= 1500) {
-      player.镇妖塔层数 = 3000
-      player.神魄段数 = 1500;
-    }
     let i = 0;
     let action2 = await redis.get('xiuxian:player:' + usr_qq + ':pifu');
     action2 = JSON.parse(action2);

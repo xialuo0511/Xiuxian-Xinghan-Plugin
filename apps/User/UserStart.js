@@ -153,6 +153,8 @@ export class UserStart extends plugin {
             "轮回点": 10,
             "occupation": [],//职业
             "occupation_level": 1,
+            "daofaxianshu": 0,
+            "daofaxianshu_endtime": 0,
             "镇妖塔层数": 0,
             "神魄段数": 0,
             "魔道值": 0,

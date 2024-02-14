@@ -46,6 +46,7 @@ import { Gulid } from '../../api/api.js'
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import { time } from 'console'
 
 /**
  * 全局变量
@@ -2486,21 +2487,19 @@ export class UserHome extends plugin {
                 return;
             }
             allaction = false;
-            var Time = 0;
-            if (usr_qq == "3969712084617166329" || usr_qq == "17143787007936634733" || usr_qq == "215673729" || usr_qq == "1204963735") {
-                Time = 2;
-            } else {
-                Time = 7;
-            }
+            var Time = 7;
             let now_Time = new Date().getTime(); //获取当前时间戳
+            if (player.daofaxianshu_endtime > now_Time) {
+                Time = 2
+            }
             let shuangxiuTimeout = parseInt(60000 * Time);
             let last_time = await redis.get("xiuxian:player:" + usr_qq + "xunbaocd");//获得上次的时间戳,
             last_time = parseInt(last_time);
             if (now_Time < last_time + shuangxiuTimeout) {
                 let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
                 let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
-                if (usr_qq == "3969712084617166329" || usr_qq == "17143787007936634733" || usr_qq == "215673729" || usr_qq == "1204963735") {
-                    e.reply("您受到了寻宝赐福，正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
+                if (player.daofaxianshu_endtime > now_Time) {
+                    e.reply("【道法仙术】护您左右，为您缩短了寻宝时间！正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
                 } else {
                     e.reply("正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
                 }
