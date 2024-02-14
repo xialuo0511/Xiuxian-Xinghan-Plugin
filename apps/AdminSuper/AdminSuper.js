@@ -1291,10 +1291,10 @@ export async function synchronization(e) {
     //   player.境界 = undefined;
     // }
     //补
-    if (player.daofaxianshu) {
+    if (!player.daofaxianshu) {
       player.daofaxianshu = 0;
     }
-    if (player.daofaxianshu_endtime) {
+    if (!player.daofaxianshu_endtime) {
       player.daofaxianshu_endtime = 0;
     }
     // if (!isNotNull(player.辟谷丹)) {
