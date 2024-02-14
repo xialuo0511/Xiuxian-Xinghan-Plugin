@@ -164,10 +164,10 @@ export class AdminSuper extends plugin {
     }
     let player = await Read_player(usr_qq);
     let daofaxianshu_endtime = 2592000000
-    if (Number(player.daofaxianshu_endtime) < nowtime) {
+    if (player.daofaxianshu_endtime < nowtime) {
       player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
     } else {
-      player.daofaxianshu += daofaxianshu_endtime
+      player.daofaxianshu_endtime += daofaxianshu_endtime
     }
     player.daofaxianshu = 1
     await Write_player(usr_qq, player)
