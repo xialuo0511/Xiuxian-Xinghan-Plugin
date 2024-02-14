@@ -2490,7 +2490,7 @@ export class UserHome extends plugin {
             var Time = 7;
             let now_Time = new Date().getTime(); //获取当前时间戳
             if (player.daofaxianshu_endtime > now_Time) {
-                Time = 2
+                Time = 3
             }
             let shuangxiuTimeout = parseInt(60000 * Time);
             let last_time = await redis.get("xiuxian:player:" + usr_qq + "xunbaocd");//获得上次的时间戳,
@@ -2523,6 +2523,9 @@ export class UserHome extends plugin {
             let t2 = 2 + Math.random();
             let xiuwei = Math.trunc(2000 + (100 * now_level_id * now_level_id * t1 * 0.1) / 5);
             let xueqi = Math.trunc(2000 + 100 * now_physique_id * now_physique_id * t2 * 0.1);
+            if (player.daofaxianshu_endtime > now_Time) {
+                last_msg += '【道法仙途】助您寻宝！本次寻宝时间缩短4分钟\n'
+            }
             if (shuangbei < player.幸运) {
                 if (shuangbei < player.addluckyNo) {
                     last_msg += '福源丹生效，所以在';
