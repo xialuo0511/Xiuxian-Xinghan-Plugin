@@ -198,7 +198,7 @@ export class AdminSuper extends plugin {
     if (Number(player.daofaxianshu_endtime) < nowtime) {
       player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
     } else {
-      player.daofaxianshu += daofaxianshu_endtime
+      player.daofaxianshu_endtime += daofaxianshu_endtime
     }
     player.daofaxianshu = 2
     await Write_player(usr_qq, player)
