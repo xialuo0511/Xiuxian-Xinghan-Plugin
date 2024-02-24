@@ -54,7 +54,7 @@
 
 .user_top_img_bottom2 {
     margin: auto;
-    background-image: url("../../img/player/head2.png");
+    background-image: url({{touxiang}});
     background-size: 100% auto;
     width: 280px;
     height: 280px;
