@@ -20,12 +20,12 @@
         </div>
 
         <!--下-->
-        {{if touxiang_have.length > 0}}
+        {{if touxiang.length > 0}}
         <div class="card_box">
             <div class="use_data">
                 <div class="user_font user_font_title">【已拥有】</div>
                 <div class="user_font  wupin">
-                    {{each touxiang_have item}}
+                    {{each touxiang item}}
                     <div class="item">
                         <div class="item_title font_item_title">{{item.name}}</div>
                         <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
