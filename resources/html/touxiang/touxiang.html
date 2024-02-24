@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/touxiang/touxiang.css" />
+    <link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
+    <link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+    <div>
+        <div class="header">
+        </div>
+        <!--上-->
+        <div class="card_box">
+            <div class="use_data">
+                <div class="user_font user_font_title">{{nickname}}的头像框</div>
+            </div>
+        </div>
+
+        <!--下-->
+        {{if touxiang.length > 0}}
+        <div class="card_box">
+            <div class="use_data">
+                <div class="user_font user_font_title">【已拥有】</div>
+                <div class="user_font  wupin">
+                    {{each touxiang item}}
+                    <div class="item">
+                        <div class="item_title font_item_title">{{item.name}}</div>
+                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+        <!--下-->
+        {{if touxiang_need.length > 0}}
+        <div class="card_box">
+            <div class="use_data">
+                <div class="user_font user_font_title">【未拥有】</div>
+                <div class="user_font  wupin">
+                    {{each touxiang_need item}}
+                    <div class="item">
+                        <div class="item_title font_item_title">{{item.name}}</div>
+                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+        <div class="user_bottom2">
+        </div>
+    </div>
+</body>
+
+</html>
