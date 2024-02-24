@@ -175,6 +175,16 @@ export class UserStart extends plugin {
                 "职业等级": 1
             }
         }
+        if (!new_player.all_touxiangkuang) {
+            new_player.all_touxiangkuang = [];
+            let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
+            new_player.all_touxiangkuang.push(Touxiang)
+        }
+        if (!new_player.zb_touxiangkuang) {
+            new_player.zb_touxiangkuang = [];
+            let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
+            new_player.zb_touxiangkuang.push(Touxiang)
+        }
         await Write_player(usr_qq, new_player);
         //初始化装备
         let new_equipment = {

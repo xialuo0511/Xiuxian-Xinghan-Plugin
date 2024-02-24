@@ -68,6 +68,9 @@ class XiuxianData {
         //炼体境界
         this.LevelMax_list = JSON.parse(fs.readFileSync(`${this.Level}/炼体境界.json`));
 
+        //特殊
+        //头像框
+        this.Touxiang_list = JSON.parse(fs.readFileSync(`${this.Level}/特殊/头像框.json`));
 
         //加载装备列表
         this.equipment_list = JSON.parse(fs.readFileSync(`${this.lib_path}/装备列表.json`));
