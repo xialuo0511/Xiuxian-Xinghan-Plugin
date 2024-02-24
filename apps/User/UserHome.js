@@ -2524,7 +2524,7 @@ export class UserHome extends plugin {
             let xiuwei = Math.trunc(2000 + (100 * now_level_id * now_level_id * t1 * 0.1) / 5);
             let xueqi = Math.trunc(2000 + 100 * now_physique_id * now_physique_id * t2 * 0.1);
             if (Number(player.daofaxianshu_endtime) > now_Time) {
-                last_msg += '【道法仙途】助您寻宝！本次寻宝时间缩短4分钟\n'
+                last_msg += '【道法仙术】助您寻宝！本次寻宝时间缩短4分钟\n'
             }
             if (shuangbei < player.幸运) {
                 if (shuangbei < player.addluckyNo) {
