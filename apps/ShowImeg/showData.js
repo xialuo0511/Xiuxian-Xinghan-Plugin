@@ -990,9 +990,11 @@ export async function get_player_img(e) {
     //头像框
     let now_Time = new Date().getTime(); //获取当前时间戳
     let touxiang = "user_top_img_bottom"
-    if (player.daofaxianshu_endtime > now_Time) {
+    if (Number(player[daofaxianshu_endtime]) > now_Time) {
         touxiang = "user_head_pic_2"
     }
+
+
     if (player.灵石 > 999999999999) {
         lingshi = 999999999999;
     }
