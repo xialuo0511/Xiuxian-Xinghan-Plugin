@@ -46,6 +46,7 @@ import { Gulid } from '../../api/api.js'
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import { time } from 'console'
 
 /**
  * 全局变量
@@ -2486,21 +2487,19 @@ export class UserHome extends plugin {
                 return;
             }
             allaction = false;
-            var Time = 0;
-            if (usr_qq == "3969712084617166329" || usr_qq == "17143787007936634733" || usr_qq == "215673729" || usr_qq == "1204963735") {
-                Time = 2;
-            } else {
-                Time = 7;
-            }
+            var Time = 7;
             let now_Time = new Date().getTime(); //获取当前时间戳
+            if (Number(player.daofaxianshu_endtime) > now_Time) {
+                Time = 3
+            }
             let shuangxiuTimeout = parseInt(60000 * Time);
             let last_time = await redis.get("xiuxian:player:" + usr_qq + "xunbaocd");//获得上次的时间戳,
             last_time = parseInt(last_time);
             if (now_Time < last_time + shuangxiuTimeout) {
                 let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
                 let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
-                if (usr_qq == "3969712084617166329" || usr_qq == "17143787007936634733" || usr_qq == "215673729" || usr_qq == "1204963735") {
-                    e.reply("您受到了寻宝赐福，正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
+                if (player.daofaxianshu_endtime > now_Time) {
+                    e.reply("【道法仙术】护您左右，为您缩短了寻宝时间！正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
                 } else {
                     e.reply("正在归来途中.....\n" + `还需要  ${Couple_m}分 ${Couple_s}秒。`);
                 }
@@ -2524,6 +2523,9 @@ export class UserHome extends plugin {
             let t2 = 2 + Math.random();
             let xiuwei = Math.trunc(2000 + (100 * now_level_id * now_level_id * t1 * 0.1) / 5);
             let xueqi = Math.trunc(2000 + 100 * now_physique_id * now_physique_id * t2 * 0.1);
+            if (Number(player.daofaxianshu_endtime) > now_Time) {
+                last_msg += '【道法仙途】助您寻宝！本次寻宝时间缩短4分钟\n'
+            }
             if (shuangbei < player.幸运) {
                 if (shuangbei < player.addluckyNo) {
                     last_msg += '福源丹生效，所以在';
@@ -2542,7 +2544,7 @@ export class UserHome extends plugin {
                     player.幸运 -= player.addluckyNo;
                     player.addluckyNo = 0;
                 }
-                await data.setData('player', player_id, player);
+                data.setData('player', player_id, player);
                 await Write_player(usr_qq, player);
             }
             if (random > newrandom) {
@@ -3274,7 +3276,7 @@ export class UserHome extends plugin {
                 }
             }
         }
-        if (func == "") {
+        if (func == "合成") {
             let wupin = data.hecheng_list.find(item => item.name == thing_name);
             if (!isNotNull(wupin)) {
                 e.reply(`合成物品暂时未添加，请持续关注`);

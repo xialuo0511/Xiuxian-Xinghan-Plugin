@@ -20,7 +20,7 @@ export class huodong extends plugin {
             dsc: '活动模块',
             event: 'message',
             /** 优先级，数字越小等级越高 */
-            priority: 500,
+            priority: 600,
             rule: [
                 {
                     reg: '^#活动商店$',
@@ -35,7 +35,7 @@ export class huodong extends plugin {
                     fnc: 'xuyuan'
                 },
                 {
-                    reg: '^#合成霄灯.*$',
+                    reg: '^#制作霄灯.*$',
                     fnc: 'hecheng'
                 }
             ]
@@ -80,7 +80,7 @@ export class huodong extends plugin {
         await Add_najie_thing(usr_qq, "灵木", "材料", -shu);
         await Add_najie_thing(usr_qq, "木浆纸", "材料", -shu);
         await Add_najie_thing(usr_qq, "霄灯", "道具", shu);
-        e.reply(`合成成功，获得【霄灯】*${shu}`);
+        e.reply(`制作成功，获得【霄灯】*${shu}`);
         return;
     }
 
@@ -185,7 +185,7 @@ export class huodong extends plugin {
         //搜索纳戒物品
         let shu = await exist_najie_thing(usr_qq, "愿力", "道具");
         //转为整数
-        let quantity = commodities_list[0].出售价 * shuliang
+        let quantity = commodities_list[0].售价 * shuliang
         quantity = await convert2integer(quantity);
         shuliang = await convert2integer(shuliang);
 

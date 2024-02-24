@@ -240,8 +240,8 @@ export class UserSellAll extends plugin {
 
     async all_tongbu(e) {
         await synchronization(e);
-        await Pushforum_ASS(e);
-        await Synchronization_ASS(e);
+        //await Pushforum_ASS(e);
+        //await Synchronization_ASS(e);
         return;
     }
 

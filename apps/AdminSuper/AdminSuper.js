@@ -35,6 +35,7 @@ const { execSync } = require("child_process")
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import { time } from 'node:console';
 
 /**
  * 修仙设置
@@ -128,16 +129,81 @@ export class AdminSuper extends plugin {
           fnc: 'replaceThing',
         },
         {
-          reg: '#调试图片',
-          fnc: 'tiaoshi',
-        },
-        {
           reg: '#查看玩家面板.*$',
           fnc: 'mianban',
+        },
+        {
+          reg: '#开通初级道法仙术.*$',
+          fnc: 'ktdfxt',
+        }, {
+          reg: '#开通高级道法仙术.*$',
+          fnc: 'ktgjdfxt',
         }
       ],
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  async ktdfxt(e) {
+    if (!e.isMaster) {
+      return;
+    }
+    let nowtime = new Date().getTime();
+    //没有at信息直接返回,不执行
+    let isat = e.message.some(item => item.type === 'at');
+    if (!isat) {
+      return;
+    }
+    //获取at信息
+    let atItem = e.message.filter(item => item.type === 'at');
+    //对方qq
+    let usr_qq = atItem[0].qq;
+    let ifexistplay = data.existData("player", usr_qq);
+    if (!ifexistplay) {
+      return;
+    }
+    let player = await Read_player(usr_qq);
+    let daofaxianshu_endtime = 2592000000
+    if (player.daofaxianshu_endtime < nowtime) {
+      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
+    } else {
+      player.daofaxianshu_endtime += daofaxianshu_endtime
+    }
+    player.daofaxianshu = 1
+    await Write_player(usr_qq, player)
+    e.reply("开通成功！【初级道法仙术】的有效时长增加30天")
+    return;
+  }
+
+  async ktgjdfxt(e) {
+    if (!e.isMaster) {
+      return;
+    }
+    let nowtime = Date.now()
+    //没有at信息直接返回,不执行
+    let isat = e.message.some(item => item.type === 'at');
+    if (!isat) {
+      return;
+    }
+    //获取at信息
+    let atItem = e.message.filter(item => item.type === 'at');
+    //对方qq
+    let usr_qq = atItem[0].qq;
+    let ifexistplay = data.existData("player", usr_qq);
+    if (!ifexistplay) {
+      return;
+    }
+    let player = await Read_player(usr_qq);
+    let daofaxianshu_endtime = 2592000000
+    if (Number(player.daofaxianshu_endtime) < nowtime) {
+      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
+    } else {
+      player.daofaxianshu_endtime += daofaxianshu_endtime
+    }
+    player.daofaxianshu = 2
+    await Write_player(usr_qq, player)
+    e.reply("开通成功！【高级道法仙术】的有效时长增加30天")
+    return;
   }
 
   async mianban(e) {
@@ -1213,450 +1279,30 @@ export async function synchronization(e) {
     playerList.push(file);
   }
   for (let player_id of playerList) {
-    let Whitelist = await data.Whitelist.find(item => item.qq == player_id);
-    if (Whitelist) {
-      return;
-    }
+    // let Whitelist = await data.Whitelist.find(item => item.qq == player_id);
+    // if (Whitelist) {
+    //   return;
+    // }
     let usr_qq = player_id;
     let player = await data.getData('player', usr_qq);
     let najie = await Read_najie(usr_qq);
-    if (!isNotNull(player.level_id)) {
-      e.reply('版本升级错误！重装吧，旧版本不支持1.1.6版本之前的存档升级！');
-      return;
-    }
     //删
-    if (isNotNull(player.境界)) {
-      player.境界 = undefined;
-    }
-    if (isNotNull(player.皮肤)) {
-      player.皮肤 = undefined;
-    }
-    if (isNotNull(player.基础血量)) {
-      player.基础血量 = undefined;
-    }
-    if (isNotNull(player.基础防御)) {
-      player.基础防御 = undefined;
-    }
-    if (isNotNull(player.基础攻击)) {
-      player.基础攻击 = undefined;
-    }
-    if (isNotNull(player.基础暴击)) {
-      player.基础暴击 = undefined;
-    }
-    if (isNotNull(player.now_level_id)) {
-      player.now_level_id = undefined;
-    }
-    if (isNotNull(player.攻击强化)) {
-      player.攻击强化 = undefined;
-    }
-    if (isNotNull(player.防御强化)) {
-      player.防御强化 = undefined;
-    }
-    if (isNotNull(player.生命强化)) {
-      player.生命强化 = undefined;
-    }
-    if (isNotNull(player.法球倍率)) {
-      player.法球倍率 = undefined;
-    }
-    if (isNotNull(player.热能)) {
-      player.热能 = undefined;
-    }
-    if (!isNotNull(player.热量) || player.热量 == null) {
-      player.热量 = 0;
-    }
+    // if (isNotNull(player.境界)) {
+    //   player.境界 = undefined;
+    // }
     //补
-    if (!isNotNull(najie.材料)) {
-      najie.材料 = [];
+    if (!player.daofaxianshu) {
+      player.daofaxianshu = 0;
     }
-    if (!isNotNull(najie.食材)) {
-      najie.食材 = [];
-    }
-    if (!isNotNull(najie.草药)) {
-      najie.草药 = [];
-    }
-    if (!isNotNull(najie.盒子)) {
-      najie.盒子 = [];
-    }
-    if (!isNotNull(player.Physique_id)) {
-      player.Physique_id = 1;
-    }
-    if (!isNotNull(player.血气)) {
-      player.血气 = 1;
-    }
-    if (!isNotNull(player.功法倍率)) {
-      player.功法倍率 = 0;
-    }
-    if (!isNotNull(player.镇妖塔层数)) {
-      player.镇妖塔层数 = 0;
-    }
-    if (!isNotNull(player.神魄段数)) {
-      player.神魄段数 = 0;
-    }
-    if (!isNotNull(player.魔道值)) {
-      player.魔道值 = 0;
-    }
-    if (!isNotNull(player.饱食度)) {
-      player.饱食度 = 0;
-    }
-    if (!isNotNull(player.linggen)) {
-      player.linggen = [];
-    }
-    if (!isNotNull(player.师徒任务阶段)) {
-      player.师徒任务阶段 = 0;
-    }
-    if (!isNotNull(player.师徒积分)) {
-      player.师徒积分 = 0;
-    }
-    if (!isNotNull(player.linggenshow)) {
-      player.linggenshow = 1;
-    }
-    if (!isNotNull(player.power_place)) {
-      player.power_place = 1;
-    }
-    if (!isNotNull(player.occupation)) {
-      player.occupation = [];
-    }
-    if (!isNotNull(player.熔炉)) {
-      player.熔炉 = 0;
-    }
-    if (!isNotNull(player.附魔台)) {
-      player.附魔台 = 0;
-    }
-    if (!isNotNull(player.书架)) {
-      player.书架 = 0;
-    }
-    if (!isNotNull(player.favorability)) {
-      player.favorability = 0;
-    }
-    if (!isNotNull(player.breakthrough)) {
-      player.breakthrough = false;
-    }
-    if (!isNotNull(player.occupation_level)) {
-      player.occupation_level = 1;
-    }
-    if (!isNotNull(player.id)) {
-      player.id = usr_qq;
-    }
-    if (!isNotNull(player.攻击加成)) {
-      player.攻击加成 = 0;
-    }
-    if (!isNotNull(player.防御加成)) {
-      player.防御加成 = 0;
-    }
-    if (!isNotNull(player.生命加成)) {
-      player.生命加成 = 0;
-    }
-    if (!isNotNull(najie.仙宠)) {
-      najie.仙宠 = [];
-    }
-    if (!isNotNull(player.热能)) {
-      player.热能 = 0;
-    }
-    if (!isNotNull(najie.仙宠口粮)) {
-      najie.仙宠口粮 = [];
-    }
-    if (!isNotNull(player.仙宠)) {
-      player.仙宠 = [];
-    }
-    if (!isNotNull(player.幸运)) {
-      player.幸运 = 0;
-    }
-    if (!isNotNull(player.练气皮肤)) {
-      player.练气皮肤 = 0;
-    }
-    if (!isNotNull(player.装备皮肤)) {
-      player.装备皮肤 = 0;
-    }
-    if (!isNotNull(player.islucky)) {
-      player.islucky = 0;
-    }
-    if (!isNotNull(player.sex)) {
-      player.sex = 0;
+    if (!player.daofaxianshu_endtime) {
+      player.daofaxianshu_endtime = 0;
     }
     // if (!isNotNull(player.辟谷丹)) {
     //     player.辟谷丹 = 0;
     // }
-    if (!isNotNull(player.addluckyNo)) {
-      player.addluckyNo = 0;
-    }
-    if (!isNotNull(player.神石)) {
-      player.神石 = 0;
-    }
-    if (player.血气 == null) {
-      player.血气 = 0;
-    }
-    if (player.Physique_id == 0) {
-      player.Physique_id = 1;
-    }
-    if (player.镇妖塔层数 >= 3000 && player.神魄段数 >= 1500) {
-      player.镇妖塔层数 = 3000
-      player.神魄段数 = 1500;
-    }
-    let i = 0;
-    let action2 = await redis.get('xiuxian:player:' + usr_qq + ':pifu');
-    action2 = JSON.parse(action2);
-    action2 = 1;
-    await redis.set(
-      'xiuxian:player:' + usr_qq + ':pifu',
-      JSON.stringify(action2)
-    );
-    let action = await redis.get('xiuxian:player:' + 10 + ':biguang');
-    action = await JSON.parse(action);
-    if (action == null) {
-      action = [];
-    }
-    for (i = 0; i < action.length; i++) {
-      if (action[i].qq == usr_qq) {
-        break;
-      }
-    }
-    if (i == action.length) {
-      const arr = {
-        biguan: 0, //闭关状态
-        biguanxl: 0, //增加效率
-        xingyun: 0,
-        lianti: 0,
-        ped: 0,
-        modao: 0,
-        beiyong1: 0, //ped
-        beiyong2: 0,
-        beiyong3: 0,
-        beiyong4: 0,
-        beiyong5: 0,
-        qq: usr_qq,
-      };
-      action.push(arr);
-      await redis.set(
-        'xiuxian:player:' + 10 + ':biguang',
-        JSON.stringify(action)
-      );
-    }
-    // player.仙宠.forEach(仙宠 => {
-    //   if (!isNotNull(仙宠.体力)) {
-    //    仙宠.体力 =
-    //        data.xianchon.find(xianchon => xianchon.name === 仙宠.name).体力 ||
-    //        35;
-    //    }
-    // });
-    // najie.仙宠.forEach(仙宠 => {
-    //   if (!isNotNull(仙宠.体力)) {
-    //     仙宠.体力 =
-    //      data.xianchon.find(xianchon => xianchon.name === 仙宠.name).体力 ||
-    //      35;
-    //   }
-    // });
-    najie.装备.forEach(装备 => {
-      if (!isNotNull(装备.islockd)) {
-        装备.islockd = 0;
-      }
-      装备.数量 = Math.floor(装备.数量);
-    });
-    najie.丹药.forEach(丹药 => {
-      if (!isNotNull(丹药.islockd)) {
-        丹药.islockd = 0;
-      }
-      丹药.数量 = Math.floor(丹药.数量);
-    });
-    najie.道具.forEach(道具 => {
-      if (!isNotNull(道具.islockd)) {
-        道具.islockd = 0;
-      }
-      道具.数量 = Math.floor(道具.数量);
-    });
-    najie.功法.forEach(功法 => {
-      if (!isNotNull(功法.islockd)) {
-        功法.islockd = 0;
-      }
-      功法.数量 = Math.floor(功法.数量);
-    });
-    najie.草药.forEach(草药 => {
-      if (!isNotNull(草药.islockd)) {
-        草药.islockd = 0;
-      }
-      草药.数量 = Math.floor(草药.数量);
-    });
-    najie.材料.forEach(材料 => {
-      if (!isNotNull(材料.islockd)) {
-        材料.islockd = 0;
-      }
-      材料.数量 = Math.floor(材料.数量);
-    });
-    najie.食材.forEach(食材 => {
-      if (!isNotNull(食材.islockd)) {
-        食材.islockd = 0;
-      }
-      食材.数量 = Math.floor(食材.数量);
-    });
-    najie.盒子.forEach(盒子 => {
-      if (!isNotNull(盒子.islockd)) {
-        盒子.islockd = 0;
-      }
-      盒子.数量 = Math.floor(盒子.数量);
-    });
-    najie.仙宠.forEach(仙宠 => {
-      if (!isNotNull(仙宠.islockd)) {
-        仙宠.islockd = 0;
-      }
-      仙宠.数量 = Math.floor(仙宠.数量);
-    });
-    najie.仙宠口粮.forEach(仙宠口粮 => {
-      if (!isNotNull(仙宠口粮.islockd)) {
-        仙宠口粮.islockd = 0;
-      }
-      仙宠口粮.数量 = Math.floor(仙宠口粮.数量);
-    });
-    //画手修复1.11产生的纳戒同名物品bug和纳戒数量为0的问题
-    najie.装备 = najie.装备.filter(item => item.数量 != null || item.数量 != 0);
-    najie.丹药 = najie.丹药.filter(item => item.数量 != null || item.数量 != 0);
-    najie.道具 = najie.道具.filter(item => item.数量 != null || item.数量 != 0);
-    najie.功法 = najie.功法.filter(item => item.数量 != null || item.数量 != 0);
-    najie.草药 = najie.草药.filter(item => item.数量 != null || item.数量 != 0);
-    najie.材料 = najie.材料.filter(item => item.数量 != null || item.数量 != 0);
-    najie.食材 = najie.食材.filter(item => item.数量 != null || item.数量 != 0);
-    najie.盒子 = najie.盒子.filter(item => item.数量 != null || item.数量 != 0);
-    najie.仙宠 = najie.仙宠.filter(item => item.数量 != null || item.数量 != 0);
-    najie.仙宠口粮 = najie.仙宠口粮.filter(
-      item => item.数量 != null || item.数量 != 0
-    );
-    //1.24将纳戒中原石替换为圆石
-    for (let i = 0; i < najie.材料.length; i++) {
-      const element = najie.材料[i];
-      if (element.name == "原石") {
-        najie.材料[i].name = "圆石";
-        break;
-      }
-    }
-    for (let i = 0; i < najie.道具.length; i++) {
-      const element = najie.道具[i];
-      if (element.name == "斧头") {
-        najie.道具[i].name = "木斧";
-        break;
-      }
-    }
-    for (let i = 0; i < najie.道具.length; i++) {
-      const element = najie.道具[i];
-      if (element.name == "天横山") {
-        najie.道具[i].name = "天衡山";
-        break;
-      }
-    }
-    for (let i = 0; i < najie.道具.length; i++) {
-      const element = najie.道具[i];
-      if (element.name == "剑帝一剑") {
-        najie.道具[i].name = "剑神一剑";
-        break;
-      }
-    }
-    for (let i = 0; i < najie.装备.length; i++) {
-      const element = najie.装备[i];
-      if (!isNotNull(element.fumo)) {
-        najie.装备[i].fumo = "无";
-      }
-    }
-    for (i = 0; i < data.shicai_list.length; i++) {
-      if (najie.食材.name == data.shicai_list[i].name) {
-        najie.食材[i].加成 = data.shicai_list[i].加成
-      }
-    }
-    //修
-    if (!isNotNull(player.血量上限)) {
-      player.血量上限 = 1;
-    }
-    if (!isNotNull(player.当前血量)) {
-      player.血量上限 = 1;
-    }
-    if (!isNotNull(player.攻击)) {
-      player.攻击 = 1;
-    }
-    if (!isNotNull(player.防御)) {
-      player.防御 = 1;
-    }
-    if (!isNotNull(player.lunhui)) {
-      player.lunhui = 0;
-    }
-    if (!isNotNull(player.lunhuiBH)) {
-      player.lunhuiBH = 0;
-    }
-    if (!isNotNull(player.轮回点) || player.轮回点 > 10) {
-      player.轮回点 = 10 - player.lunhui;
-    }
-    player.灵石 = Math.floor(player.灵石);
-    //重新根据id去重置仙门
-    let now_level_id = await data.Level_list.find(
-      item => item.level_id == player.level_id
-    ).level_id;
-    if (now_level_id < 42) {
-      player.power_place = 1;
-    }
-    for (i = 0; i < data.talent_list.length; i++) {
-      if (player.灵根.name == data.talent_list[i].name) {
-        player.修炼效率提升 -= player.灵根.eff;
-        player.灵根 = data.talent_list[i];
-        player.修炼效率提升 += player.灵根.eff;
-        break;
-      }
-    }
-    await redis.set('xiuxian:player:' + usr_qq + ':lhxueqi', 0);
-    await redis.set('xiuxian:player:' + usr_qq + ':lhxigen', 0);
-    //更新面板
-    let equipment = await Read_equipment(usr_qq);
-    /*
-    if (!isNotNull(equipment.项链)) {
-      equipment.项链 = data.necklace_list.find(item => item.name == '幸运儿');
-      player.幸运 += data.necklace_list.find(
-        item => item.name == '幸运儿'
-      ).加成;
-      equipment.项链 = data.necklace_list.find(item => item.name == '幸运up');
-      player.幸运 += data.necklace_list.find(
-        item => item.name == '幸运up'
-      ).加成;
-    }
-    if (equipment.项链.属性 == "幸运") {
-      if (player.仙宠.type == "幸运" && player.幸运 != player.仙宠.加成 + equipment.项链.加成 + player.addluckyNo) {
-        player.幸运 = player.仙宠.加成 + player.addluckyNo + equipment.项链.加成;
-      } else if (player.仙宠.type != "幸运" && player.幸运 != equipment.项链.加成 + player.addluckyNo) {
-        player.幸运 = player.addluckyNo + equipment.项链.加成;
-      }
-    } else {
-      if (player.仙宠.type == "幸运" && player.幸运 != player.仙宠.加成 + player.addluckyNo) {
-        player.幸运 = player.仙宠.加成 + player.addluckyNo;
-      } else if (player.仙宠.type != "幸运" && player.幸运 != player.addluckyNo) {
-        player.幸运 = player.addluckyNo;
-      }
-    }
-    */
-    if (!isNotNull(equipment.武器.fumo)) {
-      equipment.武器.fumo = "无";
-    }
-    if (!isNotNull(equipment.护具.fumo)) {
-      equipment.护具.fumo = "无";
-    }
-    if (!isNotNull(equipment.法宝.fumo)) {
-      equipment.法宝.fumo = "无";
-    }
-    await Write_najie(usr_qq, najie);
     await Write_player(usr_qq, player);
-    await Write_equipment(usr_qq, equipment);
   }
   e.reply('存档同步结束');
-
-  // NOTE: 魔术师同步，开发者专用，要使用请删除注释
-  const thingType = ''; // 填写欲抹除物品类型
-  const thingName = ''; // 填写欲抹除物品名称
-
-  const objArr = await clearNajieThing(thingType, thingName);
-  e.reply('物品自动抹除结束');
-
-  const newThingType = '';
-  const newThingName = ''; // 填写新物品
-  const N = 1; // 填写
-
-  objArr.map(uid_tnum => {
-    const usrId = Object.entries(uid_tnum)[0][0];
-    Add_najie_thing(usrId, newThingName, newThingType, uid_tnum.usrId * N);
-  });
-  e.reply('物品自动替换结束');
-
   return;
 }
 

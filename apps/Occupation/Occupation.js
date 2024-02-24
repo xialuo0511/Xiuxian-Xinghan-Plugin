@@ -866,8 +866,6 @@ export class Occupation extends plugin {
             if (random < player.仙宠.加成) {
                 res_n *= 2
                 e.reply("你的仙宠" + player.仙宠.name + "辅佐了你进行炼丹,成功获得了双倍丹药")
-            } else {
-                e.reply("你的仙宠只是在旁边看着")
             }
         }
         if (danyao == "神心丹" || danyao == "九阶淬体丹" || danyao == "九阶玄元丹" || danyao == "破境丹" || danyao == "甜酿丹") {
