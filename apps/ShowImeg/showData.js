@@ -988,7 +988,7 @@ export async function get_player_img(e) {
     let lingshi = Math.trunc(player.灵石);
 
     //头像框
-    let touxiang = player.zb_touxiangkuang.id
+    let touxiang = player.zb_touxiangkuang[0].id
 
 
     if (player.灵石 > 999999999999) {
