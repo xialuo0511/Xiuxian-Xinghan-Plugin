@@ -126,7 +126,7 @@ export class showData extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let img = await get_touxiang_img(e);
+        let img = await get_Touxiang_img(e);
         e.reply(img);
         return;
     }
