@@ -77,6 +77,10 @@ export class showData extends plugin {
                 {
                     reg: "^#修仙设置$",
                     fnc: "show_adminset",
+                },
+                {
+                    reg: "^#我的头像框$",
+                    fnc: "show_touxiang",
                 }
             ]
         })
@@ -113,6 +117,16 @@ export class showData extends plugin {
             return;
         }
         let img = await get_huanying_img(e);
+        e.reply(img);
+        return;
+    }
+
+    async show_touxiang(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let img = await get_touxiang_img(e);
         e.reply(img);
         return;
     }
@@ -390,7 +404,7 @@ export async function get_Touxiang_img(e) {
     let touxiang_list = data.Touxiang_list
     for (var i = 0; i < daoju_list.length; i++) {
         if (!touxiang.find(item => item.name == touxiang_list[i].name)) {
-            touxiang_need.push(daoju_list[i])
+            touxiang_need.push(touxiang_list[i])
         }
     }
     let player_data = {

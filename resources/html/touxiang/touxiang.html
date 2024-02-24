@@ -20,12 +20,12 @@
         </div>
 
         <!--下-->
-        {{if daoju_have.length > 0}}
+        {{if touxiang_have.length > 0}}
         <div class="card_box">
             <div class="use_data">
                 <div class="user_font user_font_title">【已拥有】</div>
                 <div class="user_font  wupin">
-                    {{each daoju_have item}}
+                    {{each touxiang_have item}}
                     <div class="item">
                         <div class="item_title font_item_title">{{item.name}}</div>
                         <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
@@ -37,12 +37,12 @@
         {{/if}}
 
         <!--下-->
-        {{if daoju_need.length > 0}}
+        {{if touxiang_need.length > 0}}
         <div class="card_box">
             <div class="use_data">
                 <div class="user_font user_font_title">【未拥有】</div>
                 <div class="user_font  wupin">
-                    {{each daoju_need item}}
+                    {{each touxiang_need item}}
                     <div class="item">
                         <div class="item_title font_item_title">{{item.name}}</div>
                         <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
