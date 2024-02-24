@@ -52,7 +52,7 @@ export class UserStart extends plugin {
                     fnc: 'daily_gift'
                 },
                 {
-                    reg: '^#设置头像框$',
+                    reg: '^#设置头像框.*$',
                     fnc: 'Set_touxiang'
                 }
                 ,
