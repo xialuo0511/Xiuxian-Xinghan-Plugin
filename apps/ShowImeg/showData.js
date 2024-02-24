@@ -402,7 +402,7 @@ export async function get_Touxiang_img(e) {
     let user_name = player.名号
     let touxiang_need = []
     let touxiang_list = data.Touxiang_list
-    for (var i = 0; i < daoju_list.length; i++) {
+    for (var i = 0; i < touxiang_list.length; i++) {
         if (!touxiang.find(item => item.name == touxiang_list[i].name)) {
             touxiang_need.push(touxiang_list[i])
         }
