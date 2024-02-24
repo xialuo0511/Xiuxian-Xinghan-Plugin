@@ -978,7 +978,7 @@ export async function get_player_img(e) {
     if (!head_pic) {
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
-    let player = await data.getData('player', usr_qq);
+    let player = await Read_player(usr_qq)
     let equipment = await data.getData('equipment', usr_qq);
     let player_status = await getPlayerAction(usr_qq);
     let status = '空闲';
