@@ -50,6 +50,10 @@ export class UserStart extends plugin {
                 {
                     reg: '^#修仙签到$',
                     fnc: 'daily_gift'
+                },
+                {
+                    reg: '^#设置头像框.*$',
+                    fnc: 'Set_touxiang'
                 }
                 ,
                 // {
@@ -174,6 +178,16 @@ export class UserStart extends plugin {
                 "职业经验": 0,
                 "职业等级": 1
             }
+        }
+        if (!new_player.all_touxiangkuang) {
+            new_player.all_touxiangkuang = [];
+            let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
+            new_player.all_touxiangkuang.push(Touxiang)
+        }
+        if (!new_player.zb_touxiangkuang) {
+            new_player.zb_touxiangkuang = [];
+            let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
+            new_player.zb_touxiangkuang.push(Touxiang)
         }
         await Write_player(usr_qq, new_player);
         //初始化装备
@@ -381,6 +395,33 @@ export class UserStart extends plugin {
         if (!ifexistplay) return false;
         let img = await get_player_img(e);
         e.reply(img);
+        return;
+    }
+
+    async Set_touxiang(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
+        //有无存档
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+        let player = await Read_player(usr_qq);
+        //命令判断
+        let msg = e.msg.replace("#设置头像框", '');
+        let thing = player.all_touxiangkuang.find(item => item.name == msg); //查找头像框
+        if (!isNotNull(thing)) {
+            e.reply('您暂未拥有此头像框');
+            return;
+        }
+        player.zb_touxiangkuang.length = 0
+        player.zb_touxiangkuang.push(thing)
+        await Write_player(usr_qq, player);
+        e.reply(`头像框更换成功！`);
         return;
     }
 

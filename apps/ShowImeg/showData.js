@@ -77,6 +77,10 @@ export class showData extends plugin {
                 {
                     reg: "^#修仙设置$",
                     fnc: "show_adminset",
+                },
+                {
+                    reg: "^#我的头像框$",
+                    fnc: "show_touxiang",
                 }
             ]
         })
@@ -113,6 +117,16 @@ export class showData extends plugin {
             return;
         }
         let img = await get_huanying_img(e);
+        e.reply(img);
+        return;
+    }
+
+    async show_touxiang(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+        let img = await get_Touxiang_img(e);
         e.reply(img);
         return;
     }
@@ -368,6 +382,44 @@ export async function get_huanying_img(e) {
     })
     return img
 }
+
+/**
+ * 返回该玩家的头像框图片
+ * @return image
+ */
+export async function get_Touxiang_img(e) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData('player', usr_qq)
+    if (!ifexistplay) {
+        return
+    }
+    let player = await data.getData('player', usr_qq)
+    if (!isNotNull(player.level_id)) {
+        e.reply('请先#同步信息')
+        return
+    }
+    let touxiang = await player.all_touxiangkuang
+    let user_name = player.名号
+    let touxiang_need = []
+    let touxiang_list = data.Touxiang_list
+    for (var i = 0; i < touxiang_list.length; i++) {
+        if (!touxiang.find(item => item.name == touxiang_list[i].name)) {
+            touxiang_need.push(touxiang_list[i])
+        }
+    }
+    let player_data = {
+        user_id: usr_qq,
+        nickname: user_name,
+        touxiang,
+        touxiang_need
+    }
+    const data1 = await new Show(e).get_touxiang(player_data)
+    let img = await puppeteer.screenshot('touxiang', {
+        ...data1
+    })
+    return img
+}
+
 /**
  * 返回该玩家的护具图片
  * @return image
@@ -978,7 +1030,7 @@ export async function get_player_img(e) {
     if (!head_pic) {
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
-    let player = await data.getData('player', usr_qq);
+    let player = await Read_player(usr_qq)
     let equipment = await data.getData('equipment', usr_qq);
     let player_status = await getPlayerAction(usr_qq);
     let status = '空闲';
@@ -986,6 +1038,11 @@ export async function get_player_img(e) {
         status = player_status.action + '(剩余时间:' + player_status.time + ')';
     }
     let lingshi = Math.trunc(player.灵石);
+
+    //头像框
+    let touxiang = player.zb_touxiangkuang[0].id
+
+
     if (player.灵石 > 999999999999) {
         lingshi = 999999999999;
     }
@@ -1159,6 +1216,7 @@ export async function get_player_img(e) {
     }
     let action = player.练气皮肤;
     let player_data = {
+        touxiang: touxiang,
         head_pic: head_pic,
         dingjixianshi: dingjixianshi,
         pifu: action,

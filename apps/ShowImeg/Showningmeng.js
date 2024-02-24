@@ -51,30 +51,6 @@ export class Showningmeng extends plugin {
                     reg: "^#幻影楼$",
                     fnc: "Show_HuanYing",
                 },
-                /*{
-                    reg: "^#法宝楼$",
-                    fnc: "show_valuables_fabao",
-                },
-                {
-                    reg: "^#武器楼$",
-                    fnc: "show_valuables_wuqi",
-                },
-                {
-                    reg: "^#护具楼$",
-                    fnc: "show_valuables_huju",
-                },
-                {
-                    reg: "^#丹药楼$",
-                    fnc: "show_valuables_drug",
-                },
-                {
-                    reg: "^#功法楼$",
-                    fnc: "show_valuables_skill",
-                },
-                {
-                    reg: "^#道具楼$",
-                    fnc: "show_valuables_prop",
-                },*/
                 {
                     reg: "^#柠檬堂(装备|丹药|功法|道具|草药|武器|护具|法宝|血量|修为|血气|天赋)?$",
                     fnc: "show_ningmenghome",
