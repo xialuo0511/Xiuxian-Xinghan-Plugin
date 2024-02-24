@@ -93,6 +93,14 @@ export default class Game extends base {
       ...myData,
     };
   }
+  async get_touxiang(myData) {
+    this.model = 'touxiang';
+    return {
+      ...this.screenData,
+      saveId: 'touxiang',
+      ...myData,
+    };
+  }
   async get_hujuData(myData) {
     this.model = 'huju';
     return {

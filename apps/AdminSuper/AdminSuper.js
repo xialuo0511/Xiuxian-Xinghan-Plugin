@@ -1297,16 +1297,16 @@ export async function synchronization(e) {
     if (!player.daofaxianshu_endtime) {
       player.daofaxianshu_endtime = 0;
     }
-    if (!player.all_touxiangkuang) {
-      player.all_touxiangkuang = [];
-      let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
-      player.all_touxiangkuang.push(Touxiang)
-    }
-    if (!player.zb_touxiangkuang) {
-      player.zb_touxiangkuang = [];
-      let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
-      player.zb_touxiangkuang.push(Touxiang)
-    }
+    //if (!player.all_touxiangkuang) {
+    player.all_touxiangkuang = [];
+    let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
+    player.all_touxiangkuang.push(Touxiang)
+    //}
+    //if (!player.zb_touxiangkuang) {
+    player.zb_touxiangkuang = [];
+    //let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
+    player.zb_touxiangkuang.push(Touxiang)
+    //}
     // if (!isNotNull(player.辟谷丹)) {
     //     player.辟谷丹 = 0;
     // }

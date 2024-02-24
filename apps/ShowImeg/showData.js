@@ -368,6 +368,44 @@ export async function get_huanying_img(e) {
     })
     return img
 }
+
+/**
+ * 返回该玩家的头像框图片
+ * @return image
+ */
+export async function get_Touxiang_img(e) {
+    let usr_qq = e.user_id;
+    let ifexistplay = data.existData('player', usr_qq)
+    if (!ifexistplay) {
+        return
+    }
+    let player = await data.getData('player', usr_qq)
+    if (!isNotNull(player.level_id)) {
+        e.reply('请先#同步信息')
+        return
+    }
+    let touxiang = await player.all_touxiangkuang
+    let user_name = player.名号
+    let touxiang_need = []
+    let touxiang_list = data.Touxiang_list
+    for (var i = 0; i < daoju_list.length; i++) {
+        if (!touxiang.find(item => item.name == touxiang_list[i].name)) {
+            touxiang_need.push(daoju_list[i])
+        }
+    }
+    let player_data = {
+        user_id: usr_qq,
+        nickname: user_name,
+        touxiang,
+        touxiang_need
+    }
+    const data1 = await new Show(e).get_touxiang(player_data)
+    let img = await puppeteer.screenshot('touxiang', {
+        ...data1
+    })
+    return img
+}
+
 /**
  * 返回该玩家的护具图片
  * @return image
