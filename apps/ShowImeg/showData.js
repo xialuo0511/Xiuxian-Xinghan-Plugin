@@ -986,6 +986,7 @@ export async function get_player_img(e) {
         status = player_status.action + '(剩余时间:' + player_status.time + ')';
     }
     let lingshi = Math.trunc(player.灵石);
+    let touxiang = 'user_top_img_bottom2'
     if (player.灵石 > 999999999999) {
         lingshi = 999999999999;
     }
@@ -1159,6 +1160,7 @@ export async function get_player_img(e) {
     }
     let action = player.练气皮肤;
     let player_data = {
+        touxiang: touxiang,
         head_pic: head_pic,
         dingjixianshi: dingjixianshi,
         pifu: action,
