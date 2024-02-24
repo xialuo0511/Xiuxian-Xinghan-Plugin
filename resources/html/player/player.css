@@ -52,6 +52,14 @@
     height: 280px;
 }
 
+.user_top_img_bottom2 {
+    margin: auto;
+    background-image: url("../../img/player/head2.png");
+    background-size: 100% auto;
+    width: 280px;
+    height: 280px;
+}
+
 .user_top_img {
     margin-top: 52px;
     margin-left: 2px;
