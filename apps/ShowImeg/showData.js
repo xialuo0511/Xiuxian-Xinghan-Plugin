@@ -986,10 +986,17 @@ export async function get_player_img(e) {
         status = player_status.action + '(剩余时间:' + player_status.time + ')';
     }
     let lingshi = Math.trunc(player.灵石);
-    let touxiang = "../../img/player/head2.png"
-    if (player.灵石 > 999999999999) {
-        lingshi = 999999999999;
+
+    //头像框
+    let now_Time = new Date().getTime(); //获取当前时间戳
+    let touxiang = "user_top_img_bottom"
+    if (player.daofaxianshu_endtime > now_Time) {
+        touxiang = "user_head_pic_2"
     }
+    if (player.daofaxianshu)
+        if (player.灵石 > 999999999999) {
+            lingshi = 999999999999;
+        }
     if (player.宣言 == null || player.宣言 == undefined) {
         player.宣言 = '这个人很懒什么都没写';
     }
