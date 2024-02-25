@@ -1042,6 +1042,24 @@ export async function get_player_img(e) {
     //头像框
     let touxiang = player.zb_touxiangkuang[0].id
 
+    //道法仙术
+    let daofa
+    let now_Time = new Date().getTime(); //获取当前时间戳
+    if (player.daofaxianshu_endtime > now_Time) {
+        var date = new Date(player.daofaxianshu_endtime - now_Time)
+        var YY = date.getFullYear();
+        var MM = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+        var DD = date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate();
+        var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+        var mm = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+        var ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+        daofa = `剩余时长：${YY}年${MM}月${DD}日 ${hh}时${mm}分${ss}秒`
+    } else if (player.daofaxianshu > 0) {
+        daofa = "已过期"
+    } else {
+        daofa = "未购买"
+    }
+
 
     if (player.灵石 > 999999999999) {
         lingshi = 999999999999;
@@ -1216,6 +1234,7 @@ export async function get_player_img(e) {
     }
     let action = player.练气皮肤;
     let player_data = {
+        daofa: daofa,
         touxiang: touxiang,
         head_pic: head_pic,
         dingjixianshi: dingjixianshi,
