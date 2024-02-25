@@ -1047,7 +1047,7 @@ export async function get_player_img(e) {
     let now_Time = new Date().getTime(); //获取当前时间戳
     if (player.daofaxianshu_endtime > now_Time) {
         var date = new Date(player.daofaxianshu_endtime - now_Time)
-        var YY = date.getFullYear();
+        var YY = date.getFullYear() - 1970;
         var MM = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
         var DD = date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate();
         var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
