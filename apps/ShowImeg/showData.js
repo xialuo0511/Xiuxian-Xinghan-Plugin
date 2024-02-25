@@ -1053,7 +1053,11 @@ export async function get_player_img(e) {
         var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
         var mm = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
         var ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
-        daofa = `剩余时长：${YY}年${MM}月${DD}日 ${hh}时${mm}分${ss}秒`
+        daofa = `剩余时长:`
+        if (YY != 0) {
+            daofa += `${YY}年`
+        }
+        daofa += `${MM}月${DD}日 ${hh}时${mm}分${ss}秒`
     } else if (player.daofaxianshu > 0) {
         daofa = "已过期"
     } else {
