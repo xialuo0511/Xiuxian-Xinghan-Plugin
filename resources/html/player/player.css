@@ -60,7 +60,7 @@
     height: 280px;
 }
 
-.user_top_img::before {
+.user_top_img:before {
     margin: auto;
     background-image: url("../../img/player/head2.png");
     background-size: 100% auto;
