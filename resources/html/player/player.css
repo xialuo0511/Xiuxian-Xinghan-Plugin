@@ -58,6 +58,7 @@
     background-size: 100% auto;
     width: 280px;
     height: 280px;
+    position: absolute;
 }
 
 .user_top_img {
