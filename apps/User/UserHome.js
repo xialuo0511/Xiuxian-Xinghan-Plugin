@@ -1215,7 +1215,6 @@ export class UserHome extends plugin {
             if (!this_danyao) {
                 this_danyao = data.newdanyao_list.find(item => item.name == thing_name);
             }
-            e.reply(this_danyao.type)
             if ((this_danyao.type == "幸运" || this_danyao.type == "补天" || this_danyao.type == "补根") && quantity > 1) {
                 e.reply("说明书上写了：本丹药一次仅能服用一枚！");
                 quantity = 1;
@@ -1267,7 +1266,7 @@ export class UserHome extends plugin {
                 e.reply(`${thing_name}服用成功，将在之后的 10 次冒险旅途中为你提高幸运值！`);
                 return;
             }
-            if (this_danyao.type == '闭关') {
+            if (this_danyao.type == "闭关") {
                 for (i = 0; i < action.length; i++) {
                     if (action[i].qq == usr_qq) {
                         if (action[i].biguan > 0) {
@@ -1282,20 +1281,27 @@ export class UserHome extends plugin {
                         }
                         action[i].biguanxl += this_danyao.biguan;
                         player.修炼效率提升 += action[i].biguanxl;
-                        e.reply(
-                            `${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100
-                            }%`
-                        );
+                        e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100}%`);
+                    } else {
+                        let arr = {
+                            "qq": usr_qq,
+                            "biguan": quantity,
+                            "zt": 1,
+                            "biguanxl": this_danyao.biguan,
+                        }
+                        action.push(arr)
+                        player.修炼效率提升 += action[i].biguanxl;
+                        e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100}%`);
                     }
                 }
                 await redis.set(
-                    'xiuxian:player:' + 10 + ':biguang',
+                    'xiuxian:player:10:biguang',
                     JSON.stringify(action)
                 );
                 data.setData('player', usr_qq, player);
                 return;
             }
-            if (this_danyao.type == '仙缘') {
+            if (this_danyao.type == "仙缘") {
                 if (quantity != 1) {
                     e.reply(`只能服用一枚仙缘丹哦`);
                     await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
@@ -1326,7 +1332,7 @@ export class UserHome extends plugin {
                 );
                 return;
             }
-            if (this_danyao.type == '凝仙') {
+            if (this_danyao.type == "凝仙") {
                 for (i = 0; i < action.length; i++) {
                     if (action[i].qq == usr_qq) {
                         if (action[i].beiyong1 == 1 || action[i].beiyong3 == 1) {
@@ -1353,7 +1359,7 @@ export class UserHome extends plugin {
                     }
                 }
             }
-            if (this_danyao.type == '炼神') {
+            if (this_danyao.type == "炼神") {
                 if (quantity != 1) {
                     e.reply(`一次闭关只能拥有一条炼神之力`);
                     await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
@@ -1383,7 +1389,7 @@ export class UserHome extends plugin {
                     }
                 }
             }
-            if (this_danyao.type == '神赐') {
+            if (this_danyao.type == "神赐") {
                 for (i = 0; i < action.length; i++) {
                     if (action[i].qq == usr_qq) {
                         if (action[i].beiyong2 != 0) {
@@ -1402,7 +1408,7 @@ export class UserHome extends plugin {
                     }
                 }
             }
-            if (this_danyao.type == '灵根') {
+            if (this_danyao.type == "灵根") {
                 if (player.lunhui != 0) {
                     let lhxg = await redis.get("xiuxian:player:" + usr_qq + ":Player_use");
                     if (lhxg != 4) {
@@ -1428,12 +1434,12 @@ export class UserHome extends plugin {
                 change_神之心(usr_qq)
                 e.reply(`异界的力量汇涌入${player.名号}的体内,${player.名号}获得了七神的祝福`)
             }
-            if (this_danyao.type == '魔道值') {
+            if (this_danyao.type == "魔道值") {
                 await Add_魔道值(usr_qq, -quantity * this_danyao.modao);
                 e.reply(`获得了转生之力,降低了${quantity * this_danyao.modao}魔道值`);
                 return;
             }
-            if (this_danyao.type == '入魔') {
+            if (this_danyao.type == "入魔") {
                 await Add_魔道值(usr_qq, quantity * this_danyao.modao);
                 e.reply(`${quantity}道黑色魔气入体,增加了${quantity * this_danyao.modao}魔道值`);
                 return;

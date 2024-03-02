@@ -105,6 +105,25 @@ export class PlayerControl extends plugin {
                 return;
             }
         }
+        let biguan_action = await redis.get("xiuxian:player:10:biguan")
+        biguan_action = await JSON.parse(biguan_action)
+        if (biguan_action) {
+            for (i = 0; i < biguan_action.length; i++) {
+                if (biguan_action[i].qq == usr_qq && biguan_action[i].biguan > 0) {
+                    biguan_action[i].biguan -= 1
+                }
+            }
+            await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));
+        } else {
+            let ac = {
+                "qq": usr_qq,
+                "biguan": 0,
+                "zt": 0,
+                "biguanxl": 0,
+            }
+            biguan_action.push(ac)
+            await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));
+        }
 
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
         let arr = {
@@ -129,7 +148,7 @@ export class PlayerControl extends plugin {
         }
 
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
-        await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));//redis设置动作
+
         e.reply(`现在开始闭关${time}分钟,两耳不闻窗外事了`);
 
         return true;
@@ -472,6 +491,20 @@ export class PlayerControl extends plugin {
             }
         }
 
+        let biguan_action = await redis.get("xiuxian:player:10:biguan")
+        biguan_action = await JSON.parse(biguan_action)
+        if (biguan_action) {
+            for (i = 0; i < biguan_action.length; i++) {
+                if (biguan_action[i].qq == usr_qq && biguan_action[i].ac == 1 && biguan_action[i].biguan == 0) {
+                    biguan_action[i].ac = 0
+                    msg.push("本次闭关后，闭关丹药药效已过。")
+                }
+                let type = "修炼效率提升"
+                await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action[i].biguanxl, type);
+            }
+            await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));
+        }
+
         if (group_id) {
             await this.pushInfo(group_id, true, msg)
         } else {
@@ -600,7 +633,7 @@ export class PlayerControl extends plugin {
      */
     async setFileValue(user_qq, num, type) {
         let user_data = data.getData("player", user_qq);
-        let current_num = user_data[type];//当前灵石数量
+        let current_num = user_data[type];
         let new_num = current_num + num;
         if (type == "当前血量" && new_num > user_data.血量上限) {
             new_num = user_data.血量上限;//治疗血量需要判读上限
