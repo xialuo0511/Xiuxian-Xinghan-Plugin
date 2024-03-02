@@ -1211,7 +1211,8 @@ export class UserHome extends plugin {
             this_danyao = data.danyao_list.find(item => item.name == thing_name)
             if (!this_danyao) {
                 this_danyao = data.timedanyao_list.find(item => item.name == thing_name);
-            } else if (!this_danyao) {
+            }
+            if (!this_danyao) {
                 this_danyao = data.newdanyao_list.find(item => item.name == thing_name);
             }
             if ((this_danyao.type == "幸运" || this_danyao.type == "补天" || this_danyao.type == "补根") && quantity > 1) {
