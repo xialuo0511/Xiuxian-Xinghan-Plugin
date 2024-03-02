@@ -1215,6 +1215,7 @@ export class UserHome extends plugin {
             if (!this_danyao) {
                 this_danyao = data.newdanyao_list.find(item => item.name == thing_name);
             }
+            e.reply(this_danyao.toString())
             if ((this_danyao.type == "幸运" || this_danyao.type == "补天" || this_danyao.type == "补根") && quantity > 1) {
                 e.reply("说明书上写了：本丹药一次仅能服用一枚！");
                 quantity = 1;
