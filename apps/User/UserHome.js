@@ -1065,7 +1065,7 @@ export class UserHome extends plugin {
         }
         if (func == "服用") {
             let action = await redis.get("xiuxian:player:" + 10 + ":biguang");
-            action = await JSON.parse(action);
+            action = Array.from(action);
             let x = await exist_najie_thing(usr_qq, thing_name, thing_exist.class);
             if (!x) {
                 e.reply(`你没有【${thing_name}】这样的【${thing_exist.class}】`);

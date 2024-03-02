@@ -492,7 +492,7 @@ export class PlayerControl extends plugin {
         }
 
         let biguan_action = await redis.get("xiuxian:player:10:biguan")
-        biguan_action = await JSON.parse(biguan_action)
+        biguan_action = Array.from(biguan_action)
         if (biguan_action) {
             for (i = 0; i < biguan_action.length; i++) {
                 if (biguan_action[i].qq == usr_qq && biguan_action[i].ac == 1 && biguan_action[i].biguan == 0) {
