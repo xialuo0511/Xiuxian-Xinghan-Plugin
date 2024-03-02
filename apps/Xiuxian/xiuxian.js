@@ -452,6 +452,7 @@ export async function Read_najie(usr_qq) {
     let dir = path.join(`${__PATH.najie_path}/${usr_qq}.json`);
     let najie = fs.readFileSync(dir, 'utf8', (err, data) => {
         if (err) {
+            console.log(usr_qq)
             console.log(err)
             return "error";
         }
