@@ -1267,6 +1267,7 @@ export class UserHome extends plugin {
                 return;
             }
             if (this_danyao.type == "闭关") {
+                let ac = 0
                 for (i = 0; i < action.length; i++) {
                     if (action[i].qq == usr_qq) {
                         if (action[i].biguan > 0) {
@@ -1281,18 +1282,22 @@ export class UserHome extends plugin {
                         }
                         action[i].biguanxl += this_danyao.biguan;
                         player.修炼效率提升 += action[i].biguanxl;
-                        e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100}%`);
-                    } else {
-                        let arr = {
-                            "qq": usr_qq,
-                            "biguan": quantity,
-                            "zt": 1,
-                            "biguanxl": this_danyao.biguan,
-                        }
-                        action.push(arr)
-                        player.修炼效率提升 += action[i].biguanxl;
+                        ac = 1
                         e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100}%`);
                     }
+                }
+                let arr
+                if (ac = 0) {
+                    arr = {
+                        "qq": usr_qq,
+                        "biguan": quantity,
+                        "zt": 1,
+                        "biguanxl": this_danyao.biguan,
+                    }
+                    ac = 1
+                    action.push(arr)
+                    player.修炼效率提升 += action[i].biguanxl;
+                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100}%`);
                 }
                 await redis.set(
                     'xiuxian:player:10:biguang',
