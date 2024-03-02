@@ -459,7 +459,12 @@ export async function Read_najie(usr_qq) {
         return data;
     })
     //将字符串数据转变成数组格式
-    najie = JSON.parse(najie);
+    try {
+        najie = JSON.parse(najie);
+    } catch (error) {
+        console.log(usr_qq)
+    }
+
     return najie;
 }
 
