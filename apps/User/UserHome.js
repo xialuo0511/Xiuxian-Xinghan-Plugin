@@ -1287,7 +1287,7 @@ export class UserHome extends plugin {
                     }
                 }
                 let arr
-                if (ac = 0) {
+                if (ac == 0) {
                     arr = {
                         "qq": usr_qq,
                         "biguan": quantity,
