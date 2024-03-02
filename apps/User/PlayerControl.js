@@ -105,15 +105,15 @@ export class PlayerControl extends plugin {
                 return;
             }
         }
-        let biguan_action = await redis.get("xiuxian:player:10:biguan")
-        biguan_action = await Array.from(biguan_action)
+        let biguan_action = await redis.get("xiuxian:player:" + 10 + ": biguan")
+        biguan_action = Array.from(biguan_action)
         if (biguan_action) {
             for (i = 0; i < biguan_action.length; i++) {
                 if (biguan_action[i].qq == usr_qq && biguan_action[i].biguan > 0) {
                     biguan_action[i].biguan -= 1
                 }
             }
-            await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));
+            await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(arr));
         } else {
             let ac = {
                 "qq": usr_qq,
@@ -122,7 +122,7 @@ export class PlayerControl extends plugin {
                 "biguanxl": 0,
             }
             biguan_action.push(ac)
-            await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));
+            await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(arr));
         }
 
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
