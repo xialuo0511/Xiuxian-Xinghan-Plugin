@@ -19,6 +19,7 @@ import {
   Add_血气,
 } from '../Xiuxian/xiuxian.js';
 import { get_random_talent } from '../Xiuxian/xiuxian.js';
+import { Gulid } from '../../api/api.js';
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
@@ -392,6 +393,7 @@ export class Battle extends plugin {
     }
     let atItem = e.message.filter(item => item.type === 'at');
     let B = atItem[0].qq; //后手
+    B = await Gulid(B);
 
     if (A == B) {
       e.reply('你还跟自己修炼上了是不是?');
