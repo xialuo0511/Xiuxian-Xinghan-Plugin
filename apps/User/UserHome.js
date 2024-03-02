@@ -1064,8 +1064,8 @@ export class UserHome extends plugin {
             return;
         }
         if (func == "服用") {
-            let action = await redis.get("xiuxian:player:" + 10 + ":biguang");
-            action = Array.from(action);
+            let action = await redis.get("xiuxian:player:" + usr_qq + ":biguang");
+            action = JSON.parse(action);
             let x = await exist_najie_thing(usr_qq, thing_name, thing_exist.class);
             if (!x) {
                 e.reply(`你没有【${thing_name}】这样的【${thing_exist.class}】`);
@@ -1267,40 +1267,32 @@ export class UserHome extends plugin {
                 return;
             }
             if (this_danyao.type == "闭关") {
-                let ac = 0
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].biguan > 0) {
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            e.reply(`上次服用的药效还没过,等以后再服用吧`);
-                            return;
-                        }
-                        if (typeof action[i].biguan != "number" || action[i].biguan < 0) {
-                            action[i].biguan = quantity;
-                        } else {
-                            action[i].biguan += quantity;
-                        }
-                        action[i].biguanxl += this_danyao.biguan;
-                        player.修炼效率提升 += action[i].biguanxl;
-                        ac = 1
-                        e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100}%`);
+                if (action) {
+                    if (action.biguan > 0) {
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                        e.reply(`上次服用的药效还没过,等以后再服用吧`);
+                        return;
                     }
-                }
-                let arr
-                if (ac == 0) {
-                    arr = {
+                    if (typeof action.biguan != "number" || action.biguan < 0) {
+                        action.biguan = quantity;
+                    } else {
+                        action.biguan += quantity;
+                    }
+                    action.biguanxl += this_danyao.biguan;
+                    player.修炼效率提升 += action.biguanxl;
+                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action.biguanxl * 100}%`);
+                } else {
+                    action = {
                         "qq": usr_qq,
                         "biguan": quantity,
                         "zt": 1,
                         "biguanxl": this_danyao.biguan,
                     }
-                    ac = 1
-                    action.push(arr)
-                    player.修炼效率提升 += action[i].biguanxl;
-                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100}%`);
+                    player.修炼效率提升 += action.biguanxl;
+                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action.biguanxl * 100}%`);
                 }
                 await redis.set(
-                    'xiuxian:player:10:biguang',
+                    'xiuxian:player:' + usr_qq + ':biguang',
                     JSON.stringify(action)
                 );
                 data.setData('player', usr_qq, player);

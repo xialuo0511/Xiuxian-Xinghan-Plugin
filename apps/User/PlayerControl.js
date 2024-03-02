@@ -105,24 +105,13 @@ export class PlayerControl extends plugin {
                 return;
             }
         }
-        let biguan_action = await redis.get("xiuxian:player:" + 10 + ": biguan")
-        biguan_action = Array.from(biguan_action)
+        let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ": biguan")
+        biguan_action = JSON.parse(biguan_action)
         if (biguan_action) {
-            for (i = 0; i < biguan_action.length; i++) {
-                if (biguan_action[i].qq == usr_qq && biguan_action[i].biguan > 0) {
-                    biguan_action[i].biguan -= 1
-                }
+            if (biguan_action.biguan > 0) {
+                biguan_action.biguan -= 1
             }
-            await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(arr));
-        } else {
-            let ac = {
-                "qq": usr_qq,
-                "biguan": 0,
-                "zt": 0,
-                "biguanxl": 0,
-            }
-            biguan_action.push(ac)
-            await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(arr));
+            await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
         }
 
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
@@ -491,18 +480,16 @@ export class PlayerControl extends plugin {
             }
         }
 
-        let biguan_action = await redis.get("xiuxian:player:10:biguan")
-        biguan_action = Array.from(biguan_action)
+        let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
+        biguan_action = JSON.parse(biguan_action)
         if (biguan_action) {
-            for (i = 0; i < biguan_action.length; i++) {
-                if (biguan_action[i].qq == usr_qq && biguan_action[i].ac == 1 && biguan_action[i].biguan == 0) {
-                    biguan_action[i].ac = 0
-                    msg.push("本次闭关后，闭关丹药药效已过。")
-                }
-                let type = "修炼效率提升"
-                await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action[i].biguanxl, type);
+            if (biguan_action.ac == 1 && biguan_action.biguan == 0) {
+                biguan_action.ac = 0
+                msg.push("本次闭关后，闭关丹药药效已过。")
             }
-            await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));
+            let type = "修炼效率提升"
+            await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action.biguanxl, type);
+            await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
         }
 
         if (group_id) {

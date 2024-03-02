@@ -140,19 +140,19 @@ export class PlayerControlTask extends plugin {
                         await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
                         msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
                     }
-                    let biguan_action = await redis.get("xiuxian:player:10:biguan")
-                    biguan_action = Array.from(biguan_action)
+
+                    let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
+                    biguan_action = JSON.parse(biguan_action)
                     if (biguan_action) {
-                        for (i = 0; i < biguan_action.length; i++) {
-                            if (biguan_action[i].qq == usr_qq && biguan_action[i].ac == 1 && biguan_action[i].biguan == 0) {
-                                biguan_action[i].ac = 0
-                                msg.push("本次闭关后，闭关丹药药效已过。")
-                            }
-                            let type = "修炼效率提升"
-                            await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action[i].biguanxl, type);
+                        if (biguan_action.ac == 1 && biguan_action.biguan == 0) {
+                            biguan_action.ac = 0
+                            msg.push("本次闭关后，闭关丹药药效已过。")
                         }
-                        await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));
+                        let type = "修炼效率提升"
+                        await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action.biguanxl, type);
+                        await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
                     }
+
                     await this.pushInfo(push_address, true, msg)
                     let arr = action;
                     //把状态都关了
