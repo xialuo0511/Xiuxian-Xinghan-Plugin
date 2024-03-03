@@ -609,7 +609,8 @@ export class SecretPlace extends plugin {
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
-        const time = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
+        const ctime = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
+        let time = ctime
 
         let now_Time = new Date().getTime(); //获取当前时间戳
         let msg = ""
