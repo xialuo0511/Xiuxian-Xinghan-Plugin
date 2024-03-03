@@ -1373,34 +1373,46 @@ export class UserHome extends plugin {
                 return;
             }
             if (this_danyao.type == "炼神") {
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":lianshen");
+                ac = JSON.parse(ac);
                 if (quantity != 1) {
                     e.reply(`一次闭关只能拥有一条炼神之力`);
                     await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
                     return;
                 }
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].lianti != 0) {
-                            e.reply(`已经拥有一道炼神之力了,身体无法承受第二道炼神之力`);
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            return;
-                        }
-                        if (action[i].lianti > 0) {
-                        } else {
-                            action[i].lianti = 1;
-                            action[i].beiyong4 = this_danyao.lianshen
-                            await redis.set(
-                                'xiuxian:player:' + 10 + ':biguang',
-                                JSON.stringify(action)
-                            );
-                            e.reply(
-                                `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${this_danyao.lianshen * 100
-                                }%`
-                            );
-                            return;
-                        }
-                    }
+                if (ac && ac.lianti != 0) {
+                    e.reply(`已经拥有一道炼神之力了,身体无法承受第二道炼神之力`);
+                    await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                    return;
                 }
+                if (ac) {
+                    if (ac.lianti > 0) {
+                        e.reply(`一次闭关只能拥有一条炼神之力`);
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                        return;
+                    } else {
+                        ac.lianti = 1;
+                        ac.lianshen = this_danyao.lianshen
+                        e.reply(
+                            `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${this_danyao.lianshen * 100
+                            }%`
+                        );
+                    }
+                } else {
+                    ac = {
+                        "lianti": 1,
+                        "lianshen": this_danyao.lianshen
+                    }
+                    e.reply(
+                        `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${this_danyao.lianshen * 100
+                        }%`
+                    );
+                }
+                await redis.set(
+                    'xiuxian:player:' + usr_qq + ':lianshen',
+                    JSON.stringify(action)
+                );
+                return;
             }
             if (this_danyao.type == "神赐") {
                 for (i = 0; i < action.length; i++) {

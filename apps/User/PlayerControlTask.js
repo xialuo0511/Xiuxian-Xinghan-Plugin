@@ -141,6 +141,20 @@ export class PlayerControlTask extends plugin {
                         msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
                     }
 
+                    let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+                    lianshen_action = JSON.parse(lianshen_action);
+                    if (lianshen_action) {
+                        if (lianshen_action.lianti > 0) {
+                            await this.setFileValue(usr_qq, (xiuwei * time + other_xiuwei) * lianshen_action.lianshen, transformation);
+                            msg.push("本次闭关消耗一次炼神之力,获得额外血气" + (xiuwei * time + other_xiuwei) * lianshen_action.lianshen)
+                            lianshen_action.lianti -= 1
+                        }
+                    }
+                    await redis.set(
+                        'xiuxian:player:' + usr_qq + ':lianshen',
+                        JSON.stringify(action)
+                    );
+
                     let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
                     biguan_action = JSON.parse(biguan_action)
                     if (biguan_action) {

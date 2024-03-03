@@ -569,7 +569,7 @@ async function InitWorldBoss(e) {
         e.reply("你们甚至没有化神以上的高手，雷电将军不是你们能染指的，继续努力再来吧！");
         return -1;
     }
-    if (player_quantity < 4) {
+    if (player_quantity < 10) {
         e.reply("天道:发现人数过少，正在进行削弱");
         player_quantity = 1
     }

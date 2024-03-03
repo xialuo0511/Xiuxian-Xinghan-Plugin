@@ -111,9 +111,15 @@ export class PlayerControl extends plugin {
         biguan_action = JSON.parse(biguan_action);
         if (biguan_action) {
             if (biguan_action.biguan > 0) {
-                msg = "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次(仅闭关获得收益后才会消耗次数)\n"
+                msg += "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次(仅闭关获得收益后才会消耗次数)\n"
             }
-            await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(biguan_action));
+        }
+        let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+        lianshen_action = JSON.parse(lianshen_action);
+        if (lianshen_action) {
+            if (lianshen_action.lianti > 0) {
+                msg += "本次闭关消耗一次炼神之力(仅闭关获得收益后才会消耗次数)\n"
+            }
         }
 
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
@@ -431,7 +437,6 @@ export class PlayerControl extends plugin {
                 xueqi = Math.trunc(rand * time);
                 if (transformation == "血气") {
                     msg.push("\n本次闭关顿悟,受到炼神之力修正,额外增加血气:" + xueqi);
-
                 } else {
                     msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
                 }
@@ -468,19 +473,24 @@ export class PlayerControl extends plugin {
         await this.setFileValue(usr_qq, blood * time, "当前血量");
 
         //给出消息提示
-        if (transformation == "血气") {
-            await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);//丹药修正
-            msg.push("\n受到炼神之力的影响,增加血气:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
-        }
-        else {
-            await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
-            if (is_random) {
+        await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
+        msg.push("\n增加修为:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
 
-                msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
-            } else {
-                msg.push("\n增加修为:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
+        let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+        lianshen_action = JSON.parse(lianshen_action);
+        if (lianshen_action) {
+            if (lianshen_action.lianti > 0) {
+                await this.setFileValue(usr_qq, (xiuwei * time + other_xiuwei) * lianshen_action.lianshen, transformation);
+                msg.push("本次闭关消耗一次炼神之力,获得额外血气" + (xiuwei * time + other_xiuwei) * lianshen_action.lianshen)
+                lianshen_action.lianti -= 1
             }
         }
+        await redis.set(
+            'xiuxian:player:' + usr_qq + ':lianshen',
+            JSON.stringify(action)
+        );
+
+
 
         let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
         biguan_action = JSON.parse(biguan_action)
