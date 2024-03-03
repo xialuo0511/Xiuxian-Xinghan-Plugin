@@ -895,6 +895,7 @@ async function GetAverageDamage() {
         let this_qq = File[i].replace(".json", '');
         this_qq = parseInt(this_qq);
         let player = await data.getData("player", this_qq);
+        if (!player) { return; }
         let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (level_id > 21 && level_id < 42) {
             temp[TotalPlayer] = parseInt(player.攻击);
