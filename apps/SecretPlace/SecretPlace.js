@@ -611,6 +611,7 @@ export class SecretPlace extends plugin {
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
 
+        let now_Time = new Date().getTime(); //获取当前时间戳
         let msg = ""
         if (player.daofaxianshu_endtime > now_Time) {
             msg = "【道法仙术】护您左右，为您指引了遗迹秘宝方向！\n"
