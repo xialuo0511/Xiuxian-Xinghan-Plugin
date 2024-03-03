@@ -144,12 +144,14 @@ export class PlayerControlTask extends plugin {
                     let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
                     biguan_action = JSON.parse(biguan_action)
                     if (biguan_action) {
-                        if (biguan_action.ac == 1 && biguan_action.biguan == 0) {
-                            biguan_action.ac = 0
-                            msg.push("本次闭关后，闭关丹药药效已过。")
+                        if (biguan_action.biguan > 0) {
+                            biguan_action.biguan -= 1
+                            if (biguan_action.biguan == 0) {
+                                msg.push("本次闭关后，辟谷丹丹药药效已过。")
+                                let type = "修炼效率提升"
+                                await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action.biguanxl, type);
+                            }
                         }
-                        let type = "修炼效率提升"
-                        await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action.biguanxl, type);
                         await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
                     }
 

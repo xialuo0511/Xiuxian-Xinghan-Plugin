@@ -1267,66 +1267,77 @@ export class UserHome extends plugin {
                 return;
             }
             if (this_danyao.type == "闭关") {
-                if (action) {
-                    if (action.biguan > 0) {
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":biguang");
+                ac = JSON.parse(ac);
+                if (ac) {
+                    if (ac.biguan > 0) {
                         await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
                         e.reply(`上次服用的药效还没过,等以后再服用吧`);
                         return;
                     }
-                    if (typeof action.biguan != "number" || action.biguan < 0) {
-                        action.biguan = quantity;
+                    if (ac.biguan < 0) {
+                        ac.biguan = quantity;
                     } else {
-                        action.biguan += quantity;
+                        ac.biguan += quantity;
                     }
-                    action.biguanxl += this_danyao.biguan;
-                    player.修炼效率提升 += action.biguanxl;
-                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action.biguanxl * 100}%`);
+                    ac.biguanxl += this_danyao.biguan;
+                    player.修炼效率提升 += ac.biguanxl;
+                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${ac.biguanxl * 100}%`);
                 } else {
-                    action = {
-                        "qq": usr_qq,
+                    ac = {
                         "biguan": quantity,
-                        "zt": 1,
                         "biguanxl": this_danyao.biguan,
                     }
-                    player.修炼效率提升 += action.biguanxl;
-                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action.biguanxl * 100}%`);
+                    player.修炼效率提升 += ac.biguanxl;
+                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${ac.biguanxl * 100}%`);
                 }
                 await redis.set(
                     'xiuxian:player:' + usr_qq + ':biguang',
-                    JSON.stringify(action)
+                    JSON.stringify(ac)
                 );
                 data.setData('player', usr_qq, player);
                 return;
             }
             if (this_danyao.type == "仙缘") {
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":xianyuan");
+                ac = JSON.parse(ac);
                 if (quantity != 1) {
                     e.reply(`只能服用一枚仙缘丹哦`);
                     await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
                     return;
                 }
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].ped <= 0 || typeof action[i].ped != 'number') {
-                            action[i].ped = 5;
-                        } else {
-                            e.reply(`还有药力剩余,等使用完再服用吧`);
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            return;
-                        }
-                        action[i].beiyong1 = this_danyao.gailv;
-                        if (action[i].beiyong1 > 0.3 && action[i].beiyong1 != 1) {
-                            action[i].beiyong1 = 0.3
-                        }
+                if (ac) {
+                    if (ac.ped <= 0) {
+                        ac.ped = 5;
+                    } else {
+                        e.reply(`还有药力剩余,等使用完再服用吧`);
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                        return;
                     }
+                    ac.beiyong1 = this_danyao.gailv;
+                    if (ac.beiyong1 > 0.3 && ac.beiyong1 != 1) {
+                        ac.beiyong1 = 0.3
+                    }
+                    e.reply(
+                        `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
+                    );
+                } else {
+                    ac = {
+                        "ped": 5
+                    }
+                    ac.beiyong1 = this_danyao.gailv;
+                    if (ac.beiyong1 > 0.3 && ac.beiyong1 != 1) {
+                        ac.beiyong1 = 0.3
+                    }
+                    e.reply(
+                        `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
+                    );
                 }
                 await redis.set(
-                    'xiuxian:player:' + 10 + ':biguang',
-                    JSON.stringify(action)
+                    'xiuxian:player:' + usr_qq + ':xianyuan',
+                    JSON.stringify(ac)
                 );
-                await data.setData('player', usr_qq, player);
-                e.reply(
-                    `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
-                );
+                data.setData('player', usr_qq, player);
                 return;
             }
             if (this_danyao.type == "凝仙") {

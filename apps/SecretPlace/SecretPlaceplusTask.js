@@ -379,25 +379,21 @@ export class SecretPlaceplusTask extends plugin {
               }
               let newrandom = 0.995;
               let action1 = await redis.get(
-                'xiuxian:player:' + 10 + ':biguang'
+                'xiuxian:player:' + player_id + ':xianyuan'
               );
               action1 = await JSON.parse(action1);
               if (action1) {
-                for (let i = 0; i < action1.length; i++) {
-                  if (action1[i].qq == player_id) {
-                    newrandom -= action1[i].beiyong1;
-                    if (action1[i].ped > 0) {
-                      action1[i].ped--;
-                    } else {
-                      action1[i].beiyong1 = 0;
-                      action1[i].ped = 0;
-                    }
-                    await redis.set(
-                      'xiuxian:player:' + 10 + ':biguang',
-                      JSON.stringify(action1)
-                    );
-                  }
+                newrandom -= action1.beiyong1;
+                if (action1.ped > 0) {
+                  action1.ped--;
+                } else {
+                  action1.beiyong1 = 0;
+                  action1.ped = 0;
                 }
+                await redis.set(
+                  'xiuxian:player:' + player_id + ':xianyuan',
+                  JSON.stringify(action1)
+                );
               }
               if (random > newrandom) {
                 let length = data.xianchonkouliang.length;
