@@ -742,7 +742,7 @@ export class Occupation extends plugin {
         action2 = await JSON.parse(action2);
         let m = '丹药效果:';
         if (action2 && action2.ped > 0) {
-            m += `\n仙缘丹药力${action.beiyong1 * 100}%药效${action.ped}次`;
+            m += `\n仙缘丹药力${action2.beiyong1 * 100}%药效${action2.ped}次`;
         }
         // if (action.lianti > 0) {
         //     m += `\n炼神丹药力${action.beiyong4 * 100}%药效${action.lianti
@@ -753,7 +753,7 @@ export class Occupation extends plugin {
         //         }次`;
         // }
         if (action1 && action1.biguan > 0) {
-            m += `\n辟谷丹药力${action.biguanxl * 100}%药效${action.biguan
+            m += `\n辟谷丹药力${action1.biguanxl * 100}%药效${action1.biguan
                 }次`;
         }
         let player = await data.getData('player', usr_qq);
