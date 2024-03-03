@@ -1415,23 +1415,25 @@ export class UserHome extends plugin {
                 return;
             }
             if (this_danyao.type == "神赐") {
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].beiyong2 != 0) {
-                            e.reply(`已经拥有神兽赐福了,下次再用吧`);
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            return;
-                        }
-                        if (action[i].beiyong2 > 0) {
-                            action[i].beiyong2 += quantity
-                        } else {
-                            action[i].beiyong2 = 3 * quantity
-                        }
-                        action[i].beiyong3 = this_danyao.概率
-                        e.reply(`${player.名号}获得了神兽的恩赐,赐福的概率增加了,当前剩余次数${action[i].beiyong2}`)
-                        await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action))
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":shenci");
+                ac = JSON.parse(ac);
+                if (ac) {
+                    if (ac.quantity != 0) {
+                        e.reply(`已经拥有神兽赐福了,下次再用吧`);
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                        return;
                     }
+                    ac.quantity = 3 * quantity
+                    ac.gailv = this_danyao.概率
+                    e.reply(`${player.名号}获得了神兽的恩赐,赐福的概率增加了,当前剩余次数${ac.quantity}`)
+                } else {
+                    ac = {
+                        "quantity": 3 * quantity,
+                        "gailv": this_danyao.概率
+                    }
+                    e.reply(`${player.名号}获得了神兽的恩赐,赐福的概率增加了,当前剩余次数${ac.quantity}`)
                 }
+                await redis.set("xiuxian:player:" + usr_qq + ":shenci", JSON.stringify(ac))
             }
             if (this_danyao.type == "灵根") {
                 if (player.lunhui != 0) {
