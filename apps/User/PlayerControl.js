@@ -107,7 +107,7 @@ export class PlayerControl extends plugin {
         }
 
         let msg
-        let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ": biguan")
+        let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
         biguan_action = JSON.parse(biguan_action)
         if (biguan_action) {
             if (biguan_action.biguan > 0) {
