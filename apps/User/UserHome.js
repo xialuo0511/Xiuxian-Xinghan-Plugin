@@ -1341,34 +1341,41 @@ export class UserHome extends plugin {
                 return;
             }
             if (this_danyao.type == "凝仙") {
-                let ac = await redis.get("xiuxian:player:" + usr_qq + ":ningxian");
-                ac = JSON.parse(ac);
                 //闭关
                 let ac1 = await redis.get("xiuxian:player:" + usr_qq + ":biguan");
-                ac1 = JSON.parse(ac);
+                ac1 = JSON.parse(ac1);
                 //仙缘
                 let ac2 = await redis.get("xiuxian:player:" + usr_qq + ":xianyuan");
                 ac2 = JSON.parse(ac2);
+                //炼神
+                let ac3 = await redis.get("xiuxian:player:" + usr_qq + ":lianshen");
+                ac3 = JSON.parse(ac3);
+                //神赐
+                let ac4 = await redis.get("xiuxian:player:" + usr_qq + ":shenci");
+                ac4 = JSON.parse(ac4);
 
                 if (ac.xianyuangl == 1 || ac.beiyong3 == 1) {
                     e.reply(`圣品丹药过于强大无法凝仙`)
                     await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity)
                     return;
                 } else {
-                    if (ac.biguan > 0) {
-                        ac.biguan += this_danyao.机缘 * quantity
+                    if (ac1.biguan > 0) {
+                        ac1.biguan += this_danyao.机缘 * quantity
                     }
-                    if (ac.lianti > 0) {
-                        ac.lianti += this_danyao.机缘 * quantity
+                    if (ac3.lianti > 0) {
+                        ac3.lianti += this_danyao.机缘 * quantity
                     }
-                    if (ac.ped > 0) {
-                        ac.ped += this_danyao.机缘 * quantity
+                    if (ac2.ped > 0) {
+                        ac2.ped += this_danyao.机缘 * quantity
                     }
-                    if (ac.beiyong2 > 0) {
-                        ac.beiyong2 += this_danyao.机缘 * quantity
+                    if (ac4.quantity > 0) {
+                        ac4.quantity += this_danyao.机缘 * quantity
                     }
                     e.reply(`丹韵入体,身体内蕴含的仙丹药效增加了${this_danyao.机缘 * quantity}次`)
-                    await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action))
+                    await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(ac1))
+                    await redis.set("xiuxian:player:" + usr_qq + ":xianyuan", JSON.stringify(ac2))
+                    await redis.set("xiuxian:player:" + usr_qq + ":lianshen", JSON.stringify(ac3))
+                    await redis.set("xiuxian:player:" + usr_qq + ":shenci", JSON.stringify(ac4))
                 }
                 return;
             }
