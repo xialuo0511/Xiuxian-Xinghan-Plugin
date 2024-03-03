@@ -113,7 +113,7 @@ export class PlayerControl extends plugin {
             if (biguan_action.biguan > 0) {
                 msg = "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次\n"
             }
-            await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
+            await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(biguan_action));
         }
 
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
