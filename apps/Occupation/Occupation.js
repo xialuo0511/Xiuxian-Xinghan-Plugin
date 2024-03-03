@@ -741,21 +741,23 @@ export class Occupation extends plugin {
         let action2 = await redis.get('xiuxian:player:' + usr_qq + ':xianyuan');
         action2 = await JSON.parse(action2);
         //炼神丹药
-        let action3 = await redis.get('xiuxian:player:' + usr_qq + ':xianyuan');
+        let action3 = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
         action3 = await JSON.parse(action3);
+        //炼神丹药
+        let action4 = await redis.get('xiuxian:player:' + usr_qq + ':shenci');
+        action4 = await JSON.parse(action4);
         let m = '丹药效果:';
+        if (action1 && action1.biguan > 0) {
+            m += `\n辟谷丹药力${action1.biguanxl * 100}%药效剩余${action1.biguan}次`;
+        }
         if (action2 && action2.ped > 0) {
             m += `\n仙缘丹药力${action2.xianyuangl * 100}%药效剩余${action2.ped}次`;
         }
         if (action3 && action3.lianti > 0) {
             m += `\n炼神丹药力${action3.lianshen * 100}%药效${action3.lianti}次`;
         }
-        // if (action.beiyong2 > 0) {
-        //     m += `\n神赐丹药力${action.beiyong3 * 100}% 药效${action.beiyong2
-        //         }次`;
-        // }
-        if (action1 && action1.biguan > 0) {
-            m += `\n辟谷丹药力${action1.biguanxl * 100}%药效剩余${action1.biguan}次`;
+        if (action4 && action4.quantity > 0) {
+            m += `\n神赐丹药力${action4.shenci * 100}% 药效${action4.quantity}次`;
         }
         let player = await data.getData('player', usr_qq);
         if (player.islucky > 0) {
