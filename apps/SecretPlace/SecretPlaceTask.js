@@ -375,30 +375,22 @@ export class SecretPlaceTask extends plugin {
                   '倒下后,一道刺眼的圣光落下,你缓缓睁开了眼,发现了[无主的神之心]正散发着幽芒的白光';
                 await Add_najie_thing(player_id, '[无主的神之心]', '道具', 1);
               }
-              let newrandom = 0.995;
-              let action1 = await redis.get(
-                'xiuxian:player:' + 10 + ':biguang'
+              let newrandom = 0.995; let action1 = await redis.get(
+                'xiuxian:player:' + player_id + ':xianyuan'
               );
               action1 = await JSON.parse(action1);
               if (action1) {
-                for (let i = 0; i < action1.length; i++) {
-                  if (action1[i].qq == player_id) {
-                    if (typeof action1[i].beiyong1 != 'number') {
-                      action1[i].beiyong1 = 5;
-                    }
-                    newrandom -= action1[i].beiyong1;
-                    if (action1[i].ped > 0) {
-                      action1[i].ped--;
-                    } else {
-                      action1[i].beiyong1 = 0;
-                      action1[i].ped = 0;
-                    }
-                    await redis.set(
-                      'xiuxian:player:' + 10 + ':biguang',
-                      JSON.stringify(action1)
-                    );
-                  }
+                newrandom -= action1.xianyuangl;
+                if (action1.ped > 0) {
+                  action1.ped--;
+                } else {
+                  action1.xianyuangl = 0;
+                  action1.ped = 0;
                 }
+                await redis.set(
+                  'xiuxian:player:' + player_id + ':xianyuan',
+                  JSON.stringify(action1)
+                );
               }
               if (random > newrandom) {
                 let length = data.xianchonkouliang.length;
