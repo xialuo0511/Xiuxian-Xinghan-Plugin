@@ -741,18 +741,18 @@ export class Occupation extends plugin {
         let action2 = await redis.get('xiuxian:player:' + usr_qq + ':xianyuan');
         action2 = await JSON.parse(action2);
         let m = '丹药效果:';
-        if (action2.ped > 0) {
+        if (action2 && action2.ped > 0) {
             m += `\n仙缘丹药力${action.beiyong1 * 100}%药效${action.ped}次`;
         }
-        if (action.lianti > 0) {
-            m += `\n炼神丹药力${action.beiyong4 * 100}%药效${action.lianti
-                }次`;
-        }
-        if (action.beiyong2 > 0) {
-            m += `\n神赐丹药力${action.beiyong3 * 100}% 药效${action.beiyong2
-                }次`;
-        }
-        if (action1.biguan > 0) {
+        // if (action.lianti > 0) {
+        //     m += `\n炼神丹药力${action.beiyong4 * 100}%药效${action.lianti
+        //         }次`;
+        // }
+        // if (action.beiyong2 > 0) {
+        //     m += `\n神赐丹药力${action.beiyong3 * 100}% 药效${action.beiyong2
+        //         }次`;
+        // }
+        if (action1 && action1.biguan > 0) {
             m += `\n辟谷丹药力${action.biguanxl * 100}%药效${action.biguan
                 }次`;
         }
