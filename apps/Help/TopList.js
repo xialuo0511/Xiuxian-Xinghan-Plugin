@@ -257,7 +257,7 @@ export class TopList extends plugin {
                 ls1: najie.灵石,
                 ls2: player.灵石,
                 灵石: lingshi,
-                名号: player.名号,
+                名号: player.名号 + this_qq,
                 qq: this_qq
             }
         }
