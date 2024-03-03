@@ -742,7 +742,7 @@ export class Occupation extends plugin {
         action2 = await JSON.parse(action2);
         let m = '丹药效果:';
         if (action2 && action2.ped > 0) {
-            m += `\n仙缘丹药力${action2.beiyong1 * 100}%药效剩余${action2.ped}次`;
+            m += `\n仙缘丹药力${action2.xianyuangl * 100}%药效剩余${action2.ped}次`;
         }
         // if (action.lianti > 0) {
         //     m += `\n炼神丹药力${action.beiyong4 * 100}%药效${action.lianti
