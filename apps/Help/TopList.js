@@ -257,18 +257,22 @@ export class TopList extends plugin {
                 ls1: najie.灵石,
                 ls2: player.灵石,
                 灵石: lingshi,
-                名号: player.名号 + this_qq,
+                名号: player.名号,
                 qq: this_qq
             }
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                arr.findIndex((item) => item.qq === obj.qq) === index
+        );
         //排序
-        temp.sort(sortBy("灵石"));
+        unique.sort(sortBy("灵石"));
         let Data = [];
-        usr_paiming = temp.findIndex(temp => temp.qq === usr_qq) + 1;
+        usr_paiming = unique.findIndex(temp => temp.qq === usr_qq) + 1;
         if (File_length > 10) { File_length = 10; }//最多显示前十
         for (var i = 0; i < File_length; i++) {
-            temp[i].名次 = i + 1;
-            Data[i] = temp[i];
+            unique[i].名次 = i + 1;
+            Data[i] = unique[i];
         }
         await sleep(500);
         let thisplayer = await data.getData("player", usr_qq);
