@@ -88,24 +88,28 @@ export class TopList extends plugin {
             }
             i++;
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                temp.findIndex((item) => item.qq === obj.qq) === index
+        );
         //根据力量排序
-        temp.sort(sortBy("power"));
-        console.log(temp);
+        unique.sort(sortBy("power"));
+        console.log(unique);
         var length;
-        if (temp.length > 10) {
+        if (unique.length > 10) {
             //只要十个
             length = 10;
         }
         else {
-            length = temp.length;
+            length = unique.length;
         }
         var j;
         for (j = 0; j < length; j++) {
             msg.push(
                 "第" + (j + 1) + "名" +
-                "\n道号：" + temp[j].name +
-                "\n战力：" + temp[j].power +
-                "\nQQ:" + temp[j].qq);
+                "\n道号：" + unique[j].name +
+                "\n战力：" + unique[j].power +
+                "\nQQ:" + unique[j].qq);
         }
         await ForwardMsg(e, msg);
         return;
@@ -157,24 +161,28 @@ export class TopList extends plugin {
             }
             i++;
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                temp.findIndex((item) => item.qq === obj.qq) === index
+        );
         //根据力量排序
-        temp.sort(sortBy("power"));
-        console.log(temp);
+        unique.sort(sortBy("power"));
+        console.log(unique);
         var length;
-        if (temp.length > 10) {
+        if (unique.length > 10) {
             //只要十个
             length = 10;
         }
         else {
-            length = temp.length;
+            length = unique.length;
         }
         var j;
         for (j = 0; j < length; j++) {
             msg.push(
                 "第" + (j + 1) + "名" +
-                "\n道号：" + temp[j].name +
-                "\n战力：" + temp[j].power +
-                "\nQQ:" + temp[j].qq);
+                "\n道号：" + unique[j].name +
+                "\n战力：" + unique[j].power +
+                "\nQQ:" + unique[j].qq);
         }
         await ForwardMsg(e, msg);
         return;
@@ -214,14 +222,18 @@ export class TopList extends plugin {
                 qq: this_qq
             }
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                temp.findIndex((item) => item.qq === obj.qq) === index
+        );
         //排序
-        temp.sort(sortBy("总修为"));
-        usr_paiming = temp.findIndex(temp => temp.qq === usr_qq) + 1;
+        unique.sort(sortBy("总修为"));
+        usr_paiming = unique.findIndex(unique => unique.qq === usr_qq) + 1;
         let Data = [];
         if (File_length > 10) { File_length = 10; }//最多显示前十
         for (var i = 0; i < File_length; i++) {
-            temp[i].名次 = i + 1;
-            Data[i] = temp[i];
+            unique[i].名次 = i + 1;
+            Data[i] = unique[i];
         }
         let thisplayer = await data.getData("player", usr_qq);
         let img = await get_ranking_power_img(e, Data, usr_paiming, thisplayer);
@@ -268,7 +280,7 @@ export class TopList extends plugin {
         //排序
         unique.sort(sortBy("灵石"));
         let Data = [];
-        usr_paiming = unique.findIndex(temp => temp.qq === usr_qq) + 1;
+        usr_paiming = unique.findIndex(unique => unique.qq === usr_qq) + 1;
         if (File_length > 10) { File_length = 10; }//最多显示前十
         for (var i = 0; i < File_length; i++) {
             unique[i].名次 = i + 1;
