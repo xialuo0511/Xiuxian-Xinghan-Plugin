@@ -1314,9 +1314,9 @@ export class UserHome extends plugin {
                         await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
                         return;
                     }
-                    ac.beiyong1 = this_danyao.gailv;
-                    if (ac.beiyong1 > 0.3 && ac.beiyong1 != 1) {
-                        ac.beiyong1 = 0.3
+                    ac.xianyuangl = this_danyao.gailv;
+                    if (ac.xianyuangl > 0.3 && ac.xianyuangl != 1) {
+                        ac.xianyuangl = 0.3
                     }
                     e.reply(
                         `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
@@ -1325,9 +1325,9 @@ export class UserHome extends plugin {
                     ac = {
                         "ped": 5
                     }
-                    ac.beiyong1 = this_danyao.gailv;
-                    if (ac.beiyong1 > 0.3 && ac.beiyong1 != 1) {
-                        ac.beiyong1 = 0.3
+                    ac.xianyuangl = this_danyao.gailv;
+                    if (ac.xianyuangl > 0.3 && ac.xianyuangl != 1) {
+                        ac.xianyuangl = 0.3
                     }
                     e.reply(
                         `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
@@ -1341,31 +1341,36 @@ export class UserHome extends plugin {
                 return;
             }
             if (this_danyao.type == "凝仙") {
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].beiyong1 == 1 || action[i].beiyong3 == 1) {
-                            e.reply(`圣品丹药过于强大无法凝仙`)
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity)
-                            return;
-                        } else {
-                            if (action[i].biguan > 0) {
-                                action[i].biguan += this_danyao.机缘 * quantity
-                            }
-                            if (action[i].lianti > 0) {
-                                action[i].lianti += this_danyao.机缘 * quantity
-                            }
-                            if (action[i].ped > 0) {
-                                action[i].ped += this_danyao.机缘 * quantity
-                            }
-                            if (action[i].beiyong2 > 0) {
-                                action[i].beiyong2 += this_danyao.机缘 * quantity
-                            }
-                            e.reply(`丹韵入体,身体内蕴含的仙丹药效增加了${this_danyao.机缘 * quantity}次`)
-                            await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action))
-                        }
-                        return;
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":ningxian");
+                ac = JSON.parse(ac);
+                //闭关
+                let ac1 = await redis.get("xiuxian:player:" + usr_qq + ":biguan");
+                ac1 = JSON.parse(ac);
+                //仙缘
+                let ac2 = await redis.get("xiuxian:player:" + usr_qq + ":xianyuan");
+                ac2 = JSON.parse(ac2);
+
+                if (ac.xianyuangl == 1 || ac.beiyong3 == 1) {
+                    e.reply(`圣品丹药过于强大无法凝仙`)
+                    await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity)
+                    return;
+                } else {
+                    if (ac.biguan > 0) {
+                        ac.biguan += this_danyao.机缘 * quantity
                     }
+                    if (ac.lianti > 0) {
+                        ac.lianti += this_danyao.机缘 * quantity
+                    }
+                    if (ac.ped > 0) {
+                        ac.ped += this_danyao.机缘 * quantity
+                    }
+                    if (ac.beiyong2 > 0) {
+                        ac.beiyong2 += this_danyao.机缘 * quantity
+                    }
+                    e.reply(`丹韵入体,身体内蕴含的仙丹药效增加了${this_danyao.机缘 * quantity}次`)
+                    await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action))
                 }
+                return;
             }
             if (this_danyao.type == "炼神") {
                 if (quantity != 1) {

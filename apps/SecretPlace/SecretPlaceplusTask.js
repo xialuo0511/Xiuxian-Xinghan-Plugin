@@ -383,11 +383,11 @@ export class SecretPlaceplusTask extends plugin {
               );
               action1 = await JSON.parse(action1);
               if (action1) {
-                newrandom -= action1.beiyong1;
+                newrandom -= action1.xianyuangl;
                 if (action1.ped > 0) {
                   action1.ped--;
                 } else {
-                  action1.beiyong1 = 0;
+                  action1.xianyuangl = 0;
                   action1.ped = 0;
                 }
                 await redis.set(
