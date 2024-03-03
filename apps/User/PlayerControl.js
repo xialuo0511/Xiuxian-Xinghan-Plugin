@@ -111,7 +111,7 @@ export class PlayerControl extends plugin {
         biguan_action = JSON.parse(biguan_action);
         if (biguan_action) {
             if (biguan_action.biguan > 0) {
-                msg = "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次\n"
+                msg = "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次(仅闭关获得收益后才会消耗次数)\n"
             }
             await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(biguan_action));
         }
