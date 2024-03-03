@@ -1918,7 +1918,7 @@ export async function get_ranking_money_img(e, Data, usr_paiming, thisplayer, th
     const lingshi = Math.trunc(thisplayer.灵石 + thisnajie.灵石);
     let ranking_money_data = {
         user_id: usr_qq,
-        nickname: thisplayer.名号,
+        nickname: thisplayer.名号 + usr_qq,
         lingshi: lingshi,
         najie_lingshi: najie_lingshi,
         usr_paiming: usr_paiming,

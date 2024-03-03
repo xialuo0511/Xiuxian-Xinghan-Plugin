@@ -261,15 +261,14 @@ export class TopList extends plugin {
                 qq: this_qq
             }
         }
-        const uniqueArr = Array.from(new Set(temp));
         //排序
-        uniqueArr.sort(sortBy("灵石"));
+        temp.sort(sortBy("灵石"));
         let Data = [];
-        usr_paiming = uniqueArr.findIndex(temp => temp.qq === usr_qq) + 1;
+        usr_paiming = temp.findIndex(temp => temp.qq === usr_qq) + 1;
         if (File_length > 10) { File_length = 10; }//最多显示前十
         for (var i = 0; i < File_length; i++) {
-            uniqueArr[i].名次 = i + 1;
-            Data[i] = uniqueArr[i];
+            temp[i].名次 = i + 1;
+            Data[i] = temp[i];
         }
         await sleep(500);
         let thisplayer = await data.getData("player", usr_qq);
