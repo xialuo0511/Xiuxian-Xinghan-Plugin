@@ -79,6 +79,7 @@ export class TopList extends plugin {
                 continue;
             }
             power = Math.trunc(power);
+            if (temp.find(item => item.qq == player_id)) { return; }
             temp[i] = {
                 "power": power,
                 "qq": player_id,
@@ -147,6 +148,7 @@ export class TopList extends plugin {
                 continue;
             }
             power = Math.trunc(power);
+            if (temp.find(item => item.qq == player_id)) { return; }
             temp[i] = {
                 "power": power,
                 "qq": player_id,
@@ -204,6 +206,7 @@ export class TopList extends plugin {
             }
             //境界名字需要查找境界名
             let level = data.Level_list.find(item => item.level_id == player.level_id).level;
+            if (temp.find(item => item.qq == this_qq)) { return; }
             temp[i] = {
                 总修为: sum_exp,
                 境界: level,
@@ -250,6 +253,7 @@ export class TopList extends plugin {
             let player = await Read_player(this_qq);
             let najie = await Read_najie(this_qq);
             let lingshi = player.灵石 + najie.灵石;
+            if (temp.find(item => item.qq == this_qq)) { return; }
             temp[i] = {
                 ls1: najie.灵石,
                 ls2: player.灵石,
