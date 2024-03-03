@@ -263,7 +263,7 @@ export class TopList extends plugin {
         }
         const unique = temp.filter(
             (obj, index) =>
-                arr.findIndex((item) => item.qq === obj.qq) === index
+                temp.findIndex((item) => item.qq === obj.qq) === index
         );
         //排序
         unique.sort(sortBy("灵石"));
