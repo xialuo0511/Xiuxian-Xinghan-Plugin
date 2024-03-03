@@ -253,7 +253,6 @@ export class TopList extends plugin {
             let player = await Read_player(this_qq);
             let najie = await Read_najie(this_qq);
             let lingshi = player.灵石 + najie.灵石;
-            if (temp.find(item => item.qq == this_qq)) { return; }
             temp[i] = {
                 ls1: najie.灵石,
                 ls2: player.灵石,
@@ -262,14 +261,15 @@ export class TopList extends plugin {
                 qq: this_qq
             }
         }
+        const uniqueArr = Array.from(new Set(temp));
         //排序
-        temp.sort(sortBy("灵石"));
+        uniqueArr.sort(sortBy("灵石"));
         let Data = [];
-        usr_paiming = temp.findIndex(temp => temp.qq === usr_qq) + 1;
+        usr_paiming = uniqueArr.findIndex(temp => temp.qq === usr_qq) + 1;
         if (File_length > 10) { File_length = 10; }//最多显示前十
         for (var i = 0; i < File_length; i++) {
-            temp[i].名次 = i + 1;
-            Data[i] = temp[i];
+            uniqueArr[i].名次 = i + 1;
+            Data[i] = uniqueArr[i];
         }
         await sleep(500);
         let thisplayer = await data.getData("player", usr_qq);
