@@ -487,7 +487,7 @@ export class PlayerControl extends plugin {
         }
         await redis.set(
             'xiuxian:player:' + usr_qq + ':lianshen',
-            JSON.stringify(action)
+            JSON.stringify(lianshen_action)
         );
 
 
@@ -647,5 +647,4 @@ export class PlayerControl extends plugin {
 
 
 }
-
 
