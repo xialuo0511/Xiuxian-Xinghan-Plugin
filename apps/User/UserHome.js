@@ -1847,37 +1847,37 @@ export class UserHome extends plugin {
                             jyp += 4
                         }
                         if (daomu > 0.7 && daomu <= 0.8) {
-                            xlhhq += 1
+                            xlhhq++
                         }
                         if (daomu > 0.8 && daomu <= 0.9) {
-                            qshs += 1
+                            qshs++
                         }
                         if (daomu > 0.9 && daomu <= 1) {
-                            czs += 1
+                            czs++
                         }
                     }
                     if (jyp != 0) {
-                        msg += jyp + "个【经验瓶】\n"
+                        msg += "\n【经验瓶】*" + jyp
                         await Add_najie_thing(usr_qq, "经验瓶", "丹药", jyp);
                     }
                     if (xqp != 0) {
-                        msg += xqp + "个【血气瓶】\n"
+                        msg += "\n【血气瓶】*" + xqp
                         await Add_najie_thing(usr_qq, "血气瓶", "丹药", xqp);
                     }
                     if (xlhhq != 0) {
-                        msg += xlhhq + "个【屑洛呼唤器】\n"
+                        msg += "\n【屑洛呼唤器】*" + xlhhq
                         await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", xlhhq);
                     }
                     if (qshs != 0) {
-                        msg += qshs + "个【起死回生丹】\n"
+                        msg += "\n【起死回生丹】*" + qshs
                         await Add_najie_thing(usr_qq, "起死回生丹", "丹药", qshs);
                     }
                     if (czs != 0) {
-                        msg += czs + "个【重铸石】\n"
+                        msg += "\n【重铸石】*" + czs
                         await Add_najie_thing(usr_qq, "重铸石", "道具", czs);
                     }
                     if (wu != 0) {
-                        msg += "其中，有" + wu + "个打开后是空的"
+                        msg += "\n其中，有" + wu + "个打开后是空的"
                     }
                     e.reply(msg)
                     return;
