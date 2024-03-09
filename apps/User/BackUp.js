@@ -50,7 +50,7 @@ export class BackUp extends plugin {
         'tiandibang',
         'equipment_path',
         'najie_path',
-        'player_path',
+        'player_path'
       ];
 
       // [[fn, fn...], ...]
@@ -99,7 +99,7 @@ export class BackUp extends plugin {
       const nowTimeStamp = Date.now();
       const saveFolder = `${__PATH.backup}/${nowTimeStamp}`;
       if (fs.existsSync(saveFolder)) {
-        return e?.reply('致命错误，请联系DD');
+        return e?.reply('致命错误，请联系管理员');
       }
       fs.mkdirSync(saveFolder);
 

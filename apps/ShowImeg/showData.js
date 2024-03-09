@@ -1587,11 +1587,11 @@ export async function get_najie_img(e) {
     const lingshi2 = Math.trunc(najie.灵石上限);
     let strand_hp = Strand(player.当前血量, player.血量上限)
     let strand_lingshi = Strand(najie.灵石, najie.灵石上限)
-    // let pifu = await redis.get("xiuxian:player:" + usr_qq + ":najiepifu");
-    // e.reply(pifu);
-    // if (!pifu) {
-    //     pifu = 0
-    // }
+
+    for (var i = 0; i < najie.装备.length; i++) {
+        najie.装备[i].出售价 = data.equipment_list.find(item => item.name == najie.装备[i].name).出售价
+    }
+
     let action = player.练气皮肤;
     let player_data = {
         user_id: usr_qq,
