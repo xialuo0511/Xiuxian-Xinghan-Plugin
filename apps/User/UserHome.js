@@ -996,6 +996,13 @@ export class UserHome extends plugin {
         let func = reg.exec(e.msg);
         let msg = e.msg.replace(reg, '');
         msg = msg.replace("#", '');
+
+        let quanbu = false
+        if (msg.includes("全部")) {
+            msg.replace("全部", "");
+            quanbu = true
+        }
+
         let code = msg.split("\*");
         let thing_name = code[0];
         let quantity = code[1];
@@ -1624,11 +1631,6 @@ export class UserHome extends plugin {
                 e.reply(`成功兑换：` + th);
                 return
             }
-            if (thing_name == "多莉的消息") {
-                e.reply([segment.at(3140947982), "多莉！！来客人了！！"])
-                await Add_najie_thing(usr_qq, "多莉的消息", "道具", -1);
-                return
-            }
             if (thing_name == "屑洛呼唤器") {
                 e.reply([segment.at(2531606029), "屑洛！！有人找你"])
                 await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", -1);
@@ -1809,71 +1811,154 @@ export class UserHome extends plugin {
                 }
             }
             if (thing_name == "钓鱼掉上来的奇怪盒子") {
-                let daomu = Math.random();
-                if (daomu == 0.01) {
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子,里面什么都没有"])
-                    return
-                }
-                if (daomu > 0.01 && daomu <= 0.1) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一些经验瓶"])
-                    return
-                }
-                if (daomu > 0.1 && daomu <= 0.15) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 20);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有20个经验瓶"])
-                    return
-                }
-                if (daomu > 0.15 && daomu <= 0.2) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有30个经验瓶"])
-                    return
-                }
-                if (daomu > 0.25 && daomu <= 0.3) {
-                    await Add_najie_thing(usr_qq, "血气瓶", "丹药", 10);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有10个血气瓶"])
-                    return
-                }
-                if (daomu > 0.3 && daomu <= 0.4) {
-                    await Add_najie_thing(usr_qq, "血气瓶", "丹药", 5);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有5个血气瓶"])
-                    return
-                }
-                if (daomu > 0.4 && daomu <= 0.5) {
-                    await Add_najie_thing(usr_qq, "血气瓶", "丹药", 4);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个血气瓶"])
-                    return
-                }
-                if (daomu > 0.5 && daomu <= 0.7) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 4);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个经验瓶"])
-                    return
-                }
-                if (daomu > 0.7 && daomu <= 0.8) {
-                    await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", 1);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个屑洛呼唤器"])
-                    return
-                }
-                if (daomu > 0.8 && daomu <= 0.9) {
-                    await Add_najie_thing(usr_qq, "起死回生丹", "丹药", 1);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个起死回生丹"])
-                    return
-                }
-                if (daomu > 0.9 && daomu <= 1) {
-                    await Add_najie_thing(usr_qq, "重铸石", "道具", 1);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个重铸石"])
-                    return
+                if (quanbu) {
+                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -x);
+                    let wu = 0
+                    let jyp = 0
+                    let xqp = 0
+                    let xlhhq = 0
+                    let qshs = 0
+                    let czs = 0
+                    let msg = "你一次性打开了全部【钓鱼掉上来的奇怪盒子】，共" + x + "个，获得了："
+                    for (var i = 0; i < x; i++) {
+                        let daomu = Math.random();
+                        if (daomu == 0.01) {
+                            wu++
+                            return;
+                        }
+                        if (daomu > 0.01 && daomu <= 0.1) {
+                            jyp += 30
+                            return;
+                        }
+                        if (daomu > 0.1 && daomu <= 0.15) {
+                            jyp += 20
+                            return
+                        }
+                        if (daomu > 0.15 && daomu <= 0.2) {
+                            jyp += 30
+                            return
+                        }
+                        if (daomu > 0.25 && daomu <= 0.3) {
+                            xqp += 10
+                            return
+                        }
+                        if (daomu > 0.3 && daomu <= 0.4) {
+                            xqp += 5
+                            return
+                        }
+                        if (daomu > 0.4 && daomu <= 0.5) {
+                            xqp += 4
+                            return
+                        }
+                        if (daomu > 0.5 && daomu <= 0.7) {
+                            jyp += 4
+                            return
+                        }
+                        if (daomu > 0.7 && daomu <= 0.8) {
+                            xlhhq += 1
+                            return
+                        }
+                        if (daomu > 0.8 && daomu <= 0.9) {
+                            qshs += 1
+                            return
+                        }
+                        if (daomu > 0.9 && daomu <= 1) {
+                            czs += 1
+                            return
+                        }
+                    }
+                    if (jyp != 0) {
+                        msg += jyp + "个【经验瓶】\n"
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", jyp);
+                    }
+                    if (xqp != 0) {
+                        msg += xqp + "个【血气瓶】\n"
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", xqp);
+                    }
+                    if (xlhhq != 0) {
+                        msg += xlhhq + "个【屑洛呼唤器】\n"
+                        await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", xlhhq);
+                    }
+                    if (qshs != 0) {
+                        msg += qshs + "个【起死回生丹】\n"
+                        await Add_najie_thing(usr_qq, "起死回生丹", "丹药", qshs);
+                    }
+                    if (czs != 0) {
+                        msg += czs + "个【重铸石】\n"
+                        await Add_najie_thing(usr_qq, "重铸石", "道具", czs);
+                    }
+                    if (wu != 0) {
+                        msg += "其中，有" + wu + "个打开后是空的"
+                    }
+                    e.reply(msg)
+                    return;
+                } else {
+                    let daomu = Math.random();
+                    if (daomu == 0.01) {
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子,里面什么都没有"])
+                        return
+                    }
+                    if (daomu > 0.01 && daomu <= 0.1) {
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一些经验瓶"])
+                        return
+                    }
+                    if (daomu > 0.1 && daomu <= 0.15) {
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 20);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有20个经验瓶"])
+                        return
+                    }
+                    if (daomu > 0.15 && daomu <= 0.2) {
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有30个经验瓶"])
+                        return
+                    }
+                    if (daomu > 0.25 && daomu <= 0.3) {
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", 10);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有10个血气瓶"])
+                        return
+                    }
+                    if (daomu > 0.3 && daomu <= 0.4) {
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", 5);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有5个血气瓶"])
+                        return
+                    }
+                    if (daomu > 0.4 && daomu <= 0.5) {
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", 4);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个血气瓶"])
+                        return
+                    }
+                    if (daomu > 0.5 && daomu <= 0.7) {
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 4);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个经验瓶"])
+                        return
+                    }
+                    if (daomu > 0.7 && daomu <= 0.8) {
+                        await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", 1);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个屑洛呼唤器"])
+                        return
+                    }
+                    if (daomu > 0.8 && daomu <= 0.9) {
+                        await Add_najie_thing(usr_qq, "起死回生丹", "丹药", 1);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个起死回生丹"])
+                        return
+                    }
+                    if (daomu > 0.9 && daomu <= 1) {
+                        await Add_najie_thing(usr_qq, "重铸石", "道具", 1);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个重铸石"])
+                        return
+                    }
                 }
             }
 
