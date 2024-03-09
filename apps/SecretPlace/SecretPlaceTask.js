@@ -78,8 +78,7 @@ export class SecretPlaceTask extends plugin {
         let player = await Read_player(player_id);
         //有秘境状态:这个直接结算即可
         if (action.Place_action == '0') {
-          //这里改一改,要在结束时间的前两分钟提前结算
-          end_time = end_time - 60000 * 2;
+          // end_time = end_time;
           //时间过了
           if (now_time > end_time) {
             let weizhi = action.Place_address;

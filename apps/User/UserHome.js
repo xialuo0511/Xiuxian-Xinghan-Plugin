@@ -1825,13 +1825,10 @@ export class UserHome extends plugin {
                         if (daomu == 0.01) {
                             wu++
                         }
-                        if (daomu > 0.01 && daomu <= 0.1) {
-                            jyp += 30
-                        }
                         if (daomu > 0.1 && daomu <= 0.15) {
                             jyp += 20
                         }
-                        if (daomu > 0.15 && daomu <= 0.2) {
+                        if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.2)) {
                             jyp += 30
                         }
                         if (daomu > 0.25 && daomu <= 0.3) {
@@ -1888,19 +1885,13 @@ export class UserHome extends plugin {
                         e.reply(["你打开了钓鱼掉上来的奇怪盒子,里面什么都没有"])
                         return
                     }
-                    if (daomu > 0.01 && daomu <= 0.1) {
-                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
-                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一些经验瓶"])
-                        return
-                    }
                     if (daomu > 0.1 && daomu <= 0.15) {
                         await Add_najie_thing(usr_qq, "经验瓶", "丹药", 20);
                         await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
                         e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有20个经验瓶"])
                         return
                     }
-                    if (daomu > 0.15 && daomu <= 0.2) {
+                    if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.2)) {
                         await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
                         await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
                         e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有30个经验瓶"])
