@@ -26,13 +26,23 @@
                 <div class="user_font user_font_title">【已拥有】</div>
                 <div class="user_font  wupin">
                     {{each daoju_have item}}
-                    <div class="item">
+                    {{if item.type == "幻影卡面_练气"}}
+                    <div class="item" style="background-image: url(../../img/play_pifu/{{id}}.jpg);">
                         <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
                         <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
                         <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
                         <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
                         <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
                     </div>
+                    {{else}}
+                    <div class="item" style="background-image: url(../../img/equipment_pifu/{{id}}.jpg);">
+                        <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
+                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
+                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
+                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
+                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+                    </div>
+                    {{/if}}
                     {{/each}}
                 </div>
             </div>
@@ -46,13 +56,23 @@
                 <div class="user_font user_font_title">【未拥有】</div>
                 <div class="user_font  wupin">
                     {{each daoju_need item}}
-                    <div class="item">
+                    {{if item.type == "幻影卡面_练气"}}
+                    <div class="item" style="background-image: url(../../img/play_pifu/{{id}}.jpg);">
                         <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
                         <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
                         <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
                         <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
                         <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
                     </div>
+                    {{else}}
+                    <div class="item" style="background-image: url(../../img/equipment_pifu/{{id}}.jpg);">
+                        <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
+                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
+                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
+                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
+                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+                    </div>
+                    {{/if}}
                     {{/each}}
                 </div>
             </div>
