@@ -103,6 +103,10 @@ export class GuessLanternRiddles extends plugin {
             if (type == "装备") {
                 kamian = data.daoju_list.find(item => item.id == photo && item.type == "幻影卡面_装备");
             }
+            if (kamian.type2 == "限定") {
+                e.reply("限定卡面不允许兑换！")
+                return;
+            }
             //let player = await Read_player(usr_qq)
             //player.练气皮肤 = kamian.id
             //await Write_player(usr_qq, player)
