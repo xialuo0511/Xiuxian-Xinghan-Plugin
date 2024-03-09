@@ -999,7 +999,7 @@ export class UserHome extends plugin {
 
         let quanbu = false
         if (msg.includes("全部")) {
-            msg.replace("全部", '');
+            msg = msg.replace("全部", '');
             quanbu = true
         }
 
