@@ -1824,47 +1824,36 @@ export class UserHome extends plugin {
                         let daomu = Math.random();
                         if (daomu == 0.01) {
                             wu++
-                            return;
                         }
                         if (daomu > 0.01 && daomu <= 0.1) {
                             jyp += 30
-                            return;
                         }
                         if (daomu > 0.1 && daomu <= 0.15) {
                             jyp += 20
-                            return
                         }
                         if (daomu > 0.15 && daomu <= 0.2) {
                             jyp += 30
-                            return
                         }
                         if (daomu > 0.25 && daomu <= 0.3) {
                             xqp += 10
-                            return
                         }
                         if (daomu > 0.3 && daomu <= 0.4) {
                             xqp += 5
-                            return
                         }
                         if (daomu > 0.4 && daomu <= 0.5) {
                             xqp += 4
-                            return
                         }
                         if (daomu > 0.5 && daomu <= 0.7) {
                             jyp += 4
-                            return
                         }
                         if (daomu > 0.7 && daomu <= 0.8) {
                             xlhhq += 1
-                            return
                         }
                         if (daomu > 0.8 && daomu <= 0.9) {
                             qshs += 1
-                            return
                         }
                         if (daomu > 0.9 && daomu <= 1) {
                             czs += 1
-                            return
                         }
                     }
                     if (jyp != 0) {
