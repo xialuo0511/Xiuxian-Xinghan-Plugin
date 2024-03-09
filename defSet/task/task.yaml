@@ -23,7 +23,5 @@ BossEndTask: 0 30 12,19 * * ?
 # 修仙论坛
 ForumTask: 0 0 4,16 * * ?
 #备份存档
-AutoBackUpTask: 0 0 4 * * ?
-#备份存档
 AutoBackUpTask: 0 0 0/1 * * ?
 #Cron表达式
