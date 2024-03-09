@@ -1589,7 +1589,9 @@ export async function get_najie_img(e) {
     let strand_lingshi = Strand(najie.灵石, najie.灵石上限)
 
     for (var i = 0; i < najie.装备.length; i++) {
-        najie.装备[i].出售价 = data.equipment_list.find(item => item.name == najie.装备[i].name).出售价
+        try {
+            najie.装备[i].出售价 = data.equipment_list.find(item => item.name == najie.装备[i].name).出售价
+        } catch (error) { }
     }
 
     let action = player.练气皮肤;
