@@ -103,9 +103,9 @@ export class GuessLanternRiddles extends plugin {
             if (type == "装备") {
                 kamian = data.daoju_list.find(item => item.id == photo && item.type == "幻影卡面_装备");
             }
-            let player = await Read_player(usr_qq)
-            player.练气皮肤 = kamian.id
-            await Write_player(usr_qq, player)
+            //let player = await Read_player(usr_qq)
+            //player.练气皮肤 = kamian.id
+            //await Write_player(usr_qq, player)
             await Add_najie_thing(usr_qq, kamian.name, "道具", 1)
             await Add_najie_thing(usr_qq, "虚无幻影", "道具", -1)
             e.reply("兑换" + kamian.name + "成功")
