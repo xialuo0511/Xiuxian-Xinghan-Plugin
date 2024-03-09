@@ -21,44 +21,47 @@
 
         <!--下-->
         {{if daoju_have.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【已拥有】</div>
-            <div class="user_font  wupin">
-                {{each daoju_have item}}
-                <div class="item">
-                    <div class="item_title font_item_title">{{item.name}}</div>
-                    <div class="item_int"style="padding-left: 26px;">类型：{{item.type}}</div>
-                    <div class="item_int"style="padding-left: 26px;">描述：{{item.desc}}</div>
-                    <div class="item_int"style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+        <div class="card_box">
+            <div class="use_data">
+                <div class="user_font user_font_title">【已拥有】</div>
+                <div class="user_font  wupin">
+                    {{each daoju_have item}}
+                    <div class="item">
+                        <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
+                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
+                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
+                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
+                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+                    </div>
+                    {{/each}}
                 </div>
-                {{/each}}
             </div>
         </div>
-    </div>
         {{/if}}
 
-    <!--下-->
+        <!--下-->
         {{if daoju_need.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【未拥有】</div>
-            <div class="user_font  wupin">
-                {{each daoju_need item}}
-                <div class="item">
-                    <div class="item_title font_item_title">{{item.name}}</div>
-                    <div class="item_int"style="padding-left: 26px;">类型：{{item.type}}</div>
-                    <div class="item_int"style="padding-left: 26px;">描述：{{item.desc}}</div>
-                    <div class="item_int"style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+        <div class="card_box">
+            <div class="use_data">
+                <div class="user_font user_font_title">【未拥有】</div>
+                <div class="user_font  wupin">
+                    {{each daoju_need item}}
+                    <div class="item">
+                        <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
+                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
+                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
+                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
+                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+                    </div>
+                    {{/each}}
                 </div>
-                {{/each}}
             </div>
         </div>
-    </div>
         {{/if}}
 
-    <div class="user_bottom2">
-    </div>
+        <div class="user_bottom2">
+        </div>
     </div>
 </body>
+
 </html>

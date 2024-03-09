@@ -107,9 +107,6 @@ export class GuessLanternRiddles extends plugin {
                 e.reply("限定卡面不允许兑换！")
                 return;
             }
-            //let player = await Read_player(usr_qq)
-            //player.练气皮肤 = kamian.id
-            //await Write_player(usr_qq, player)
             await Add_najie_thing(usr_qq, kamian.name, "道具", 1)
             await Add_najie_thing(usr_qq, "虚无幻影", "道具", -1)
             e.reply("兑换" + kamian.name + "成功")
