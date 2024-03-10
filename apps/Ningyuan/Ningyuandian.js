@@ -93,9 +93,9 @@ function Harm(atk, def, bao, baoshang) {
     let x;
     let s = Math.random()
     if (s <= bao) {
-        x = atk * (1 + baoshang) / (def / 2)
+        x = atk * (1 + baoshang) / def
     } else {
-        x = atk / (def / 2)
+        x = atk / def
     }
     if (x < 1) {
         x = 1
