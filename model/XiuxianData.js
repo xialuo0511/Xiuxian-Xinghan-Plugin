@@ -81,6 +81,9 @@ class XiuxianData {
         //护具
         this.huju_list = JSON.parse(fs.readFileSync(`${this.lib_path}/护具列表.json`));
 
+        //凝渊
+        this.ningyuan_guai_list_1 = JSON.parse(fs.readFileSync(`${this.lib_path}/怪物/凝渊殿/1.json`));
+
 
         //异界
         //装备

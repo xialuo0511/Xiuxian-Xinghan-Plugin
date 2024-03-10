@@ -29,7 +29,7 @@ export class Ningyuandian extends plugin {
     }
 
     async xyxz(e) {
-        e.reply("本月仙殷祥祝效果：\n战斗开始时，获得10%攻击力加成，持续3回合，可叠加\n\n道法仙术加成后效果：\n战斗开始时，获得12%攻击力加成，持续5回合，可叠加")
+        e.reply("本月仙殷祥祝效果：\n战斗开始时，获得10%攻击力加成，持续3回合\n\n道法仙术加成后效果：\n战斗开始时，获得12%攻击力加成，持续5回合")
     }
 
     async tznyd(e) {
@@ -38,172 +38,172 @@ export class Ningyuandian extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        if (await data.existData("player", e.user_id)) {
-            let CurrentPlayerAttributes = await data.getData("player", e.user_id);
+        if (data.existData("player", e.user_id)) {
             let usr_qq = e.user_id;
             let player = data.getData("player", usr_qq);
-            let ZYTcs = player.镇妖塔层数
-            let Health = 0;
-            let Attack = 0;
-            let Defence = 0;
-            let Reward = 0;
-            if (ZYTcs < 100) {
-                Health = 33000 * ZYTcs + 10000;
-                Attack = 15000 * ZYTcs + 10000;
-                Defence = 24000 * ZYTcs + 10000;
-                Reward = 260 * ZYTcs + 100;
-            }
-            else if (ZYTcs >= 100 && ZYTcs < 200) {
-                Health = 50000 * ZYTcs + 10000;
-                Attack = 22000 * ZYTcs + 10000;
-                Defence = 36000 * ZYTcs + 10000;
-                Reward = 360 * ZYTcs + 1000;
-            }
-            else if (ZYTcs >= 200) {
-                Health = 90000 * ZYTcs + 10000;
-                Attack = 40000 * ZYTcs + 10000;
-                Defence = 70000 * ZYTcs + 10000;
-                Reward = 700 * ZYTcs + 1000;
-            }
-            let bosszt = {
-                "Health": Health,
-                "OriginHealth": Health,
-                "isAngry": 0,
-                "isWeak": 0,
-                "Attack": Attack,
-                "Defence": Defence,
-                "KilledTime": -1,
-                "Reward": Reward,
-            };
 
-            if (player.镇妖塔层数 >= 3000) {
-                CurrentPlayerAttributes.镇妖塔层数 = 3000;
-                e.reply('镇妖塔层数最多3000');
-                await data.setData("player", e.user_id, CurrentPlayerAttributes);
+
+            if (player.镇妖塔层数 < 3500) {
+                e.reply('镇妖塔层数不足3500，无法参与战斗');
                 return;
             }
-            var Time = 2;
-            let now_Time = new Date().getTime(); //获取当前时间戳
-            let shuangxiuTimeout = parseInt(60000 * Time);
-            let last_time = await redis.get("xiuxian:player:" + usr_qq + "CD");//获得上次的时间戳,
-            last_time = parseInt(last_time);
-            if (now_Time < last_time + shuangxiuTimeout) {
-                let Couple_m = Math.trunc((last_time + shuangxiuTimeout - now_Time) / 60 / 1000);
-                let Couple_s = Math.trunc(((last_time + shuangxiuTimeout - now_Time) % 60000) / 1000);
-                e.reply("正在CD中，" + `剩余cd:  ${Couple_m}分 ${Couple_s}秒`);
-                return;
-            }
-            if (CurrentPlayerAttributes.当前血量 <= 10000 * ZYTcs) {
-                e.reply("还是先疗伤吧，死了可就叽了");
-                return true;
-            }
-            let BattleFrame = 0, TotalDamage = 0, msg = [];
-            let BOSSCurrentAttack = bosszt.isAngry ? Math.trunc(bosszt.Attack * 1.8) : bosszt.isWeak ? Math.trunc(bosszt.Attack * 0.7) : bosszt.Attack;
-            let BOSSCurrentDefence = bosszt.isWeak ? Math.trunc(bosszt.Defence * 0.7) : bosszt.Defence;
-            while (CurrentPlayerAttributes.当前血量 > 0 && bosszt.Health > 0) {
-                let Random = Math.random();
-                if (!(BattleFrame & 1)) {
-                    let Player_To_BOSS_Damage = Harm(CurrentPlayerAttributes.攻击, BOSSCurrentDefence) + Math.trunc(CurrentPlayerAttributes.攻击 * CurrentPlayerAttributes.灵根.法球倍率);
-                    let SuperAttack = (Math.random() < CurrentPlayerAttributes.暴击率) ? 1.5 : 1;
-                    msg.push(`第${Math.trunc(BattleFrame / 2) + 1}回合：`);
-                    if (Random > 0.50 && BattleFrame == 0) {
-                        msg.push("你的进攻被反手了！");
-                        Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 0.3);
-                    }
-                    else if (Random > 0.94) {
-                        msg.push("你的攻击被破解了");
-                        Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 6);
-                    }
-                    else if (Random > 0.9) {
-                        msg.push("你的攻击被挡了一部分");
-                        Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 0.8);
-                    }
-                    else if (Random < 0.1) {
-                        msg.push("你抓到了未知妖物的破绽");
-                        Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * 1.2);
-                    }
-                    Player_To_BOSS_Damage = Math.trunc(Player_To_BOSS_Damage * SuperAttack + Math.random() * 100);
-                    bosszt.Health -= Player_To_BOSS_Damage;
-                    TotalDamage += Player_To_BOSS_Damage;
-                    if (bosszt.Health < 0) { bosszt.Health = 0 }
-                    msg.push(`${CurrentPlayerAttributes.名号}${ifbaoji(SuperAttack)}造成伤害${Player_To_BOSS_Damage}，未知妖物剩余血量${bosszt.Health}`);
-                }
-                else {
-                    let BOSS_To_Player_Damage = Harm(BOSSCurrentAttack, Math.trunc(CurrentPlayerAttributes.防御 * 0.1));
-                    if (Random > 0.94) {
-                        msg.push("未知妖物的攻击被你破解了");
-                        BOSS_To_Player_Damage = Math.trunc(BOSS_To_Player_Damage * 0.6);
-                    }
-                    else if (Random > 0.9) {
-                        msg.push("未知妖物的攻击被你挡了一部分");
-                        BOSS_To_Player_Damage = Math.trunc(BOSS_To_Player_Damage * 0.8);
-                    }
-                    else if (Random < 0.1) {
-                        msg.push("未知妖物抓到了你的破绽");
-                        BOSS_To_Player_Damage = Math.trunc(BOSS_To_Player_Damage * 1.2);
-                    }
-                    CurrentPlayerAttributes.当前血量 -= BOSS_To_Player_Damage;
-                    bosszt.isAngry ? --bosszt.isAngry : 0;
-                    bosszt.isWeak ? --bosszt.isWeak : 0;
-                    if (!bosszt.isAngry && BOSSCurrentAttack > bosszt.Attack) BOSSCurrentAttack = bosszt.Attack;
-                    if (!bosszt.isWeak && BOSSCurrentDefence < bosszt.Defence) BOSSCurrentDefence = bosszt.Defence;
-                    if (CurrentPlayerAttributes.当前血量 < 0) { CurrentPlayerAttributes.当前血量 = 0 }
-                    msg.push(`未知妖物攻击了${CurrentPlayerAttributes.名号}，造成伤害${BOSS_To_Player_Damage}，${CurrentPlayerAttributes.名号}剩余血量${CurrentPlayerAttributes.当前血量}`);
-                }
-                if (CurrentPlayerAttributes.当前血量 == 0 || bosszt.Health == 0)
-                    break;
-                BattleFrame++;
-            }
+            let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
+            let zd_msg = await xh_zd(player, bosszt)
 
             let log_data = {
-                log: msg,
+                log: zd_msg,
             };
             const data1 = await new Show(e).get_logData(log_data);
             let img = await puppeteer.screenshot('log', {
                 ...data1,
             });
             e.reply(img);
-            await redis.set("xiuxian:player:" + usr_qq + "CD", now_Time);
-            if (bosszt.Health == 0) {
-                CurrentPlayerAttributes.镇妖塔层数 += 5;
-                CurrentPlayerAttributes.灵石 += Reward;
-                CurrentPlayerAttributes.当前血量 += Reward * 21;
-                e.reply([segment.at(e.user_id), `\n恭喜通过此层镇妖塔，层数+5！增加灵石${Reward}回复血量${Reward * 21}`]);
-                await data.setData("player", e.user_id, CurrentPlayerAttributes);
-            }
-            if (CurrentPlayerAttributes.当前血量 == 0 || CurrentPlayerAttributes.当前血量 < 0) {
-                CurrentPlayerAttributes.当前血量 = 0;
-                let JL = Reward / 12
-                JL = Number(JL)
-                JL = JL.toFixed(0)
-                CurrentPlayerAttributes.灵石 -= JL;
-                e.reply([segment.at(e.user_id), `\n你未能通过此层镇妖塔！灵石-${JL}`]);
-                await data.setData("player", e.user_id, CurrentPlayerAttributes);
-            }
+            // if (bosszt.Health == 0) {
+            //     CurrentPlayerAttributes.镇妖塔层数 += 5;
+            //     CurrentPlayerAttributes.灵石 += Reward;
+            //     CurrentPlayerAttributes.当前血量 += Reward * 21;
+            //     e.reply([segment.at(e.user_id), `\n恭喜通过此层镇妖塔，层数+5！增加灵石${Reward}回复血量${Reward * 21}`]);
+            //     data.setData("player", e.user_id, CurrentPlayerAttributes);
+            // }
+            // if (CurrentPlayerAttributes.当前血量 == 0 || CurrentPlayerAttributes.当前血量 < 0) {
+            //     CurrentPlayerAttributes.当前血量 = 0;
+            //     let JL = Reward / 12
+            //     JL = Number(JL)
+            //     JL = JL.toFixed(0)
+            //     CurrentPlayerAttributes.灵石 -= JL;
+            //     e.reply([segment.at(e.user_id), `\n你未能通过此层镇妖塔！灵石-${JL}`]);
+            //     await data.setData("player", e.user_id, CurrentPlayerAttributes);
+            // }
 
             return true;
-        }
-        else {
-            e.reply("区区凡人，也想参与此等战斗中吗？");
+        } else {
+            e.reply("区区凡人，也想参与此等战斗中吗？请踏入仙途，好好修炼吧！");
             return true;
         }
     }
 }
 
 //攻击攻击防御计算伤害
-function Harm(atk, def) {
+function Harm(atk, def, bao, baoshang) {
     let x;
-    let s = atk / def;
-    let rand = Math.trunc(Math.random() * 11) / 100 + 0.95;//保留±5%的伤害波动
-    if (s < 1) {
-        x = 0.1;
+    let s = Math.random()
+    if (s <= bao) {
+        x = atk * (1 + baoshang) / def
+    } else {
+        x = atk / def
     }
-    else if (s > 2.5) {
-        x = 1;
+    if (x < 1) {
+        x = 1
     }
-    else {
-        x = 0.6 * s - 0.5;
-    }
-    x = Math.trunc(x * atk * rand);
+
     return x;
+}
+
+/*
+* 战斗相关
+*/
+export async function xh_zd(A_player, B_player) {
+    let cnt = 1; //回合数
+
+    if (!A_player.灵气) {
+        A_player.灵气 = 100
+    }
+    if (!A_player.单段攻击回复灵气) {
+        A_player.单段攻击回复灵气 = 20
+    }
+    if (!A_player.终结技) {
+        A_player.终结技 = "破体之力"
+    }
+    if (!A_player.倍率) {
+        A_player.倍率 = 1.5
+    }
+    //攻击赋值
+    let a_atk = A_player.攻击
+    let b_atk = B_player.攻击
+    //灵气赋值
+    let A_lingqi = 0
+    let B_lingqi = 0
+
+    let xyxz_cnt = 3
+    let xyxz_atk_add = 0.1
+    let now_Time = new Date().getTime(); //获取当前时间戳
+    if (A_player.daofaxianshu_endtime > now_Time) {
+        xyxz_cnt = 5
+        xyxz_atk_add = 0.12
+    }
+
+    let msg = [];
+    while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
+        msg.push(`==第${cnt}回合==`)
+        let lingshi_atk = a_atk
+        if (xyxz_cnt > 0) {
+            e.reply(`本回合获得【仙殷祥祝】祝福，攻击力提高${xyxz_atk_add * 100}%`)
+            xyxz_cnt--
+            lingshi_atk *= xyxz_atk_add + 1
+        }
+
+        let A_shanghai = Harm(lingshi_atk, B_player.防御, A_player.暴击, A_player.暴击伤害)
+        let B_shanghai = Harm(b_atk, A_player.防御, B_player.暴击, B_player.暴击伤害)
+        //A对B
+        if (A_lingqi < A_player.灵气) {
+            B_player.当前血量 -= A_shanghai
+            if (B_player.当前血量 < 0) {
+                B_player.当前血量 = 0
+            }
+            A_lingqi += A_player.单段攻击回复灵气
+            msg.push(`${A_player.名号}发起了攻击！对${B_player.名号}发起了普通攻击，造成伤害${A_shanghai}，${B_player.名号}剩余血量${B_player.当前血量}\n回复了${A_player.单段攻击回复灵气}，当前灵气值${A_lingqi}/${A_player.灵气}`)
+            if (B_player.当前血量 <= 0) {
+                msg.push(`${A_player.名号}造成了致命一击，击败了${B_player.名号}，结束了战斗！`)
+                msg.push(`====================`)
+                msg.push(`${A_player.名号}赢得了战斗`)
+                break;
+            }
+        } else {
+            B_player.当前血量 -= A_shanghai * A_player.倍率
+            A_lingqi -= A_player.灵气
+            if (B_player.当前血量 < 0) {
+                B_player.当前血量 = 0
+            }
+            msg.push(`${A_player.名号}灵气汇满！消耗了${A_player.灵气}灵气对${A_player.名号}发起了终结技${A_player.终结技}，造成伤害${A_shanghai * A_player.倍率}，${B_player.名号}剩余血量${B_player.当前血量}\n当前灵气值${A_lingqi}/${A_player.灵气}`)
+            if (B_player.当前血量 <= 0) {
+                msg.push(`${A_player.名号}造成了致命一击，击败了${B_player.名号}，结束了战斗！`)
+                msg.push(`====================`)
+                msg.push(`${A_player.名号}赢得了战斗`)
+                break;
+            }
+        }
+
+        //B对A
+        if (B_lingqi < B_player.灵气) {
+            A_player.当前血量 -= B_shanghai
+            if (A_player.当前血量 < 0) {
+                A_player.当前血量 = 0
+            }
+            B_lingqi += B_player.单段攻击回复灵气
+            msg.push(`${B_player.名号}发起了攻击！对${A_player.名号}发起了普通攻击，造成伤害${B_shanghai}，${A_player.名号}剩余血量${A_player.当前血量}\n回复了${B_player.单段攻击回复灵气}，当前灵气值${B_lingqi}/${B_player.灵气}`)
+            if (A_player.当前血量 <= 0) {
+                msg.push(`${B_player.名号}造成了致命一击，击败了${A_player.名号}，结束了战斗！`)
+                msg.push(`====================`)
+                msg.push(`${B_player.名号}赢得了战斗`)
+                break;
+            }
+        } else {
+            A_player.当前血量 -= B_shanghai * B_player.倍率
+            B_lingqi -= B_player.灵气
+            if (A_player.当前血量 < 0) {
+                A_player.当前血量 = 0
+            }
+            msg.push(`${B_player.名号}灵气汇满！消耗了${B_player.灵气}灵气对${A_player.名号}发起了终结技${B_player.终结技}，造成伤害${B_shanghai * B_player.倍率}，${A_player.名号}剩余血量${A_player.当前血量}\n当前灵气值${B_lingqi}/${B_player.灵气}`)
+            if (A_player.当前血量 <= 0) {
+                msg.push(`${B_player.名号}造成了致命一击，击败了${A_player.名号}，结束了战斗！`)
+                msg.push(`====================`)
+                msg.push(`${B_player.名号}赢得了战斗`)
+                break;
+            }
+        }
+
+
+        cnt++;
+    }
+    return msg;
 }
