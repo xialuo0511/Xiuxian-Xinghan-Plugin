@@ -278,7 +278,7 @@ export class BackUp extends plugin {
   async loadBackUp_datebase(e) {
     try {
       if (!e.isMaster) return e.reply('只有主人可以执行操作');
-      const saveDataNum = Number(e.msg.replace('#读取存档', '').trim());
+      const saveDataNum = Number(e.msg.replace('#读取数据库存档', '').trim());
       if (!(1 <= saveDataNum && saveDataNum <= 80)) {
         return e.reply('正确格式：#读取存档[1~80]\n如：#读取存档18');
       }

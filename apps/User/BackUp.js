@@ -293,7 +293,15 @@ export class BackUp extends plugin {
       } catch (_) {
         includeBackup = false; // 这个备份不包含redis
       }
+      // [[data, data...], ...]
+      const readDoneTask = needLoad.map((folderName, index) => {
+        dataFname[index] = dataFname[index].filter(fn => fn.endsWith('.json'));
 
+        const readTask = dataFname[index].map(fn =>
+          fs.promises.readFile(`${backUpPath}/${folderName}/${fn}`)
+        );
+        return Promise.all(readTask);
+      });
       const loadData = await Promise.all(readDoneTask);
 
       // 导入
