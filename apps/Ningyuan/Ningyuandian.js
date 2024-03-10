@@ -140,7 +140,7 @@ export async function xh_zd(A_player, B_player) {
     }
 
     let msg = [];
-    msg.push(A_player.血量上限)
+    //msg.push(A_player.血量上限)
     while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
         msg.push(`==第${cnt}回合==`)
         let lingshi_atk = a_atk
