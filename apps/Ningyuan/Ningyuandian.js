@@ -137,7 +137,7 @@ export async function xh_zd(A_player, B_player) {
         msg.push(`==第${cnt}回合==`)
         let lingshi_atk = a_atk
         if (xyxz_cnt > 0) {
-            e.reply(`本回合获得【仙殷祥祝】祝福，攻击力提高${xyxz_atk_add * 100}%`)
+            msg.push(`本回合获得【仙殷祥祝】祝福，攻击力提高${xyxz_atk_add * 100}%`)
             xyxz_cnt--
             lingshi_atk *= xyxz_atk_add + 1
         }
