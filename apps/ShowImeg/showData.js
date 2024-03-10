@@ -1026,7 +1026,13 @@ export async function get_player_img(e) {
     let 武器评级;
     let usr_qq = e.user_id.toString().replace('qg_', '');;
     usr_qq = await Gulid(usr_qq)
-    let head_pic = e.member.getAvatarUrl()
+    let head_pic
+    try {
+        head_pic = e.member.getAvatarUrl()
+    } catch (error) {
+
+    }
+
     if (!head_pic) {
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
