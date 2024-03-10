@@ -6,7 +6,6 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import { Gulid } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
-import { forEach } from 'lodash';
 
 export class Ningyuandian extends plugin {
     constructor() {
