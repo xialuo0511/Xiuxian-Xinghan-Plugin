@@ -95,7 +95,7 @@ function Harm(atk, def, bao, baoshang) {
     if (x < 1) {
         x = 1
     }
-    x = parent(x)
+    x = Math.floor(x)
 
     return x;
 }
