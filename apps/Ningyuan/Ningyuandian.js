@@ -95,6 +95,7 @@ function Harm(atk, def, bao, baoshang) {
     if (x < 1) {
         x = 1
     }
+    x = parent(x)
 
     return x;
 }
