@@ -1822,7 +1822,7 @@ export class UserHome extends plugin {
                     let msg = "你一次性打开了全部【钓鱼掉上来的奇怪盒子】，共" + x + "个，获得了："
                     for (var i = 0; i < x; i++) {
                         let daomu = Math.random();
-                        if (daomu <= 0.01) {
+                        if (daomu == 0.01) {
                             wu++
                         }
                         if (daomu > 0.1 && daomu <= 0.15) {
@@ -1880,7 +1880,7 @@ export class UserHome extends plugin {
                     return;
                 } else {
                     let daomu = Math.random();
-                    if (daomu <= 0.01) {
+                    if (daomu == 0.01) {
                         await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
                         e.reply(["你打开了钓鱼掉上来的奇怪盒子,里面什么都没有"])
                         return
