@@ -123,7 +123,7 @@ export async function xh_zd(A_player, B_player) {
     if (!A_player.倍率) {
         A_player.倍率 = 1.5
     }
-    A_player.当前血量 = A_player.血量上限
+    let blood = A_player.血量上限
     //攻击赋值
     let a_atk = A_player.攻击
     let b_atk = B_player.攻击
@@ -141,7 +141,7 @@ export async function xh_zd(A_player, B_player) {
 
     let msg = [];
     //msg.push(A_player.血量上限)
-    while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
+    while (blood > 0 && B_player.当前血量 > 0) {
         if (cut == 30) {
             msg.push("30回合未战胜魔物，挑战失败！")
             break
@@ -187,26 +187,26 @@ export async function xh_zd(A_player, B_player) {
 
         //B对A
         if (B_lingqi < B_player.灵气) {
-            A_player.当前血量 -= B_shanghai
-            if (A_player.当前血量 < 0) {
-                A_player.当前血量 = 0
+            blood -= B_shanghai
+            if (blood < 0) {
+                blood = 0
             }
             B_lingqi += B_player.单段攻击回复灵气
-            msg.push(`【${B_player.名号}】发起了攻击！对【${A_player.名号}】发起了普通攻击，造成伤害${B_shanghai}，【${A_player.名号}】剩余血量${A_player.当前血量}\n||\n回复了${B_player.单段攻击回复灵气}灵气，当前灵气值${B_lingqi}/${B_player.灵气}`)
-            if (A_player.当前血量 <= 0) {
+            msg.push(`【${B_player.名号}】发起了攻击！对【${A_player.名号}】发起了普通攻击，造成伤害${B_shanghai}，【${A_player.名号}】剩余血量${blood}\n||\n回复了${B_player.单段攻击回复灵气}灵气，当前灵气值${B_lingqi}/${B_player.灵气}`)
+            if (blood <= 0) {
                 msg.push(`【${B_player.名号}】造成了致命一击，击败了【${A_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)
                 msg.push(`】${B_player.名号}】赢得了战斗`)
                 break;
             }
         } else {
-            A_player.当前血量 -= B_shanghai * B_player.倍率
+            blood -= B_shanghai * B_player.倍率
             B_lingqi -= B_player.灵气
-            if (A_player.当前血量 < 0) {
-                A_player.当前血量 = 0
+            if (blood < 0) {
+                blood = 0
             }
-            msg.push(`【${B_player.名号}】灵气汇满！消耗了${B_player.灵气}灵气对【${A_player.名号}】发起了终结技${B_player.终结技}，造成伤害${B_shanghai * B_player.倍率}，【${A_player.名号}】剩余血量${A_player.当前血量}，当前灵气值${B_lingqi}/${B_player.灵气}`)
-            if (A_player.当前血量 <= 0) {
+            msg.push(`【${B_player.名号}】灵气汇满！消耗了${B_player.灵气}灵气对【${A_player.名号}】发起了终结技${B_player.终结技}，造成伤害${B_shanghai * B_player.倍率}，【${A_player.名号}】剩余血量${blood}，当前灵气值${B_lingqi}/${B_player.灵气}`)
+            if (blood <= 0) {
                 msg.push(`【${B_player.名号}】造成了致命一击，击败了【${A_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)
                 msg.push(`【${B_player.名号}】赢得了战斗`)
