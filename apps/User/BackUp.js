@@ -317,7 +317,6 @@ export class BackUp extends plugin {
           );
         }
 
-      const timeStr = getTimeStr(backUpList[saveDataNum - 1]);
       return e.reply(`数据库存档已读取`);
     } catch (err) {
       await e.reply(`读取失败，${err}`);
