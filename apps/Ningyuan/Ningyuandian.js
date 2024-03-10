@@ -5,28 +5,34 @@ import data from '../model/XiuxianData.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
 import Show from '../model/show.js';
 
-export class tzzyt extends plugin {
+export class Ningyuandian extends plugin {
     constructor() {
         super({
             /** 功能名称 */
-            name: 'Yunzai_Bot_修仙_ZYT',
+            name: 'Yunzai_Bot_xiuxian_Ningyuan',
             /** 功能描述 */
-            dsc: '镇妖塔',
+            dsc: '凝渊殿',
             event: 'message',
             /** 优先级，数字越小等级越高 */
             priority: 600,
             rule: [
                 {
-                    reg: '^#挑战镇妖塔$',
-                    fnc: 'WorldBossBattle'
+                    reg: '^#挑战凝渊殿$',
+                    fnc: 'tznyd'
+                },
+                {
+                    reg: '^#查看本月仙殷祥祝$',
+                    fnc: 'xyxz'
                 }
             ]
         })
     }
 
+    async xyxz(e) {
+        e.reply("本月仙殷祥祝效果：\n战斗开始时，获得10%攻击力加成，持续3回合，可叠加\n\n道法仙术加成后效果：\n战斗开始时，获得12%攻击力加成，持续5回合，可叠加")
+    }
 
-    //与未知妖物战斗
-    async WorldBossBattle(e) {
+    async tznyd(e) {
         //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
@@ -182,12 +188,6 @@ export class tzzyt extends plugin {
             return true;
         }
     }
-}
-
-//通过暴击伤害返回输出用的文本
-function ifbaoji(baoji) {
-    if (baoji == 1) { return ""; }
-    else { return '触发暴击，'; }
 }
 
 //攻击攻击防御计算伤害

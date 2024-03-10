@@ -665,8 +665,8 @@ export class TreasureCabinet extends plugin {
             if (action.quantity == 0) {
                 action.gailv = 0;
             }
+            e.reply("本次神兽赐福消耗了一次神赐丹效果,剩余" + action.quantity + "次")
         }
-        e.reply("本次神兽赐福消耗了一次神赐丹效果,剩余" + action.quantity + "次")
         await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(action))
         if (random > flag) {
             let randomA = Math.random();

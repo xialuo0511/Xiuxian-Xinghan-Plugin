@@ -92,7 +92,7 @@ export class GuessLanternRiddles extends plugin {
                 e.reply("该图片id不存在,范围[0-" + (File_length2) + "]")
                 return
             }
-            e.reply("你输入的类型不正确,例#自选存档皮肤2*练气(或装备)")
+            e.reply("你输入的类型不正确,例#自选存档皮肤2*练气(或装备\nid可在幻影楼中查询")
             return;
         }
         else {
