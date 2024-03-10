@@ -4,6 +4,8 @@ import data from '../../model/XiuxianData.js'
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import { Gulid } from '../../api/api.js';
+import { Read_player } from '../Xiuxian/xiuxian.js';
 
 export class Ningyuandian extends plugin {
     constructor() {
@@ -40,7 +42,8 @@ export class Ningyuandian extends plugin {
         // }
         if (data.existData("player", e.user_id)) {
             let usr_qq = e.user_id;
-            let player = data.getData("player", usr_qq);
+            usr_qq = await Gulid(usr_qq)
+            let player = await Read_player(usr_qq)
 
 
             if (player.镇妖塔层数 < 3500) {
@@ -140,7 +143,6 @@ export async function xh_zd(A_player, B_player) {
     }
 
     let msg = [];
-    //msg.push(A_player.血量上限)
     while (blood > 0 && B_player.当前血量 > 0) {
         if (cut == 30) {
             msg.push("30回合未战胜魔物，挑战失败！")
