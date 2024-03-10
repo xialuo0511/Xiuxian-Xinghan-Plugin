@@ -52,12 +52,7 @@ export class Ningyuandian extends plugin {
             }
             let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
             let zd_msg
-            try {
-                zd_msg = await xh_zd(player, bosszt)
-            } catch (error) {
-
-            }
-            logger.mark(zd_msg)
+            zd_msg = await xh_zd(player, bosszt)
             let log_data = {
                 log: zd_msg,
             };
