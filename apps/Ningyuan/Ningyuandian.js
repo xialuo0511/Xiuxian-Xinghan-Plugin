@@ -48,7 +48,12 @@ export class Ningyuandian extends plugin {
                 return;
             }
             let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
-            let zd_msg = await xh_zd(player, bosszt)
+            let zd_msg
+            try {
+                zd_msg = await xh_zd(player, bosszt)
+            } catch (error) {
+
+            }
 
             let log_data = {
                 log: zd_msg,
@@ -202,8 +207,6 @@ export async function xh_zd(A_player, B_player) {
                 break;
             }
         }
-
-
         cnt++;
     }
     return msg;
