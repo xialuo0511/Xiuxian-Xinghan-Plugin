@@ -34,10 +34,10 @@ export class Ningyuandian extends plugin {
 
     async tznyd(e) {
         //不开放私聊功能
-        if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
+        // if (!e.isGroup) {
+        //     e.reply('修仙游戏请在群聊中游玩');
+        //     return;
+        // }
         if (data.existData("player", e.user_id)) {
             let usr_qq = e.user_id;
             let player = data.getData("player", usr_qq);
