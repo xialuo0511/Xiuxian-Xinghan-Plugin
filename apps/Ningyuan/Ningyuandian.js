@@ -156,26 +156,26 @@ export async function xh_zd(A_player, B_player) {
         let B_shanghai = Harm(b_atk, A_player.防御, B_player.暴击, B_player.暴击伤害)
         //A对B
         if (A_lingqi < A_player.灵气) {
-            B_player.当前血量 -= A_shanghai
-            if (B_player.当前血量 < 0) {
-                B_player.当前血量 = 0
+            B_player.血量上限 -= A_shanghai
+            if (B_player.血量上限 < 0) {
+                B_player.血量上限 = 0
             }
             A_lingqi += A_player.单段攻击回复灵气
-            msg.push(`【${A_player.名号}】发起了攻击！对【${B_player.名号}】发起了普通攻击，造成伤害${A_shanghai}，【${B_player.名号}】剩余血量${B_player.当前血量}\n||\n回复了${A_player.单段攻击回复灵气}灵气，当前灵气值${A_lingqi}/${A_player.灵气}`)
-            if (B_player.当前血量 <= 0) {
+            msg.push(`【${A_player.名号}】发起了攻击！对【${B_player.名号}】发起了普通攻击，造成伤害${A_shanghai}，【${B_player.名号}】剩余血量${B_player.血量上限}\n||\n回复了${A_player.单段攻击回复灵气}灵气，当前灵气值${A_lingqi}/${A_player.灵气}`)
+            if (B_player.血量上限 <= 0) {
                 msg.push(`【${A_player.名号}】造成了致命一击，击败了【${B_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
                 break;
             }
         } else {
-            B_player.当前血量 -= A_shanghai * A_player.倍率
+            B_player.血量上限 -= A_shanghai * A_player.倍率
             A_lingqi -= A_player.灵气
-            if (B_player.当前血量 < 0) {
-                B_player.当前血量 = 0
+            if (B_player.血量上限 < 0) {
+                B_player.血量上限 = 0
             }
-            msg.push(`【${A_player.名号}】灵气汇满！消耗了${A_player.灵气}灵气对${A_player.名号}发起了终结技${A_player.终结技}，造成伤害${A_shanghai * A_player.倍率}，【${B_player.名号}】剩余血量${B_player.当前血量}，当前灵气值${A_lingqi}/${A_player.灵气}`)
-            if (B_player.当前血量 <= 0) {
+            msg.push(`【${A_player.名号}】灵气汇满！消耗了${A_player.灵气}灵气对${A_player.名号}发起了终结技${A_player.终结技}，造成伤害${A_shanghai * A_player.倍率}，【${B_player.名号}】剩余血量${B_player.血量上限}，当前灵气值${A_lingqi}/${A_player.灵气}`)
+            if (B_player.血量上限 <= 0) {
                 msg.push(`【${A_player.名号}】造成了致命一击，击败了【${B_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
