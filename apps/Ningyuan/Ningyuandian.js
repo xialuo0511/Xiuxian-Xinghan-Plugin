@@ -143,6 +143,8 @@ export async function xh_zd(A_player, B_player) {
     }
 
     let msg = [];
+    msg.push(A_player)
+    msg.push(B_player)
     while (blood > 0 && B_player.当前血量 > 0) {
         if (cut == 30) {
             msg.push("30回合未战胜魔物，挑战失败！")
