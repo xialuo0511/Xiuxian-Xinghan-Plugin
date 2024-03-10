@@ -88,9 +88,9 @@ function Harm(atk, def, bao, baoshang) {
     let x;
     let s = Math.random()
     if (s <= bao) {
-        x = atk * (1 + baoshang) / def
+        x = atk * (1 + baoshang) / (def * 0.5)
     } else {
-        x = atk / def
+        x = atk / (def * 0.5)
     }
     if (x < 1) {
         x = 1
@@ -181,7 +181,7 @@ export async function xh_zd(A_player, B_player) {
                 A_player.当前血量 = 0
             }
             B_lingqi += B_player.单段攻击回复灵气
-            msg.push(`【${B_player.名号}】发起了攻击！对【${A_player.名号}】发起了普通攻击，造成伤害${B_shanghai}，【${A_player.名号}】剩余血量${A_player.当前血量}\n||\n回复了${B_player.单段攻击回复灵气}，当前灵气值${B_lingqi}/${B_player.灵气}`)
+            msg.push(`【${B_player.名号}】发起了攻击！对【${A_player.名号}】发起了普通攻击，造成伤害${B_shanghai}，【${A_player.名号}】剩余血量${A_player.当前血量}\n||\n回复了${B_player.单段攻击回复灵气}灵气，当前灵气值${B_lingqi}/${B_player.灵气}`)
             if (A_player.当前血量 <= 0) {
                 msg.push(`【${B_player.名号}】造成了致命一击，击败了【${A_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)
