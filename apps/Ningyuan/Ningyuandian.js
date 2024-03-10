@@ -93,9 +93,9 @@ function Harm(atk, def, bao, baoshang) {
     let x;
     let s = Math.random()
     if (s <= bao) {
-        x = atk * (1 + baoshang) / def
+        x = atk * (1 + baoshang) / (def * 0.5)
     } else {
-        x = atk / def
+        x = atk / (def * 0.5)
     }
     if (x < 1) {
         x = 1
@@ -123,6 +123,7 @@ export async function xh_zd(A_player, B_player) {
     if (!A_player.倍率) {
         A_player.倍率 = 1.5
     }
+    A_player.当前血量 = A_player.血量上限
     //攻击赋值
     let a_atk = A_player.攻击
     let b_atk = B_player.攻击
