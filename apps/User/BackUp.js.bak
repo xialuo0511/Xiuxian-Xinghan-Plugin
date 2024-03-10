@@ -293,20 +293,9 @@ export class BackUp extends plugin {
       } catch (_) {
         includeBackup = false; // 这个备份不包含redis
       }
-      // [[data, data...], ...]
-      const readDoneTask = needLoad.map((folderName, index) => {
-        dataFname[index] = dataFname[index].filter(fn => fn.endsWith('.json'));
+      
 
-        const readTask = dataFname[index].map(fn =>
-          fs.promises.readFile(`${backUpPath}/${folderName}/${fn}`)
-        );
-        return Promise.all(readTask);
-      });
-      const loadData = await Promise.all(readDoneTask);
-
-      // 导入
-      const finishTask = needLoad.map(async (folderName, index) => {
-
+      
         // 删原本的redis
         if (includeBackup) {
           const originRedisKeys = await redis.keys('xiuxian:*');
@@ -327,9 +316,6 @@ export class BackUp extends plugin {
             })
           );
         }
-
-        return Promise.all(writeTask);
-      });
 
       // 尘埃落定了就提示一下
       await Promise.all(finishTask);

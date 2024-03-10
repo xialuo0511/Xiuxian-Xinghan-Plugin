@@ -317,9 +317,6 @@ export class BackUp extends plugin {
           );
         }
 
-      // 尘埃落定了就提示一下
-      await Promise.all(finishTask);
-
       const timeStr = getTimeStr(backUpList[saveDataNum - 1]);
       return e.reply(`数据库存档已读取：${timeStr}`);
     } catch (err) {
