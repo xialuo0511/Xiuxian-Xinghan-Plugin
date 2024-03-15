@@ -570,7 +570,7 @@ export class Occupation extends plugin {
     async plant_jiesuan(user_id, time, is_random, group_id) {
 
         let usr_qq = user_id;
-        let player = data.getData("player", usr_id);
+        let player = data.getData("player", usr_qq);
         let now_level_id;
 
         if (!isNotNull(player.level_id)) {
@@ -579,8 +579,8 @@ export class Occupation extends plugin {
         let msg = []
         let a = {
         "type": "at",
-            "data": {
-                "qq": usr_id
+        "data": {
+            "qq": usr_qq
             }
         }
         msg.push(a);
