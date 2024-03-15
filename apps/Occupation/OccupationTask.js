@@ -58,7 +58,7 @@ export class OccupationTask extends plugin {
                     }
                 }
                 //最后发送的消息
-                let msg = [segment.at(player_id)];
+                let msg = [];
                 //动作结束时间
                 let end_time = action.end_time;
                 //现在的时间
@@ -78,6 +78,7 @@ export class OccupationTask extends plugin {
                         if (!isNotNull(player.level_id)) {
                             return;
                         }
+                        msg.push(`【${player.名号】`)
 
 
                         let time = parseInt(action.time) / 1000 / 60;
