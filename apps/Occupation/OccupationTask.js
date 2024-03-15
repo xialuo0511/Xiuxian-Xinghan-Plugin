@@ -78,7 +78,7 @@ export class OccupationTask extends plugin {
                         if (!isNotNull(player.level_id)) {
                             return;
                         }
-                        msg.push(`【${player.名号】`)
+                        msg.push(`【${player.名号}】`)
 
 
                         let time = parseInt(action.time) / 1000 / 60;
