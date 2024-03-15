@@ -582,7 +582,8 @@ export class Occupation extends plugin {
             "data": {
                 "qq": usr_qq
             }
-        }];
+        }
+        msg.push(a);
         // var size = this.xiuxianConfigData.plant.size;
         //let plant_amount1 = Math.floor((0.07+Math.random()*0.04)*time);
         //let plant_amount2 = Math.floor((0.07+Math.random()*0.04)*time);
