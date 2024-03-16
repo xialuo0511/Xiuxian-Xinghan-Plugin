@@ -185,11 +185,11 @@ export class Occupation extends plugin {
                 e.reply("出现错误，请联系管理员，错误码fuzhi_01")
                 return
             }
-            console.log(result)
             var dataString = JSON.stringify(result);
             action0 = JSON.parse(dataString);
+            console.log(action0)
         })
-        let action = action0[0]
+        let action = action0
 
 
 
