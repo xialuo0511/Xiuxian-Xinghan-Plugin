@@ -25,8 +25,8 @@ export class XiuxianDatabase extends plugin {
             priority: 400,
             rule: [
                 {
-                    reg: "^#初始化数据库$",
-                    fnc: "chushihua",
+                    reg: '^#初始化数据库$',
+                    fnc: 'chushihua',
                 }
             ],
         });
