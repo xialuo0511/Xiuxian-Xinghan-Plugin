@@ -53,7 +53,7 @@ export class XiuxianDatabase extends plugin {
         let sql = 'CREATE DATABASE if not exists XiuxianDatabase'
         db.query(sql, (err, result) => {
             if (err) throw err
-            e.reply('创建库成功')
+            e.reply(result)
         })
         const db1 = mysql.createPool({
             host: 'localhost',
@@ -65,7 +65,7 @@ export class XiuxianDatabase extends plugin {
         let sql1 = 'create table if not exists fuzhi(usr_id bigint,content text,PRIMARY KEY(id))'
         db1.query(sql1, (err, result) => {
             if (err) throw err
-            e.reply('创建表成功')
+            e.reply(result)
         })
 
 
