@@ -27,6 +27,10 @@ export class XiuxianDatabase extends plugin {
                 {
                     reg: '^#初始化数据库$',
                     fnc: 'chushihua',
+                },
+                {
+                    reg: '^#执行数据库语句.*$',
+                    fnc: 'test',
                 }
             ],
         });
@@ -70,5 +74,22 @@ export class XiuxianDatabase extends plugin {
 
 
         return;
+    }
+
+    async test(e) {
+        if (!this.e.isMaster) {
+            return;
+        }
+        let thing = e.msg.replace("#执行数据库语句", '');
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: this.databaseConfigData.Database.username,
+            password: this.databaseConfigData.Database.password,
+            database: 'XiuxianDatabase'
+        })
+        db1.query(thing, (err, result) => {
+            if (err) throw err
+            e.reply(result.toString())
+        })
     }
 }
