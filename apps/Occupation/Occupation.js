@@ -249,11 +249,11 @@ export class Occupation extends plugin {
             e.reply(`您还没有副职哦`);
             return;
         }
-        console.log(action)
         let a, b, c;
         a = action.occupation;
         b = action.occupation_exp;
         c = action.occupation_level;
+        console.log(a + "1" + b + '1' + c)
         const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
         db.query(sql2, (err, result) => {
             if (err) {
