@@ -192,16 +192,16 @@ export class Occupation extends plugin {
             action = action0[0]
         })
 
-
-
-
-        if (!action.isNotNull) {
+        if (action.usr_id == usr_qq) {
             let sql = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
             db.query(sql)
         } else {
             const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
             db.query(sql2)
         }
+
+
+
 
         player.occupation = occupation;
         player.occupation_level = 1;
