@@ -58,7 +58,8 @@ export class XiuxianDatabase extends plugin {
         const db1 = mysql.createPool({
             host: 'localhost',
             user: this.databaseConfigData.Database.username,
-            password: this.databaseConfigData.Database.password
+            password: this.databaseConfigData.Database.password,
+            database: 'XiuxianDatabase'
         })
 
         let sql1 = 'create table if not exists fuzhi(usr_id bigint,content text,PRIMARY KEY(id))'
