@@ -37,6 +37,7 @@ export class XiuxianDatabase extends plugin {
         if (!this.e.isMaster) {
             return;
         }
+        e.reply('test')
         //创建连接
         const db = mysql.createConnection({
             host: 'localhost',
