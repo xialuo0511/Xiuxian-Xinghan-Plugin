@@ -189,7 +189,7 @@ export class Occupation extends plugin {
             action0 = JSON.parse(dataString);
             console.log(action0)
         })
-        let action = action0
+        let action = action0[0]
 
 
 
