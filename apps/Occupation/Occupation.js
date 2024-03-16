@@ -235,6 +235,7 @@ export class Occupation extends plugin {
         let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
         let action0
         let action = {}
+        let a, b, c;
         db.query(sql1, (err, result) => {
             if (err) {
             }
@@ -242,6 +243,9 @@ export class Occupation extends plugin {
             action0 = JSON.parse(dataString);
             console.log(action0[0])
             action = action0[0]
+            a = action.occupation;
+            b = action.occupation_exp;
+            c = action.occupation_level;
         })
 
         if (!action.usr_id == usr_qq) {
@@ -249,11 +253,6 @@ export class Occupation extends plugin {
             e.reply(`您还没有副职哦`);
             return;
         }
-        let a, b, c;
-        a = action.occupation;
-        b = action.occupation_exp;
-        c = action.occupation_level;
-        console.log(a + "1" + b + '1' + c)
         const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
         db.query(sql2, (err, result) => {
             if (err) {
