@@ -7,6 +7,7 @@ import { existplayer, Write_player, isNotNull, exist_najie_thing, Add_najie_thin
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
+import mysql from "mysql"
 
 import { zd_battle } from "../Battle/Battle.js"
 /**
@@ -112,6 +113,7 @@ export class Occupation extends plugin {
             ]
         });
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+        this.databaseConfigData = config.getConfig("database", "database");
     }
 
     async chose_occupation(e) {
@@ -170,9 +172,22 @@ export class Occupation extends plugin {
             e.reply(`恭喜${player.名号}转职为[${occupation}]`);
             return;
         }
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":fuzhi");//副职
+
+        const db = mysql.createPool({
+            host: 'localhost',
+            user: this.databaseConfigData.Database.username,
+            password: this.databaseConfigData.Database.password,
+            database: 'XiuxianDatabase'
+        })
+        let sql1 = `select * from users where usr_id=${usr_qq};`
+        let action = db.query(sql1, (err, result) => {
+            if (err) {
+                e.reply("出现错误，请联系管理员，错误码fuzhi_01")
+                return
+            }
+        })
         action = await JSON.parse(action);
-        if (action == null) {
+        if (!action) {
             action = [];
         }
         var arr = {
@@ -181,7 +196,14 @@ export class Occupation extends plugin {
             职业等级: player.occupation_level,
         }
         action = arr;
-        await redis.set("xiuxian:player:" + usr_qq + ":fuzhi", JSON.stringify(action));
+        const sql2 = `update users set usr_id=${usr_qq} where content=${arr};`
+        db.query(sql2, (err, result) => {
+            if (err) {
+                e.reply("出现错误，请联系管理员，错误码fuzhi_02")
+                return
+            }
+        })
+
         player.occupation = occupation;
         player.occupation_level = 1;
         player.occupation_exp = 0;
