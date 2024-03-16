@@ -576,7 +576,7 @@ export class Occupation extends plugin {
         if (!isNotNull(player.level_id)) {
             return;
         }
-        let msg = [segment.at(usr_qq)];
+        let msg = [segment.at(user_id)]
         // var size = this.xiuxianConfigData.plant.size;
         //let plant_amount1 = Math.floor((0.07+Math.random()*0.04)*time);
         //let plant_amount2 = Math.floor((0.07+Math.random()*0.04)*time);
@@ -733,41 +733,42 @@ export class Occupation extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let action = await redis.get('xiuxian:player:' + 10 + ':biguang');
-        action = await JSON.parse(action);
         let usr_qq = e.user_id;
-        let i = 0;
+        //闭关丹药
+        let action1 = await redis.get('xiuxian:player:' + usr_qq + ':biguang');
+        action1 = await JSON.parse(action1);
+        //仙缘丹药
+        let action2 = await redis.get('xiuxian:player:' + usr_qq + ':xianyuan');
+        action2 = await JSON.parse(action2);
+        //炼神丹药
+        let action3 = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+        action3 = await JSON.parse(action3);
+        //炼神丹药
+        let action4 = await redis.get('xiuxian:player:' + usr_qq + ':shenci');
+        action4 = await JSON.parse(action4);
         let m = '丹药效果:';
-        for (i = 0; i < action.length; i++) {
-            if (action[i].qq == usr_qq) {
-                if (action[i].ped > 0) {
-                    m += `\n仙缘丹药力${action[i].beiyong1 * 100}%药效${action[i].ped}次`;
-                }
-                if (action[i].lianti > 0) {
-                    m += `\n炼神丹药力${action[i].beiyong4 * 100}%药效${action[i].lianti
-                        }次`;
-                }
-                if (action[i].beiyong2 > 0) {
-                    m += `\n神赐丹药力${action[i].beiyong3 * 100}% 药效${action[i].beiyong2
-                        }次`;
-                }
-                if (action[i].biguan > 0) {
-                    m += `\n辟谷丹药力${action[i].biguanxl * 100}%药效${action[i].biguan
-                        }次`;
-                }
-                let player = await data.getData('player', usr_qq);
-                if (player.islucky > 0) {
-                    m += `\n福源丹药力${player.addluckyNo * 100}%药效${player.islucky}次`;
-                }
-                if (player.breakthrough == true) {
-                    m += `\n破境丹生效中`;
-                }
-                e.reply(m);
-            }
+        if (action1 && action1.biguan > 0) {
+            m += `\n辟谷丹药力${action1.biguanxl * 100}%药效剩余${action1.biguan}次`;
+        }
+        if (action2 && action2.ped > 0) {
+            m += `\n仙缘丹药力${action2.xianyuangl * 100}%药效剩余${action2.ped}次`;
+        }
+        if (action3 && action3.lianti > 0) {
+            m += `\n炼神丹药力${action3.lianshen * 100}%药效${action3.lianti}次`;
+        }
+        if (action4 && action4.quantity > 0) {
+            m += `\n神赐丹药力${action4.shenci * 100}% 药效${action4.quantity}次`;
         }
         let player = await data.getData('player', usr_qq);
         if (player.islucky > 0) {
-            m += `\n福源丹药力${player.addluckyNo * 100}%药效${player.islucky}次`;
+            m += `\n福源丹药力${player.addluckyNo * 100}%药效剩余${player.islucky}次`;
+        }
+        if (player.breakthrough == true) {
+            m += `\n破境丹生效中`;
+        }
+        e.reply(m);
+        if (player.islucky > 0) {
+            m += `\n福源丹药力${player.addluckyNo * 100}%药效剩余${player.islucky}次`;
         }
         if (player.breakthrough == true) {
             m += `\n破境丹生效中`;

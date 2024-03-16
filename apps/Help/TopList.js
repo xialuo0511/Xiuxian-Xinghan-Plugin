@@ -1,11 +1,14 @@
+
+
 //插件加载
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { get_ranking_power_img, get_ranking_money_img } from '../ShowImeg/showData.js'
 import { Read_player, Read_najie } from '../Xiuxian/xiuxian.js'
-import { existplayer, Get_xiuwei, sortBy, sleep,ForwardMsg,isNotNull } from '../Xiuxian/xiuxian.js'
+import { existplayer, Get_xiuwei, sortBy, sleep, ForwardMsg, isNotNull } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
+import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid, verc } from '../../api/api.js'
 
 /**
  * 所有榜单
@@ -45,9 +48,10 @@ export class TopList extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) { 
+        if (!ifexistplay) {
             return;
         }
         let msg = [
@@ -63,43 +67,48 @@ export class TopList extends plugin {
             file = file.replace(".json", "");
             playerList.push(file);
         }
-        var i=0;
+        var i = 0;
         for (let player_id of playerList) {
             //(攻击+防御*0.8+生命*0.5)*暴击率=理论战力
+            player_id = await Gulid(player_id);
             let player = await Read_player(player_id);
             //计算并保存到数组
-            let power=(player.攻击*0.9+player.防御*1.1+player.血量上限*0.6)+(player.暴击率*player.攻击*0.5);
-            if(player.level_id<42){
+            let power = (player.攻击 * 0.9 + player.防御 * 1.1 + player.血量上限 * 0.6) + (player.暴击率 * player.攻击 * 0.5);
+            if (player.level_id < 42) {
                 //跳过凡人
                 continue;
             }
             power = Math.trunc(power);
             temp[i] = {
-                "power":power,
-                "qq":player_id,
-                "name":player.名号,
-                "level_id":player.level_id
-               }
+                "power": power,
+                "qq": player_id,
+                "name": player.名号,
+                "level_id": player.level_id
+            }
             i++;
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                temp.findIndex((item) => item.qq === obj.qq) === index
+        );
         //根据力量排序
-        temp.sort(sortBy("power"));
-        console.log(temp);
+        unique.sort(sortBy("power"));
+        console.log(unique);
         var length;
-        if(temp.length>10){
+        if (unique.length > 10) {
             //只要十个
-            length=10;
+            length = 10;
         }
-        else{
-            length=temp.length;
+        else {
+            length = unique.length;
         }
         var j;
-        for(j=0;j<length;j++){
+        for (j = 0; j < length; j++) {
             msg.push(
-                "第"+(j+1)+"名"+
-                "\n道号："+temp[j].name+
-                "\n战力："+temp[j].power+
-                "\nQQ:"+temp[j].qq);
+                "第" + (j + 1) + "名" +
+                "\n道号：" + unique[j].name +
+                "\n战力：" + unique[j].power +
+                "\nQQ:" + unique[j].qq);
         }
         await ForwardMsg(e, msg);
         return;
@@ -111,9 +120,10 @@ export class TopList extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) { 
+        if (!ifexistplay) {
             return;
         }
         let msg = [
@@ -129,43 +139,48 @@ export class TopList extends plugin {
             file = file.replace(".json", "");
             playerList.push(file);
         }
-        var i=0;
+        var i = 0;
         for (let player_id of playerList) {
             //(攻击+防御+生命*0.5)*暴击率=理论战力
+            player_id = await Gulid(player_id);
             let player = await Read_player(player_id);
             //计算并保存到数组
-            let power=(player.攻击+player.防御*0.8+player.血量上限*0.6)*(player.暴击率+1);
-            if(player.level_id>=42){
+            let power = (player.攻击 + player.防御 * 0.8 + player.血量上限 * 0.6) * (player.暴击率 + 1);
+            if (player.level_id >= 42) {
                 //跳过仙人的记录
                 continue;
             }
             power = Math.trunc(power);
             temp[i] = {
-                "power":power,
-                "qq":player_id,
-                "name":player.名号,
-                "level_id":player.level_id
-               }
+                "power": power,
+                "qq": player_id,
+                "name": player.名号,
+                "level_id": player.level_id
+            }
             i++;
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                temp.findIndex((item) => item.qq === obj.qq) === index
+        );
         //根据力量排序
-        temp.sort(sortBy("power"));
-        console.log(temp);
+        unique.sort(sortBy("power"));
+        console.log(unique);
         var length;
-        if(temp.length>10){
+        if (unique.length > 10) {
             //只要十个
-            length=10;
+            length = 10;
         }
-        else{
-            length=temp.length;
+        else {
+            length = unique.length;
         }
         var j;
-        for(j=0;j<length;j++){
+        for (j = 0; j < length; j++) {
             msg.push(
-                "第"+(j+1)+"名"+
-                "\n道号："+temp[j].name+
-                "\n战力："+temp[j].power+
-                "\nQQ:"+temp[j].qq);
+                "第" + (j + 1) + "名" +
+                "\n道号：" + unique[j].name +
+                "\n战力：" + unique[j].power +
+                "\nQQ:" + unique[j].qq);
         }
         await ForwardMsg(e, msg);
         return;
@@ -176,7 +191,8 @@ export class TopList extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { return; }
 
@@ -187,10 +203,10 @@ export class TopList extends plugin {
         let temp = [];
         for (var i = 0; i < File_length; i++) {
             let this_qq = File[i].replace(".json", '');
-            this_qq = parseInt(this_qq);
+            this_qq = await Gulid(this_qq);
             let player = await Read_player(this_qq);
             let sum_exp = await Get_xiuwei(this_qq);
-            if (!isNotNull(player.level_id)){
+            if (!isNotNull(player.level_id)) {
                 e.reply("请先#同步信息");
                 return;
             }
@@ -203,14 +219,18 @@ export class TopList extends plugin {
                 qq: this_qq
             }
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                temp.findIndex((item) => item.qq === obj.qq) === index
+        );
         //排序
-        temp.sort(sortBy("总修为"));
-        usr_paiming = temp.findIndex(temp => temp.qq === usr_qq) + 1;
+        unique.sort(sortBy("总修为"));
+        usr_paiming = unique.findIndex(unique => unique.qq === usr_qq) + 1;
         let Data = [];
         if (File_length > 10) { File_length = 10; }//最多显示前十
         for (var i = 0; i < File_length; i++) {
-            temp[i].名次 = i + 1;
-            Data[i] = temp[i];
+            unique[i].名次 = i + 1;
+            Data[i] = unique[i];
         }
         let thisplayer = await data.getData("player", usr_qq);
         let img = await get_ranking_power_img(e, Data, usr_paiming, thisplayer);
@@ -227,7 +247,8 @@ export class TopList extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let usr_qq = e.user_id;
+        let nowid = e.user_id.toString().replace('qg_', '')
+        let usr_qq = await Gulid(nowid);
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) { return; }
         let usr_paiming;
@@ -237,7 +258,7 @@ export class TopList extends plugin {
         let temp = [];
         for (var i = 0; i < File_length; i++) {
             let this_qq = File[i].replace(".json", '');
-            this_qq = parseInt(this_qq);
+            this_qq = await Gulid(this_qq);
             let player = await Read_player(this_qq);
             let najie = await Read_najie(this_qq);
             let lingshi = player.灵石 + najie.灵石;
@@ -249,14 +270,18 @@ export class TopList extends plugin {
                 qq: this_qq
             }
         }
+        const unique = temp.filter(
+            (obj, index) =>
+                temp.findIndex((item) => item.qq === obj.qq) === index
+        );
         //排序
-        temp.sort(sortBy("灵石"));
+        unique.sort(sortBy("灵石"));
         let Data = [];
-        usr_paiming = temp.findIndex(temp => temp.qq === usr_qq) + 1;
+        usr_paiming = unique.findIndex(unique => unique.qq === usr_qq) + 1;
         if (File_length > 10) { File_length = 10; }//最多显示前十
         for (var i = 0; i < File_length; i++) {
-            temp[i].名次 = i + 1;
-            Data[i] = temp[i];
+            unique[i].名次 = i + 1;
+            Data[i] = unique[i];
         }
         await sleep(500);
         let thisplayer = await data.getData("player", usr_qq);

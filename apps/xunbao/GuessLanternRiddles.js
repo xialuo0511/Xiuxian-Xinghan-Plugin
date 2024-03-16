@@ -92,7 +92,7 @@ export class GuessLanternRiddles extends plugin {
                 e.reply("该图片id不存在,范围[0-" + (File_length2) + "]")
                 return
             }
-            e.reply("你输入的类型不正确,例#自选存档皮肤2*练气(或装备)")
+            e.reply("你输入的类型不正确,例#自选存档皮肤2*练气(或装备\nid可在幻影楼中查询")
             return;
         }
         else {
@@ -103,9 +103,10 @@ export class GuessLanternRiddles extends plugin {
             if (type == "装备") {
                 kamian = data.daoju_list.find(item => item.id == photo && item.type == "幻影卡面_装备");
             }
-            let player = await Read_player(usr_qq)
-            player.练气皮肤 = kamian.id
-            await Write_player(usr_qq, player)
+            if (kamian.type2 == "限定") {
+                e.reply("限定卡面不允许兑换！")
+                return;
+            }
             await Add_najie_thing(usr_qq, kamian.name, "道具", 1)
             await Add_najie_thing(usr_qq, "虚无幻影", "道具", -1)
             e.reply("兑换" + kamian.name + "成功")

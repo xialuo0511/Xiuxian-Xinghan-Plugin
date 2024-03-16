@@ -645,35 +645,29 @@ export class TreasureCabinet extends plugin {
         let flag = 0.5;
         //根据好感度获取概率
         let i = 0
-        let action = await redis.get("xiuxian:player:" + 10 + ":biguang");
+        let action = await redis.get("xiuxian:player:" + usr_qq + ":shenci");
         action = await JSON.parse(action);
-        if (!action) {
-            action = {}
-        }
-        for (i = 0; i < action.length; i++) {
-            if (action[i].qq == usr_qq) {
-                if (action[i].beiyong2 > 0) {
-                    action[i].beiyong2--
+        if (action) {
+            if (action.quantity > 0) {
+                action.quantity--
 
-                }
-                let up1 = action[i].beiyong3
-                flag = 0.7 - up1;
-                if (player.favorability > 1000) {
-                    flag = 0.1 - up1;
-                } else if (player.favorability > 500) {
-                    flag = 0.3 - up1;
-                } else if (player.favorability > 200) {
-                    flag = 0.5 - up1;
-                }
-                console.log(flag);
-
-                if (action[i].beiyong2 == 0) {
-                    action[i].beiyong3 = 0;
-                }
-                console.log(action[i])
             }
+            let up1 = action.gailv
+            flag = 0.7 - up1;
+            if (player.favorability > 1000) {
+                flag = 0.1 - up1;
+            } else if (player.favorability > 500) {
+                flag = 0.3 - up1;
+            } else if (player.favorability > 200) {
+                flag = 0.5 - up1;
+            }
+
+            if (action.quantity == 0) {
+                action.gailv = 0;
+            }
+            e.reply("本次神兽赐福消耗了一次神赐丹效果,剩余" + action.quantity + "次")
         }
-        await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action))
+        await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(action))
         if (random > flag) {
             let randomA = Math.random();
             let res = 1;

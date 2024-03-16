@@ -452,13 +452,19 @@ export async function Read_najie(usr_qq) {
     let dir = path.join(`${__PATH.najie_path}/${usr_qq}.json`);
     let najie = fs.readFileSync(dir, 'utf8', (err, data) => {
         if (err) {
+            console.log(usr_qq)
             console.log(err)
             return "error";
         }
         return data;
     })
     //将字符串数据转变成数组格式
-    najie = JSON.parse(najie);
+    try {
+        najie = JSON.parse(najie);
+    } catch (error) {
+        console.log(usr_qq)
+    }
+
     return najie;
 }
 

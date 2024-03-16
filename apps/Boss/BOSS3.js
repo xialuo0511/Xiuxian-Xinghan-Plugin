@@ -569,14 +569,14 @@ async function InitWorldBoss(e) {
         e.reply("你们甚至没有化神以上的高手，雷电将军不是你们能染指的，继续努力再来吧！");
         return -1;
     }
-    if (player_quantity < 4) {
+    if (player_quantity < 10) {
         e.reply("天道:发现人数过少，正在进行削弱");
         player_quantity = 1
     }
     let X = AverageDamage * 0.01;
     // Bot.logger.mark(`[雷电将军] 化神玩家总数：${player_quantity}`);
     // Bot.logger.mark(`[雷电将军] 生成基数:${X}`);
-    let Health = Math.trunc(X * 500 * player_quantity * 10);//血量要根据人数来
+    let Health = Math.trunc(X * 500 * player_quantity ** 3);//血量要根据人数来
     let Attack = Math.trunc(X * 120);
     let Defence = Math.trunc(X);
     let Reward = Math.trunc(X * (fairyNums > 7 ? 2 : 4) * (player_quantity > 20 ? 20 : player_quantity));
@@ -691,19 +691,22 @@ async function GetAverageDamage() {
     let fairyNums = 0;
     let TotalPlayer = 0;
     for (var i = 0; i < File.length; i++) {
-        let this_qq = File[i].replace(".json", '');
-        this_qq = parseInt(this_qq);
-        let player = await data.getData("player", this_qq);
-        let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        if (level_id >= 17) {
-            temp[TotalPlayer] = parseInt(player.攻击);
+        try {
+            let this_qq = File[i].replace(".json", '');
+            this_qq = parseInt(this_qq);
+            let player = await data.getData("player", this_qq);
+            let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
+            if (level_id >= 17) {
+                temp[TotalPlayer] = parseInt(player.攻击)
+                TotalPlayer++;
+            }
+            if (level_id > 33) {
+                fairyNums++;
+            }
+        } catch (error) {
 
-            //Bot.logger.mark(`[雷电将军] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
-            TotalPlayer++;
         }
-        if (level_id > 33) {
-            fairyNums++;
-        }
+
     }
     //排序
     temp.sort(function (a, b) { return b - a });

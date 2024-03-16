@@ -106,6 +106,22 @@ export class PlayerControl extends plugin {
             }
         }
 
+        let msg = ""
+        let biguan_action = await redis.get('xiuxian:player:' + usr_qq + ':biguang');
+        biguan_action = JSON.parse(biguan_action);
+        if (biguan_action) {
+            if (biguan_action.biguan > 0) {
+                msg += "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次(仅闭关获得收益后才会消耗次数)\n"
+            }
+        }
+        let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+        lianshen_action = JSON.parse(lianshen_action);
+        if (lianshen_action) {
+            if (lianshen_action.lianti > 0) {
+                msg += "本次闭关消耗一次炼神之力(仅闭关获得收益后才会消耗次数)\n"
+            }
+        }
+
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
         let arr = {
             "action": "闭关",//动作
@@ -129,8 +145,8 @@ export class PlayerControl extends plugin {
         }
 
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
-        await redis.set("xiuxian:player:10:biguang", JSON.stringify(arr));//redis设置动作
-        e.reply(`现在开始闭关${time}分钟,两耳不闻窗外事了`);
+
+        e.reply(msg + `现在开始闭关${time}分钟,两耳不闻窗外事了`);
 
         return true;
 
@@ -421,7 +437,6 @@ export class PlayerControl extends plugin {
                 xueqi = Math.trunc(rand * time);
                 if (transformation == "血气") {
                     msg.push("\n本次闭关顿悟,受到炼神之力修正,额外增加血气:" + xueqi);
-
                 } else {
                     msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
                 }
@@ -458,18 +473,37 @@ export class PlayerControl extends plugin {
         await this.setFileValue(usr_qq, blood * time, "当前血量");
 
         //给出消息提示
-        if (transformation == "血气") {
-            await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);//丹药修正
-            msg.push("\n受到炼神之力的影响,增加血气:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
-        }
-        else {
-            await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
-            if (is_random) {
+        await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
+        msg.push("\n增加修为:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
 
-                msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
-            } else {
-                msg.push("\n增加修为:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
+        let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+        lianshen_action = JSON.parse(lianshen_action);
+        if (lianshen_action) {
+            if (lianshen_action.lianti > 0) {
+                await this.setFileValue(usr_qq, (xiuwei * time + other_xiuwei) * lianshen_action.lianshen, transformation);
+                msg.push("本次闭关消耗一次炼神之力,获得额外血气" + (xiuwei * time + other_xiuwei) * lianshen_action.lianshen)
+                lianshen_action.lianti -= 1
             }
+        }
+        await redis.set(
+            'xiuxian:player:' + usr_qq + ':lianshen',
+            JSON.stringify(lianshen_action)
+        );
+
+
+
+        let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
+        biguan_action = JSON.parse(biguan_action)
+        if (biguan_action) {
+            if (biguan_action.biguan > 0) {
+                biguan_action.biguan -= 1
+                if (biguan_action.biguan == 0) {
+                    msg.push("本次闭关后，辟谷丹丹药药效已过。")
+                    let type = "修炼效率提升"
+                    await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action.biguanxl, type);
+                }
+            }
+            await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
         }
 
         if (group_id) {
@@ -600,7 +634,7 @@ export class PlayerControl extends plugin {
      */
     async setFileValue(user_qq, num, type) {
         let user_data = data.getData("player", user_qq);
-        let current_num = user_data[type];//当前灵石数量
+        let current_num = user_data[type];
         let new_num = current_num + num;
         if (type == "当前血量" && new_num > user_data.血量上限) {
             new_num = user_data.血量上限;//治疗血量需要判读上限
@@ -613,5 +647,4 @@ export class PlayerControl extends plugin {
 
 
 }
-
 
