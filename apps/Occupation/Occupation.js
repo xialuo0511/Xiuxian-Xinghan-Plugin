@@ -191,7 +191,7 @@ export class Occupation extends plugin {
 
 
 
-        if (action == undefined) {
+        if (!action) {
             let sql = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
             db.query(sql)
         } else {
@@ -238,7 +238,7 @@ export class Occupation extends plugin {
             action = result[0]
         })
 
-        if (action == null) {
+        if (!action) {
             action = [];
             e.reply(`您还没有副职哦`);
             return;
