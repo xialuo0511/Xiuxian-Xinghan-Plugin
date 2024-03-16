@@ -191,14 +191,14 @@ export class Occupation extends plugin {
 
 
         if (action) {
-            let sql = `insert into fuzhi(usr_id,occupation,occupation_exp,occupation_level) VALUES (${usr_qq},${player.occupation},${player.occupation_exp},${player.occupation_level})`
+            let sql = `insert into fuzhi(usr_id,occupation,occupation_exp,occupation_level) VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
             db.query(sql, (err, result) => {
                 if (err) {
                     e.reply('出现错误，请联系管理员，错误码fuzhi_02')
                 }
             })
         } else {
-            const sql2 = `update fuzhi set occupation=${player.occupation},occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
+            const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
             db.query(sql2, (err, result) => {
                 if (err) {
                     e.reply("出现错误，请联系管理员，错误码fuzhi_03")
