@@ -45,11 +45,11 @@ export class XiuxianDatabase extends plugin {
             user: this.databaseConfigData.Database.username,
             password: this.databaseConfigData.Database.password
         })
-        //connect 连接数据库
-        db.connect(err => {
-            if (err) throw err;
-            e.reply('mysql connected ......')
-        })
+        // //connect 连接数据库
+        // db.connect(err => {
+        //     if (err) throw err;
+        //     e.reply('mysql connected ......')
+        // })
         //创建数据库
         let sql = 'CREATE DATABASE XiuxianDatabase'
         db.query(sql, (err, result) => {
