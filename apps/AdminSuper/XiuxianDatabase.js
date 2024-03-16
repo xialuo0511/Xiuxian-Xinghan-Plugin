@@ -51,7 +51,7 @@ export class XiuxianDatabase extends plugin {
         //     e.reply('mysql connected ......')
         // })
         //创建数据库
-        let sql = 'CREATE DATABASE XiuxianDatabase'
+        let sql = 'CREATE DATABASE if not exists XiuxianDatabase'
         db.query(sql, (err, result) => {
             if (err) throw err
             e.reply('创建库成功')
