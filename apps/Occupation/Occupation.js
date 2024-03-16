@@ -233,11 +233,15 @@ export class Occupation extends plugin {
             database: 'XiuxianDatabase'
         })
         let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
-        let action
+        let action0
+        let action = {}
         db.query(sql1, (err, result) => {
             if (err) {
             }
-            action = result[0]
+            var dataString = JSON.stringify(result);
+            action0 = JSON.parse(dataString);
+            console.log(action0[0])
+            action = action0[0]
         })
 
         if (!action) {
