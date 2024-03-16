@@ -180,7 +180,7 @@ export class Occupation extends plugin {
         })
         let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
         let action0
-        let action
+        let action = {}
         db.query(sql1, (err, result) => {
             if (err) {
                 e.reply("出现错误，请联系管理员，错误码fuzhi_01")
@@ -195,7 +195,7 @@ export class Occupation extends plugin {
 
 
 
-        if (!action.usr_id) {
+        if (!action.isNotNull) {
             let sql = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
             db.query(sql)
         } else {
