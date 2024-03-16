@@ -187,7 +187,6 @@ export class Occupation extends plugin {
             }
             console.log(result)
             action = result[0]
-            action = JSON.parse(action);
         })
 
 
@@ -244,7 +243,6 @@ export class Occupation extends plugin {
             e.reply(`您还没有副职哦`);
             return;
         }
-        action = await JSON.parse(action);
         let a, b, c;
         a = action.occupation;
         b = action.occupation_exp;
