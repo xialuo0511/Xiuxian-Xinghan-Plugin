@@ -244,7 +244,7 @@ export class Occupation extends plugin {
             action = action0[0]
         })
 
-        if (!action) {
+        if (!action.usr_id == usr_qq) {
             action = [];
             e.reply(`您还没有副职哦`);
             return;
