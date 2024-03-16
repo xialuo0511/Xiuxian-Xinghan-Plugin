@@ -27,10 +27,19 @@ export class XiuxianDatabase extends plugin {
                 {
                     reg: '^#初始化数据库$',
                     fnc: 'chushihua',
+                },
+                {
+                    reg: '^#tiaos$',
+                    fnc: 'tiaos',
                 }
             ],
         });
         this.databaseConfigData = config.getConfig("database", "database");
+    }
+
+    async tiaos(e) {
+        e.reply('1')
+        return;
     }
 
     async chushihua(e) {
@@ -38,6 +47,7 @@ export class XiuxianDatabase extends plugin {
             return;
         }
         e.reply('test')
+        var mysql = require('mysql');
         //创建连接
         const db = mysql.createConnection({
             host: 'localhost',
