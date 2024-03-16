@@ -196,7 +196,7 @@ export class Occupation extends plugin {
         const sql2 = `update fuzhi set occupation=${player.occupation},occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
         db.query(sql2, (err, result) => {
             if (err) {
-                e.reply("出现错误，请联系管理员，错误码fuzhi_02")
+                e.reply(err)
                 return
             }
         })
