@@ -232,27 +232,42 @@ export class Occupation extends plugin {
         }
 
         let player = await Read_player(usr_qq);
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":fuzhi");//副职
-        action = await JSON.parse(action);
+        const db = mysql.createPool({
+            host: 'localhost',
+            user: this.databaseConfigData.Database.username,
+            password: this.databaseConfigData.Database.password,
+            database: 'XiuxianDatabase'
+        })
+        let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
+        let action
+        db.query(sql1, (err, result) => {
+            if (err) {
+            }
+            action = result
+        })
+
         if (action == null) {
             action = [];
             e.reply(`您还没有副职哦`);
             return;
         }
+        action = await JSON.parse(action);
         let a, b, c;
-        a = action.职业名;
-        b = action.职业经验;
-        c = action.职业等级;
-        action.职业名 = player.occupation;
-        action.职业经验 = player.occupation_exp;
-        action.职业等级 = player.occupation_level;
+        a = action.occupation;
+        b = action.occupation_exp;
+        c = action.occupation_level;
+        const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
+        db.query(sql2, (err, result) => {
+            if (err) {
+                e.reply("出现错误，请联系管理员，错误码fuzhi_03")
+                return
+            }
+        })
         player.occupation = a;
         player.occupation_exp = b;
         player.occupation_level = c;
-        await redis.set("xiuxian:player:" + usr_qq + ":fuzhi", JSON.stringify(action));
-        console.log(action);
         await Write_player(usr_qq, player);
-        e.reply(`恭喜${player.名号}转职为[${player.occupation}],您的副职为${action.职业名}`);
+        e.reply(`恭喜${player.名号}转职为[${player.occupation}]`);
         return;
     }
 
