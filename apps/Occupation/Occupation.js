@@ -188,6 +188,7 @@ export class Occupation extends plugin {
             }
             action = result
         })
+        console.log(action)
 
 
         if (action) {
