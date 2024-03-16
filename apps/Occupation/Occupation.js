@@ -179,7 +179,7 @@ export class Occupation extends plugin {
             password: this.databaseConfigData.Database.password,
             database: 'XiuxianDatabase'
         })
-        let sql1 = `select * from users where usr_id=${usr_qq};`
+        let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
         let action
         db.query(sql1, (err, result) => {
             if (err) {
@@ -201,7 +201,7 @@ export class Occupation extends plugin {
             职业等级: player.occupation_level,
         }
         action = arr;
-        const sql2 = `update users set usr_id=${usr_qq} where content=${arr};`
+        const sql2 = `update fuzhi set usr_id=${usr_qq} where content=${arr};`
         db.query(sql2, (err, result) => {
             if (err) {
                 //e.reply("出现错误，请联系管理员，错误码fuzhi_02")
