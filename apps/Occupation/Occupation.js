@@ -151,7 +151,6 @@ export class Occupation extends plugin {
             return
         }
         let thing_name = occupation + "转职凭证"
-        console.log(thing_name)
         let thing_class = "道具"
         let n = -1
         let thing_quantity = await exist_najie_thing(usr_qq, thing_name, thing_class);
@@ -191,7 +190,7 @@ export class Occupation extends plugin {
         console.log(action)
 
 
-        if (action) {
+        if (action == null) {
             let sql = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
             db.query(sql, (err, result) => {
                 if (err) {
