@@ -191,7 +191,7 @@ export class Occupation extends plugin {
 
 
         if (action) {
-            let sql = `insert into fuzhi(usr_id,occupation,occupation_exp,occupation_level) VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
+            let sql = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
             db.query(sql, (err, result) => {
                 if (err) {
                     e.reply('出现错误，请联系管理员，错误码fuzhi_02')
