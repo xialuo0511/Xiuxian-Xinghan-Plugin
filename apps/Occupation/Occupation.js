@@ -191,21 +191,26 @@ export class Occupation extends plugin {
 
 
         if (action) {
-            action = await JSON.parse(action);
+            let sql = `insert into fuzhi(usr_id,occupation,occupation_exp,occupation_level) VALUES (${usr_qq},${player.occupation},${player.occupation_exp},${player.occupation_level})`
+            db.query(sql, (err, result) => {
+                if (err) {
+                    e.reply('出现错误，请联系管理员，错误码fuzhi_02')
+                }
+            })
+        } else {
+            const sql2 = `update fuzhi set occupation=${player.occupation},occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
+            db.query(sql2, (err, result) => {
+                if (err) {
+                    e.reply("出现错误，请联系管理员，错误码fuzhi_03")
+                    return
+                }
+            })
         }
-        const sql2 = `update fuzhi set occupation=${player.occupation},occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
-        db.query(sql2, (err, result) => {
-            if (err) {
-                e.reply(err)
-                return
-            }
-        })
 
         player.occupation = occupation;
         player.occupation_level = 1;
         player.occupation_exp = 0;
         await Write_player(usr_qq, player);
-        console.log(action);
         e.reply(`恭喜${player.名号}转职为[${occupation}]`);
         return;
 
