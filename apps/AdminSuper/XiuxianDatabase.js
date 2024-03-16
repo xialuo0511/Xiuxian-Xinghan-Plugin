@@ -49,7 +49,7 @@ export class XiuxianDatabase extends plugin {
         e.reply('test')
         var mysql = require('mysql');
         //创建连接
-        const db = mysql.createConnection({
+        const db = mysql.create({
             host: 'localhost',
             user: this.databaseConfigData.Database.username,
             password: this.databaseConfigData.Database.password
@@ -63,8 +63,16 @@ export class XiuxianDatabase extends plugin {
         let sql = 'CREATE DATABASE XiuxianDatabase'
         db.query(sql, (err, result) => {
             if (err) throw err
-            e.reply(result)
+            e.reply('创建库成功')
         })
+
+        let sql1 = 'create table if not exists fuzhi(usr_id bigint,content text,PRIMARY KEY(id))'
+        db.query(sql1, (err, result) => {
+            if (!err) {
+                e.reply('创建表成功')
+            }
+        })
+
 
         return;
     }
