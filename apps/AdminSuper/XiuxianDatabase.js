@@ -37,7 +37,6 @@ export class XiuxianDatabase extends plugin {
         if (!this.e.isMaster) {
             return;
         }
-        e.reply('test')
         var mysql = require('mysql');
         //创建连接
         const db = mysql.createPool({
@@ -59,9 +58,8 @@ export class XiuxianDatabase extends plugin {
 
         let sql1 = 'create table if not exists fuzhi(usr_id bigint,content text,PRIMARY KEY(id))'
         db.query(sql1, (err, result) => {
-            if (!err) {
-                e.reply('创建表成功')
-            }
+            if (err) throw err
+            e.reply('创建表成功')
         })
 
 
