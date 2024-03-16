@@ -183,7 +183,7 @@ export class Occupation extends plugin {
         let action
         db.query(sql1, (err, result) => {
             if (err) {
-                //e.reply("出现错误，请联系管理员，错误码fuzhi_01")
+                e.reply("出现错误，请联系管理员，错误码fuzhi_01")
                 return
             }
             action = result
@@ -204,7 +204,7 @@ export class Occupation extends plugin {
         const sql2 = `update fuzhi set usr_id=${usr_qq} where content=${arr};`
         db.query(sql2, (err, result) => {
             if (err) {
-                //e.reply("出现错误，请联系管理员，错误码fuzhi_02")
+                e.reply("出现错误，请联系管理员，错误码fuzhi_02")
                 return
             }
         })
