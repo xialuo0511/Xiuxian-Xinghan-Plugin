@@ -1,6 +1,16 @@
-# 绝云间修仙2.1.0 【青天千古，碧海追逐】
+# 绝云间修仙2.3.0 【仙韵绕春华】
 ## QQ游玩反馈群：906061358
 ## 有问题可反馈issues
+
+### 更新注意！2.3版本更新后，需要安装mysql支持
+> Yunzai-Bot/目录下执行  
+```
+npm install mysql
+
+```
+
+
+
 ## 玩家攻略：
 [修仙攻略](https://docs.qq.com/doc/DSUhqZWdpZXJuUndZ?&u=4bd0757f64094c48b02d7cfc4eaeb44b)  
 [异界攻略](https://docs.qq.com/doc/DU1pmVFNReVlvdEJP)
