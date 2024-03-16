@@ -33,7 +33,7 @@ export class XiuxianDatabase extends plugin {
         this.databaseConfigData = config.getConfig("database", "database");
     }
 
-    async chushihua() {
+    async chushihua(e) {
         if (!this.e.isMaster) {
             return;
         }
