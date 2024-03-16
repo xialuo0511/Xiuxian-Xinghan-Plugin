@@ -245,7 +245,7 @@ export class Occupation extends plugin {
         db.query(sql1, (err, result) => {
             if (err) {
             }
-            action = result
+            action = result[0]
         })
 
         if (action == null) {
