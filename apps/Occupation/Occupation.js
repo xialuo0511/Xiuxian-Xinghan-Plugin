@@ -179,15 +179,17 @@ export class Occupation extends plugin {
             database: 'XiuxianDatabase'
         })
         let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
-        let action
+        let action0
         db.query(sql1, (err, result) => {
             if (err) {
                 e.reply("出现错误，请联系管理员，错误码fuzhi_01")
                 return
             }
             console.log(result)
-            action = result[0]
+            var dataString = JSON.stringify(results);
+            action0 = JSON.parse(dataString);
         })
+        let action = action0[0]
 
 
 
