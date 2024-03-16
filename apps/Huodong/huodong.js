@@ -22,22 +22,22 @@ export class huodong extends plugin {
             /** 优先级，数字越小等级越高 */
             priority: 600,
             rule: [
-                {
-                    reg: '^#活动商店$',
-                    fnc: 'shop'
-                },
-                {
-                    reg: '^#愿力兑换(.*)*(.*)$',
-                    fnc: 'duihuan'
-                },
-                {
-                    reg: '^#许愿.*$',
-                    fnc: 'xuyuan'
-                },
-                {
-                    reg: '^#制作霄灯.*$',
-                    fnc: 'hecheng'
-                }
+                // {
+                //     reg: '^#活动商店$',
+                //     fnc: 'shop'
+                // },
+                // {
+                //     reg: '^#愿力兑换(.*)*(.*)$',
+                //     fnc: 'duihuan'
+                // },
+                // {
+                //     reg: '^#许愿.*$',
+                //     fnc: 'xuyuan'
+                // },
+                // {
+                //     reg: '^#制作霄灯.*$',
+                //     fnc: 'hecheng'
+                // }
             ]
         })
     }

@@ -37,7 +37,7 @@ export class DSC extends plugin {
             return;
         }
 
-        if (await data.existData("player", e.user_id)) {
+        if (data.existData("player", e.user_id)) {
             let CurrentPlayerAttributes = await data.getData("player", e.user_id);
             if (CurrentPlayerAttributes.当前血量 <= 100000) {
                 e.reply("身体没有状态 下去送死？");

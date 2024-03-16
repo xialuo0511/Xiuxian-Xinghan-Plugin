@@ -19,6 +19,7 @@ import {
   Add_血气,
 } from '../Xiuxian/xiuxian.js';
 import { get_random_talent } from '../Xiuxian/xiuxian.js';
+import { Gulid } from '../../api/api.js';
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
@@ -392,6 +393,7 @@ export class Battle extends plugin {
     }
     let atItem = e.message.filter(item => item.type === 'at');
     let B = atItem[0].qq; //后手
+    B = await Gulid(B);
 
     if (A == B) {
       e.reply('你还跟自己修炼上了是不是?');
@@ -585,8 +587,7 @@ export async function zd_battle(AA_player, BB_player) {
       }
     }
     if (cnt != yuansu.cnt) {
-      msg.push(`第${cnt2 + 1}回合：
-${B_player.名号}无法造成伤害`);
+      msg.push(`第${cnt2 + 1}回合：\n${B_player.名号}无法造成伤害`);
       cnt += 2;
       continue;
     }
@@ -617,8 +618,7 @@ ${B_player.名号}无法造成伤害`);
     }
     if (cnt % 2 == 0) A_player.防御 = AA_player.防御;
     else A_player.防御 = BB_player.防御;
-    msg.push(`第${cnt2 + 1}回合：
-${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号}剩余血量${B_player.当前血量}`);
+    msg.push(`第${cnt2 + 1}回合：\n${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号}剩余血量${B_player.当前血量}`);
     cnt++;
   }
   if (cnt % 2 == 0) {

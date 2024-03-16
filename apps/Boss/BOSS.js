@@ -575,7 +575,7 @@ async function InitWorldBoss(e) {
     let X = AverageDamage * 0.01;
     //Bot.logger.mark(`[散兵] 化神玩家总数：${player_quantity}`);
     //Bot.logger.mark(`[散兵] 生成基数:${X}`);
-    let Health = Math.trunc(X * 400 * player_quantity * 2);//血量要根据人数来
+    let Health = Math.trunc(X * 400 * player_quantity ** 2);//血量要根据人数来
     let Attack = Math.trunc(X * 120);
     let Defence = Math.trunc(X);
     let Reward = Math.trunc(X * (fairyNums > 7 ? 2 : 4) * (player_quantity > 20 ? 20 : player_quantity));
@@ -690,17 +690,21 @@ async function GetAverageDamage() {
     let fairyNums = 0;
     let TotalPlayer = 0;
     for (var i = 0; i < File.length; i++) {
-        let this_qq = File[i].replace(".json", '');
-        this_qq = parseInt(this_qq);
-        let player = await data.getData("player", this_qq);
-        let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        if (level_id >= 17) {
-            temp[TotalPlayer] = parseInt(player.攻击);
-            //Bot.logger.mark(`[散兵] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
-            TotalPlayer++;
-        }
-        if (level_id > 33) {
-            fairyNums++;
+        try {
+            let this_qq = File[i].replace(".json", '');
+            this_qq = parseInt(this_qq);
+            let player = await data.getData("player", this_qq);
+            let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
+            if (level_id >= 17) {
+                temp[TotalPlayer] = parseInt(player.攻击);
+                //Bot.logger.mark(`[散兵] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
+                TotalPlayer++;
+            }
+            if (level_id > 33) {
+                fairyNums++;
+            }
+        } catch (error) {
+
         }
     }
     //排序
