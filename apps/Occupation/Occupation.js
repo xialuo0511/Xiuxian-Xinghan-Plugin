@@ -186,8 +186,11 @@ export class Occupation extends plugin {
                 return
             }
         })
-        action = await JSON.parse(action);
-        if (!action) {
+
+
+        if (action) {
+            action = await JSON.parse(action);
+        } else {
             action = [];
         }
         var arr = {
