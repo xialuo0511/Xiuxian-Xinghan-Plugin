@@ -249,6 +249,7 @@ export class Occupation extends plugin {
             e.reply(`您还没有副职哦`);
             return;
         }
+        console.log(action)
         let a, b, c;
         a = action.occupation;
         b = action.occupation_exp;
