@@ -91,5 +91,6 @@ export class XiuxianDatabase extends plugin {
             if (err) throw err
             e.reply(result.toString())
         })
+        return;
     }
 }
