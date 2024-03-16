@@ -192,16 +192,8 @@ export class Occupation extends plugin {
 
         if (action) {
             action = await JSON.parse(action);
-        } else {
-            action = [];
         }
-        var arr = {
-            职业名: player.occupation,
-            职业经验: player.occupation_exp,
-            职业等级: player.occupation_level,
-        }
-        action = arr;
-        const sql2 = `update fuzhi set usr_id=${usr_qq} where content=${arr};`
+        const sql2 = `update fuzhi set usr_id=${usr_qq} where occupation=${player.occupation},occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level};`
         db.query(sql2, (err, result) => {
             if (err) {
                 e.reply("出现错误，请联系管理员，错误码fuzhi_02")
@@ -214,7 +206,7 @@ export class Occupation extends plugin {
         player.occupation_exp = 0;
         await Write_player(usr_qq, player);
         console.log(action);
-        e.reply(`恭喜${player.名号}转职为[${occupation}],您的副职为${arr.职业名}`);
+        e.reply(`恭喜${player.名号}转职为[${occupation}]`);
         return;
 
     }

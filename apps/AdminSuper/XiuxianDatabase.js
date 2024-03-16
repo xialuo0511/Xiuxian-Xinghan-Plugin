@@ -66,7 +66,7 @@ export class XiuxianDatabase extends plugin {
             database: 'XiuxianDatabase'
         })
 
-        let sql1 = 'create table if not exists fuzhi(usr_id bigint,content text,PRIMARY KEY(usr_id))'
+        let sql1 = 'create table if not exists fuzhi(usr_id bigint,occupation text,occupation_exp bigint,occupation_level bigint,PRIMARY KEY(usr_id))'
         db1.query(sql1, (err, result) => {
             if (err) throw err
             e.reply("初始化数据表完成")
