@@ -82,7 +82,7 @@ export class SecretPlaceplusTask extends plugin {
         let msg = [`【${player.名号}】`];
         //有秘境状态:这个直接结算即可
         if (action.Place_actionplus == '0') {
-          // end_time = end_time - action.time;
+          end_time = end_time - action.time;
           //时间过了
           if (now_time > end_time) {
             let weizhi = action.Place_address;
