@@ -49,7 +49,7 @@ export class Ningyuandian extends plugin {
             password: this.databaseConfigData.Database.password,
             database: 'XiuxianDatabase'
         })
-        let sql2 = `create table if not exists ningyuandian(usr_id bigint,this_level_time bigint,this_level bigint,last_challenged_time bigint,PRIMARY KEY(usr_id))`
+        let sql2 = `create table if not exists ningyuandian(usr_id bigint,this_level_time bigint,this_level bigint,level_1_round int default 0,level_2_round int default 0,level_3_round int default 0,level_4_round int default 0,level_5_round int default 0,level_6_round int default 0,level_7_round int default 0,level_8_round int default 0,last_challenged_time bigint,PRIMARY KEY(usr_id))`
         db1.query(sql2, (err, result) => {
             if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
             e.reply("初始化凝渊殿数据表完成")
