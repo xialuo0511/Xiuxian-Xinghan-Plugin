@@ -257,14 +257,15 @@ export class Occupation extends plugin {
                     e.reply("出现错误，请联系管理员，错误码fuzhi_03")
                     return
                 }
+                player.occupation = a;
+                player.occupation_exp = b;
+                player.occupation_level = c;
+                Write_player(usr_qq, player);
+                e.reply(`恭喜${player.名号}转职为[${player.occupation}]`);
+                return;
             })
-            player.occupation = a;
-            player.occupation_exp = b;
-            player.occupation_level = c;
-            Write_player(usr_qq, player);
-            e.reply(`恭喜${player.名号}转职为[${player.occupation}]`);
-            return;
         })
+
 
 
     }
