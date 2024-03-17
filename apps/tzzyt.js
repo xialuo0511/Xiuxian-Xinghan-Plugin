@@ -32,7 +32,7 @@ export class tzzyt extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        if (await data.existData("player", e.user_id)) {
+        if (data.existData("player", e.user_id)) {
             let CurrentPlayerAttributes = await data.getData("player", e.user_id);
             let usr_qq = e.user_id;
             let player = data.getData("player", usr_qq);
@@ -41,23 +41,28 @@ export class tzzyt extends plugin {
             let Attack = 0;
             let Defence = 0;
             let Reward = 0;
+            let cengshu = 5
             if (ZYTcs < 100) {
                 Health = 33000 * ZYTcs + 10000;
                 Attack = 15000 * ZYTcs + 10000;
                 Defence = 24000 * ZYTcs + 10000;
                 Reward = 260 * ZYTcs + 100;
-            }
-            else if (ZYTcs >= 100 && ZYTcs < 200) {
+            } else if (ZYTcs >= 100 && ZYTcs < 200) {
                 Health = 50000 * ZYTcs + 10000;
                 Attack = 22000 * ZYTcs + 10000;
                 Defence = 36000 * ZYTcs + 10000;
                 Reward = 360 * ZYTcs + 1000;
-            }
-            else if (ZYTcs >= 200) {
+            } else if (ZYTcs >= 200 && ZYTcs <= 3000) {
                 Health = 90000 * ZYTcs + 10000;
                 Attack = 40000 * ZYTcs + 10000;
                 Defence = 70000 * ZYTcs + 10000;
                 Reward = 700 * ZYTcs + 1000;
+            } else if (ZYTcs > 3000) {
+                Health = 900000 * ZYTcs + 100000;
+                Attack = 400000 * ZYTcs + 100000;
+                Defence = 700000 * ZYTcs + 100000;
+                Reward = 7000 * ZYTcs + 10000;
+                cengshu = 10
             }
             let bosszt = {
                 "Health": Health,
@@ -70,10 +75,10 @@ export class tzzyt extends plugin {
                 "Reward": Reward,
             };
 
-            if (player.镇妖塔层数 >= 3000) {
-                CurrentPlayerAttributes.镇妖塔层数 = 3000;
-                e.reply('镇妖塔层数最多3000');
-                await data.setData("player", e.user_id, CurrentPlayerAttributes);
+            if (player.镇妖塔层数 >= 3500) {
+                CurrentPlayerAttributes.镇妖塔层数 = 3500;
+                e.reply('镇妖塔层数最多3500');
+                data.setData("player", e.user_id, CurrentPlayerAttributes);
                 return;
             }
             var Time = 2;
@@ -159,10 +164,10 @@ export class tzzyt extends plugin {
             e.reply(img);
             await redis.set("xiuxian:player:" + usr_qq + "CD", now_Time);
             if (bosszt.Health == 0) {
-                CurrentPlayerAttributes.镇妖塔层数 += 5;
+                CurrentPlayerAttributes.镇妖塔层数 += cengshu;
                 CurrentPlayerAttributes.灵石 += Reward;
                 CurrentPlayerAttributes.当前血量 += Reward * 21;
-                e.reply([segment.at(e.user_id), `\n恭喜通过此层镇妖塔，层数+5！增加灵石${Reward}回复血量${Reward * 21}`]);
+                e.reply([segment.at(e.user_id), `\n恭喜通过此层镇妖塔，层数+${cengshu}！增加灵石${Reward}回复血量${Reward * 21}`]);
                 await data.setData("player", e.user_id, CurrentPlayerAttributes);
             }
             if (CurrentPlayerAttributes.当前血量 == 0 || CurrentPlayerAttributes.当前血量 < 0) {
