@@ -246,26 +246,27 @@ export class Occupation extends plugin {
             a = action.occupation;
             b = action.occupation_exp;
             c = action.occupation_level;
+            if (!action.usr_id == usr_qq) {
+                action = [];
+                e.reply(`您还没有副职哦`);
+                return;
+            }
+            const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
+            db.query(sql2, (err, result) => {
+                if (err) {
+                    e.reply("出现错误，请联系管理员，错误码fuzhi_03")
+                    return
+                }
+            })
+            player.occupation = a;
+            player.occupation_exp = b;
+            player.occupation_level = c;
+            Write_player(usr_qq, player);
+            e.reply(`恭喜${player.名号}转职为[${player.occupation}]`);
+            return;
         })
 
-        if (!action.usr_id == usr_qq) {
-            action = [];
-            e.reply(`您还没有副职哦`);
-            return;
-        }
-        const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
-        db.query(sql2, (err, result) => {
-            if (err) {
-                e.reply("出现错误，请联系管理员，错误码fuzhi_03")
-                return
-            }
-        })
-        player.occupation = a;
-        player.occupation_exp = b;
-        player.occupation_level = c;
-        await Write_player(usr_qq, player);
-        e.reply(`恭喜${player.名号}转职为[${player.occupation}]`);
-        return;
+
     }
 
     async plant(e) {
