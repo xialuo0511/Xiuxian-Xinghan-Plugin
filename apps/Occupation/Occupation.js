@@ -243,14 +243,15 @@ export class Occupation extends plugin {
             action0 = JSON.parse(dataString);
             console.log(action0[0])
             action = action0[0]
-            a = action.occupation;
-            b = action.occupation_exp;
-            c = action.occupation_level;
+
             if (!action) {
                 action = [];
                 e.reply(`您还没有副职哦`);
                 return;
             }
+            a = action.occupation;
+            b = action.occupation_exp;
+            c = action.occupation_level;
             const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
             db.query(sql2, (err, result) => {
                 if (err) {
