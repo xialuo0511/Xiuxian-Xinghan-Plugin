@@ -614,7 +614,7 @@ export class Occupation extends plugin {
         if (!isNotNull(player.level_id)) {
             return;
         }
-        let msg = [segment.at(user_id)]
+        let msg = [`【${player.名号}】`]
         // var size = this.xiuxianConfigData.plant.size;
         //let plant_amount1 = Math.floor((0.07+Math.random()*0.04)*time);
         //let plant_amount2 = Math.floor((0.07+Math.random()*0.04)*time);
@@ -702,7 +702,7 @@ export class Occupation extends plugin {
         if (!isNotNull(player.level_id)) {
             return;
         }
-        let msg = [segment.at(usr_qq)];
+        let msg = [`【${player.名号}】`]
         var size = this.xiuxianConfigData.mine.size;
         let mine_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);
         let mine_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);
@@ -1644,7 +1644,7 @@ export class Occupation extends plugin {
         if (!isNotNull(player.level_id)) {
             return;
         }
-        let msg = [segment.at(usr_qq)];
+        let msg = [`【${player.名号}】`]
         //返回数目
         let shoulie_amount = Math.floor((1.6 + Math.random() * 0.35) * time * 12);
         //职业经验
