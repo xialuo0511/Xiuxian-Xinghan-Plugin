@@ -275,7 +275,7 @@ export class OccupationTask extends plugin {
                         if (!isNotNull(player.level_id)) {
                             return;
                         }
-                        let msg = [segment.at(player_id)];
+                        let msg = [`【${player.名号}】`];
                         //返回数目
                         let shoulie_amount = Math.floor((1.6 + Math.random() * 0.35) * time * 12);
                         //职业经验
