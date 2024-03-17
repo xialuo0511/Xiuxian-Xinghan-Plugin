@@ -187,26 +187,28 @@ export class Occupation extends plugin {
                 return
             }
             var dataString = JSON.stringify(result);
+            console.log(dataString)
             action0 = JSON.parse(dataString);
             console.log(action0[0])
             action = action0[0]
+            let sql2 = ""
+            if (action) {
+                sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
+            } else {
+                sql2 = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
+            }
+            db.query(sql2)
+
+
+
+            player.occupation = occupation;
+            player.occupation_level = 1;
+            player.occupation_exp = 0;
+            Write_player(usr_qq, player);
+            e.reply(`恭喜${player.名号}转职为[${occupation}]`);
+            return;
         })
-        let sql2 = ""
-        if (action) {
-            sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
-        } else {
-            sql2 = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
-        }
-        db.query(sql2)
 
-
-
-        player.occupation = occupation;
-        player.occupation_level = 1;
-        player.occupation_exp = 0;
-        await Write_player(usr_qq, player);
-        e.reply(`恭喜${player.名号}转职为[${occupation}]`);
-        return;
 
     }
     async chose_occupation2(e) {
