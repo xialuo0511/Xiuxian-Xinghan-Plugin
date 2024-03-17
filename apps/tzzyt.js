@@ -58,10 +58,10 @@ export class tzzyt extends plugin {
                 Defence = 70000 * ZYTcs + 10000;
                 Reward = 700 * ZYTcs + 1000;
             } else if (ZYTcs > 3000) {
-                Health = 900000 * ZYTcs + 100000;
-                Attack = 400000 * ZYTcs + 100000;
-                Defence = 700000 * ZYTcs + 100000;
-                Reward = 7000 * ZYTcs + 10000;
+                Health = 100000 * ZYTcs + 15000;
+                Attack = 50000 * ZYTcs + 15000;
+                Defence = 90000 * ZYTcs + 15000;
+                Reward = 900 * ZYTcs + 1500;
                 cengshu = 10
             }
             let bosszt = {
