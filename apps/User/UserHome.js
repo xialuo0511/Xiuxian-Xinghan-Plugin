@@ -1828,7 +1828,7 @@ export class UserHome extends plugin {
                         if (daomu > 0.1 && daomu <= 0.15) {
                             jyp += 20
                         }
-                        if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.2)) {
+                        if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.25)) {
                             jyp += 30
                         }
                         if (daomu > 0.25 && daomu <= 0.3) {
@@ -1891,7 +1891,7 @@ export class UserHome extends plugin {
                         e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有20个经验瓶"])
                         return
                     }
-                    if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.2)) {
+                    if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.25)) {
                         await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
                         await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
                         e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有30个经验瓶"])
@@ -2331,7 +2331,7 @@ export class UserHome extends plugin {
                 player.灵根 = await get_random_talent();
                 data.setData("player", usr_qq, player);
                 await player_efficiency(usr_qq);
-                e.reply([segment.at(usr_qq), `  服用成功,剩余 ${thing_name}数量: ${x - 1}，新的灵根为 "${player.灵根.type}"：${player.灵根.name}`, "\n可以在【#我的练气】中查看"]);
+                e.reply([`【${player.名号}】服用成功,剩余 ${thing_name}数量: ${x - 1}，新的灵根为 "${player.灵根.type}"：${player.灵根.name}`, "\n可以在【#我的练气】中查看"]);
                 return;
             } else if (thing_name == "隐身水") {
                 e.reply(`该道具无法在纳戒中消耗,在打劫非空闲群友时自动消耗`);
