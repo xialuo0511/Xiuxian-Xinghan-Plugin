@@ -198,7 +198,7 @@ export class UserHome extends plugin {
             return;
         }
         //特殊兑换码调整
-        if (data.duihuan[i].name.includes("版本参与测试")) {
+        if (data.duihuan[i].name.includes("存档补偿")) {
             for (var o = 0; o < data.duihuan[i].qq.length; o++) {
                 if (usr_qq == data.duihuan[i].qq[o].name) {
                     action.push(name);
@@ -208,11 +208,11 @@ export class UserHome extends plugin {
                         await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
                         msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
                     }
-                    e.reply("感谢您参与测试！恭喜获得:" + msg);
+                    e.reply("非常抱歉游戏bug影响了你的体验！特此奉上:" + msg);
                     return;
                 }
             }
-            e.reply("您不是测试服成员，无法使用此兑换码");
+            e.reply("您不符合此兑换码的兑换条件");
             return;
         }
         if (data.duihuan[i].name.includes("渡劫补偿")) {
