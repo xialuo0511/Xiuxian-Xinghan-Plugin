@@ -2146,10 +2146,12 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
         if (B_lin == yuansu[1] && random3 > 0.5) {
             msg.push(A_player.名号 + "使用了冰元素战技,触发了冻结反应" + B_player.名号 + "被冻结了,下一回合无法出手")
             donjie = true
+            huihe = true
         }
         if (equipment.武器.fumo == "水" && random3 > 0.5) {
             msg.push(A_player.名号 + "使用了冰元素战技,水属性附魔武器与其产生共鸣,触发了冻结反应" + B_player.名号 + "被冻结了,下一回合无法出手")
             donjie = true
+            huihe = true
         }
         //雷冰(50%)
         let random4 = Math.random()
