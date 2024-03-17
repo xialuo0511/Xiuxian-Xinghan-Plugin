@@ -79,7 +79,7 @@ export class SecretPlaceplusTask extends plugin {
         //用户信息
         let player = await Read_player(player_id);
         //最后发送的消息
-        let msg = [`【${player.名号}】`];
+        let msg = [];
         //有秘境状态:这个直接结算即可
         if (action.Place_actionplus == '0') {
           end_time = end_time - action.time;
