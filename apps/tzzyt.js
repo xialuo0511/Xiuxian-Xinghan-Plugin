@@ -167,8 +167,8 @@ export class tzzyt extends plugin {
                 CurrentPlayerAttributes.镇妖塔层数 += cengshu;
                 CurrentPlayerAttributes.灵石 += Reward;
                 CurrentPlayerAttributes.当前血量 += Reward * 21;
-                e.reply([segment.at(e.user_id), `\n恭喜通过此层镇妖塔，层数+${cengshu}！增加灵石${Reward}回复血量${Reward * 21}`]);
-                await data.setData("player", e.user_id, CurrentPlayerAttributes);
+                e.reply([`【${player.名号}】恭喜通过此层镇妖塔，层数+${cengshu}！增加灵石${Reward}回复血量${Reward * 21}`]);
+                data.setData("player", e.user_id, CurrentPlayerAttributes);
             }
             if (CurrentPlayerAttributes.当前血量 == 0 || CurrentPlayerAttributes.当前血量 < 0) {
                 CurrentPlayerAttributes.当前血量 = 0;
