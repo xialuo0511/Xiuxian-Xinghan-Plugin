@@ -25,13 +25,40 @@ export class Ningyuandian extends plugin {
                 {
                     reg: '^#查看本月仙殷祥祝$',
                     fnc: 'xyxz'
+                },
+                {
+                    reg: '^#初始化凝渊殿$',
+                    fnc: 'csh'
                 }
             ]
+        })
+        this.databaseConfigData = config.getConfig("database", "database");
+        this.ningyuandianConfigData = config.getConfig("ningyuandian", "ningyuandian");
+    }
+
+
+    async csh(e) {
+        if (!this.e.isMaster) {
+            return;
+        }
+        var mysql = require('mysql');
+        //创建连接
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: this.databaseConfigData.Database.username,
+            password: this.databaseConfigData.Database.password,
+            database: 'XiuxianDatabase'
+        })
+        let sql2 = `create table if not exists ningyuandian(usr_id bigint,this_level_time bigint,this_level bigint,last_challenged_time bigint,PRIMARY KEY(usr_id))`
+        db1.query(sql2, (err, result) => {
+            if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
+            e.reply("初始化凝渊殿数据表完成")
         })
     }
 
     async xyxz(e) {
         e.reply("本月仙殷祥祝效果：\n战斗开始时，获得10%攻击力加成，持续3回合\n\n道法仙术加成后效果：\n战斗开始时，获得12%攻击力加成，持续5回合")
+        return;
     }
 
     async tznyd(e) {
