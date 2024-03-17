@@ -492,7 +492,7 @@ export class SecretPlaceplusTask extends plugin {
             } else {
               return;
             }
-            msg.push(`\n【${player.名号}】` + last_msg + fyd_msg);
+            msg.push(`【${player.名号}】` + last_msg + fyd_msg);
             let arr = action;
             if (arr.cishu == 1) {
               //把状态都关了
