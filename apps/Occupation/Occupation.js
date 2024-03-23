@@ -1819,7 +1819,7 @@ export class Occupation extends plugin {
         }
         var action0 = JSON.stringify(action)
         action = JSON.parse(action0);//转为json格式数据
-        return action;
+        return action[0];
     }
 
     /**
