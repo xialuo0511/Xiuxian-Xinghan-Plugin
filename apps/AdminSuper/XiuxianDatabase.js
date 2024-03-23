@@ -54,7 +54,6 @@ export class XiuxianDatabase extends plugin {
             if (err) throw err
             e.reply("初始化数据库完成")
         })
-        db.end()
         const db1 = mysql.createPool({
             host: 'localhost',
             user: this.databaseConfigData.Database.username,
