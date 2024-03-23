@@ -100,6 +100,28 @@ export async function Write_Gulid(Gulid) {
   return;
 }
 
+export async function sql_run(query) {
+  var mysql = require('mysql');
+  let databaseConfigData = config.getConfig("database", "database");
+  //创建连接
+  const db1 = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+  })
+  let sql2 = query
+  db1.query(sql2, (err, result) => {
+    if (err || !result) {
+      db1.end();
+      return false;
+    }
+    db1.end();
+    return result;
+  })
+
+}
+
 export async function fstadd_Gulid(A, B, key) {
   let Gulid;
   try {

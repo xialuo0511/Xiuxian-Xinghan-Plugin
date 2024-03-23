@@ -8,6 +8,7 @@ import { Read_player, __PATH } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
 import mysql from "mysql"
+import { sql_run } from '../../api/api.js'
 
 import { zd_battle } from "../Battle/Battle.js"
 /**
@@ -195,7 +196,7 @@ export class Occupation extends plugin {
             if (action) {
                 sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
             } else {
-                sql2 = `INSERT INTO fuzhi VALUES (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
+                sql2 = `insert into fuzhi values (${usr_qq},'${player.occupation}',${player.occupation_exp},${player.occupation_level})`
             }
             db.query(sql2)
 
@@ -318,12 +319,12 @@ export class Occupation extends plugin {
             //不设置时间默认30分钟
             time = 30;
         }
-
+        let sql1 = `select * from action where usr_id=${usr_qq};`
         //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        if (action != null) {
-            //人物有动作查询动作结束时间
+        let action = await sql_run(sql1)
+        if (action) {
+            action = JSON.stringify(action)
+            action = JSON.parse(JSON)
             let action_end_time = action.end_time;
             let now_time = new Date().getTime();
             if (now_time <= action_end_time) {
@@ -333,28 +334,20 @@ export class Occupation extends plugin {
                 return;
             }
         }
-
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let arr = {
-            "action": "采药",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "plant": "0",//采药-开启
-            "shutup": "1",//闭关状态-开启
-            "working": "1",//降妖状态-关闭
-            "Place_action": "1",//秘境状态---关闭
-            "Place_actionplus": "1",//沉迷---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "xijie": "1", //洗劫状态开启
-            "mine": "1",//采矿-开启
-
-        };
+        let sql2 = `select * from action where usr_id=${usr_qq};`
+        let sql3
+        let select1 = await sql_run(sql2)
+        let group_id = 0
         if (e.isGroup) {
-            arr.group_id = e.group_id
+            group_id = e.group_id
         }
-
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
+        if (select1) {
+            sql3 = `update action set action=采药,end_time=${new Date().getTime() + action_time},time=${action_time},group_id=${group_id},action_open=1 where usr_id=${usr_qq};`
+        } else {
+            sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${group_id},${action_time}) `
+        }
+        await sql_run(sql3)
         e.reply(`现在开始采药${time}分钟`);
 
         return true;

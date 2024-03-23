@@ -1,7 +1,6 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import { createRequire } from "module"
 import config from "../../model/Config.js"
-import mysql from "mysql"
 import fs from "fs"
 
 
@@ -27,10 +26,6 @@ export class XiuxianDatabase extends plugin {
                 {
                     reg: '^#初始化数据库$',
                     fnc: 'chushihua',
-                },
-                {
-                    reg: '^#执行数据库语句.*$',
-                    fnc: 'test',
                 }
             ],
         });
@@ -54,43 +49,25 @@ export class XiuxianDatabase extends plugin {
         //     e.reply('mysql connected ......')
         // })
         //创建数据库
-        let sql = 'CREATE DATABASE if not exists XiuxianDatabase'
+        let sql = 'CREATE DATABASE if not exists xiuxiandatabase'
         db.query(sql, (err, result) => {
             if (err) throw err
             e.reply("初始化数据库完成")
         })
-        const db1 = mysql.createPool({
-            host: 'localhost',
-            user: this.databaseConfigData.Database.username,
-            password: this.databaseConfigData.Database.password,
-            database: 'XiuxianDatabase'
-        })
 
         let sql1 = 'create table if not exists fuzhi(usr_id bigint,occupation text,occupation_exp bigint,occupation_level bigint,PRIMARY KEY(usr_id))'
-        db1.query(sql1, (err, result) => {
+        db.query(sql1, (err, result) => {
             if (err) throw err
-            e.reply("初始化数据表完成")
+            e.reply("初始化数据表1完成")
         })
 
-
-        return;
-    }
-
-    async test(e) {
-        if (!this.e.isMaster) {
-            return;
-        }
-        let thing = e.msg.replace("#执行数据库语句", '');
-        const db1 = mysql.createPool({
-            host: 'localhost',
-            user: this.databaseConfigData.Database.username,
-            password: this.databaseConfigData.Database.password,
-            database: 'XiuxianDatabase'
-        })
-        db1.query(thing, (err, result) => {
+        let sql2 = 'create table if not exists action(usr_id bigint,action text,end_time bigint,time bigint,group_id bigint,action_open int,PRIMARY KEY(usr_id))'
+        db.query(sql2, (err, result) => {
             if (err) throw err
-            e.reply(result.toString())
+            e.reply("初始化数据表2完成")
         })
+
+
         return;
     }
 }
