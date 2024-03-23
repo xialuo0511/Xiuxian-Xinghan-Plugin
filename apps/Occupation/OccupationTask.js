@@ -7,6 +7,7 @@ import fs from "node:fs"
 
 import { isNotNull, Read_player } from "../Xiuxian/xiuxian.js"
 import { Add_najie_thing, Add_职业经验 } from '../Xiuxian/xiuxian.js'
+import { sql_run } from '../../api/api.js'
 
 /**
  * 定时任务
