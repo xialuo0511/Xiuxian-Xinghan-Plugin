@@ -34,273 +34,290 @@ export class OccupationTask extends plugin {
 
     async OccupationTask() {
         let sql1 = `select * from action where action_zhiye=1;`
-        let action_list0 = await sql_run(sql1)
-        console.log(action_list0)
-        if (!action_list0) { return }
-        var datas = JSON.stringify(action_list0)
-        let action_list = JSON.parse(datas)
-        for (let player_action of action_list) {
-            let push_address;//消息推送地址
-            let is_group = false;//是否推送到群
-            if (player_action.group_id != 0) {
-                is_group = true;
-                push_address = action.group_id;
+        var mysql = require('mysql');
+        let databaseConfigData = config.getConfig("database", "database");
+        //创建连接
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: databaseConfigData.Database.username,
+            password: databaseConfigData.Database.password,
+            database: 'xiuxiandatabase'
+        })
+        let sql2 = query
+        db1.query(sql2, (err, result) => {
+            if (err) {
+                console.log(err)
+                return
             }
-            //最后发送的消息
-            let msg = [];
-            //动作结束时间
-            let end_time = player_action.end_time;
-            //现在的时间
-            let now_time = new Date().getTime();
+
+            let action_list0 = result
+            console.log(action_list0)
+            if (!action_list0) { return }
+            var datas = JSON.stringify(action_list0)
+            let action_list = JSON.parse(datas)
+            for (let player_action of action_list) {
+                let push_address;//消息推送地址
+                let is_group = false;//是否推送到群
+                if (player_action.group_id != 0) {
+                    is_group = true;
+                    push_address = action.group_id;
+                }
+                //最后发送的消息
+                let msg = [];
+                //动作结束时间
+                let end_time = player_action.end_time;
+                //现在的时间
+                let now_time = new Date().getTime();
 
 
 
-            //采药
-            if (player_action.action_zhiye_1 == "0") {
-                //这里改一改,要在结束时间的前一分钟提前结算
-                //时间过了
-                end_time = end_time - 60000 * 2;
-                if (now_time > end_time) {
-                    log_mag += "当前人物未结算，结算状态";
-                    let player = data.getData("player", player_action.usr_id);
+                //采药
+                if (player_action.action_zhiye_1 == "0") {
+                    //这里改一改,要在结束时间的前一分钟提前结算
+                    //时间过了
+                    end_time = end_time - 60000 * 2;
+                    if (now_time > end_time) {
+                        log_mag += "当前人物未结算，结算状态";
+                        let player = data.getData("player", player_action.usr_id);
 
-                    if (!isNotNull(player.level_id)) {
-                        return;
-                    }
-                    msg.push(`【${player.名号}】`)
-
-
-                    let time = parseInt(player_action.time) / 1000 / 60;
-                    if (time > 720) {
-                        time = 720
-                    }
-                    let exp = 0;
-                    let ext = "";
-                    let rate = 0;
-                    if (player.occupation == "采药师") {
-                        exp = time * 10;
-                        rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
-                        ext = `你是采药师，获得采药经验${exp}`;
-                    }
-                    //plant_amount1 = parseInt(plant_amount1 * time);
-                    //plant_amount2 = parseInt(plant_amount2 * time);
-                    //plant_amount3 = parseInt(plant_amount3 * time);
-                    //plant_amount4 = parseInt(plant_amount4 * time);
-
-                    // await Add_najie_thing(player_id, "人参", "草药", plant_amount1);
-                    // await Add_najie_thing(player_id, "何首乌", "草药", plant_amount2);
-                    // await Add_najie_thing(player_id, "当归", "草药", plant_amount3);
-                    // await Add_najie_thing(player_id, "枸杞", "草药", plant_amount4);
-                    await Add_职业经验(player_action.usr_id, exp);
-
-
-                    /*凝血草 甜甜花 何首乌 清心草 血精草*/
-                    let res = [
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0]
-                    ]
-                    let names = ["凝血草", "甜甜花", "何首乌", "清心草", "血精草"];//可以获得的药材
-                    let years = ["一年", "十年", "百年", "千年", "万年"];//可以获得的品级
-                    if (player.level_id <= 21) {
-                        time = time * player.level_id / 40
-                        msg.push("由于你境界不足化神,在琥牢山爬上爬下总被石珀困住，挣脱花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
-                    } else {
-                        time = time * player.level_id / 40
-                    }
-
-                    while (time > 0) {//time=职业等级X采药时间(分钟)
-                        let plant_year = Math.random();//0到1随机一个数字
-                        if (plant_year < 0.001 * (1 + rate)) {//最高品质
-                            plant_year = 4;
+                        if (!isNotNull(player.level_id)) {
+                            return;
                         }
-                        else if (plant_year < 0.01 * (1 + rate)) {
-                            plant_year = 3;
+                        msg.push(`【${player.名号}】`)
+
+
+                        let time = parseInt(player_action.time) / 1000 / 60;
+                        if (time > 720) {
+                            time = 720
                         }
-                        else if (plant_year < 0.05 * (1 + rate)) {
-                            plant_year = 2;
+                        let exp = 0;
+                        let ext = "";
+                        let rate = 0;
+                        if (player.occupation == "采药师") {
+                            exp = time * 10;
+                            rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
+                            ext = `你是采药师，获得采药经验${exp}`;
                         }
-                        else if (plant_year < 0.5 * (1 + rate)) {
-                            plant_year = 1;
+                        //plant_amount1 = parseInt(plant_amount1 * time);
+                        //plant_amount2 = parseInt(plant_amount2 * time);
+                        //plant_amount3 = parseInt(plant_amount3 * time);
+                        //plant_amount4 = parseInt(plant_amount4 * time);
+
+                        // await Add_najie_thing(player_id, "人参", "草药", plant_amount1);
+                        // await Add_najie_thing(player_id, "何首乌", "草药", plant_amount2);
+                        // await Add_najie_thing(player_id, "当归", "草药", plant_amount3);
+                        // await Add_najie_thing(player_id, "枸杞", "草药", plant_amount4);
+                        Add_职业经验(player_action.usr_id, exp);
+
+
+                        /*凝血草 甜甜花 何首乌 清心草 血精草*/
+                        let res = [
+                            [0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0]
+                        ]
+                        let names = ["凝血草", "甜甜花", "何首乌", "清心草", "血精草"];//可以获得的药材
+                        let years = ["一年", "十年", "百年", "千年", "万年"];//可以获得的品级
+                        if (player.level_id <= 21) {
+                            time = time * player.level_id / 40
+                            msg.push("由于你境界不足化神,在琥牢山爬上爬下总被石珀困住，挣脱花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
+                        } else {
+                            time = time * player.level_id / 40
                         }
-                        else {
-                            plant_year = 0;
-                        }
-                        time -= 1;//一分钟加一次
-                        res[plant_year][Math.floor(Math.random() * 5)] += 1;//数量=1到4随机数
-                    }
-                    let res_msg = "";
-                    for (let i = 0; i < 5; i++) {
-                        for (let j = 0; j < 5; j++) {
-                            if (res[i][j] > 0) {
-                                res_msg += `\n[${years[i]}${names[j]}]×${res[i][j]}，`;
+
+                        while (time > 0) {//time=职业等级X采药时间(分钟)
+                            let plant_year = Math.random();//0到1随机一个数字
+                            if (plant_year < 0.001 * (1 + rate)) {//最高品质
+                                plant_year = 4;
                             }
-                            console.log(player.id)
-                            await Add_najie_thing(player.id, years[i] + names[j], "草药", res[i][j]);
+                            else if (plant_year < 0.01 * (1 + rate)) {
+                                plant_year = 3;
+                            }
+                            else if (plant_year < 0.05 * (1 + rate)) {
+                                plant_year = 2;
+                            }
+                            else if (plant_year < 0.5 * (1 + rate)) {
+                                plant_year = 1;
+                            }
+                            else {
+                                plant_year = 0;
+                            }
+                            time -= 1;//一分钟加一次
+                            res[plant_year][Math.floor(Math.random() * 5)] += 1;//数量=1到4随机数
                         }
+                        let res_msg = "";
+                        for (let i = 0; i < 5; i++) {
+                            for (let j = 0; j < 5; j++) {
+                                if (res[i][j] > 0) {
+                                    res_msg += `\n[${years[i]}${names[j]}]×${res[i][j]}，`;
+                                }
+                                console.log(player.id)
+                                Add_najie_thing(player.id, years[i] + names[j], "草药", res[i][j]);
+                            }
+                        }
+                        Add_职业经验(player_id, exp);
+                        msg.push(`\n采药归来，${ext}${res_msg}`);
+
+
+
+                        //msg.push(`\n采药归来，${ext}收获人参×${plant_amount1}，何首乌×${plant_amount2}，当归×${plant_amount3}，枸杞×${plant_amount4}`);
+
+                        let sql1 = `DELETE FROM action WHERE usr_id IN ${player_action.usr_id}`
+                        sql_run(sql1)
+                        if (is_group) {
+                            this.pushInfo(push_address, is_group, msg)
+                        } else {
+                            this.pushInfo(player_action.usr_id, is_group, msg);
+                        }
+
                     }
-                    await Add_职业经验(player_id, exp);
-                    msg.push(`\n采药归来，${ext}${res_msg}`);
+                }
+                if (action.mine == "0") {
+                    //这里改一改,要在结束时间的前一分钟提前结算
+                    //时间过了
+                    end_time = end_time - 60000 * 2;
+                    if (now_time > end_time) {
+                        log_mag += "当前人物未结算，结算状态";
+                        let player = data.getData("player", player_id);
+                        let now_level_id;
+                        if (!isNotNull(player.level_id)) {
+                            return;
+                        }
 
+                        // var size=this.xiuxianConfigData.mine.size;
+                        let time = parseInt(action.time) / 1000 / 60;//最高720分钟
+                        if (time > 720) {
+                            time = 720
+                        }
+                        //以下1到5为每种的数量
+                        let mine_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
+                        let mine_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
+                        let mine_amount3 = Math.floor(time / 30);//时间除30
+                        let mine_amount4 = Math.floor(time / 30);//时间除30
+                        let mine_amount5 = Math.floor(time / 30);//时间除30
+                        let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
+                        let exp = 0;
+                        let ext = "";
+                        if (player.occupation == "采矿师") {
+                            exp = time * 10;
+                            time *= rate;
+                            ext = `你是采矿师，获得采矿经验${exp}，额外获得矿石${Math.floor(rate * 100)}%，`;
+                        }
+                        let end_amount = Math.floor(4 * (rate + 1) * (mine_amount1))//普通矿石
+                        let end_amount2 = Math.floor(4 * (rate + 1) * (mine_amount3))//稀有
+                        if (player.level_id <= 21) {
 
+                            end_amount *= player.level_id / 40
+                            end_amount2 *= player.level_id / 40
+                            msg.push("由于你境界不足化神,在琥牢山爬上爬下总被石珀困住，挣脱花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
+                        } else {
+                            end_amount *= player.level_id / 40
+                            end_amount2 *= player.level_id / 40
+                        }
 
-                    //msg.push(`\n采药归来，${ext}收获人参×${plant_amount1}，何首乌×${plant_amount2}，当归×${plant_amount3}，枸杞×${plant_amount4}`);
+                        //mine_amount1 = parseInt(mine_amount1 * time);
+                        //mine_amount2 = parseInt(mine_amount2 * time);
+                        //mine_amount3 = parseInt(mine_amount3 * time);
+                        //mine_amount4 = parseInt(mine_amount4 * time);
+                        let usr_qq = player.id
+                        end_amount = Math.floor(end_amount);
+                        end_amount2 = Math.floor(end_amount2);
+                        Add_najie_thing(usr_qq, "庚金", "材料", end_amount);
+                        Add_najie_thing(usr_qq, "玄土", "材料", end_amount);
+                        Add_najie_thing(usr_qq, "红宝石", "材料", end_amount2);
+                        Add_najie_thing(usr_qq, "绿宝石", "材料", end_amount2);
+                        Add_najie_thing(usr_qq, "蓝宝石", "材料", end_amount2);
+                        Add_职业经验(usr_qq, exp);
+                        msg.push(`\n采矿归来，${ext}\n收获庚金×${end_amount}\n玄土×${end_amount}\n红宝石×${end_amount2}\n绿宝石×${end_amount2}\n蓝宝石×${end_amount2}`);
 
-                    let sql1 = `DELETE FROM action WHERE usr_id IN ${player_action.usr_id}`
-                    await sql_run(sql1)
-                    if (is_group) {
-                        await this.pushInfo(push_address, is_group, msg)
-                    } else {
-                        await this.pushInfo(player_action.usr_id, is_group, msg);
+                        let arr = action;
+                        //把状态都关了
+                        arr.mine = 1;//采矿状态
+                        arr.mine = 1;//闭状态
+                        arr.shutup = 1;//闭关状态
+                        arr.working = 1;//降妖状态
+                        arr.power_up = 1;//渡劫状态
+                        arr.Place_action = 1;//秘境
+                        arr.Place_actionplus = 1;//沉迷状态
+                        delete arr.group_id;//结算完去除group_id
+                        redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
+                        //msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
+                        if (is_group) {
+                            this.pushInfo(push_address, is_group, msg)
+                        } else {
+                            this.pushInfo(player_id, is_group, msg);
+                        }
+
                     }
+                }
+                if (action.shoulie == "0") {
+                    //这里改一改,要在结束时间的前一分钟提前结算
+                    //时间过了
+                    end_time = end_time - 60000 * 2;
+                    if (now_time > end_time) {
+                        var y = this.xiuxianConfigData.mine.time;//固定时间
+                        let time = parseInt(action.time) / 1000 / 60;//最高720分钟
+                        if (time > 720) {
+                            time = 720
+                        }
+                        //超过就按最低的算，即为满足30分钟才结算一次
+                        if (time < y) {
+                            time = 0;
+                        }
+                        log_mag += "当前人物未结算，结算状态";
+                        let player = data.getData("player", player_id);
+                        if (!isNotNull(player.level_id)) {
+                            return;
+                        }
+                        let msg = [`【${player.名号}】`];
+                        //返回数目
+                        let shoulie_amount = Math.floor((1.6 + Math.random() * 0.35) * time * 12);
+                        //职业经验
+                        let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
+                        let exp = 0;
+                        let ext = "";
+                        if (player.occupation == "猎户") {
+                            exp = time * 12;
+                            ext = `你是猎户，获得狩猎经验${exp}，`;
+                        }
 
+                        let end_amount = Math.floor(shoulie_amount)
+                        end_amount *= player.occupation_level / 60
+                        end_amount = Math.floor(end_amount);
+
+
+                        Add_najie_thing(player_id, "野兔", "食材", end_amount);
+                        Add_najie_thing(player_id, "野鸡", "食材", end_amount);
+                        Add_najie_thing(player_id, "野猪", "食材", end_amount);
+                        Add_najie_thing(player_id, "野牛", "食材", end_amount);
+                        Add_najie_thing(player_id, "野羊", "食材", end_amount);
+                        Add_职业经验(player_id, exp);
+                        msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
+
+                        let arr = action;
+                        //把状态都关了
+                        arr.shoulie = 1;//采矿状态
+                        arr.shoulie = 1;//闭状态
+                        arr.shutup = 1;//闭关状态
+                        arr.working = 1;//降妖状态
+                        arr.power_up = 1;//渡劫状态
+                        arr.Place_action = 1;//秘境
+                        arr.Place_actionplus = 1;//沉迷状态
+                        delete arr.group_id;//结算完去除group_id
+                        redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
+                        //msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
+                        if (is_group) {
+                            this.pushInfo(push_address, is_group, msg)
+                        } else {
+                            this.pushInfo(player_id, is_group, msg);
+                        }
+
+                    }
                 }
             }
-            if (action.mine == "0") {
-                //这里改一改,要在结束时间的前一分钟提前结算
-                //时间过了
-                end_time = end_time - 60000 * 2;
-                if (now_time > end_time) {
-                    log_mag += "当前人物未结算，结算状态";
-                    let player = data.getData("player", player_id);
-                    let now_level_id;
-                    if (!isNotNull(player.level_id)) {
-                        return;
-                    }
-
-                    // var size=this.xiuxianConfigData.mine.size;
-                    let time = parseInt(action.time) / 1000 / 60;//最高720分钟
-                    if (time > 720) {
-                        time = 720
-                    }
-                    //以下1到5为每种的数量
-                    let mine_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
-                    let mine_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);//(1.8+随机0到0.4)x时间(分钟)
-                    let mine_amount3 = Math.floor(time / 30);//时间除30
-                    let mine_amount4 = Math.floor(time / 30);//时间除30
-                    let mine_amount5 = Math.floor(time / 30);//时间除30
-                    let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
-                    let exp = 0;
-                    let ext = "";
-                    if (player.occupation == "采矿师") {
-                        exp = time * 10;
-                        time *= rate;
-                        ext = `你是采矿师，获得采矿经验${exp}，额外获得矿石${Math.floor(rate * 100)}%，`;
-                    }
-                    let end_amount = Math.floor(4 * (rate + 1) * (mine_amount1))//普通矿石
-                    let end_amount2 = Math.floor(4 * (rate + 1) * (mine_amount3))//稀有
-                    if (player.level_id <= 21) {
-
-                        end_amount *= player.level_id / 40
-                        end_amount2 *= player.level_id / 40
-                        msg.push("由于你境界不足化神,在琥牢山爬上爬下总被石珀困住，挣脱花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
-                    } else {
-                        end_amount *= player.level_id / 40
-                        end_amount2 *= player.level_id / 40
-                    }
-
-                    //mine_amount1 = parseInt(mine_amount1 * time);
-                    //mine_amount2 = parseInt(mine_amount2 * time);
-                    //mine_amount3 = parseInt(mine_amount3 * time);
-                    //mine_amount4 = parseInt(mine_amount4 * time);
-                    let usr_qq = player.id
-                    end_amount = Math.floor(end_amount);
-                    end_amount2 = Math.floor(end_amount2);
-                    await Add_najie_thing(usr_qq, "庚金", "材料", end_amount);
-                    await Add_najie_thing(usr_qq, "玄土", "材料", end_amount);
-                    await Add_najie_thing(usr_qq, "红宝石", "材料", end_amount2);
-                    await Add_najie_thing(usr_qq, "绿宝石", "材料", end_amount2);
-                    await Add_najie_thing(usr_qq, "蓝宝石", "材料", end_amount2);
-                    await Add_职业经验(usr_qq, exp);
-                    msg.push(`\n采矿归来，${ext}\n收获庚金×${end_amount}\n玄土×${end_amount}\n红宝石×${end_amount2}\n绿宝石×${end_amount2}\n蓝宝石×${end_amount2}`);
-
-                    let arr = action;
-                    //把状态都关了
-                    arr.mine = 1;//采矿状态
-                    arr.mine = 1;//闭状态
-                    arr.shutup = 1;//闭关状态
-                    arr.working = 1;//降妖状态
-                    arr.power_up = 1;//渡劫状态
-                    arr.Place_action = 1;//秘境
-                    arr.Place_actionplus = 1;//沉迷状态
-                    delete arr.group_id;//结算完去除group_id
-                    await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
-                    //msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
-                    if (is_group) {
-                        await this.pushInfo(push_address, is_group, msg)
-                    } else {
-                        await this.pushInfo(player_id, is_group, msg);
-                    }
-
-                }
-            }
-            if (action.shoulie == "0") {
-                //这里改一改,要在结束时间的前一分钟提前结算
-                //时间过了
-                end_time = end_time - 60000 * 2;
-                if (now_time > end_time) {
-                    var y = this.xiuxianConfigData.mine.time;//固定时间
-                    let time = parseInt(action.time) / 1000 / 60;//最高720分钟
-                    if (time > 720) {
-                        time = 720
-                    }
-                    //超过就按最低的算，即为满足30分钟才结算一次
-                    if (time < y) {
-                        time = 0;
-                    }
-                    log_mag += "当前人物未结算，结算状态";
-                    let player = data.getData("player", player_id);
-                    if (!isNotNull(player.level_id)) {
-                        return;
-                    }
-                    let msg = [`【${player.名号}】`];
-                    //返回数目
-                    let shoulie_amount = Math.floor((1.6 + Math.random() * 0.35) * time * 12);
-                    //职业经验
-                    let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
-                    let exp = 0;
-                    let ext = "";
-                    if (player.occupation == "猎户") {
-                        exp = time * 12;
-                        ext = `你是猎户，获得狩猎经验${exp}，`;
-                    }
-
-                    let end_amount = Math.floor(shoulie_amount)
-                    end_amount *= player.occupation_level / 60
-                    end_amount = Math.floor(end_amount);
-
-
-                    await Add_najie_thing(player_id, "野兔", "食材", end_amount);
-                    await Add_najie_thing(player_id, "野鸡", "食材", end_amount);
-                    await Add_najie_thing(player_id, "野猪", "食材", end_amount);
-                    await Add_najie_thing(player_id, "野牛", "食材", end_amount);
-                    await Add_najie_thing(player_id, "野羊", "食材", end_amount);
-                    await Add_职业经验(player_id, exp);
-                    msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
-
-                    let arr = action;
-                    //把状态都关了
-                    arr.shoulie = 1;//采矿状态
-                    arr.shoulie = 1;//闭状态
-                    arr.shutup = 1;//闭关状态
-                    arr.working = 1;//降妖状态
-                    arr.power_up = 1;//渡劫状态
-                    arr.Place_action = 1;//秘境
-                    arr.Place_actionplus = 1;//沉迷状态
-                    delete arr.group_id;//结算完去除group_id
-                    await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
-                    //msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
-                    if (is_group) {
-                        await this.pushInfo(push_address, is_group, msg)
-                    } else {
-                        await this.pushInfo(player_id, is_group, msg);
-                    }
-
-                }
-            }
-        }
+        })
     }
 
 
