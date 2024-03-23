@@ -54,15 +54,23 @@ export class XiuxianDatabase extends plugin {
             if (err) throw err
             e.reply("初始化数据库完成")
         })
+        db.end()
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: this.databaseConfigData.Database.username,
+            password: this.databaseConfigData.Database.password,
+            database: 'xiuxiandatabase'
+        })
+
 
         let sql1 = 'create table if not exists fuzhi(usr_id bigint,occupation text,occupation_exp bigint,occupation_level bigint,PRIMARY KEY(usr_id))'
-        db.query(sql1, (err, result) => {
+        db1.query(sql1, (err, result) => {
             if (err) throw err
             e.reply("初始化数据表1完成")
         })
 
         let sql2 = 'create table if not exists action(usr_id bigint,action text,end_time bigint,time bigint,group_id bigint,action_open int,PRIMARY KEY(usr_id))'
-        db.query(sql2, (err, result) => {
+        db1.query(sql2, (err, result) => {
             if (err) throw err
             e.reply("初始化数据表2完成")
         })
