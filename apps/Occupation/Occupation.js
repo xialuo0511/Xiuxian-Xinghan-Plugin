@@ -320,7 +320,7 @@ export class Occupation extends plugin {
             time = 30;
         }
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        //查询redis中的人物动作
+        //查询人物动作
         let action = await sql_run(sql1)
         if (action) {
             action = JSON.stringify(action)
@@ -335,18 +335,12 @@ export class Occupation extends plugin {
             }
         }
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let sql2 = `select * from action where usr_id=${usr_qq};`
         let sql3
-        let select1 = await sql_run(sql2)
         let group_id = 0
         if (e.isGroup) {
             group_id = e.group_id
         }
-        if (select1) {
-            sql3 = `update action set action=采药,end_time=${new Date().getTime() + action_time},time=${action_time},group_id=${group_id},action_zhiye=1,action_zhiye_1=1 where usr_id=${usr_qq};`
-        } else {
-            sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0) `
-        }
+        sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0) `
         await sql_run(sql3)
         e.reply(`现在开始采药${time}分钟`);
 
@@ -423,21 +417,12 @@ export class Occupation extends plugin {
             }
         }
         if (e.isGroup) {
-            await this.plant_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+            await this.plant_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
         } else {
-            await this.plant_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
+            await this.plant_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
         }
-        let arr = action;
-        arr.is_jiesuan = 1;//结算状态
-        arr.plant = 1;//采药状态
-        arr.shutup = 1;//闭关状态
-        arr.working = 1;//降妖状态
-        arr.power_up = 1;//渡劫状态
-        arr.Place_action = 1;//秘境
-        //结束的时间也修改为当前时间
-        arr.end_time = new Date().getTime();
-        delete arr.group_id;//结算完去除group_id
-        await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
+        const sql2 = `delete from action where usr_id=${e.user_id};`
+        db1.query(sql2)
     }
     async mine(e) {
         let usr_qq = e.user_id;//用户qq
@@ -448,13 +433,6 @@ export class Occupation extends plugin {
         //不开放私聊
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
             return;
         }
         let player = await Read_player(usr_qq);
@@ -486,11 +464,12 @@ export class Occupation extends plugin {
             //不设置时间默认30分钟
             time = 30;
         }
-        //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        if (action != null) {
-            //人物有动作查询动作结束时间
+
+        //查询人物动作
+        let action = await sql_run(sql1)
+        if (action) {
+            action = JSON.stringify(action)
+            action = JSON.parse(JSON)
             let action_end_time = action.end_time;
             let now_time = new Date().getTime();
             if (now_time <= action_end_time) {
@@ -502,25 +481,13 @@ export class Occupation extends plugin {
         }
 
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let arr = {
-            "action": "采矿",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "plant": "1",//采药-开启
-            "mine": "0",//采药-开启
-            "shutup": "1",//闭关状态-开启
-            "working": "1",//降妖状态-关闭
-            "Place_action": "1",//秘境状态---关闭
-            "Place_actionplus": "1",//沉迷---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "xijie": "1", //洗劫状态开启
-        };
+        let sql3
+        let group_id = 0
         if (e.isGroup) {
-            arr.group_id = e.group_id
+            group_id = e.group_id
         }
-
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
+        sql3 = `insert into action values(${usr_qq},'采矿',${new Date().getTime() + action_time},${action_time},${group_id},1,0,1,0,0,0,0,0,0,0,0) `
+        await sql_run(sql3)
         e.reply(`现在开始采矿${time}分钟`);
 
         return true;
@@ -580,41 +547,25 @@ export class Occupation extends plugin {
         }
 
         if (e.isGroup) {
-            await this.mine_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+            await this.mine_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
         } else {
-            await this.mine_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
+            await this.mine_jiesuan(e.user_id, time,);//提前闭关结束不会触发随机事件
         }
 
-        let arr = action;
-        arr.is_jiesuan = 1;//结算状态
-        arr.mine = 1;//采药状态
-        arr.plant = 1;//采药状态
-        arr.shutup = 1;//闭关状态
-        arr.working = 1;//降妖状态
-        arr.power_up = 1;//渡劫状态
-        arr.Place_action = 1;//秘境
-        //结束的时间也修改为当前时间
-        arr.end_time = new Date().getTime();
-        delete arr.group_id;//结算完去除group_id
-        await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
+        const sql2 = `delete from action where usr_id=${e.user_id};`
+        db1.query(sql2)
     }
 
 
-    async plant_jiesuan(user_id, time, is_random, group_id) {
+    async plant_jiesuan(user_id, time, group_id) {
 
         let usr_qq = user_id;
         let player = data.getData("player", usr_qq);
-        let now_level_id;
 
         if (!isNotNull(player.level_id)) {
             return;
         }
         let msg = [`【${player.名号}】`]
-        // var size = this.xiuxianConfigData.plant.size;
-        //let plant_amount1 = Math.floor((0.07+Math.random()*0.04)*time);
-        //let plant_amount2 = Math.floor((0.07+Math.random()*0.04)*time);
-        //let plant_amount3 = Math.floor((0.07+Math.random()*0.04)*time);
-        //let plant_amount4 = Math.floor((0.07+Math.random()*0.04)*time);
         let exp = 0;
         let ext = "";
         let rate = 0;
@@ -623,10 +574,6 @@ export class Occupation extends plugin {
             rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
             ext = `你是采药师，获得采药经验${exp}，额外获得药材${Math.floor(rate * 100)}%，`;
         }
-        //plant_amount1 = parseInt(plant_amount1 * time);
-        //plant_amount2 = parseInt(plant_amount2 * time);
-        //plant_amount3 = parseInt(plant_amount3 * time);
-        //plant_amount4 = parseInt(plant_amount4 * time);
         /*凝血草 甜甜花 何首乌 清心草 血精草*/
         let res = [
             [0, 0, 0, 0, 0],
@@ -675,35 +622,25 @@ export class Occupation extends plugin {
         }
         await Add_职业经验(usr_qq, exp);
         msg.push(`\n采药归来，${ext}${res_msg}`);
-        //msg.push(`\n采药归来，${ext}收获人参×${plant_amount1}，何首乌×${plant_amount2}，当归×${plant_amount3}，枸杞×${plant_amount4}`);
-
-
-
         if (group_id) {
             await this.pushInfo(group_id, true, msg)
         } else {
             await this.pushInfo(usr_qq, false, msg);
         }
-
         return;
     }
 
-    async mine_jiesuan(user_id, time, is_random, group_id) {
+    async mine_jiesuan(user_id, time, group_id) {
 
         let usr_qq = user_id;
         let player = data.getData("player", usr_qq);
-        let now_level_id;
 
         if (!isNotNull(player.level_id)) {
             return;
         }
         let msg = [`【${player.名号}】`]
-        var size = this.xiuxianConfigData.mine.size;
         let mine_amount1 = Math.floor((1.8 + Math.random() * 0.4) * time);
-        let mine_amount2 = Math.floor((1.8 + Math.random() * 0.4) * time);
         let mine_amount3 = Math.floor(time / 30);
-        let mine_amount4 = Math.floor(time / 30);
-        let mine_amount5 = Math.floor(time / 30);
         let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
         let exp = 0;
         let ext = "";
@@ -724,12 +661,6 @@ export class Occupation extends plugin {
             end_amount *= player.level_id / 40
             end_amount2 *= player.level_id / 40
         }
-
-
-        //mine_amount1 = parseInt(mine_amount1 * time);
-        //mine_amount2 = parseInt(mine_amount2 * time);
-        //mine_amount3 = parseInt(mine_amount3 * time);
-        //mine_amount4 = parseInt(mine_amount4 * time);
         end_amount = Math.floor(end_amount);
         end_amount2 = Math.floor(end_amount2);
         await Add_najie_thing(usr_qq, "庚金", "材料", end_amount);
@@ -739,15 +670,11 @@ export class Occupation extends plugin {
         await Add_najie_thing(usr_qq, "蓝宝石", "材料", end_amount2);
         await Add_职业经验(usr_qq, exp);
         msg.push(`\n采矿归来，${ext}\n收获庚金×${end_amount}\n玄土×${end_amount}\n红宝石×${end_amount2}\n绿宝石×${end_amount2}\n蓝宝石×${end_amount2}`);
-
-
-
         if (group_id) {
             await this.pushInfo(group_id, true, msg)
         } else {
             await this.pushInfo(usr_qq, false, msg);
         }
-
         return;
     }
 
@@ -1495,15 +1422,6 @@ export class Occupation extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-
-
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
-            return;
-        }
         let player = await Read_player(usr_qq);
         if (player.occupation != "猎户") {
             e.reply("你的狩猎许可证呢？盗猎是吧？罚款2000灵石。")
@@ -1535,11 +1453,11 @@ export class Occupation extends plugin {
             time = 30;
         }
 
-        //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        if (action != null) {
-            //人物有动作查询动作结束时间
+        //查询人物动作
+        let action = await sql_run(sql1)
+        if (action) {
+            action = JSON.stringify(action)
+            action = JSON.parse(JSON)
             let action_end_time = action.end_time;
             let now_time = new Date().getTime();
             if (now_time <= action_end_time) {
@@ -1550,23 +1468,13 @@ export class Occupation extends plugin {
             }
         }
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let arr = {
-            "action": "狩猎",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "plant": "1",//采药-开启
-            "shoulie": "0",//采药-开启
-            "shutup": "1",//闭关状态-开启
-            "working": "1",//降妖状态-关闭
-            "Place_action": "1",//秘境状态---关闭
-            "Place_actionplus": "1",//沉迷---关闭
-            "power_up": "1",//渡劫状态--关闭
-        };
+        let sql3
+        let group_id = 0
         if (e.isGroup) {
-            arr.group_id = e.group_id
+            group_id = e.group_id
         }
-
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
+        sql3 = `insert into action values(${usr_qq},'打猎',${new Date().getTime() + action_time},${action_time},${group_id},1,0,0,1,0,0,0,0,0,0,0) `
+        await sql_run(sql3)
         e.reply(`现在开始外出打猎${time}分钟`);
 
         return true;
@@ -1617,18 +1525,8 @@ export class Occupation extends plugin {
             await this.shoulie_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
         }
 
-        let arr = action;
-        arr.shoulie = 1;//采矿状态
-        arr.shoulie = 1;//闭状态
-        arr.shutup = 1;//闭关状态
-        arr.working = 1;//降妖状态
-        arr.power_up = 1;//渡劫状态
-        arr.Place_action = 1;//秘境
-        arr.Place_actionplus = 1;//沉迷状态
-        //结束的时间也修改为当前时间
-        arr.end_time = new Date().getTime();
-        delete arr.group_id;//结算完去除group_id
-        await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
+        const sql2 = `delete from action where usr_id=${e.user_id};`
+        db1.query(sql2)
     }
 
 
@@ -1643,19 +1541,15 @@ export class Occupation extends plugin {
         //返回数目
         let shoulie_amount = Math.floor((1.6 + Math.random() * 0.35) * time * 12);
         //职业经验
-        let rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
         let exp = 0;
         let ext = "";
         if (player.occupation == "猎户") {
             exp = time * 12;
             ext = `你是猎户，获得狩猎经验${exp}，`;
         }
-
         let end_amount = Math.floor(shoulie_amount)
         end_amount *= player.occupation_level / 60
         end_amount = Math.floor(end_amount);
-
-
         await Add_najie_thing(usr_qq, "野兔", "食材", end_amount);
         await Add_najie_thing(usr_qq, "野鸡", "食材", end_amount);
         await Add_najie_thing(usr_qq, "野猪", "食材", end_amount);
@@ -1663,10 +1557,6 @@ export class Occupation extends plugin {
         await Add_najie_thing(usr_qq, "野羊", "食材", end_amount);
         await Add_职业经验(usr_qq, exp);
         msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
-
-
-
-
         if (group_id) {
             await this.pushInfo(group_id, true, msg)
         } else {
@@ -1922,7 +1812,12 @@ export class Occupation extends plugin {
      * @returns {Promise<void>}
      */
     async getPlayerAction(usr_qq) {
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        let action = await sql_run(sql1)
+        if (!action) {
+            return false;
+        }
+        action = JSON.stringify(action)
         action = JSON.parse(action);//转为json格式数据
         return action;
     }
@@ -1933,15 +1828,7 @@ export class Occupation extends plugin {
      * @returns {Promise<void>}
      */
     async getPlayerState(action) {
-        if (action == null) {
-            return "空闲";
-        }
-        let now_time = new Date().getTime();
-        let end_time = action.end_time;
-        //当前时间>=结束时间，并且未结算 属于已经完成任务，却并没有结算的
-        //当前时间<=完成时间，并且未结算 属于正在进行
-        if (!((now_time >= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0 || action.min == 0)) || (now_time <= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0 || action.mine == 0 || action.shoulie == 0)))) {
-
+        if (!action) {
             return "空闲";
         }
         return action.action;
