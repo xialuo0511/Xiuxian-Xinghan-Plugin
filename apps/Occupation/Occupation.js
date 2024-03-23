@@ -9,6 +9,8 @@ import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
 import mysql from "mysql"
 import { sql_run } from '../../api/api.js'
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
 
 import { zd_battle } from "../Battle/Battle.js"
 /**
