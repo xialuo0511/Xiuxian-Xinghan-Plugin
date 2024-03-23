@@ -45,8 +45,7 @@ export class OccupationTask extends plugin {
             password: databaseConfigData.Database.password,
             database: 'xiuxiandatabase'
         })
-        let sql2 = query
-        db1.query(sql2, (err, result) => {
+        db1.query(sql1, (err, result) => {
             if (err) {
                 console.log(err)
                 return
