@@ -155,9 +155,10 @@ export class OccupationTask extends plugin {
 
                         //msg.push(`\n采药归来，${ext}收获人参×${plant_amount1}，何首乌×${plant_amount2}，当归×${plant_amount3}，枸杞×${plant_amount4}`);
 
-                        const sql2 = `DELETE FROM action WHERE id IN ${player_action.usr_id};`
+                        const sql2 = `update one set status=0 where usr_id=${player_action.usr_id};`
                         db1.query(sql2, (err, result) => {
                             console.log(err)
+                            console.log(result)
                             if (is_group) {
                                 this.pushInfo(push_address, is_group, msg)
                             } else {
