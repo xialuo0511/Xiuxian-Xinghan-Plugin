@@ -74,7 +74,7 @@ export class OccupationTask extends plugin {
 
 
                 //采药
-                if (player_action.action_zhiye_1 == "0") {
+                if (player_action.action_zhiye_1 == "1") {
                     //这里改一改,要在结束时间的前一分钟提前结算
                     //时间过了
                     end_time = end_time - 60000 * 2;
