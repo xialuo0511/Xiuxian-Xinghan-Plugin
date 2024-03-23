@@ -40,29 +40,27 @@ export class OccupationTask extends plugin {
         for (let player_action of action_list) {
             let push_address;//消息推送地址
             let is_group = false;//是否推送到群
-            if (action.hasOwnProperty("group_id")) {
-                if (isNotNull(action.group_id)) {
-                    is_group = true;
-                    push_address = action.group_id;
-                }
+            if (player_action.group_id != 0) {
+                is_group = true;
+                push_address = action.group_id;
             }
             //最后发送的消息
             let msg = [];
             //动作结束时间
-            let end_time = action.end_time;
+            let end_time = player_action.end_time;
             //现在的时间
             let now_time = new Date().getTime();
 
 
 
-            //闭关状态
-            if (action.plant == "0") {
+            //采药
+            if (player_action.action_zhiye_1 == "0") {
                 //这里改一改,要在结束时间的前一分钟提前结算
                 //时间过了
                 end_time = end_time - 60000 * 2;
                 if (now_time > end_time) {
                     log_mag += "当前人物未结算，结算状态";
-                    let player = data.getData("player", player_id);
+                    let player = data.getData("player", player_action.usr_id);
 
                     if (!isNotNull(player.level_id)) {
                         return;
@@ -70,7 +68,7 @@ export class OccupationTask extends plugin {
                     msg.push(`【${player.名号}】`)
 
 
-                    let time = parseInt(action.time) / 1000 / 60;
+                    let time = parseInt(player_action.time) / 1000 / 60;
                     if (time > 720) {
                         time = 720
                     }
@@ -91,7 +89,7 @@ export class OccupationTask extends plugin {
                     // await Add_najie_thing(player_id, "何首乌", "草药", plant_amount2);
                     // await Add_najie_thing(player_id, "当归", "草药", plant_amount3);
                     // await Add_najie_thing(player_id, "枸杞", "草药", plant_amount4);
-                    await Add_职业经验(player_id, exp);
+                    await Add_职业经验(player_action.usr_id, exp);
 
 
                     /*凝血草 甜甜花 何首乌 清心草 血精草*/
@@ -148,21 +146,12 @@ export class OccupationTask extends plugin {
 
                     //msg.push(`\n采药归来，${ext}收获人参×${plant_amount1}，何首乌×${plant_amount2}，当归×${plant_amount3}，枸杞×${plant_amount4}`);
 
-                    let arr = action;
-                    //把状态都关了
-                    arr.plant = 1;//闭关状态
-                    arr.shutup = 1;//闭关状态
-                    arr.working = 1;//降妖状态
-                    arr.power_up = 1;//渡劫状态
-                    arr.Place_action = 1;//秘境
-                    arr.Place_actionplus = 1;//沉迷状态
-                    delete arr.group_id;//结算完去除group_id
-                    await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
-                    //msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
+                    let sql1 = `DELETE FROM action WHERE usr_id IN ${player_action.usr_id}`
+                    await sql_run(sql1)
                     if (is_group) {
                         await this.pushInfo(push_address, is_group, msg)
                     } else {
-                        await this.pushInfo(player_id, is_group, msg);
+                        await this.pushInfo(player_action.usr_id, is_group, msg);
                     }
 
                 }
