@@ -157,7 +157,7 @@ export class OccupationTask extends plugin {
                         //msg.push(`\n采药归来，${ext}收获人参×${plant_amount1}，何首乌×${plant_amount2}，当归×${plant_amount3}，枸杞×${plant_amount4}`);
 
                         let sql1 = `DELETE FROM action WHERE usr_id IN ${player_action.usr_id}`
-                        sql_run(sql1)
+                        db1.query(sql1)
                         if (is_group) {
                             this.pushInfo(push_address, is_group, msg)
                         } else {
