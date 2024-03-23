@@ -35,6 +35,7 @@ export class OccupationTask extends plugin {
     async OccupationTask() {
         let sql1 = `select * from action where action_zhiye=1;`
         let action_list = await sql_run(sql1)
+        confirm.log(action_list)
         if (!action_list) { return }
         action_list = JSON.stringify(action_list)
         action_list = JSON.parse(action_list)
