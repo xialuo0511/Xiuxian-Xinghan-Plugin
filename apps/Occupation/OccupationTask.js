@@ -52,10 +52,10 @@ export class OccupationTask extends plugin {
             }
 
             let action_list0 = result
-            console.log(action_list0)
             if (!action_list0) { return }
             var datas = JSON.stringify(action_list0)
             let action_list = JSON.parse(datas)
+            console.log(action_list)
             for (let player_action of action_list) {
                 let push_address;//消息推送地址
                 let is_group = false;//是否推送到群
