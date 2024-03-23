@@ -68,7 +68,7 @@ export class XiuxianDatabase extends plugin {
             e.reply("初始化数据表1完成")
         })
 
-        let sql2 = 'create table if not exists action(usr_id bigint,action text,end_time bigint,time bigint,group_id bigint,action_open int,PRIMARY KEY(usr_id))'
+        let sql2 = 'create table if not exists action(usr_id bigint,action text,end_time bigint,time bigint,group_id bigint,action_zhiye int default 0,action_biguan int default 0,action_xiangyao int default 0,action_mijing int default 0,action_chengmi int default 0,PRIMARY KEY(usr_id))'
         db1.query(sql2, (err, result) => {
             if (err) throw err
             e.reply("初始化数据表2完成")

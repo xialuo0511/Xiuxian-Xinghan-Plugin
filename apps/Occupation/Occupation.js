@@ -343,9 +343,9 @@ export class Occupation extends plugin {
             group_id = e.group_id
         }
         if (select1) {
-            sql3 = `update action set action=采药,end_time=${new Date().getTime() + action_time},time=${action_time},group_id=${group_id},action_open=1 where usr_id=${usr_qq};`
+            sql3 = `update action set action=采药,end_time=${new Date().getTime() + action_time},time=${action_time},group_id=${group_id},action_zhiye=1 where usr_id=${usr_qq};`
         } else {
-            sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${group_id},${action_time}) `
+            sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,0,0,0,0) `
         }
         await sql_run(sql3)
         e.reply(`现在开始采药${time}分钟`);
