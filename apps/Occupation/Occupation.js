@@ -1813,12 +1813,21 @@ export class Occupation extends plugin {
      */
     async getPlayerAction(usr_qq) {
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        let action = await sql_run(sql1)
-        console.log(action)
-        if (!action) {
-            return false;
-        }
-        return action[0];
+        var mysql = require('mysql');
+        let databaseConfigData = config.getConfig("database", "database");
+        //创建连接
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: databaseConfigData.Database.username,
+            password: databaseConfigData.Database.password,
+            database: 'xiuxiandatabase'
+        })
+        db1.query(sql1, (err, result) => {
+            var action0 = JSON.stringify(result)
+            let action = JSON.parse(action0);
+            return action[0];
+        })
+
     }
 
     /**
