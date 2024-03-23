@@ -99,15 +99,6 @@ export class OccupationTask extends plugin {
                             rate = data.occupation_exp_list.find(item => item.id == player.occupation_level).rate * 10;
                             ext = `你是采药师，获得采药经验${exp}`;
                         }
-                        //plant_amount1 = parseInt(plant_amount1 * time);
-                        //plant_amount2 = parseInt(plant_amount2 * time);
-                        //plant_amount3 = parseInt(plant_amount3 * time);
-                        //plant_amount4 = parseInt(plant_amount4 * time);
-
-                        // await Add_najie_thing(player_id, "人参", "草药", plant_amount1);
-                        // await Add_najie_thing(player_id, "何首乌", "草药", plant_amount2);
-                        // await Add_najie_thing(player_id, "当归", "草药", plant_amount3);
-                        // await Add_najie_thing(player_id, "枸杞", "草药", plant_amount4);
                         Add_职业经验(player_action.usr_id, exp);
 
 
@@ -158,7 +149,7 @@ export class OccupationTask extends plugin {
                                 Add_najie_thing(player.id, years[i] + names[j], "草药", res[i][j]);
                             }
                         }
-                        Add_职业经验(player_id, exp);
+                        Add_职业经验(player_action.usr_id, exp);
                         msg.push(`\n采药归来，${ext}${res_msg}`);
 
 
@@ -180,7 +171,7 @@ export class OccupationTask extends plugin {
                 //     //时间过了
                 //     end_time = end_time - 60000 * 2;
                 //     if (now_time > end_time) {
-                //         let player = data.getData("player", player_id);
+                //         let player = data.getData("player", player_action.usr_id);
                 //         let now_level_id;
                 //         if (!isNotNull(player.level_id)) {
                 //             return;
@@ -242,12 +233,12 @@ export class OccupationTask extends plugin {
                 //         arr.Place_action = 1;//秘境
                 //         arr.Place_actionplus = 1;//沉迷状态
                 //         delete arr.group_id;//结算完去除group_id
-                //         redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
+                //         redis.set("xiuxian:player:" + player_action.usr_id + ":action", JSON.stringify(arr));
                 //         //msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
                 //         if (is_group) {
                 //             this.pushInfo(push_address, is_group, msg)
                 //         } else {
-                //             this.pushInfo(player_id, is_group, msg);
+                //             this.pushInfo(player_action.usr_id, is_group, msg);
                 //         }
 
                 //     }
@@ -266,7 +257,7 @@ export class OccupationTask extends plugin {
                 //         if (time < y) {
                 //             time = 0;
                 //         }
-                //         let player = data.getData("player", player_id);
+                //         let player = data.getData("player", player_action.usr_id);
                 //         if (!isNotNull(player.level_id)) {
                 //             return;
                 //         }
@@ -287,12 +278,12 @@ export class OccupationTask extends plugin {
                 //         end_amount = Math.floor(end_amount);
 
 
-                //         Add_najie_thing(player_id, "野兔", "食材", end_amount);
-                //         Add_najie_thing(player_id, "野鸡", "食材", end_amount);
-                //         Add_najie_thing(player_id, "野猪", "食材", end_amount);
-                //         Add_najie_thing(player_id, "野牛", "食材", end_amount);
-                //         Add_najie_thing(player_id, "野羊", "食材", end_amount);
-                //         Add_职业经验(player_id, exp);
+                //         Add_najie_thing(player_action.usr_id, "野兔", "食材", end_amount);
+                //         Add_najie_thing(player_action.usr_id, "野鸡", "食材", end_amount);
+                //         Add_najie_thing(player_action.usr_id, "野猪", "食材", end_amount);
+                //         Add_najie_thing(player_action.usr_id, "野牛", "食材", end_amount);
+                //         Add_najie_thing(player_action.usr_id, "野羊", "食材", end_amount);
+                //         Add_职业经验(player_action.usr_id, exp);
                 //         msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
 
                 //         let arr = action;
@@ -305,12 +296,12 @@ export class OccupationTask extends plugin {
                 //         arr.Place_action = 1;//秘境
                 //         arr.Place_actionplus = 1;//沉迷状态
                 //         delete arr.group_id;//结算完去除group_id
-                //         redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
+                //         redis.set("xiuxian:player:" + player_action.usr_id + ":action", JSON.stringify(arr));
                 //         //msg.push("\n增加修为:" + xiuwei * time, "血量增加:" + blood * time);
                 //         if (is_group) {
                 //             this.pushInfo(push_address, is_group, msg)
                 //         } else {
-                //             this.pushInfo(player_id, is_group, msg);
+                //             this.pushInfo(player_action.usr_id, is_group, msg);
                 //         }
 
                 //     }
