@@ -371,6 +371,7 @@ export class Occupation extends plugin {
             return;
         }
         let action = await this.getPlayerAction(e.user_id);
+        console.log(action)
         let state = await this.getPlayerState(action);
         if (state == "空闲") {
             return;
@@ -1818,7 +1819,6 @@ export class Occupation extends plugin {
         }
         var action0 = JSON.stringify(action)
         action = JSON.parse(action0);//转为json格式数据
-        console.log(action)
         return action;
     }
 
