@@ -1828,6 +1828,7 @@ export class Occupation extends plugin {
             var action0 = JSON.stringify(result)
             let action = JSON.parse(action0);
             let a = action[0]
+            console.log(a)
             return a;
         })
 
