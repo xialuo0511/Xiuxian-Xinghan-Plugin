@@ -157,7 +157,7 @@ export class OccupationTask extends plugin {
 
                         const sql2 = `DELETE FROM action WHERE id IN ${player_action.usr_id};`
                         db1.query(sql2, (err, result) => {
-                            console.log(result)
+                            console.log(err)
                             if (is_group) {
                                 this.pushInfo(push_address, is_group, msg)
                             } else {
