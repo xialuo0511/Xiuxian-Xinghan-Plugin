@@ -117,7 +117,6 @@ export async function sql_run(query) {
   db1.query(sql2, (err, result) => {
     console.log(result)
     if (err || !result) {
-      db1.end();
       return false;
     }
     return result;
