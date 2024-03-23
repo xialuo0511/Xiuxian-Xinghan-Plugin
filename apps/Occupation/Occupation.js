@@ -1818,8 +1818,6 @@ export class Occupation extends plugin {
         if (!action) {
             return false;
         }
-        var action0 = JSON.stringify(action)
-        action = JSON.parse(action0);//转为json格式数据
         return action[0];
     }
 

@@ -114,11 +114,8 @@ export async function sql_run(query) {
     database: 'xiuxiandatabase'
   })
   db1.query(query, (err, result) => {
-    console.log(result)
-    if (result) {
-      return result;
-    }
-    return false;
+    var action0 = JSON.stringify(result)
+    return JSON.parse(action0);
   })
 
 }
