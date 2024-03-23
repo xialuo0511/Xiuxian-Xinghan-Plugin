@@ -1487,7 +1487,23 @@ export class Occupation extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let action = await this.getPlayerAction(e.user_id);
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        var mysql = require('mysql');
+        let databaseConfigData = config.getConfig("database", "database");
+        //创建连接
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: databaseConfigData.Database.username,
+            password: databaseConfigData.Database.password,
+            database: 'xiuxiandatabase'
+        })
+        var action = db1.query(sql1, (err, result) => {
+            let b = JSON.stringify(result)
+            let action = JSON.parse(b);
+            let a = action[0]
+            console.log(a)
+            return a;
+        })
         let state = await this.getPlayerState(action);
         if (state == "空闲") {
             return;
@@ -1831,7 +1847,6 @@ export class Occupation extends plugin {
             console.log(a)
             return a;
         })
-
     }
 
     /**
