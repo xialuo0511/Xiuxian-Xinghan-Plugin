@@ -79,7 +79,6 @@ export class OccupationTask extends plugin {
                     //时间过了
                     end_time = end_time - 60000 * 2;
                     if (now_time > end_time) {
-                        log_mag += "当前人物未结算，结算状态";
                         let player = data.getData("player", player_action.usr_id);
 
                         if (!isNotNull(player.level_id)) {
