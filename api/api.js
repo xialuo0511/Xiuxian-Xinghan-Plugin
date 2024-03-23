@@ -9,6 +9,8 @@ import config from '../model/Config.js';
 import data from '../model/XiuxianData.js';
 import Show from '../model/show.js';
 import { __PATH } from '../apps/Xiuxian/xiuxian.js';
+
+import { createRequire } from "module"
 const require = createRequire(import.meta.url)
 
 export const verc = ({ e }) => {
