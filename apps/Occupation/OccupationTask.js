@@ -61,7 +61,7 @@ export class OccupationTask extends plugin {
                 let is_group = false;//是否推送到群
                 if (player_action.group_id != 0) {
                     is_group = true;
-                    push_address = action.group_id;
+                    push_address = player_action.group_id;
                 }
                 //最后发送的消息
                 let msg = [];
