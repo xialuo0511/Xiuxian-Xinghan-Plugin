@@ -1825,9 +1825,10 @@ export class Occupation extends plugin {
             database: 'xiuxiandatabase'
         })
         db1.query(sql1, (err, result) => {
-            console.log(result)
             var action0 = JSON.stringify(result)
+            console.log(action0)
             let action = JSON.parse(action0);
+            console.log(action)
             return action[0];
         })
 
