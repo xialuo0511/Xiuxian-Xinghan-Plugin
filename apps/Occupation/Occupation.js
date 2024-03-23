@@ -1818,6 +1818,7 @@ export class Occupation extends plugin {
         }
         var action0 = JSON.stringify(action)
         action = JSON.parse(action0);//转为json格式数据
+        console.log(action)
         return action;
     }
 
@@ -1830,6 +1831,7 @@ export class Occupation extends plugin {
         if (!action) {
             return "空闲";
         }
+
         return action.action;
     }
 

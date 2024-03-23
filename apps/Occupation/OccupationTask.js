@@ -57,7 +57,6 @@ export class OccupationTask extends plugin {
             let action_list = JSON.parse(datas)
             for (var i = 0; i < action_list.length; i++) {
                 let player_action = action_list[i]
-                console.log(player_action)
                 let push_address;//消息推送地址
                 let is_group = false;//是否推送到群
                 if (player_action.group_id != 0) {
