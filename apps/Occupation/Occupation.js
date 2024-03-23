@@ -335,12 +335,11 @@ export class Occupation extends plugin {
             }
         }
         let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let sql3
         let group_id = 0
         if (e.isGroup) {
             group_id = e.group_id
         }
-        sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0) `
+        let sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0) `
         await sql_run(sql3)
         e.reply(`现在开始采药${time}分钟`);
 
@@ -1817,8 +1816,8 @@ export class Occupation extends plugin {
         if (!action) {
             return false;
         }
-        action = JSON.stringify(action)
-        action = JSON.parse(action);//转为json格式数据
+        var action0 = JSON.stringify(action)
+        action = JSON.parse(action0);//转为json格式数据
         return action;
     }
 
