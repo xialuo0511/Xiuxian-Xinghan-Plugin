@@ -373,7 +373,7 @@ export class Occupation extends plugin {
             return;
         }
 
-        let sql1 = `select * from action where usr_id=${usr_qq};`
+        let sql1 = `select * from action where usr_id=${e.user_qq};`
         var mysql = require('mysql');
         let databaseConfigData = config.getConfig("database", "database");
         //创建连接
