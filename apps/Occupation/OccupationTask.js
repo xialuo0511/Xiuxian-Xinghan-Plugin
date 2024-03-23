@@ -34,11 +34,11 @@ export class OccupationTask extends plugin {
 
     async OccupationTask() {
         let sql1 = `select * from action where action_zhiye=1;`
-        let action_list = await sql_run(sql1)
-        console.log(action_list)
-        if (!action_list) { return }
-        action_list = JSON.stringify(action_list)
-        action_list = JSON.parse(action_list)
+        let action_list0 = await sql_run(sql1)
+        console.log(action_list0)
+        if (!action_list0) { return }
+        var datas = JSON.stringify(action_list0)
+        let action_list = JSON.parse(datas)
         for (let player_action of action_list) {
             let push_address;//消息推送地址
             let is_group = false;//是否推送到群
