@@ -1814,6 +1814,7 @@ export class Occupation extends plugin {
     async getPlayerAction(usr_qq) {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         let action = await sql_run(sql1)
+        console.log(action)
         if (!action) {
             return false;
         }

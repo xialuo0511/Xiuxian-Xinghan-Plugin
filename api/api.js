@@ -113,8 +113,7 @@ export async function sql_run(query) {
     password: databaseConfigData.Database.password,
     database: 'xiuxiandatabase'
   })
-  let sql2 = query
-  db1.query(sql2, (err, result) => {
+  db1.query(query, (err, result) => {
     if (result) {
       return result;
     }
