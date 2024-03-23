@@ -119,7 +119,6 @@ export async function sql_run(query) {
       db1.end();
       return false;
     }
-    db1.end();
     return result;
   })
 
