@@ -6,9 +6,7 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import { Gulid } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
-import lodash from 'lodash';
 
-const require = createRequire(import.meta.url)
 import mysql from "mysql"
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
