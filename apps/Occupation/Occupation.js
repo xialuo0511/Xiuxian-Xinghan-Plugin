@@ -13,6 +13,13 @@ import { createRequire } from "module"
 const require = createRequire(import.meta.url)
 
 import { zd_battle } from "../Battle/Battle.js"
+
+const db = mysql.createPool({
+    host: 'localhost',
+    user: this.databaseConfigData.Database.username,
+    password: this.databaseConfigData.Database.password,
+    database: 'XiuxianDatabase'
+})
 /**
  * 全局变量
  */
@@ -175,12 +182,7 @@ export class Occupation extends plugin {
             return;
         }
 
-        const db = mysql.createPool({
-            host: 'localhost',
-            user: this.databaseConfigData.Database.username,
-            password: this.databaseConfigData.Database.password,
-            database: 'XiuxianDatabase'
-        })
+
         let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
         let action0
         let action = {}
@@ -232,12 +234,6 @@ export class Occupation extends plugin {
         }
 
         let player = await Read_player(usr_qq);
-        const db = mysql.createPool({
-            host: 'localhost',
-            user: this.databaseConfigData.Database.username,
-            password: this.databaseConfigData.Database.password,
-            database: 'XiuxianDatabase'
-        })
         let sql1 = `select * from fuzhi where usr_id=${usr_qq};`
         let action0
         let action = {}
@@ -271,9 +267,6 @@ export class Occupation extends plugin {
                 return;
             })
         })
-
-
-
     }
 
     async plant(e) {
@@ -285,13 +278,6 @@ export class Occupation extends plugin {
         //不开放私聊
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
             return;
         }
         let player = await Read_player(usr_qq);
@@ -323,30 +309,27 @@ export class Occupation extends plugin {
             time = 30;
         }
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        //查询人物动作
-        let action = await sql_run(sql1)
-        if (action) {
-            action = JSON.stringify(action)
-            action = JSON.parse(JSON)
-            let action_end_time = action.end_time;
-            let now_time = new Date().getTime();
-            if (now_time <= action_end_time) {
+        db.query(sql1, (err, result) => {
+            if (result) {
+                let action = JSON.stringify(result)
+                action = JSON.parse(JSON)
                 let m = parseInt((action_end_time - now_time) / 1000 / 60);
                 let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
-        }
-        let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let group_id = 0
-        if (e.isGroup) {
-            group_id = e.group_id
-        }
-        let sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0) `
-        await sql_run(sql3)
-        e.reply(`现在开始采药${time}分钟`);
+            let action_time = time * 60 * 1000;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            let sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0) `
+            sql_run(sql3)
+            e.reply(`现在开始采药${time}分钟`);
 
-        return true;
+            return true;
+        })
+
     }
 
     async qingchushangjinbang(e) {
