@@ -80,7 +80,7 @@ export class Ningyuandian extends plugin {
             console.log(result)
             let a = JSON.stringify(result)
             console.log(a)
-            if (a != []) {
+            if (a.length != 0) {
                 e.reply("您已报名！")
                 return;
             }
