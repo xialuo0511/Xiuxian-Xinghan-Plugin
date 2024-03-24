@@ -368,6 +368,7 @@ export class Occupation extends plugin {
     }
 
     async plant_back(e) {
+
         //不开放私聊功能
         if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
@@ -1536,54 +1537,55 @@ export class Occupation extends plugin {
             password: databaseConfigData.Database.password,
             database: 'xiuxiandatabase'
         })
-        var action = db1.query(sql1, (err, result) => {
+        db1.query(sql1, (err, result) => {
             let b = JSON.stringify(result)
-            let action = JSON.parse(b);
-            let a = action[0]
-            console.log(a)
-            return a;
+            let action0 = JSON.parse(b);
+            var action = action0[0]
+            let state = this.getPlayerState(action);
+            if (state == "空闲") {
+                return;
+            }
+            if (action.action != "狩猎") {
+                return;
+            }
+
+
+            //结算
+            let end_time = action.end_time;
+            //开始时间
+            let start_time = end_time - action.time;
+            //现在时间
+            let now_time = new Date().getTime();
+            let time;
+            var y = this.xiuxianConfigData.mine.time;//固定时间
+
+            if (end_time > now_time) {//属于提前结束
+                time = parseInt((now_time - start_time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                if (time < y) {
+                    time = 0;
+                }
+            } else {//属于结束了未结算
+                time = parseInt((action.time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果<15，不给收益
+                if (time < y) {
+                    time = 0;
+                }
+            }
+
+            if (e.isGroup) {
+                this.shoulie_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
+            } else {
+                this.shoulie_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
+            }
+
+            const sql2 = `delete from action where usr_id=${e.user_id};`
+            db1.query(sql2, (err, result) => {
+                db1.end()
+            })
         })
-        let state = await this.getPlayerState(action);
-        if (state == "空闲") {
-            return;
-        }
-        if (action.action != "狩猎") {
-            return;
-        }
 
-
-        //结算
-        let end_time = action.end_time;
-        //开始时间
-        let start_time = end_time - action.time;
-        //现在时间
-        let now_time = new Date().getTime();
-        let time;
-        var y = this.xiuxianConfigData.mine.time;//固定时间
-
-        if (end_time > now_time) {//属于提前结束
-            time = parseInt((now_time - start_time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            if (time < y) {
-                time = 0;
-            }
-        } else {//属于结束了未结算
-            time = parseInt((action.time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果<15，不给收益
-            if (time < y) {
-                time = 0;
-            }
-        }
-
-        if (e.isGroup) {
-            await this.shoulie_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
-        } else {
-            await this.shoulie_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
-        }
-
-        const sql2 = `delete from action where usr_id=${e.user_id};`
-        db1.query(sql2)
     }
 
 
