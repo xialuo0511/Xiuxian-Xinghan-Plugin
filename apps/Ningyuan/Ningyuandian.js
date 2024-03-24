@@ -114,12 +114,12 @@ export class Ningyuandian extends plugin {
             //战斗模块
             let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
             let zd_json
-            zd_json = xh_zd(player, bosszt)
+            zd_json = await xh_zd(player, bosszt)
             let log_data = {
                 log: zd_json.msg,
             };
             const data1 = new Show(e).get_logData(log_data);
-            let img = puppeteer.screenshot('log', {
+            let img = await puppeteer.screenshot('log', {
                 ...data1,
             });
             e.reply(img);
