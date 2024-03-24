@@ -488,6 +488,7 @@ export class Occupation extends plugin {
         }
 
         //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
         let action = await sql_run(sql1)
         if (action) {
             action = JSON.stringify(action)
@@ -1493,6 +1494,7 @@ export class Occupation extends plugin {
         }
 
         //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
         let action = await sql_run(sql1)
         if (action) {
             action = JSON.stringify(action)
