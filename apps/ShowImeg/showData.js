@@ -1053,7 +1053,7 @@ export async function get_player_img(e) {
     let now_Time = new Date().getTime(); //获取当前时间戳
     if (player.daofaxianshu_endtime > now_Time) {
         var date = new Date(player.daofaxianshu_endtime - now_Time)
-        var DD = (player.daofaxianshu_endtime - now_Time) / (24 * 60 * 60 * 1000);
+        var DD = parseInt((player.daofaxianshu_endtime - now_Time) / (24 * 60 * 60 * 1000));
         var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
         var mm = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
         var ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
