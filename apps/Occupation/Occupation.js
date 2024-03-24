@@ -14,11 +14,13 @@ const require = createRequire(import.meta.url)
 
 import { zd_battle } from "../Battle/Battle.js"
 
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
 const db = mysql.createPool({
     host: 'localhost',
-    user: this.databaseConfigData.Database.username,
-    password: this.databaseConfigData.Database.password,
-    database: 'XiuxianDatabase'
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
 })
 /**
  * 全局变量
