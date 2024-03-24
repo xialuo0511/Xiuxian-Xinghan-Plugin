@@ -8,6 +8,8 @@ import { Gulid } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
 import lodash from 'lodash';
 
+const require = createRequire(import.meta.url)
+import mysql from "mysql"
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
 const db = mysql.createPool({

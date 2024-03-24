@@ -7,13 +7,13 @@ import { existplayer, Write_player, isNotNull, exist_najie_thing, Add_najie_thin
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
-import mysql from "mysql"
+import { zd_battle } from "../Battle/Battle.js"
 import { sql_run } from '../../api/api.js'
 import { createRequire } from "module"
+
+
 const require = createRequire(import.meta.url)
-
-import { zd_battle } from "../Battle/Battle.js"
-
+import mysql from "mysql"
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
 const db = mysql.createPool({
