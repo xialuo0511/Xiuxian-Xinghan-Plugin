@@ -77,7 +77,8 @@ export class Ningyuandian extends plugin {
         }
         let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
         db.query(sql1, (err, result) => {
-            if (result.length > 2) {
+            let a = JSON.stringify(result)
+            if (a.length > 2) {
                 e.reply("您已报名！")
                 return;
             }
@@ -101,13 +102,13 @@ export class Ningyuandian extends plugin {
             let player = await Read_player(usr_qq)
             let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
             db.query(sql1, (err, result) => {
-                if (result.length <= 2) {
+                let a = JSON.stringify(result)
+                if (a.length <= 2) {
                     e.reply('请先#报名凝渊殿')
                     return;
                 }
-                let a = JSON.stringify(result)
-                a = JSON.parse(a)
-                console.log(a)
+                let b = JSON.parse(a)
+                console.log(b)
                 //战斗模块
                 let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
                 let zd_json
