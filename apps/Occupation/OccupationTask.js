@@ -171,7 +171,7 @@ export class OccupationTask extends plugin {
                             return;
                         }
 
-                        let time = parseInt(action.time) / 1000 / 60;//最高720分钟
+                        let time = parseInt(player_action.time) / 1000 / 60;//最高720分钟
                         if (time > 720) {
                             time = 720
                         }
