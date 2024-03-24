@@ -82,7 +82,7 @@ export class Ningyuandian extends plugin {
                 e.reply("您已报名！")
                 return;
             }
-            let sql2 = `insert into ningyuandian values (${usr_qq},0,0,0)`
+            let sql2 = `insert into ningyuandian values (${usr_qq},0,0,0,0,0,0,0,0,0,0,0)`
             db.query(sql2, (err, result) => {
                 console.log(err)
                 e.reply('报名成功！')
