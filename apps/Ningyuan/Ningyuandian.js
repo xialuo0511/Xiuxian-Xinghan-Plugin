@@ -109,7 +109,7 @@ export class Ningyuandian extends plugin {
                     return;
                 }
                 let b = JSON.parse(a)
-                console.log(b)
+                b = b[0]
                 let now_time = new Date().getTime();
                 if (b.last_challenged_time - now_time < 600000) {
                     let m = parseInt((b.last_challenged_time - now_time) / 1000 / 60);
@@ -136,8 +136,6 @@ export class Ningyuandian extends plugin {
                             bi += 20
                         }
                     }
-                    console.log(zd_json.round)
-                    console.log(b)
                     await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
                     let sql = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where usr_id=${usr_qq};`
                     db.query(sql, (err, result) => {
@@ -248,6 +246,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
                 ok = !ok
+                cut = cut
                 break;
             }
         } else {
@@ -262,6 +261,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
                 ok = !ok
+                cut = cut
                 break;
             }
         }
