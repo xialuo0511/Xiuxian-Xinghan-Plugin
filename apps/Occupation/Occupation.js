@@ -315,8 +315,8 @@ export class Occupation extends plugin {
             if (result) {
                 let action = JSON.stringify(result)
                 action = JSON.parse(action)
-                let m = parseInt((action_end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
