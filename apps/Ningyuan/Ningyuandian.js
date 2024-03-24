@@ -6,8 +6,10 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import { Gulid } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
+import { Add_najie_thing } from '../Xiuxian/xiuxian.js';
 
 import mysql from "mysql"
+import { now } from 'lodash';
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
 const db = mysql.createPool({
@@ -109,11 +111,38 @@ export class Ningyuandian extends plugin {
                 }
                 let b = JSON.parse(a)
                 console.log(b)
+                let now_time = new Date().getTime();
+                if (b.last_challenged_time - now_time < 600000) {
+                    let m = parseInt((b.last_challenged_time - now_time) / 1000 / 60);
+                    let s = parseInt(((b.last_challenged_time - now_time) - m * 60 * 1000) / 1000);
+                    e.reply("两次挑战应间隔10分钟，剩余时间:" + m + "分" + s + "秒");
+                    return;
+                }
                 //战斗模块
                 let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
                 let zd_json
                 zd_json = await xh_zd(player, bosszt)
-                console.log(zd_json.msg)
+
+                //结算
+                let bi = 0
+                if (zd_json.ok) {
+                    b += 60
+                    if (b.this_level + 1 <= 4) {
+                        if (b.round <= 20) {
+                            bi += 20
+                        }
+                    }
+                    if (b.this_level + 1 > 4) {
+                        if (b.round <= 10) {
+                            bi += 20
+                        }
+                    }
+                    await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
+                    sql2 = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where usr_id=${usr_qq};`
+                    db.query(sql2)
+                    e.reply(`恭喜挑战成功，获得鎏金碎币*${bi}，进入下一层!`)
+                }
+
                 let log_data = {
                     log: zd_json.msg,
                 };
@@ -122,10 +151,10 @@ export class Ningyuandian extends plugin {
                     ...data1,
                 });
                 e.reply(img);
+
+
+
             })
-
-
-
             return true;
         } else {
             e.reply("区区凡人，也想参与此等战斗中吗？请踏入仙途，好好修炼吧！");
@@ -224,7 +253,7 @@ export async function xh_zd(A_player, B_player) {
             if (B_player.血量上限 < 0) {
                 B_player.血量上限 = 0
             }
-            msg.push(`【${A_player.名号}】灵气汇满！消耗了${A_player.灵气}灵气对${A_player.名号}发起了终结技${A_player.终结技}，造成伤害${A_shanghai * A_player.倍率}，【${B_player.名号}】剩余血量${B_player.血量上限}，当前灵气值${A_lingqi}/${A_player.灵气}`)
+            msg.push(`【${A_player.名号}】灵气汇满！消耗了${A_player.灵气}灵气对【${B_player.名号}】发起了终结技${A_player.终结技}，造成伤害${A_shanghai * A_player.倍率}，【${B_player.名号}】剩余血量${B_player.血量上限}，当前灵气值${A_lingqi}/${A_player.灵气}`)
             if (B_player.血量上限 <= 0) {
                 msg.push(`【${A_player.名号}】造成了致命一击，击败了【${B_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)

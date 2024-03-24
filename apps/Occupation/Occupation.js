@@ -1527,8 +1527,6 @@ export class Occupation extends plugin {
             if (action.action != "打猎") {
                 return;
             }
-
-
             //结算
             let end_time = action.end_time;
             //开始时间
