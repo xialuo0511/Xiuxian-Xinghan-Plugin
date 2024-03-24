@@ -137,8 +137,8 @@ export class Ningyuandian extends plugin {
                         }
                     }
                     await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
-                    sql2 = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where usr_id=${usr_qq};`
-                    db.query(sql2)
+                    let sql = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where usr_id=${usr_qq};`
+                    db.query(sql)
                     e.reply(`恭喜挑战成功，获得鎏金碎币*${bi}，进入下一层!`)
                 }
 
