@@ -247,7 +247,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
                 ok = !ok
-                cut1 = cut
+                cnt1 = cnt
                 break;
             }
         } else {
@@ -262,7 +262,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
                 ok = !ok
-                cut1 = cut
+                cnt1 = cnt
                 break;
             }
         }
