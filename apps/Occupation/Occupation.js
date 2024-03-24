@@ -385,6 +385,7 @@ export class Occupation extends plugin {
         })
         var action = db1.query(sql1, (err, result) => {
             let b = JSON.stringify(result)
+            console.log(b)
             let action = JSON.parse(b);
             let a = action[0]
             console.log(a)

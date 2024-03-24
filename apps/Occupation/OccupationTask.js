@@ -45,7 +45,7 @@ export class OccupationTask extends plugin {
             password: databaseConfigData.Database.password,
             database: 'xiuxiandatabase'
         })
-        await db1.query(sql1, (err, result) => {
+        db1.query(sql1, (err, result) => {
             if (err) {
                 console.log(err)
                 return
@@ -269,8 +269,9 @@ export class OccupationTask extends plugin {
                     }
                 }
             }
+            db1.end();
         })
-        db1.end();
+
     }
 
 
