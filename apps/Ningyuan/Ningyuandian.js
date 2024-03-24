@@ -300,5 +300,6 @@ export async function xh_zd(A_player, B_player) {
         }
         cnt++;
     }
-    return { "msg": msg, "round": cnt1, "ok": ok };
+    let m = { msg: msg, round: cnt1, ok: ok }
+    return m;
 }
