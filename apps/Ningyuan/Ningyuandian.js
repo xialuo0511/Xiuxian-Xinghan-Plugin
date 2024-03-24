@@ -125,7 +125,7 @@ export class Ningyuandian extends plugin {
                 //结算
                 let bi = 0
                 if (zd_json.ok) {
-                    b += 60
+                    bi += 60
                     if (b.this_level + 1 <= 4) {
                         if (b.round <= 20) {
                             bi += 20
@@ -136,6 +136,8 @@ export class Ningyuandian extends plugin {
                             bi += 20
                         }
                     }
+                    console.log(b.round)
+                    console.log(b)
                     await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
                     let sql = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where usr_id=${usr_qq};`
                     db.query(sql)
