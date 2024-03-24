@@ -534,6 +534,10 @@ export class Occupation extends plugin {
             database: 'xiuxiandatabase'
         })
         db1.query(sql1, (err, result) => {
+            let b = JSON.stringify(result)
+            console.log(b)
+            let action0 = JSON.parse(b);
+            var action = action0[0]
             let state = this.getPlayerState(action);
             if (state == "空闲") {
                 return;
@@ -585,7 +589,9 @@ export class Occupation extends plugin {
             }
 
             const sql2 = `delete from action where usr_id=${e.user_id};`
-            db1.query(sql2)
+            db1.query(sql2, (err, result) => {
+                db1.end()
+            })
         })
     }
 
