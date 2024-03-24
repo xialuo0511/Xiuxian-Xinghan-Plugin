@@ -103,7 +103,9 @@ export class Ningyuandian extends plugin {
             let player = await Read_player(usr_qq)
             let sql1 = `select * from ningyuandian where this_level_time=${this.ningyuandianConfigData.Ningyuandian.level},usr_id=${usr_qq};`
             db.query(sql1, async (err, result) => {
+
                 let a = JSON.stringify(result)
+                console.log(a)
                 if (a.length <= 2) {
                     e.reply('请先#报名凝渊殿')
                     return;
