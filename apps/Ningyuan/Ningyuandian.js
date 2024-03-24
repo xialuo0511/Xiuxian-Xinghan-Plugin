@@ -9,7 +9,6 @@ import { Read_player } from '../Xiuxian/xiuxian.js';
 import { Add_najie_thing } from '../Xiuxian/xiuxian.js';
 
 import mysql from "mysql"
-import { now } from 'lodash';
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
 const db = mysql.createPool({
