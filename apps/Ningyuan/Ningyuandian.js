@@ -112,8 +112,8 @@ export class Ningyuandian extends plugin {
                 b = b[0]
                 let now_time = new Date().getTime();
                 if (now_time - b.last_challenged_time < 600000) {
-                    let m = parseInt((now_time - b.last_challenged_time) / 1000 / 60);
-                    let s = parseInt(((now_time - b.last_challenged_time) - m * 60 * 1000) / 1000);
+                    let m = parseInt((600000 - (now_time - b.last_challenged_time)) / 1000 / 60);
+                    let s = parseInt(((600000 - (now_time - b.last_challenged_time)) - m * 60 * 1000) / 1000);
                     e.reply("两次挑战应间隔10分钟，剩余时间:" + m + "分" + s + "秒");
                     return;
                 }
