@@ -186,6 +186,7 @@ function Harm(atk, def, bao, baoshang) {
 */
 export async function xh_zd(A_player, B_player) {
     let cnt = 1; //回合数
+    let cnt1 = 0
 
     if (!A_player.灵气) {
         A_player.灵气 = 100
@@ -246,7 +247,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
                 ok = !ok
-                cut = cut
+                cut1 = cut
                 break;
             }
         } else {
@@ -261,7 +262,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
                 ok = !ok
-                cut = cut
+                cut1 = cut
                 break;
             }
         }
@@ -296,5 +297,5 @@ export async function xh_zd(A_player, B_player) {
         }
         cnt++;
     }
-    return { "msg": msg, "round": cnt, "ok": ok };
+    return { "msg": msg, "round": cnt1, "ok": ok };
 }
