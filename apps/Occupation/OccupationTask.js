@@ -270,6 +270,7 @@ export class OccupationTask extends plugin {
                 }
             }
         })
+        db1.end();
     }
 
 
