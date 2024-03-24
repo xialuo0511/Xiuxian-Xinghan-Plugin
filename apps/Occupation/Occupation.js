@@ -314,7 +314,7 @@ export class Occupation extends plugin {
         db.query(sql1, (err, result) => {
             if (result) {
                 let action = JSON.stringify(result)
-                action = JSON.parse(JSON)
+                action = JSON.parse(action)
                 let m = parseInt((action_end_time - now_time) / 1000 / 60);
                 let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
