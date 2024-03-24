@@ -315,7 +315,7 @@ export class Occupation extends plugin {
             if (result) {
                 console.log(result)
                 let action0 = JSON.stringify(result)
-                action = JSON.parse(action0)
+                let action = JSON.parse(action0)
                 console.log(action)
                 let now_time = new Date().getTime();
                 let m = parseInt((action.end_time - now_time) / 1000 / 60);
