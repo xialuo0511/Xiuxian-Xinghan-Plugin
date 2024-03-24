@@ -384,8 +384,9 @@ export class Occupation extends plugin {
             database: 'xiuxiandatabase'
         })
         var action = db1.query(sql1, (err, result) => {
+            console.log(err)
+            console.log(result)
             let b = JSON.stringify(result)
-            console.log(b)
             let action = JSON.parse(b);
             let a = action[0]
             console.log(a)
@@ -443,7 +444,10 @@ export class Occupation extends plugin {
             await this.plant_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
         }
         const sql2 = `delete from action where usr_id=${e.user_id};`
-        db1.query(sql2)
+        db1.query(sql2, (err, result) => {
+            db1.end()
+        })
+
     }
     async mine(e) {
         let usr_qq = e.user_id;//用户qq
