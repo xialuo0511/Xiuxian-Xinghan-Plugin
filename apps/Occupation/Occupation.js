@@ -209,6 +209,7 @@ export class Occupation extends plugin {
             player.occupation_exp = 0;
             Write_player(usr_qq, player);
             e.reply(`恭喜${player.名号}转职为[${occupation}]`);
+            db.end()
             return;
         })
 
@@ -383,69 +384,66 @@ export class Occupation extends plugin {
             password: databaseConfigData.Database.password,
             database: 'xiuxiandatabase'
         })
-        var action = db1.query(sql1, (err, result) => {
+        db1.query(sql1, (err, result) => {
             let b = JSON.stringify(result)
             console.log(b)
-            let action = JSON.parse(b);
-            let a = action[0]
-            console.log(a)
-            return a;
-        })
+            let action0 = JSON.parse(b);
+            var action = action0[0]
+            let state = this.getPlayerState(action);
+            if (state == "空闲") {
+                return;
+            }
+            if (action.action != "采药") {
+                return;
+            }
+            //结算
+            let end_time = action.end_time;
+            let start_time = action.end_time - action.time;
+            let now_time = new Date().getTime();
+            let time;
+            var y = 15;//固定时间
+            var x = 48;//循环次数
 
-        console.log(action)
-        let state = await this.getPlayerState(action);
-        if (state == "空闲") {
-            return;
-        }
-        if (action.action != "采药") {
-            return;
-        }
-        //结算
-        let end_time = action.end_time;
-        let start_time = action.end_time - action.time;
-        let now_time = new Date().getTime();
-        let time;
-        var y = 15;//固定时间
-        var x = 48;//循环次数
-
-        if (end_time > now_time) {//属于提前结束
-            time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
+            if (end_time > now_time) {//属于提前结束
+                time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                //如果<15，不给收益
+                if (time < y) {
+                    time = 0;
+                }
+            } else {//属于结束了未结算
+                time = parseInt((action.time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                //如果<15，不给收益
+                if (time < y) {
+                    time = 0;
                 }
             }
-            //如果<15，不给收益
-            if (time < y) {
-                time = 0;
+            if (e.isGroup) {
+                this.plant_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
+            } else {
+                this.plant_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
             }
-        } else {//属于结束了未结算
-            time = parseInt((action.time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
-            //如果<15，不给收益
-            if (time < y) {
-                time = 0;
-            }
-        }
-        if (e.isGroup) {
-            await this.plant_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
-        } else {
-            await this.plant_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
-        }
-        const sql2 = `delete from action where usr_id=${e.user_id};`
-        db1.query(sql2, (err, result) => {
-            db1.end()
+            const sql2 = `delete from action where usr_id=${e.user_id};`
+            db1.query(sql2, (err, result) => {
+                db1.end()
+            })
         })
+
 
     }
     async mine(e) {
