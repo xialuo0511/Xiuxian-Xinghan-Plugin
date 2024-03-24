@@ -77,8 +77,7 @@ export class Ningyuandian extends plugin {
         }
         let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
         db.query(sql1, (err, result) => {
-            let a = JSON.stringify(result)
-            if (a.length > 2) {
+            if (result.length > 2) {
                 e.reply("您已报名！")
                 return;
             }
@@ -100,25 +99,30 @@ export class Ningyuandian extends plugin {
             let usr_qq = e.user_id;
             usr_qq = await Gulid(usr_qq)
             let player = await Read_player(usr_qq)
-            //战斗模块
-            let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
-            let zd_json
-            zd_json = await xh_zd(player, bosszt)
-            let log_data = {
-                log: zd_json.msg,
-            };
-            const data1 = await new Show(e).get_logData(log_data);
-            let img = await puppeteer.screenshot('log', {
-                ...data1,
-            });
-            e.reply(img);
             let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
             db.query(sql1, (err, result) => {
-                if (!result) {
-                    e.reply('请先报名凝渊殿')
+                if (result.length <= 2) {
+                    e.reply('请先#报名凝渊殿')
                     return;
                 }
+                let a = JSON.stringify(result)
+                a = JSON.parse(a)
+                console.log(a)
+                //战斗模块
+                let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
+                let zd_json
+                zd_json = xh_zd(player, bosszt)
+                let log_data = {
+                    log: zd_json.msg,
+                };
+                const data1 = new Show(e).get_logData(log_data);
+                let img = puppeteer.screenshot('log', {
+                    ...data1,
+                });
+                e.reply(img);
             })
+
+
 
             return true;
         } else {
