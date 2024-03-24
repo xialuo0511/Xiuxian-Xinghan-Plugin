@@ -313,8 +313,10 @@ export class Occupation extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, (err, result) => {
             if (result) {
-                let action = JSON.stringify(result)
-                action = JSON.parse(action)
+                console.log(result)
+                let action0 = JSON.stringify(result)
+                action = JSON.parse(action0)
+                console.log(action)
                 let now_time = new Date().getTime();
                 let m = parseInt((action.end_time - now_time) / 1000 / 60);
                 let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
