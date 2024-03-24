@@ -125,9 +125,8 @@ export class Ningyuandian extends plugin {
                 }
                 //战斗模块
                 let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
-                let zd_json
-                zd_json = await xh_zd(player, bosszt)
-
+                let zd_json = await xh_zd(player, bosszt)
+                console.log(zd_json)
                 //结算
                 let bi = 0
                 if (zd_json.ok) {
