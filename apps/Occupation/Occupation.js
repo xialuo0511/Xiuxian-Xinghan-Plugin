@@ -477,31 +477,30 @@ export class Occupation extends plugin {
 
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        let action = await sql_run(sql1)
-        if (action) {
-            action = JSON.stringify(action)
-            action = JSON.parse(JSON)
-            let action_end_time = action.end_time;
-            let now_time = new Date().getTime();
-            if (now_time <= action_end_time) {
-                let m = parseInt((action_end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
+        db.query(sql1, (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
-        }
 
-        let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let sql3
-        let group_id = 0
-        if (e.isGroup) {
-            group_id = e.group_id
-        }
-        sql3 = `insert into action values(${usr_qq},'采矿',${new Date().getTime() + action_time},${action_time},${group_id},1,0,1,0,0,0,0,0,0,0,0) `
-        await sql_run(sql3)
-        e.reply(`现在开始采矿${time}分钟`);
+            let action_time = time * 60 * 1000;//持续时间，单位毫秒
+            let sql3
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            sql3 = `insert into action values(${usr_qq},'采矿',${new Date().getTime() + action_time},${action_time},${group_id},1,0,1,0,0,0,0,0,0,0,0) `
+            sql_run(sql3)
+            e.reply(`现在开始采矿${time}分钟`);
 
-        return true;
+            return true;
+        })
     }
 
 
@@ -515,14 +514,7 @@ export class Occupation extends plugin {
         let sql1 = `select * from action where usr_id=${e.user_id};`
         var mysql = require('mysql');
         let databaseConfigData = config.getConfig("database", "database");
-        //创建连接
-        const db1 = mysql.createPool({
-            host: 'localhost',
-            user: databaseConfigData.Database.username,
-            password: databaseConfigData.Database.password,
-            database: 'xiuxiandatabase'
-        })
-        db1.query(sql1, (err, result) => {
+        db.query(sql1, (err, result) => {
             let b = JSON.stringify(result)
             console.log(b)
             let action0 = JSON.parse(b);
@@ -1484,29 +1476,29 @@ export class Occupation extends plugin {
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
         let action = await sql_run(sql1)
-        if (action) {
-            action = JSON.stringify(action)
-            action = JSON.parse(JSON)
-            let action_end_time = action.end_time;
-            let now_time = new Date().getTime();
-            if (now_time <= action_end_time) {
-                let m = parseInt((action_end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
+        db.query(sql1, (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
-        }
-        let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let sql3
-        let group_id = 0
-        if (e.isGroup) {
-            group_id = e.group_id
-        }
-        sql3 = `insert into action values(${usr_qq},'打猎',${new Date().getTime() + action_time},${action_time},${group_id},1,0,0,1,0,0,0,0,0,0,0) `
-        await sql_run(sql3)
-        e.reply(`现在开始外出打猎${time}分钟`);
+            let action_time = time * 60 * 1000;//持续时间，单位毫秒
+            let sql3
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            sql3 = `insert into action values(${usr_qq},'打猎',${new Date().getTime() + action_time},${action_time},${group_id},1,0,0,1,0,0,0,0,0,0,0) `
+            sql_run(sql3)
+            e.reply(`现在开始外出打猎${time}分钟`);
 
-        return true;
+            return true;
+        })
     }
     async shoulie_back(e) {
         //不开放私聊功能
