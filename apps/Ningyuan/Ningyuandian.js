@@ -117,7 +117,7 @@ export class Ningyuandian extends plugin {
                 let log_data = {
                     log: zd_json.msg,
                 };
-                const data1 = new Show(e).get_logData(log_data);
+                const data1 = await new Show(e).get_logData(log_data);
                 let img = await puppeteer.screenshot('log', {
                     ...data1,
                 });
