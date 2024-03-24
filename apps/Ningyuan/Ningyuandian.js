@@ -101,7 +101,7 @@ export class Ningyuandian extends plugin {
             let usr_qq = e.user_id;
             usr_qq = await Gulid(usr_qq)
             let player = await Read_player(usr_qq)
-            let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
+            let sql1 = `select * from ningyuandian where this_level_time=${this.ningyuandianConfigData.Ningyuandian.level},usr_id=${usr_qq};`
             db.query(sql1, async (err, result) => {
                 let a = JSON.stringify(result)
                 if (a.length <= 2) {
@@ -115,6 +115,10 @@ export class Ningyuandian extends plugin {
                     let m = parseInt((600000 - (now_time - b.last_challenged_time)) / 1000 / 60);
                     let s = parseInt(((600000 - (now_time - b.last_challenged_time)) - m * 60 * 1000) / 1000);
                     e.reply("两次挑战应间隔10分钟，剩余时间:" + m + "分" + s + "秒");
+                    return;
+                }
+                if (b.this_level == 8) {
+                    e.reply("勇士，你已到达凝渊殿最深处，请回吧！")
                     return;
                 }
                 //战斗模块
@@ -137,9 +141,9 @@ export class Ningyuandian extends plugin {
                         }
                     }
                     await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
-                    let sql = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where usr_id=${usr_qq};`
+                    let sql = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where this_level_time=${this.ningyuandianConfigData.Ningyuandian.level},usr_id=${usr_qq};`
                     db.query(sql, (err, result) => {
-                        e.reply(`恭喜挑战成功，获得鎏金碎币*${bi}，进入下一层!`)
+                        e.reply(`恭喜挑战成功，获得鎏金碎币*${bi}，进入下一层--第${b.this_level + 1}层!`)
                     })
 
                 }
