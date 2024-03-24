@@ -523,59 +523,70 @@ export class Occupation extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let action = await this.getPlayerAction(e.user_id);
-        let state = await this.getPlayerState(action);
-        if (state == "空闲") {
-            return;
-        }
-        if (action.action != "采矿") {
-            return;
-        }
-        //结算
-        let end_time = action.end_time;
-        let start_time = action.end_time - action.time;
-        let now_time = new Date().getTime();
-        let time;
-        var y = this.xiuxianConfigData.mine.time;//固定时间
-        var x = this.xiuxianConfigData.mine.cycle;//循环次数
-        if (end_time > now_time) {//属于提前结束
-            time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
+        let sql1 = `select * from action where usr_id=${e.user_id};`
+        var mysql = require('mysql');
+        let databaseConfigData = config.getConfig("database", "database");
+        //创建连接
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: databaseConfigData.Database.username,
+            password: databaseConfigData.Database.password,
+            database: 'xiuxiandatabase'
+        })
+        db1.query(sql1, (err, result) => {
+            let state = this.getPlayerState(action);
+            if (state == "空闲") {
+                return;
+            }
+            if (action.action != "采矿") {
+                return;
+            }
+            //结算
+            let end_time = action.end_time;
+            let start_time = action.end_time - action.time;
+            let now_time = new Date().getTime();
+            let time;
+            var y = this.xiuxianConfigData.mine.time;//固定时间
+            var x = this.xiuxianConfigData.mine.cycle;//循环次数
+            if (end_time > now_time) {//属于提前结束
+                time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                //如果<15，不给收益
+                if (time < y) {
+                    time = 0;
+                }
+            } else {//属于结束了未结算
+                time = parseInt((action.time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                //如果<15，不给收益
+                if (time < y) {
+                    time = 0;
                 }
             }
-            //如果<15，不给收益
-            if (time < y) {
-                time = 0;
-            }
-        } else {//属于结束了未结算
-            time = parseInt((action.time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
-            //如果<15，不给收益
-            if (time < y) {
-                time = 0;
-            }
-        }
 
-        if (e.isGroup) {
-            await this.mine_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
-        } else {
-            await this.mine_jiesuan(e.user_id, time,);//提前闭关结束不会触发随机事件
-        }
+            if (e.isGroup) {
+                this.mine_jiesuan(e.user_id, time, e.group_id);//提前闭关结束不会触发随机事件
+            } else {
+                this.mine_jiesuan(e.user_id, time,);//提前闭关结束不会触发随机事件
+            }
 
-        const sql2 = `delete from action where usr_id=${e.user_id};`
-        db1.query(sql2)
+            const sql2 = `delete from action where usr_id=${e.user_id};`
+            db1.query(sql2)
+        })
     }
 
 
