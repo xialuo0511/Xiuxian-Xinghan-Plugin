@@ -222,8 +222,6 @@ export async function xh_zd(A_player, B_player) {
 
     let msg = [];
     let ok = false
-    // msg.push(A_player)
-    // msg.push(B_player)
     while (A_player.血量上限 > 0 && B_player.血量上限 > 0) {
         if (cnt == 31) {
             msg.push("30回合未战胜魔物，挑战失败！")
