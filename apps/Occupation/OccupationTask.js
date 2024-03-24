@@ -256,21 +256,18 @@ export class OccupationTask extends plugin {
                         Add_najie_thing(player_action.usr_id, "野羊", "食材", end_amount);
                         Add_职业经验(player_action.usr_id, exp);
                         msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
-
-
+                        const sql2 = `delete from action where usr_id=${player_action.usr_id};`
+                        db1.query(sql2)
+                        if (is_group) {
+                            this.pushInfo(push_address, is_group, msg)
+                        } else {
+                            this.pushInfo(player_action.usr_id, is_group, msg);
+                        }
 
                     }
                 }
             }
-            const sql2 = `delete from action where usr_id=${player_action.usr_id};`
-            db1.query(sql2, (err, result) => {
-                if (is_group) {
-                    this.pushInfo(push_address, is_group, msg)
-                } else {
-                    this.pushInfo(player_action.usr_id, is_group, msg);
-                }
-                db1.end();
-            })
+            db1.end();
         })
     }
 

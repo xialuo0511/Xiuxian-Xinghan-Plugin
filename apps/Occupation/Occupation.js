@@ -1527,7 +1527,7 @@ export class Occupation extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let sql1 = `select * from action where usr_id=${usr_qq};`
+        let sql1 = `select * from action where usr_id=${e.user_id};`
         var mysql = require('mysql');
         let databaseConfigData = config.getConfig("database", "database");
         //创建连接
