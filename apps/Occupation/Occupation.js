@@ -373,7 +373,7 @@ export class Occupation extends plugin {
             return;
         }
 
-        let sql1 = `select * from action where usr_id=${e.user_qq};`
+        let sql1 = `select * from action where usr_id=${e.user_id};`
         var mysql = require('mysql');
         let databaseConfigData = config.getConfig("database", "database");
         //创建连接
@@ -384,8 +384,6 @@ export class Occupation extends plugin {
             database: 'xiuxiandatabase'
         })
         var action = db1.query(sql1, (err, result) => {
-            console.log(err)
-            console.log(result)
             let b = JSON.stringify(result)
             let action = JSON.parse(b);
             let a = action[0]
