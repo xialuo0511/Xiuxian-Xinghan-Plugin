@@ -127,12 +127,12 @@ export class Ningyuandian extends plugin {
                 if (zd_json.ok) {
                     bi += 60
                     if (b.this_level + 1 <= 4) {
-                        if (b.round <= 20) {
+                        if (zd_json.round <= 20) {
                             bi += 20
                         }
                     }
                     if (b.this_level + 1 > 4) {
-                        if (b.round <= 10) {
+                        if (zd_json.round <= 10) {
                             bi += 20
                         }
                     }
