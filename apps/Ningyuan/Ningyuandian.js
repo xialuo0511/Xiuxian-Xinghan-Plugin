@@ -6,7 +6,7 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import { Gulid } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
-import { result } from 'lodash';
+import lodash from 'lodash';
 
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
