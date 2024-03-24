@@ -77,7 +77,7 @@ export class Ningyuandian extends plugin {
         }
         let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
         db.query(sql1, (err, result) => {
-            if (result) {
+            if (result != []) {
                 e.reply("您已报名！")
                 return;
             }
