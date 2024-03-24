@@ -115,10 +115,12 @@ export async function sql_run(query) {
   })
   db1.query(query, (err, result) => {
     if (!result) {
+      db1.end()
       return;
     }
     var action0 = JSON.stringify(result)
     return JSON.parse(action0);
+
   })
 
 }

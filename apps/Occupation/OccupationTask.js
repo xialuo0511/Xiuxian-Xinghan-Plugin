@@ -11,6 +11,15 @@ import { isNotNull, Read_player } from "../Xiuxian/xiuxian.js"
 import { Add_najie_thing, Add_职业经验 } from '../Xiuxian/xiuxian.js'
 import { sql_run } from '../../api/api.js'
 
+var mysql = require('mysql');
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
+const db1 = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+})
 /**
  * 定时任务
  */
@@ -32,19 +41,12 @@ export class OccupationTask extends plugin {
             name: 'OccupationTask',
             fnc: () => this.OccupationTask()
         }
+
+
     }
 
     async OccupationTask() {
         let sql1 = `select * from action where action_zhiye=1;`
-        var mysql = require('mysql');
-        let databaseConfigData = config.getConfig("database", "database");
-        //创建连接
-        const db1 = mysql.createPool({
-            host: 'localhost',
-            user: databaseConfigData.Database.username,
-            password: databaseConfigData.Database.password,
-            database: 'xiuxiandatabase'
-        })
         db1.query(sql1, (err, result) => {
             if (err) {
                 console.log(err)
@@ -267,7 +269,6 @@ export class OccupationTask extends plugin {
                     }
                 }
             }
-            db1.end();
         })
     }
 
