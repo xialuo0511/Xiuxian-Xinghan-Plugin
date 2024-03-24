@@ -113,7 +113,7 @@ export class Ningyuandian extends plugin {
                 let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
                 let zd_json
                 zd_json = await xh_zd(player, bosszt)
-                console.log(zd_json)
+                console.log(zd_json.msg)
                 let log_data = {
                     log: zd_json.msg,
                 };
