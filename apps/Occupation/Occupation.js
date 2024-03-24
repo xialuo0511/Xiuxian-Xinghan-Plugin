@@ -1545,7 +1545,7 @@ export class Occupation extends plugin {
             if (state == "空闲") {
                 return;
             }
-            if (action.action != "狩猎") {
+            if (action.action != "打猎") {
                 return;
             }
 

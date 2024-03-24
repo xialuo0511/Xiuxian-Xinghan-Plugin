@@ -114,6 +114,9 @@ export async function sql_run(query) {
     database: 'xiuxiandatabase'
   })
   db1.query(query, (err, result) => {
+    if (!result) {
+      return;
+    }
     var action0 = JSON.stringify(result)
     return JSON.parse(action0);
   })
