@@ -1053,17 +1053,11 @@ export async function get_player_img(e) {
     let now_Time = new Date().getTime(); //获取当前时间戳
     if (player.daofaxianshu_endtime > now_Time) {
         var date = new Date(player.daofaxianshu_endtime - now_Time)
-        var YY = date.getFullYear() - 1970;
-        var MM = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
-        var DD = date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate();
+        var DD = (player.daofaxianshu_endtime - now_Time) / (24 * 60 * 60 * 1000);
         var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
         var mm = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
         var ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
-        daofa = `剩余时长:`
-        if (YY != 0) {
-            daofa += `${YY}年`
-        }
-        daofa += `${MM}月${DD}日 ${hh}时${mm}分${ss}秒`
+        daofa = `剩余时长:${DD}日 ${hh}时${mm}分${ss}秒`
     } else if (player.daofaxianshu > 0) {
         daofa = "已过期"
     } else {

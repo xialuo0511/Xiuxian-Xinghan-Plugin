@@ -449,7 +449,7 @@ export class UserStart extends plugin {
             return;
         }
         player.sex = msg == '男' ? 2 : 1;
-        await data.setData("player", usr_qq, player);
+        data.setData("player", usr_qq, player);
         e.reply(`${player.名号}的性别已成功设置为 ${msg}。`);
     }
 
