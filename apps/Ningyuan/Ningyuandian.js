@@ -6,6 +6,16 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import { Gulid } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
+import { result } from 'lodash';
+
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
+const db = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+})
 
 export class Ningyuandian extends plugin {
     constructor() {
@@ -18,6 +28,10 @@ export class Ningyuandian extends plugin {
             /** 优先级，数字越小等级越高 */
             priority: 600,
             rule: [
+                {
+                    reg: '^#报名凝渊殿$',
+                    fnc: 'bmnyd'
+                },
                 {
                     reg: '^#挑战凝渊殿$',
                     fnc: 'tznyd'
@@ -35,22 +49,14 @@ export class Ningyuandian extends plugin {
         this.databaseConfigData = config.getConfig("database", "database");
         this.ningyuandianConfigData = config.getConfig("ningyuandian", "ningyuandian");
     }
-
-
     async csh(e) {
         if (!this.e.isMaster) {
             return;
         }
-        var mysql = require('mysql');
         //创建连接
-        const db1 = mysql.createPool({
-            host: 'localhost',
-            user: this.databaseConfigData.Database.username,
-            password: this.databaseConfigData.Database.password,
-            database: 'XiuxianDatabase'
-        })
+
         let sql2 = `create table if not exists ningyuandian(usr_id bigint,this_level_time bigint,this_level bigint,level_1_round int default 0,level_2_round int default 0,level_3_round int default 0,level_4_round int default 0,level_5_round int default 0,level_6_round int default 0,level_7_round int default 0,level_8_round int default 0,last_challenged_time bigint,PRIMARY KEY(usr_id))`
-        db1.query(sql2, (err, result) => {
+        db.query(sql2, (err, result) => {
             if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
             e.reply("初始化凝渊殿数据表完成")
         })
@@ -61,49 +67,56 @@ export class Ningyuandian extends plugin {
         return;
     }
 
+    async bmnyd(e) {
+        let usr_qq = e.user_id;
+        usr_qq = await Gulid(usr_qq)
+        let player = await Read_player(usr_qq)
+        if (player.镇妖塔层数 < 3500) {
+            e.reply('镇妖塔层数不足3500，无法参与战斗');
+            return;
+        }
+        let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
+        db.query(sql1, (err, result) => {
+            if (result) {
+                e.reply("您已报名！")
+                return;
+            }
+            let sql2 = `insert into ningyuandian values (${usr_qq},0,0,0)`
+            db.query(sql2, (err, result) => {
+                e.reply('报名成功！')
+                return;
+            })
+        })
+    }
+
     async tznyd(e) {
-        //不开放私聊功能
-        // if (!e.isGroup) {
-        //     e.reply('修仙游戏请在群聊中游玩');
-        //     return;
-        // }
+        if (!this.e.isMaster) {
+            e.reply('请等待开放')
+            return;
+        }
         if (data.existData("player", e.user_id)) {
             let usr_qq = e.user_id;
             usr_qq = await Gulid(usr_qq)
             let player = await Read_player(usr_qq)
-
-
-            if (player.镇妖塔层数 < 3500) {
-                e.reply('镇妖塔层数不足3500，无法参与战斗');
-                return;
-            }
+            //战斗模块
             let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
-            let zd_msg
-            zd_msg = await xh_zd(player, bosszt)
+            let zd_json
+            zd_json = await xh_zd(player, bosszt)
             let log_data = {
-                log: zd_msg,
+                log: zd_json.msg,
             };
             const data1 = await new Show(e).get_logData(log_data);
             let img = await puppeteer.screenshot('log', {
                 ...data1,
             });
             e.reply(img);
-            // if (bosszt.Health == 0) {
-            //     CurrentPlayerAttributes.镇妖塔层数 += 5;
-            //     CurrentPlayerAttributes.灵石 += Reward;
-            //     CurrentPlayerAttributes.当前血量 += Reward * 21;
-            //     e.reply([segment.at(e.user_id), `\n恭喜通过此层镇妖塔，层数+5！增加灵石${Reward}回复血量${Reward * 21}`]);
-            //     data.setData("player", e.user_id, CurrentPlayerAttributes);
-            // }
-            // if (CurrentPlayerAttributes.当前血量 == 0 || CurrentPlayerAttributes.当前血量 < 0) {
-            //     CurrentPlayerAttributes.当前血量 = 0;
-            //     let JL = Reward / 12
-            //     JL = Number(JL)
-            //     JL = JL.toFixed(0)
-            //     CurrentPlayerAttributes.灵石 -= JL;
-            //     e.reply([segment.at(e.user_id), `\n你未能通过此层镇妖塔！灵石-${JL}`]);
-            //     await data.setData("player", e.user_id, CurrentPlayerAttributes);
-            // }
+            let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
+            db.query(sql1, (err, result) => {
+                if (!result) {
+                    e.reply('请先报名凝渊殿')
+                    return;
+                }
+            })
 
             return true;
         } else {
@@ -164,6 +177,7 @@ export async function xh_zd(A_player, B_player) {
     }
 
     let msg = [];
+    let ok = false
     // msg.push(A_player)
     // msg.push(B_player)
     while (A_player.血量上限 > 0 && B_player.血量上限 > 0) {
@@ -193,6 +207,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`【${A_player.名号}】造成了致命一击，击败了【${B_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
+                ok = !ok
                 break;
             }
         } else {
@@ -206,6 +221,7 @@ export async function xh_zd(A_player, B_player) {
                 msg.push(`【${A_player.名号}】造成了致命一击，击败了【${B_player.名号}】，结束了战斗！`)
                 msg.push(`====================`)
                 msg.push(`【${A_player.名号}】赢得了战斗`)
+                ok = !ok
                 break;
             }
         }
@@ -240,5 +256,5 @@ export async function xh_zd(A_player, B_player) {
         }
         cnt++;
     }
-    return msg;
+    return { "msg": msg, "round": cnt, "ok": ok };
 }
