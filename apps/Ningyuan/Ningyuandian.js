@@ -101,28 +101,28 @@ export class Ningyuandian extends plugin {
             usr_qq = await Gulid(usr_qq)
             let player = await Read_player(usr_qq)
             let sql1 = `select * from ningyuandian where usr_id=${usr_qq};`
-            db.query(sql1, (err, result) => {
+            let b = await db.query(sql1, (err, result) => {
                 let a = JSON.stringify(result)
                 if (a.length <= 2) {
                     e.reply('请先#报名凝渊殿')
                     return;
                 }
-                let b = JSON.parse(a)
-                console.log(b)
-                //战斗模块
-                let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
-                let zd_json
-                zd_json = xh_zd(player, bosszt)
-                let log_data = {
-                    log: zd_json.msg,
-                };
-                const data1 = new Show(e).get_logData(log_data);
-                let img = puppeteer.screenshot('log', {
-                    ...data1,
-                });
-                e.reply(img);
+                return a;
             })
-
+            b = JSON.parse(b)
+            console.log(b)
+            //战斗模块
+            let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
+            let zd_json
+            zd_json = xh_zd(player, bosszt)
+            let log_data = {
+                log: zd_json.msg,
+            };
+            const data1 = new Show(e).get_logData(log_data);
+            let img = puppeteer.screenshot('log', {
+                ...data1,
+            });
+            e.reply(img);
 
 
             return true;
