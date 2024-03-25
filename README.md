@@ -4,7 +4,7 @@
 
 ### 更新注意！2.3版本更新后，需要安装mysql支持
 1. 自行前往mysql官网下载最新版本mysql并安装完毕，设置好密码
-2. 在config/xiuxian文件夹下配置好MySQL用户信息
+2. 在config/database文件夹下配置好MySQL用户信息
 3. Yunzai-Bot/目录下执行  
 ```
 pnpm install mysql --workspace-root
