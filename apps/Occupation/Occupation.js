@@ -242,16 +242,20 @@ export class Occupation extends plugin {
         let a, b, c;
         db.query(sql1, (err, result) => {
             if (err) {
+                e.reply("遇到错误！请联系开发者解决！")
+                console.log(err)
+                return;
             }
             var dataString = JSON.stringify(result);
+            if (!dataString) {
+                e.reply(`您还没有副职哦`);
+                return;
+            }
             action0 = JSON.parse(dataString);
             console.log(action0[0])
             action = action0[0]
 
-            if (!action) {
-                e.reply(`您还没有副职哦`);
-                return;
-            }
+
             a = action.occupation;
             b = action.occupation_exp;
             c = action.occupation_level;
