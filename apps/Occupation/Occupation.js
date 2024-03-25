@@ -213,7 +213,6 @@ export class Occupation extends plugin {
             player.occupation_exp = 0;
             Write_player(usr_qq, player);
             e.reply(`恭喜${player.名号}转职为[${occupation}]`);
-            db.end()
             return;
         })
 
