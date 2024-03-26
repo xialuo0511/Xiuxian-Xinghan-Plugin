@@ -217,10 +217,6 @@ export class Tiandibang extends plugin {
                     }
                 }
                 let x = tiandibang.length;
-                if (x == tiandibang.length) {
-                    e.reply("请先报名!");
-                    return;
-                }
                 if (l > tiandibang.length) {
                     l = tiandibang.length;
                 }
