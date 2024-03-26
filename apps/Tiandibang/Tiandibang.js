@@ -12,6 +12,7 @@ import config from "../../model/Config.js"
 import { createRequire } from "module"
 const require = createRequire(import.meta.url)
 import mysql from "mysql"
+import { constrainedMemory } from 'process';
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
 const db = mysql.createPool({
@@ -177,6 +178,8 @@ export class Tiandibang extends plugin {
             let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
             let sql2 = `insert into tiandibang values (${usr_qq},'${player.名号}',${level_id},${player.攻击},${player.防御},${player.血量上限},${player.暴击率},${player.灵根},${player.灵根.法球倍率},${player.学习的功法},0,0)`
             db.query(sql2, (err, result) => {
+                console.log(err)
+                console.log(result)
                 e.reply("参赛成功!");
                 return;
             })
