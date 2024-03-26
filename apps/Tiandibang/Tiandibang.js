@@ -101,28 +101,26 @@ export class Tiandibang extends plugin {
         let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             var dataString = JSON.stringify(result);
-            if (!dataString) {
+            let a = JSON.parse(dataString)
+            a = a[0]
+            if (!a) {
                 e.reply("您未报名")
                 return;
             }
-            let player = await Read_player(usr_qq);
-            let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-            let sql2 = `insert into tiandibang values (${usr_qq},0,0)`
+            if (a.jifen < data.tianditang[i].积分) {
+                e.reply(`积分不足,还需${data.tianditang[i].积分 - a.jifen}积分兑换${thing_name}`);
+                return;
+            }
+            a.jifen -= data.tianditang[i].积分;
+            await Add_najie_thing(usr_qq, thing_name, data.tianditang[i].class, 1);
+            sql2 = `update tiandibang set jifen='${a.jifen}' where usr_id=${usr_qq};`
             db.query(sql2, (err, result) => {
-                e.reply("参赛成功!");
+                e.reply([`兑换成功!获得[${thing_name}],剩余[${a.jifen}]积分`, '\n可以在【我的纳戒】中查看']);
                 return;
             })
+
         })
-        if (tiandibang[m].积分 < data.tianditang[i].积分) {
-            e.reply(`积分不足,还需${data.tianditang[i].积分 - tiandibang[m].积分}积分兑换${thing_name}`);
-            return;
-        }
-        tiandibang[m].积分 -= data.tianditang[i].积分;
-        await Add_najie_thing(usr_qq, thing_name, data.tianditang[i].class, 1);
-        await Write_tiandibang(tiandibang);
-        e.reply([`兑换成功!  获得[${thing_name}],剩余[${tiandibang[m].积分}]积分  `,
-            '\n可以在【我的纳戒】中查看']);
-        return;
+
     }
 
     async tianditang(e) {
