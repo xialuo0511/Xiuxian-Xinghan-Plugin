@@ -180,7 +180,7 @@ export class Tiandibang extends plugin {
             db.query(sql2, (err, result) => {
                 console.log(err)
                 console.log(result)
-                e.reply("参赛成功!");
+                //e.reply("参赛成功!");
                 return;
             })
         })
