@@ -134,21 +134,19 @@ export class Tiandibang extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let tiandibang;
-        tiandibang = await Read_tiandibang();
-        let m = tiandibang.length;
-        for (m = 0; m < tiandibang.length; m++) {
-            if (tiandibang[m].qq == usr_qq) {
-                break;
+        db.query(sql1, async (err, result) => {
+            var dataString = JSON.stringify(result);
+            let a = JSON.parse(dataString)
+            a = a[0]
+            if (!a) {
+                e.reply("您未报名")
+                return;
             }
-        }
-        if (m == tiandibang.length) {
-            e.reply("请先报名!");
+            let img = await get_tianditang_img(e, a.jifen);
+            e.reply(img);
             return;
-        }
-        let img = await get_tianditang_img(e, tiandibang[m].积分);
-        e.reply(img);
-        return;
+        })
+
     }
 
     async cansai(e) {
