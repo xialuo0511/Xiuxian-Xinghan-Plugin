@@ -297,7 +297,6 @@ export class Tiandibang extends plugin {
                     }
                 }
                 let last_msg = [];
-                console.log(tiandibang)
                 let atk = 1;
                 let def = 1;
                 let blood = 1;
@@ -403,6 +402,7 @@ export class Tiandibang extends plugin {
                     let msg = Data_battle.msg;
                     let A_win = `${A_player.名号}击败了${B_player.名号}`;
                     let B_win = `${B_player.名号}击败了${A_player.名号}`;
+                    console.log(msg)
                     if (msg.find(item => item == A_win)) {
                         if (k == -1) {
                             tiandibang[x].jifen += 1500;
