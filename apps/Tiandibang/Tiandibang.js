@@ -303,7 +303,7 @@ export class Tiandibang extends plugin {
                     await redis.set("xiuxian:player:" + usr_qq + ":lastbisai_time", nowTime);//redis设置pk时间
                     tiandibang[x].cishu = 3;
                 }
-                if (Today.Y == lastbisai_time.Y && Today.M == lastbisai_time.M && Today.D == lastbisai_time.D && tiandibang[x].次数 < 1) {
+                if (Today.Y == lastbisai_time.Y && Today.M == lastbisai_time.M && Today.D == lastbisai_time.D && tiandibang[x].cishu < 1) {
                     let zbl = await exist_najie_thing(usr_qq, "摘榜令", "道具");
                     if (zbl) {
                         tiandibang[x].cishu = 1;
