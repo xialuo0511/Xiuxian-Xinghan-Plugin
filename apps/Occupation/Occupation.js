@@ -9,9 +9,8 @@ import Show from "../../model/show.js"
 import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
 import { zd_battle } from "../Battle/Battle.js"
 import { sql_run } from '../../api/api.js'
+
 import { createRequire } from "module"
-
-
 const require = createRequire(import.meta.url)
 import mysql from "mysql"
 let databaseConfigData = config.getConfig("database", "database");
