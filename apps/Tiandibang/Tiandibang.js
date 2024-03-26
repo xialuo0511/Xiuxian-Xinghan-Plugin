@@ -291,6 +291,7 @@ export class Tiandibang extends plugin {
                 let tiandibang = JSON.parse(dataString)
                 let x = tiandibang.length;
                 let last_msg = [];
+                console.log(tiandibang)
                 let atk = 1;
                 let def = 1;
                 let blood = 1;
