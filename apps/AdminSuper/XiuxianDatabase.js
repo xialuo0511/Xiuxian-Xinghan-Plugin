@@ -74,7 +74,7 @@ export class XiuxianDatabase extends plugin {
             e.reply("初始化数据表2完成")
         })
 
-        let sql3 = 'create table if not exists tiandibang(usr_id bigint,name text,jingjie int,atk bigint,def bigint,hp bigint,baolv float,linggeng text,faqiubeilv text,gongfa text,cishu bigint,jifen bigint,PRIMARY KEY(usr_id))'
+        let sql3 = 'create table if not exists tiandibang(usr_id bigint,name text,jingjie int,atk bigint,def bigint,hp bigint,baolv float,linggeng json,faqiubeilv float,gongfa json,cishu bigint,jifen bigint,PRIMARY KEY(usr_id))'
         db1.query(sql3, (err, result) => {
             if (err) throw err
             e.reply("初始化数据表3完成")
