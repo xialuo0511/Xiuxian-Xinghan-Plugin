@@ -9,7 +9,8 @@ import { ForwardMsg, Read_player, shijianc, Add_灵石, existplayer, Add_najie_t
 import { zd_battle } from "../Battle/Battle.js"
 import config from "../../model/Config.js"
 
-var mysql = require('mysql');
+const require = createRequire(import.meta.url)
+import mysql from "mysql"
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
 const db = mysql.createPool({
