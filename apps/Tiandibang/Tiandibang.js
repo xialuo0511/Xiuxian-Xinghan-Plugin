@@ -167,12 +167,10 @@ export class Tiandibang extends plugin {
         let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             var dataString = JSON.stringify(result);
-            if (dataString) {
+            if (!dataString) {
                 e.reply("你已经参赛了!")
                 return;
             }
-            let player = await Read_player(usr_qq);
-            let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
             let sql2 = `insert into tiandibang values (${usr_qq},0,0)`
             db.query(sql2, (err, result) => {
                 e.reply("参赛成功!");
