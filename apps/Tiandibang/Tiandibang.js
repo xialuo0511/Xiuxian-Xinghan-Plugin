@@ -332,6 +332,7 @@ export class Tiandibang extends plugin {
                     tiandibang.灵根 = playerer.灵根
                     tiandibang.法球倍率 = playerer.灵根.法球倍率
                 }
+                console.log(tiandibang)
                 if (x != 0) {
                     let k;
                     for (k = x - 1; k >= 0; k--) {
