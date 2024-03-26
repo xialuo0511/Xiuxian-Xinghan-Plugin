@@ -169,7 +169,7 @@ export class Tiandibang extends plugin {
             var dataString = JSON.stringify(result);
             let a = JSON.parse(dataString)
             a = a[0]
-            if (!a) {
+            if (a) {
                 e.reply("你已经参赛了!")
                 return;
             }
