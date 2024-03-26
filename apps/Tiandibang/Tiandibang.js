@@ -290,6 +290,12 @@ export class Tiandibang extends plugin {
                 var dataString = JSON.stringify(result);
                 let tiandibang = JSON.parse(dataString)
                 let x = tiandibang.length;
+                for (var m = 0; m < tiandibang.length; m++) {
+                    if (tiandibang[m].usr_id == usr_qq) {
+                        x = m;
+                        break;
+                    }
+                }
                 let last_msg = [];
                 console.log(tiandibang)
                 let atk = 1;
