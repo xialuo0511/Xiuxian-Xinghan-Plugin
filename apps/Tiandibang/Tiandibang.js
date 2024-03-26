@@ -167,6 +167,8 @@ export class Tiandibang extends plugin {
         let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             var dataString = JSON.stringify(result);
+            let a = JSON.parse(dataString)
+            a = a[0]
             if (!dataString) {
                 e.reply("你已经参赛了!")
                 return;
