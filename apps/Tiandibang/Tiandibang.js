@@ -323,14 +323,14 @@ export class Tiandibang extends plugin {
                 let lingshi;
                 for (var i = 0; i < tiandibang.length; i++) {
                     let playerer = await Read_player(tiandibang[i].usr_id)
-                    tiandibang.名号 = playerer.名号
-                    tiandibang.境界 = playerer.level_id
-                    tiandibang.攻击 = playerer.攻击
-                    tiandibang.防御 = playerer.防御
-                    tiandibang.当前血量 = playerer.血量上限
-                    tiandibang.学习的功法 = playerer.学习的功法
-                    tiandibang.灵根 = playerer.灵根
-                    tiandibang.法球倍率 = playerer.灵根.法球倍率
+                    tiandibang[i].名号 = playerer.名号
+                    tiandibang[i].境界 = playerer.level_id
+                    tiandibang[i].攻击 = playerer.攻击
+                    tiandibang[i].防御 = playerer.防御
+                    tiandibang[i].当前血量 = playerer.血量上限
+                    tiandibang[i].学习的功法 = playerer.学习的功法
+                    tiandibang[i].灵根 = playerer.灵根
+                    tiandibang[i].法球倍率 = playerer.灵根.法球倍率
                 }
                 console.log(tiandibang)
                 if (x != 0) {
