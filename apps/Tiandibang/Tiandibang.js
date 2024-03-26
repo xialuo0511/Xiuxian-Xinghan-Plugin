@@ -324,11 +324,11 @@ export class Tiandibang extends plugin {
                 for (var i = 0; i < tiandibang.length; i++) {
                     let playerer = await Read_player(tiandibang[i].usr_id)
                     tiandibang.名号 = playerer.名号
-                    tiandibang.境界 = playerer.境界
+                    tiandibang.境界 = playerer.level_id
                     tiandibang.攻击 = playerer.攻击
                     tiandibang.防御 = playerer.防御
                     tiandibang.当前血量 = playerer.血量上限
-                    tiandibang.学习的功法 = playerer.功法
+                    tiandibang.学习的功法 = playerer.学习的功法
                     tiandibang.灵根 = playerer.灵根
                     tiandibang.法球倍率 = playerer.灵根.法球倍率
                 }
