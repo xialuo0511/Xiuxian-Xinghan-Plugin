@@ -203,7 +203,7 @@ export class Tiandibang extends plugin {
                 var dataString = JSON.stringify(result);
                 let tiandibang = JSON.parse(dataString)
                 for (var i = 0; i < tiandibang.length; i++) {
-                    let play = await Read_player(tiandibang[i].usr_qq)
+                    let play = await Read_player(tiandibang[i].usr_id)
                     tiandibang[i].名号 = play.名号
                 }
                 let l = 10;

@@ -200,23 +200,12 @@ export async function Go(e) {
                     if (random < gemSuccessRate[action.Place_address.type]) {
                         e.reply(`已成功镶嵌${action.Place_address.name}`);
                         const equipmentType = action.thing.type;
-                        console.log("0" + equipment[equipmentType])
-                        console.log("0" + equipment)
-                        console.log("0" + equipment[0])
-                        console.log("0" + equipment["武器"])
-                        console.log("0" + equipment["武器"].name)
-                        console.log(equipmentType);
                         if (equipment[equipmentType]?.宝石位?.hasOwnProperty(gemSlot)) {
                             console.log("0" + equipment[equipmentType])
                             equipment[equipmentType].宝石位[gemSlot] = action.Place_address;
                             equipment[equipmentType].atk += shi.攻击加成;
                             equipment[equipmentType].bao += shi.暴击加成;
                             equipment[equipmentType].HP += shi.生命加成;
-                            console.log("1" + equipment[equipmentType].HP);
-                            console.log("2" + equipment[equipmentType].bao);
-                            console.log("3" + equipment[equipmentType].atk);
-                            console.log("4" + equipment[equipmentType].宝石位[gemSlot]);
-                            console.log("5" + action.Place_address.name);
                             await Write_equipment(usr_qq, equipment);
                         }
                     } else {
