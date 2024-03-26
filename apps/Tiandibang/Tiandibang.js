@@ -189,59 +189,76 @@ export class Tiandibang extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let tiandibang;
-        tiandibang = await Read_tiandibang();
-        let x = tiandibang.length;
-        let l = 10;
-        let msg = [
-            "***天地榜(每日免费三次)***\n       周一0点清空积分",
-        ];
-        for (var i = 0; i < tiandibang.length; i++) {
-            if (tiandibang[i].qq == usr_qq) {
-                x = i;
-                break;
+        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            var dataString = JSON.stringify(result);
+            let a = JSON.parse(dataString)
+            a = a[0]
+            if (!a) {
+                e.reply("请先报名")
+                return;
             }
-        }
-        if (x == tiandibang.length) {
-            e.reply("请先报名!");
-            return;
-        }
-        if (l > tiandibang.length) {
-            l = tiandibang.length;
-        }
-        if (x < l) {
-            for (var m = 0; m < l; m++) {
-                msg.push(
-                    "名次：" + (m + 1) +
-                    "|名号：" + tiandibang[m].名号 +
-                    "|积分：" + tiandibang[m].积分);
-            }
-        }
-        else if (x >= l && (tiandibang.length - x) < l) {
-            for (var m = tiandibang.length - l; m < tiandibang.length; m++) {
-                msg.push(
-                    "名次：" + (m + 1) +
-                    "|名号：" + tiandibang[m].名号 +
-                    "|积分：" + tiandibang[m].积分);
-            }
-        }
-        else {
-            for (var m = x - 5; m < x + 5; m++) {
-                msg.push(
-                    "名次：" + (m + 1) +
-                    "|名号：" + tiandibang[m].名号 +
-                    "|积分：" + tiandibang[m].积分);
-            }
-        }
-        let log_data = {
-            log: msg,
-        };
-        const data1 = await new Show(e).get_logData(log_data);
-        let img = await puppeteer.screenshot('log', {
-            ...data1,
-        });
-        e.reply(img);
-        return;
+            let sql2 = `select * from tiandibang;`
+            db.query(sql2, async (err, result) => {
+                var dataString = JSON.stringify(result);
+                let tiandibang = JSON.parse(dataString)
+                for (var i = 0; i < tiandibang.length; i++) {
+                    let play = await Read_player(tiandibang[i].usr_qq)
+                    tiandibang[i].名号 = play.名号
+                }
+                let l = 10;
+                let msg = [
+                    "***天地榜(每日免费三次)***\n       周一0点清空积分",
+                ];
+                for (var i = 0; i < tiandibang.length; i++) {
+                    if (tiandibang[i].usr_qq == usr_qq) {
+                        x = i;
+                        break;
+                    }
+                }
+                if (x == tiandibang.length) {
+                    e.reply("请先报名!");
+                    return;
+                }
+                if (l > tiandibang.length) {
+                    l = tiandibang.length;
+                }
+                if (x < l) {
+                    for (var m = 0; m < l; m++) {
+                        msg.push(
+                            "名次：" + (m + 1) +
+                            "|名号：" + tiandibang[m].名号 +
+                            "|积分：" + tiandibang[m].jifen);
+                    }
+                }
+                else if (x >= l && (tiandibang.length - x) < l) {
+                    for (var m = tiandibang.length - l; m < tiandibang.length; m++) {
+                        msg.push(
+                            "名次：" + (m + 1) +
+                            "|名号：" + tiandibang[m].名号 +
+                            "|积分：" + tiandibang[m].jifen);
+                    }
+                }
+                else {
+                    for (var m = x - 5; m < x + 5; m++) {
+                        msg.push(
+                            "名次：" + (m + 1) +
+                            "|名号：" + tiandibang[m].名号 +
+                            "|积分：" + tiandibang[m].jifen);
+                    }
+                }
+                let log_data = {
+                    log: msg,
+                };
+                const data1 = await new Show(e).get_logData(log_data);
+                let img = await puppeteer.screenshot('log', {
+                    ...data1,
+                });
+                e.reply(img);
+                return;
+            })
+        })
+
     }
 
     async pk(e) {
