@@ -98,24 +98,21 @@ export class Tiandibang extends plugin {
             e.reply(`天地堂还没有这样的东西:${thing_name}`);
             return;
         }
-        let tiandibang;
-        tiandibang = await Read_tiandibang();
-        let m = tiandibang.length;
-        let i;
-        for (m = 0; m < tiandibang.length; m++) {
-            if (tiandibang[m].qq == usr_qq) {
-                break;
+        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            var dataString = JSON.stringify(result);
+            if (!dataString) {
+                e.reply("您未报名")
+                return;
             }
-        }
-        if (m == tiandibang.length) {
-            e.reply("请先报名!");
-            return;
-        }
-        for (i = 0; i < data.tianditang.length; i++) {
-            if (thing_name == data.tianditang[i].name) {
-                break;
-            }
-        }
+            let player = await Read_player(usr_qq);
+            let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
+            let sql2 = `insert into tiandibang values (${usr_qq},0,0)`
+            db.query(sql2, (err, result) => {
+                e.reply("参赛成功!");
+                return;
+            })
+        })
         if (tiandibang[m].积分 < data.tianditang[i].积分) {
             e.reply(`积分不足,还需${data.tianditang[i].积分 - tiandibang[m].积分}积分兑换${thing_name}`);
             return;
@@ -170,7 +167,7 @@ export class Tiandibang extends plugin {
         let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             var dataString = JSON.stringify(result);
-            if (!dataString) {
+            if (dataString) {
                 e.reply("你已经参赛了!")
                 return;
             }
