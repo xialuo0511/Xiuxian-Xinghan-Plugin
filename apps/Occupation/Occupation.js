@@ -194,9 +194,7 @@ export class Occupation extends plugin {
                 return
             }
             var dataString = JSON.stringify(result);
-            console.log(dataString)
             action0 = JSON.parse(dataString);
-            console.log(action0[0])
             action = action0[0]
             let sql2 = ""
             if (action) {

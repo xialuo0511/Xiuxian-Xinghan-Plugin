@@ -9,6 +9,16 @@ import { ForwardMsg, Read_player, shijianc, Add_灵石, existplayer, Add_najie_t
 import { zd_battle } from "../Battle/Battle.js"
 import config from "../../model/Config.js"
 
+var mysql = require('mysql');
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
+const db = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+})
+
 export class Tiandibang extends plugin {
     constructor() {
         super({
@@ -154,42 +164,21 @@ export class Tiandibang extends plugin {
         if (!ifexistplay) {
             return;
         }
-        let tiandibang;
-        tiandibang = await Read_tiandibang();
-        let x = tiandibang.length;
-        for (var i = 0; i < tiandibang.length; i++) {
-            if (tiandibang[i].qq == usr_qq) {
-                x = i;
-                break;
+        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            var dataString = JSON.stringify(result);
+            if (!dataString) {
+                e.reply("你已经参赛了!")
+                return;
             }
-        }
-        if (x == tiandibang.length) {
             let player = await Read_player(usr_qq);
             let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-            let A_player = {
-                名号: player.名号,
-                境界: level_id,
-                攻击: player.攻击,
-                防御: player.防御,
-                当前血量: player.血量上限,
-                暴击率: player.暴击率,
-                灵根: player.灵根,
-                法球倍率: player.灵根.法球倍率,
-                学习的功法: player.学习的功法,
-                qq: usr_qq,
-                次数: 0,
-                积分: 0
-            }
-
-            tiandibang.push(A_player);
-            await Write_tiandibang(tiandibang);
-            e.reply("参赛成功!");
-            return;
-        }
-        else {
-            e.reply("你已经参赛了!");
-            return;
-        }
+            let sql2 = `insert into tiandibang values (${usr_qq},'${player.名号}',${level_id},${player.攻击},${player.防御},${player.血量上限},${player.暴击率},${player.灵根},${player.灵根.法球倍率},${player.学习的功法},0,0)`
+            db.query(sql2, (err, result) => {
+                e.reply("参赛成功!");
+                return;
+            })
+        })
     }
 
     async my_point(e) {

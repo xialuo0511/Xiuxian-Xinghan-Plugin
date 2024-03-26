@@ -9,7 +9,6 @@ const require = createRequire(import.meta.url)
 
 import { isNotNull, Read_player } from "../Xiuxian/xiuxian.js"
 import { Add_najie_thing, Add_职业经验 } from '../Xiuxian/xiuxian.js'
-import { sql_run } from '../../api/api.js'
 
 var mysql = require('mysql');
 let databaseConfigData = config.getConfig("database", "database");
