@@ -200,7 +200,7 @@ export class Tiandibang extends plugin {
                 }
                 let l = 10;
                 let msg = [
-                    "***天地榜(每日免费三次)***\n       周一0点清空积分",
+                    "***天地榜(每日免费三次--周一0点清空积分)***",
                 ];
                 for (var i = 0; i < tiandibang.length; i++) {
                     if (tiandibang[i].usr_qq == usr_qq) {
