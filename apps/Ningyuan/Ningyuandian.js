@@ -93,10 +93,10 @@ export class Ningyuandian extends plugin {
     }
 
     async tznyd(e) {
-        if (!this.e.isMaster) {
-            e.reply('请等待开放')
-            return;
-        }
+        // if (!this.e.isMaster) {
+        //     e.reply('请等待开放')
+        //     return;
+        // }
         if (data.existData("player", e.user_id)) {
             let usr_qq = e.user_id;
             usr_qq = await Gulid(usr_qq)
