@@ -315,6 +315,17 @@ export class Tiandibang extends plugin {
                     tiandibang[x].last_time = nowTime
                     tiandibang[x].cishu = 3;
                 }
+                for (var i = 0; i < tiandibang.length; i++) {
+                    let playerer = await Read_player(tiandibang[i].usr_id)
+                    tiandibang[i].名号 = playerer.名号
+                    tiandibang[i].境界 = playerer.level_id
+                    tiandibang[i].攻击 = playerer.攻击
+                    tiandibang[i].防御 = playerer.防御
+                    tiandibang[i].当前血量 = playerer.血量上限
+                    tiandibang[i].学习的功法 = playerer.学习的功法
+                    tiandibang[i].灵根 = playerer.灵根
+                    tiandibang[i].法球倍率 = playerer.灵根.法球倍率
+                }
                 if (Today.Y == lastbisai_time.Y && Today.M == lastbisai_time.M && Today.D == lastbisai_time.D && tiandibang[x].cishu < 1) {
                     let zbl = await exist_najie_thing(usr_qq, "摘榜令", "道具");
                     if (zbl) {
@@ -328,17 +339,7 @@ export class Tiandibang extends plugin {
                     }
                 }
                 let lingshi;
-                for (var i = 0; i < tiandibang.length; i++) {
-                    let playerer = await Read_player(tiandibang[i].usr_id)
-                    tiandibang[i].名号 = playerer.名号
-                    tiandibang[i].境界 = playerer.level_id
-                    tiandibang[i].攻击 = playerer.攻击
-                    tiandibang[i].防御 = playerer.防御
-                    tiandibang[i].当前血量 = playerer.血量上限
-                    tiandibang[i].学习的功法 = playerer.学习的功法
-                    tiandibang[i].灵根 = playerer.灵根
-                    tiandibang[i].法球倍率 = playerer.灵根.法球倍率
-                }
+
                 console.log(tiandibang)
                 if (x != 0) {
                     let k;
@@ -487,7 +488,6 @@ export class Tiandibang extends plugin {
                     let msg = Data_battle.msg;
                     let A_win = `${A_player.名号}击败了${B_player.名号}`;
                     let B_win = `${B_player.名号}击败了${A_player.名号}`;
-                    console.log(Data_battle)
                     if (msg.find(item => item == A_win)) {
                         tiandibang[x].jifen += 1500;
                         tiandibang[x].cishu -= 1;
@@ -545,39 +545,6 @@ export class Tiandibang extends plugin {
 
 
 }
-async function Write_tiandibang(wupin) {
-    let dir = path.join(__PATH.tiandibang, `tiandibang.json`);
-    let new_ARR = JSON.stringify(wupin, "", "\t");
-    fs.writeFileSync(dir, new_ARR, 'utf8', (err) => {
-        console.log('写入成功', err)
-    })
-    return;
-}
-
-async function Read_tiandibang() {
-    let dir = path.join(`${__PATH.tiandibang}/tiandibang.json`);
-    let tiandibang = fs.readFileSync(dir, 'utf8', (err, data) => {
-        if (err) {
-            console.log(err)
-            return "error";
-        }
-        return data;
-    })
-    //将字符串数据转变成数组格式
-    tiandibang = JSON.parse(tiandibang);
-    return tiandibang;
-}
-
-async function getLastbisai(usr_qq) {
-    //查询redis中的人物动作
-    let time = await redis.get("xiuxian:player:" + usr_qq + ":lastbisai_time");
-    console.log(time);
-    if (time != null) {
-        let data = await shijianc(parseInt(time))
-        return data;
-    }
-    return false;
-}
 
 async function get_tianditang_img(e, jifen) {
     let usr_qq = e.user_id;
@@ -594,63 +561,4 @@ async function get_tianditang_img(e, jifen) {
     });
     return img;
 
-}
-
-async function re_bangdang(e) {
-    let File = fs.readdirSync(__PATH.player_path);
-    File = File.filter(file => file.endsWith(".json"));
-    let File_length = File.length;
-    fs.rmSync(`${__PATH.tiandibang}/tiandibang.json`);
-    let tiandibang;
-    let temp = [];
-    let t;
-    for (var k = 0; k < File_length; k++) {
-        let this_qq = File[k].replace(".json", '');
-        this_qq = parseInt(this_qq);
-        let player = await Read_player(this_qq);
-        let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        temp[k] = {
-            名号: player.名号,
-            境界: level_id,
-            攻击: player.攻击,
-            防御: player.防御,
-            当前血量: player.血量上限,
-            暴击率: player.暴击率,
-            灵根: player.灵根,
-            法球倍率: player.灵根.法球倍率,
-            学习的功法: player.学习的功法,
-            魔道值: player.魔道值,
-            神石: player.神石,
-            qq: this_qq,
-            次数: 3,
-            积分: 0
-        }
-    }
-    for (var i = 0; i < File_length - 1; i++) {
-        var count = 0;
-        for (var j = 0; j < File_length - i - 1; j++) {
-            if (temp[j].积分 < temp[j + 1].积分) {
-                t = temp[j];
-                temp[j] = temp[j + 1];
-                temp[j + 1] = t;
-                count = 1;
-            }
-        }
-        if (count == 0)
-            break;
-    }
-    for (var m = 0; m < File_length; m++) {
-        try {
-            tiandibang = await Read_tiandibang();
-        }
-        catch {
-            //没有表要先建立一个！
-            await Write_tiandibang([]);
-            tiandibang = await Read_tiandibang();
-        }
-        tiandibang.push(temp[m]);
-        await Write_tiandibang(tiandibang);
-    }
-    e.reply("积分已经重置！");
-    return;
 }
