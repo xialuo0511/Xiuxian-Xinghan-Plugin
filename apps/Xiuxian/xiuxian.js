@@ -2909,19 +2909,16 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
 
         }
     }
+    if (usr_qq == '2053739615') {
+        if (random > 0.2) {
+            msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
+            donjie = true
 
-    //功法
-    //轮回经
-    // if (lunhuijing && lunhuijing > -1) {
-    //     if (random > 0.2) {
-    //         msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
-    //         donjie = true
-
-    //     } else if (random > 0.1) {
-    //         msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
-    //         att = last_att * 2
-    //     }
-    // }
+        } else if (random > 0.1) {
+            msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
+            att = last_att * 2
+        }
+    }
 
 
 

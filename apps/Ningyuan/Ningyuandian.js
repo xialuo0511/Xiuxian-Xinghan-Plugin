@@ -124,7 +124,7 @@ export class Ningyuandian extends plugin {
                     return;
                 }
                 //战斗模块
-                let bosszt = data.ningyuan_guai_list_1.find(item => item.id == 1)
+                let bosszt = data.ningyuan_guai_list_1.find(item => item.id == b.this_level)
                 let zd_json = await xh_zd(player, bosszt)
                 console.log(zd_json)
                 //结算
@@ -174,9 +174,9 @@ function Harm(atk, def, bao, baoshang) {
     let x;
     let s = Math.random()
     if (s <= bao) {
-        x = atk * (1 + baoshang) / (def * 0.5)
+        x = atk * (1 + baoshang) / (def * 0.3)
     } else {
-        x = atk / (def * 0.5)
+        x = atk / (def * 0.3)
     }
     if (x < 1) {
         x = 1
