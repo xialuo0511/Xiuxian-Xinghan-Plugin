@@ -52,10 +52,6 @@ export class Tiandibang extends plugin {
                 {
                     reg: '^#积分兑换(.*)$',
                     fnc: 'duihuan'
-                },
-                {
-                    reg: '^#刷新天地榜',
-                    fnc: 're_bangdang'
                 }
             ]
         });
@@ -538,14 +534,9 @@ export class Tiandibang extends plugin {
 
     }
 
-    async re_bangdang(e) {
-        if (!e.isMaster) {
-            e.reply('你凑什么热闹');
-            return;
-        }
+    async re_bangdang() {
         let sql2 = `update tiandibang set jifen=0;`
         db.query(sql2, (err, result) => {
-            e.reply('重置完毕')
             return;
         })
     }
