@@ -230,9 +230,9 @@ export class Tiandibang extends plugin {
                 }
                 b.sort(function (a, b) {
                     if (a.jifen === b.jifen) {
-                        return b.the_best_jifen - a.the_best_jifen
+                        return a.the_best_jifen - b.the_best_jifen
                     } else {
-                        return a.jifen - b.jifen
+                        return b.jifen - a.jifen
                     }
                 })
                 for (var i = 0; i < b.length; i++) {
