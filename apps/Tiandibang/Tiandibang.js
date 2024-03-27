@@ -162,7 +162,7 @@ export class Tiandibang extends plugin {
                 e.reply("你已经参赛了!")
                 return;
             }
-            let sql2 = `insert into tiandibang values (${usr_qq},3,0)`
+            let sql2 = `insert into tiandibang values (${usr_qq},3,0,0,0,0)`
             db.query(sql2, (err, result) => {
                 e.reply("参赛成功!");
                 return;
@@ -217,7 +217,10 @@ export class Tiandibang extends plugin {
                         msg.push(
                             "名次：" + (m + 1) +
                             "|名号：" + tiandibang[m].名号 +
-                            "|积分：" + tiandibang[m].jifen);
+                            "|积分：" + tiandibang[m].jifen +
+                            "|最高积分：" + tiandibang[m].the_best_jifen +
+                            "|累计挑战次数：" + tiandibang[m].all_cishu
+                        );
                     }
                 }
                 else if (x >= l && (tiandibang.length - x) < l) {
@@ -225,7 +228,9 @@ export class Tiandibang extends plugin {
                         msg.push(
                             "名次：" + (m + 1) +
                             "|名号：" + tiandibang[m].名号 +
-                            "|积分：" + tiandibang[m].jifen);
+                            "|积分：" + tiandibang[m].jifen +
+                            "|最高积分：" + tiandibang[m].the_best_jifen +
+                            "|累计挑战次数：" + tiandibang[m].all_cishu);
                     }
                 }
                 else {
@@ -233,7 +238,9 @@ export class Tiandibang extends plugin {
                         msg.push(
                             "名次：" + (m + 1) +
                             "|名号：" + tiandibang[m].名号 +
-                            "|积分：" + tiandibang[m].jifen);
+                            "|积分：" + tiandibang[m].jifen +
+                            "|最高积分：" + tiandibang[m].the_best_jifen +
+                            "|累计挑战次数：" + tiandibang[m].all_cishu);
                     }
                 }
                 let log_data = {
@@ -303,9 +310,9 @@ export class Tiandibang extends plugin {
                 let now = new Date();
                 let nowTime = now.getTime(); //获取当前日期的时间戳
                 let Today = await shijianc(nowTime);
-                let lastbisai_time = await getLastbisai(usr_qq);//获得上次pk日期
+                let lastbisai_time = await shijianc(tiandibang[x].last_time);//获得上次pk日期
                 if (Today.Y != lastbisai_time.Y || Today.M != lastbisai_time.M || Today.D != lastbisai_time.D) {
-                    await redis.set("xiuxian:player:" + usr_qq + ":lastbisai_time", nowTime);//redis设置pk时间
+                    tiandibang[x].last_time = nowTime
                     tiandibang[x].cishu = 3;
                 }
                 if (Today.Y == lastbisai_time.Y && Today.M == lastbisai_time.M && Today.D == lastbisai_time.D && tiandibang[x].cishu < 1) {
@@ -414,7 +421,7 @@ export class Tiandibang extends plugin {
                         }
                         tiandibang[x].cishu -= 1;
                         last_msg.push(`${A_player.名号}击败了[${B_player.名号}],当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set jifen='${tiandibang[x].jifen}',cishu=${tiandibang[x].cishu} where usr_id=${usr_qq};`
+                        let sql2 = `update tiandibang set jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
                         db.query(sql2)
                     }
                     else if (msg.find(item => item == B_win)) {
@@ -428,7 +435,7 @@ export class Tiandibang extends plugin {
                         }
                         tiandibang[x].cishu -= 1;
                         last_msg.push(`${A_player.名号}被[${B_player.名号}]打败了,当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set jifen='${tiandibang[x].jifen}',cishu=${tiandibang[x].cishu} where usr_id=${usr_qq};`
+                        let sql2 = `update tiandibang set jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
                         db.query(sql2)
                     }
                     else {
@@ -480,7 +487,7 @@ export class Tiandibang extends plugin {
                         tiandibang[x].cishu -= 1;
                         lingshi = tiandibang[x].jifen * 3;
                         last_msg.push(`${A_player.名号}击败了[${B_player.名号}],当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set jifen='${tiandibang[x].jifen}',cishu=${tiandibang[x].cishu} where usr_id=${usr_qq};`
+                        let sql2 = `update tiandibang set jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
                         db.query(sql2)
                     }
                     else if (msg.find(item => item == B_win)) {
@@ -488,7 +495,7 @@ export class Tiandibang extends plugin {
                         tiandibang[x].cishu -= 1;
                         lingshi = tiandibang[x].jifen * 3;
                         last_msg.push(`${A_player.名号}被[${B_player.名号}]打败了,当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set jifen='${tiandibang[x].jifen}',cishu=${tiandibang[x].cishu} where usr_id=${usr_qq};`
+                        let sql2 = `update tiandibang set jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
                         db.query(sql2)
                     }
                     else {
