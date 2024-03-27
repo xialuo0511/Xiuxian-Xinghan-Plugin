@@ -78,6 +78,8 @@ export class Ningyuandian extends plugin {
         }
         let sql1 = `select * from ningyuandian where usr_id=${usr_qq} and this_level_time=${this.ningyuandianConfigData.Ningyuandian.level};`
         db.query(sql1, (err, result) => {
+            console.log(err)
+            console.log(result)
             var dataString = JSON.stringify(result);
             let a = JSON.parse(dataString)
             a = a[0]
