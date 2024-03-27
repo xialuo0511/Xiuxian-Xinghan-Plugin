@@ -212,37 +212,41 @@ export class Tiandibang extends plugin {
                 if (l > tiandibang.length) {
                     l = tiandibang.length;
                 }
+                let b = []
                 if (x < l) {
                     for (var m = 0; m < l; m++) {
-                        msg.push(
-                            "名次：" + (m + 1) +
-                            "|名号：" + tiandibang[m].名号 +
-                            "|积分：" + tiandibang[m].jifen +
-                            "|最高积分：" + tiandibang[m].the_best_jifen +
-                            "|累计挑战次数：" + tiandibang[m].all_cishu
-                        );
+                        b.push(tiandibang[m])
                     }
                 }
                 else if (x >= l && (tiandibang.length - x) < l) {
                     for (var m = tiandibang.length - l; m < tiandibang.length; m++) {
-                        msg.push(
-                            "名次：" + (m + 1) +
-                            "|名号：" + tiandibang[m].名号 +
-                            "|积分：" + tiandibang[m].jifen +
-                            "|最高积分：" + tiandibang[m].the_best_jifen +
-                            "|累计挑战次数：" + tiandibang[m].all_cishu);
+                        b.push(tiandibang[m])
                     }
                 }
                 else {
                     for (var m = x - 5; m < x + 5; m++) {
-                        msg.push(
-                            "名次：" + (m + 1) +
-                            "|名号：" + tiandibang[m].名号 +
-                            "|积分：" + tiandibang[m].jifen +
-                            "|最高积分：" + tiandibang[m].the_best_jifen +
-                            "|累计挑战次数：" + tiandibang[m].all_cishu);
+                        b.push(tiandibang[m])
                     }
                 }
+                b.sort(function (a, b) {
+                    if (a.jifen === b.jifen) {
+                        return b.the_best_jifen - a.the_best_jifen
+                    } else {
+                        return a.jifen - b.jifen
+                    }
+                })
+                for (var i = 0; i < b.length; i++) {
+                    msg.push(
+                        "名次：" + (i + 1) +
+                        "|名号：" + b[i].名号 +
+                        "|积分：" + b[i].jifen +
+                        "|最高积分：" + b[i].the_best_jifen +
+                        "|累计挑战次数：" + b[i].all_cishu
+                    );
+                }
+
+
+
                 let log_data = {
                     log: msg,
                 };
