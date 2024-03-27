@@ -13,7 +13,6 @@ import { createRequire } from "module"
 const require = createRequire(import.meta.url)
 import mysql from "mysql"
 import { constrainedMemory } from 'process';
-import { result } from 'lodash';
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
 const db = mysql.createPool({
