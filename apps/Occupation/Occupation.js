@@ -737,7 +737,7 @@ export class Occupation extends plugin {
             m += `\n炼神丹药力${action3.lianshen * 100}%药效${action3.lianti}次`;
         }
         if (action4 && action4.quantity > 0) {
-            m += `\n神赐丹药力${action4.shenci * 100}% 药效${action4.quantity}次`;
+            m += `\n神赐丹药力${action4.gailv * 100}% 药效${action4.quantity}次`;
         }
         let player = await data.getData('player', usr_qq);
         if (player.islucky > 0) {
