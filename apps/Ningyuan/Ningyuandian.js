@@ -78,8 +78,10 @@ export class Ningyuandian extends plugin {
         }
         let sql1 = `select * from ningyuandian where usr_id=${usr_qq} and this_level_time=${this.ningyuandianConfigData.Ningyuandian.level};`
         db.query(sql1, (err, result) => {
-            let a = JSON.stringify(result)
-            if (a.length > 2) {
+            var dataString = JSON.stringify(result);
+            let a = JSON.parse(dataString)
+            a = a[0]
+            if (a) {
                 e.reply("您已报名！")
                 return;
             }
