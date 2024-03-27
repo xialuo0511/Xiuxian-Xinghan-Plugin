@@ -160,7 +160,7 @@ export class Ningyuandian extends plugin {
                 log: zd_json.msg,
             };
             const data1 = await new Show(e).get_logData(log_data);
-            let img = await puppeteer.screenshot(`log${usr_qq}`, {
+            let img = await puppeteer.screenshot(`log`, {
                 ...data1,
             });
             e.reply(img);
