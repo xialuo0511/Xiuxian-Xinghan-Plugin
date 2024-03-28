@@ -487,7 +487,6 @@ export class Battle extends plugin {
     B_player.当前血量 = B_player.血量上限;
     let Data_battle = await zd_battle(A_player, B_player);
     let msg = Data_battle.msg;
-
     let log_data = {
       log: msg,
     };
