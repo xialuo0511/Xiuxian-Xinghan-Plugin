@@ -200,7 +200,7 @@ export class Tiandibang extends plugin {
                 }
                 let l = 10;
                 let msg = [
-                    "***天地榜(每日免费三次--周一0点清空积分)***",
+                    "***天地榜(每日免费三次周一0点清空积分)***",
                 ];
                 for (var i = 0; i < tiandibang.length; i++) {
                     if (tiandibang[i].usr_qq == usr_qq) {
@@ -346,17 +346,9 @@ export class Tiandibang extends plugin {
 
                 console.log(tiandibang)
                 if (x != 0) {
-                    let k;
-                    for (k = x - 1; k >= 0; k--) {
-                        if (tiandibang[x].境界 > 41)
-                            break;
-                        else {
-                            if (tiandibang[k].境界 > 41) {
-                                continue;
-                            }
-                            else
-                                break;
-                        }
+                    let k = Math.ceil(Math.random() * tiandibang.length);
+                    if (k == 0) {
+                        k = -1
                     }
                     let B_player;
                     if (k != -1) {
