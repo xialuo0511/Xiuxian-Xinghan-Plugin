@@ -198,11 +198,11 @@ export class OccupationTask extends plugin {
                         let usr_qq = player.id
                         end_amount = Math.floor(end_amount);
                         end_amount2 = Math.floor(end_amount2);
-                        await Add_najie_thing(usr_qq, "庚金", "材料", end_amount);
-                        await Add_najie_thing(usr_qq, "玄土", "材料", end_amount);
-                        await Add_najie_thing(usr_qq, "红宝石", "材料", end_amount2);
-                        await Add_najie_thing(usr_qq, "绿宝石", "材料", end_amount2);
-                        await Add_najie_thing(usr_qq, "蓝宝石", "材料", end_amount2);
+                        await Add_najie_thing(player_action.usr_id, "庚金", "材料", end_amount);
+                        await Add_najie_thing(player_action.usr_id, "玄土", "材料", end_amount);
+                        await Add_najie_thing(player_action.usr_id, "红宝石", "材料", end_amount2);
+                        await Add_najie_thing(player_action.usr_id, "绿宝石", "材料", end_amount2);
+                        await Add_najie_thing(player_action.usr_id, "蓝宝石", "材料", end_amount2);
                         Add_职业经验(usr_qq, exp);
                         msg.push(`\n采矿归来，${ext}\n收获庚金×${end_amount}\n玄土×${end_amount}\n红宝石×${end_amount2}\n绿宝石×${end_amount2}\n蓝宝石×${end_amount2}`);
 
@@ -248,11 +248,11 @@ export class OccupationTask extends plugin {
                         let end_amount = Math.floor(shoulie_amount)
                         end_amount *= player.occupation_level / 60
                         end_amount = Math.floor(end_amount);
-                        await Add_najie_thing(usr_qq, "野兔", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野鸡", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野猪", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野牛", "食材", end_amount);
-                        await Add_najie_thing(usr_qq, "野羊", "食材", end_amount);
+                        await Add_najie_thing(player_action.usr_id, "野兔", "食材", end_amount);
+                        await Add_najie_thing(player_action.usr_id, "野鸡", "食材", end_amount);
+                        await Add_najie_thing(player_action.usr_id, "野猪", "食材", end_amount);
+                        await Add_najie_thing(player_action.usr_id, "野牛", "食材", end_amount);
+                        await Add_najie_thing(player_action.usr_id, "野羊", "食材", end_amount);
                         Add_职业经验(player_action.usr_id, exp);
                         msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
