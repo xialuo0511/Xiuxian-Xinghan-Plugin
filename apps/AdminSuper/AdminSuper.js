@@ -161,6 +161,7 @@ export class AdminSuper extends plugin {
     //获取at信息
     let atItem = e.message.filter(item => item.type === 'at');
     let usr_qq = atItem[0].qq;
+    console.log(usr_qq)
     if (!usr_qq) {
       usr_qq = e.msg.replace("#开通初级道法仙术", "");
     }
