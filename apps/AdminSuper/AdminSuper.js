@@ -153,16 +153,12 @@ export class AdminSuper extends plugin {
       return;
     }
     let nowtime = new Date().getTime();
-    //没有at信息直接返回,不执行
-    let isat = e.message.some(item => item.type === 'at');
-    if (!isat) {
-      return;
-    }
-    //获取at信息
-    let atItem = e.message.filter(item => item.type === 'at');
-    let usr_qq = atItem[0].qq;
-    console.log(usr_qq)
-    if (!usr_qq) {
+    let usr_qq
+    try {
+      //获取at信息
+      let atItem = e.message.filter(item => item.type === 'at');
+      usr_qq = atItem[0].qq;
+    } catch (error) {
       usr_qq = e.msg.replace("#开通初级道法仙术", "");
     }
     let ifexistplay = data.existData("player", usr_qq);
