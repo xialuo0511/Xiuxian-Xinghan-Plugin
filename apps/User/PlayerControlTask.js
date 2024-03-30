@@ -66,10 +66,11 @@ export class PlayerControlTask extends plugin {
                 let now_time = new Date().getTime();
                 //闭关状态
                 if (player_action.action_biguan == "1") {
+                    console.log(player_action)
                     if (now_time < end_time) {
                         return;
                     }
-                    console.log(player_action)
+
                     let time = (parseInt(player_action.time) / 1000 / 60) * 2;//分钟
                     if (time > 7200) {
                         time = 7200
