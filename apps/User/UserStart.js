@@ -56,10 +56,10 @@ export class UserStart extends plugin {
                     fnc: 'Set_touxiang'
                 }
                 ,
-                // {
-                //     reg: '^#领取七日馈赠$',
-                //     fnc: 'huodong_gift'
-                // },
+                {
+                    reg: '^#领取七日馈赠$',
+                    fnc: 'huodong_gift'
+                },
                 {
                     reg: '^#绑定频道密钥$',
                     fnc: 'bangding'
@@ -649,8 +649,8 @@ export class UserStart extends plugin {
         let nowTime = now.getTime(); //获取当前日期的时间戳
         let Today = await shijianc(nowTime);
         //7-12 0点开启
-        if (nowTime < 1689091200000) {
-            e.reply(`「七日馈赠 · 异界珍宝」活动暂未开启！`);
+        if (nowTime < 1711850400000) {
+            e.reply(`「七日馈赠 · 仙韵绕春华」活动暂未开启！`);
             return;
         }
         let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
@@ -660,7 +660,7 @@ export class UserStart extends plugin {
         let lastsign_time = await shijianc(parseInt(time))//获得上次签到日期
 
         if (Today.Y == lastsign_time.Y && Today.M == lastsign_time.M && Today.D == lastsign_time.D) {
-            e.reply(`你今日已经领取过「七日馈赠 · 异界珍宝」了`);
+            e.reply(`你今日已经领取过「七日馈赠 · 仙韵绕春华」了`);
             return;
         }
         await redis.set("xiuxian:player:" + usr_qq + ":huodonglastsign_time", nowTime);//redis设置签到时间
@@ -669,130 +669,73 @@ export class UserStart extends plugin {
         if (!sign) {
             sign = 0
         }
-        let xianshi = await redis.get("xiuxian:player:" + usr_qq + ":dingjixianshi");
-        xianshi = Number(xianshi);
-        if (!xianshi) {
-            xianshi = 0
-        }
         sign = sign + 1
         await redis.set("xiuxian:player:" + usr_qq + ":huodongsign", sign);//redis设置签到
         if (sign > 7) {//签到连续7天或者昨天没有签到,连续签到天数清零
-            e.reply(`「七日馈赠 · 异界珍宝」已领取完毕！`);
+            e.reply(`「七日馈赠 · 仙韵绕春华」已领取完毕！`);
             return;
         }
 
         if (sign == 1) {
-            await Add_najie_thing(usr_qq, "2w", "道具", "5");
-            xianshi = xianshi + 5
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
+            await Add_najie_thing(usr_qq, "2w", "道具", "10");
             let msg = [
                 segment.at(e.user_id),
-                `领取第${sign}天馈赠成功！获得【2w】*5,【顶级仙石】*5`
+                `领取第${sign}天馈赠成功！获得【2w】*10`
             ]
-            let yijie = await yijie_existplayer(usr_qq)
-            if (yijie) {
-                await Add_星魂币(usr_qq, 500);
-                msg.push("\n领取异界奖励成功，获得500星魂币！")
-            }
             e.reply(msg);
             return;
         }
         if (sign == 2) {
-            await Add_najie_thing(usr_qq, "甜酿丹", "丹药", "10");
-            xianshi = xianshi + 10
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
+            await Add_najie_thing(usr_qq, "甜酿丹", "丹药", "20");
             let msg = [
                 segment.at(e.user_id),
-                `领取第${sign}天馈赠成功！获得【甜酿丹】*10,【顶级仙石】*10`
+                `领取第${sign}天馈赠成功！获得【甜酿丹】*20`
             ]
-            let yijie = await yijie_existplayer(usr_qq)
-            if (yijie) {
-                await Add_yijie_beibao_thing(usr_qq, "幽静谷", "道具", 5)
-                await Add_yijie_beibao_thing(usr_qq, "玄蛛网", "道具", 5)
-                msg.push("\n领取异界奖励成功，获得【幽静谷】*5,【玄蛛网】*5")
-            }
             e.reply(msg);
             return;
         }
         if (sign == 3) {
-            await Add_najie_thing(usr_qq, "摘榜令", "道具", "3");
-            xianshi = xianshi + 10
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
+            await Add_najie_thing(usr_qq, "摘榜令", "道具", "5");
             let msg = [
                 segment.at(e.user_id),
-                `领取第${sign}天馈赠成功！获得【摘榜令】*3,【顶级仙石】*10 `
+                `领取第${sign}天馈赠成功！获得【摘榜令】*5`
             ]
-            let yijie = await yijie_existplayer(usr_qq)
-            if (yijie) {
-                await Add_yijie_beibao_thing(usr_qq, "仙鼎历练券", "道具", 15)
-                msg.push("\n领取异界奖励成功，获得【仙鼎历练券】*15")
-            }
             e.reply(msg);
             return;
         }
         if (sign == 4) {
             await Add_najie_thing(usr_qq, "2w", "道具", "15");
-            xianshi = xianshi + 15
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(e.user_id),
-                `领取第${sign}天馈赠成功！获得【2w】*15,【顶级仙石】*15`
+                `领取第${sign}天馈赠成功！获得【2w】*15`
             ]
-            let yijie = await yijie_existplayer(usr_qq)
-            if (yijie) {
-                await Add_星魂币(usr_qq, 1000);
-                msg.push("\n领取异界奖励成功，获得1000星魂币！")
-            }
             e.reply(msg);
             return;
         }
         if (sign == 5) {
             await Add_najie_thing(usr_qq, "2w", "道具", "30");
-            xianshi = xianshi + 15
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
             let msg = [
                 segment.at(e.user_id),
-                `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*15`
+                `领取第${sign}天馈赠成功！获得【2w】*30`
             ]
-            let yijie = await yijie_existplayer(usr_qq)
-            if (yijie) {
-                await Add_yijie_beibao_thing(usr_qq, "烤肉", "食材", 25)
-                msg.push("\n领取异界奖励成功，获得【烤肉】*25")
-            }
             e.reply(msg);
             return;
         }
         if (sign == 6) {
-            await Add_najie_thing(usr_qq, "2w", "道具", "30");
-            xianshi = xianshi + 20
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
+            await Add_najie_thing(usr_qq, "2w", "道具", "50");
             let msg = [
                 segment.at(e.user_id),
-                `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*20`
+                `领取第${sign}天馈赠成功！获得【2w】*50`
             ]
-            let yijie = await yijie_existplayer(usr_qq)
-            if (yijie) {
-                await Add_yijie_beibao_thing(usr_qq, "深邃矿洞", "道具", 5)
-                await Add_yijie_beibao_thing(usr_qq, "铁镐", "道具", 5)
-                msg.push("\n领取异界奖励成功，获得【深邃矿洞】*5,【铁镐】*5")
-            }
             e.reply(msg);
             return;
         }
         if (sign == 7) {
-            await Add_najie_thing(usr_qq, "2w", "道具", "30");
-            xianshi = xianshi + 35
-            await redis.set("xiuxian:player:" + usr_qq + ":dingjixianshi", xianshi);
+            await Add_najie_thing(usr_qq, "七星玄元丹", "丹药", "5");
             let msg = [
                 segment.at(e.user_id),
-                `领取第${sign}天馈赠成功！获得【2w】*30,【顶级仙石】*35`
+                `领取第${sign}天馈赠成功！获得【七星玄元丹】*5`
             ]
-            let yijie = await yijie_existplayer(usr_qq)
-            if (yijie) {
-                await Add_yijie_beibao_thing(usr_qq, "高级装备箱", "箱子", 10)
-                await Add_星魂币(usr_qq, 1500)
-                msg.push("\n领取异界奖励成功，获得1500星魂币,【高级装备箱】*10")
-            }
             e.reply(msg);
             return;
         }
