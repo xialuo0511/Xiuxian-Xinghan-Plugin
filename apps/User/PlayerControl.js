@@ -193,6 +193,10 @@ export class PlayerControl extends plugin {
                 return;
             }
             let action_time = time * 60 * 1000;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
             let sql3 = `insert into action values(${usr_qq},'降妖',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,1,0,0) `
             db.query(sql3)
             e.reply(`现在开始降妖${time}分钟`);
