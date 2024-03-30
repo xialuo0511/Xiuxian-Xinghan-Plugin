@@ -174,10 +174,10 @@ export class PlayerControlTask extends plugin {
                         }
                         await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
                     }
-
-                    await this.pushInfo(push_address, true, msg)
                     const sql2 = `delete from action where usr_id=${player_action.usr_id};`
-                    db1.query(sql2)
+                    db1.query(sql2, async (err, result) => {
+                        await this.pushInfo(push_address, true, msg)
+                    })
                     return;
 
                 }
@@ -225,14 +225,15 @@ export class PlayerControlTask extends plugin {
                         //
                         await this.setFileValue(player_id, get_lingshi, "灵石");//添加灵石
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
-                        db1.query(sql2)
-                        msg.push("\n降妖得到" + get_lingshi + "灵石");
-                        log_mag += "收入" + get_lingshi;
-                        if (is_group) {
-                            await this.pushInfo(push_address, is_group, msg)
-                        } else {
-                            await this.pushInfo(player_id, is_group, msg);
-                        }
+                        db1.query(sql2, async (err, result) => {
+                            msg.push("\n降妖得到" + get_lingshi + "灵石");
+                            log_mag += "收入" + get_lingshi;
+                            if (is_group) {
+                                await this.pushInfo(push_address, is_group, msg)
+                            } else {
+                                await this.pushInfo(player_id, is_group, msg);
+                            }
+                        })
                     }
                 }
             }
