@@ -343,8 +343,6 @@ export class Tiandibang extends plugin {
                     }
                 }
                 let lingshi;
-
-                console.log(tiandibang)
                 if (x != 0) {
                     let k = Math.ceil(Math.random() * tiandibang.length);
                     if (k == 0 || tiandibang[x].名号 == tiandibang[k].名号) {
