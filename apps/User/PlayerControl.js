@@ -93,21 +93,6 @@ export class PlayerControl extends plugin {
             time = 30;
         }
 
-        //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        if (action != null) {
-            //人物有动作查询动作结束时间
-            let action_end_time = action.end_time;
-            let now_time = new Date().getTime();
-            if (now_time <= action_end_time) {
-                let m = parseInt((action_end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
-                return;
-            }
-        }
-
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
@@ -162,13 +147,6 @@ export class PlayerControl extends plugin {
         if (!await existplayer(usr_qq)) {
             return;
         }
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
-            return;
-        }
         //获取时间
         let time = e.msg.replace("#", "");
         time = time.replace("降妖", "");
@@ -202,43 +180,24 @@ export class PlayerControl extends plugin {
             return;
         }
         //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        if (action != null) {
-            //人物有动作查询动作结束时间
-            let action_end_time = action.end_time;
-            let now_time = new Date().getTime();
-            if (now_time <= action_end_time) {
-                let m = parseInt((action_end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
-        }
-        let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let arr = {
-            "action": "降妖",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "plant": "1",//采药-关闭
-            "shutup": "1",//闭关状态-关闭
-            "working": "0",//降妖状态-开启
-            "Place_action": "1",//秘境状态---关闭
-            "Place_actionplus": "1",//沉迷---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "xijie": "1", //洗劫状态开启
-            "plant": "1",//采药-开启
-            "mine": "1",//采矿-开启
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id;
-        }
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
-        e.reply(`现在开始降妖${time}分钟`);
-        return true;
+            let action_time = time * 60 * 1000;//持续时间，单位毫秒
+            let sql3 = `insert into action values(${usr_qq},'降妖',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,1,0,0) `
+            db.query(sql3)
+            e.reply(`现在开始降妖${time}分钟`);
+            return true;
+        })
     }
     /**
      * 人物结束闭关
@@ -326,68 +285,65 @@ export class PlayerControl extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let action = await this.getPlayerAction(e.user_id);
-        let state = await this.getPlayerState(action);
-        if (state == "空闲") {
-            return;
-        }
-        if (action.action != "降妖") {
-            return;
-        }
-        //结算
-        let end_time = action.end_time;
-        let start_time = action.end_time - action.time;
-        let now_time = new Date().getTime();
-        let time;
-        var y = this.xiuxianConfigData.work.time;//固定时间
-        var x = this.xiuxianConfigData.work.cycle;//循环次数
+        let sql1 = `select * from action where usr_id=${e.user_id};`
+        db.query(sql1, async (err, result) => {
+            let b = JSON.stringify(result)
+            let action0 = JSON.parse(b);
+            var action = action0[0]
+            if (!action) {
+                return;
+            }
+            if (action.action != "降妖") {
+                return;
+            }
+            //结算
+            let end_time = action.end_time;
+            let start_time = action.end_time - action.time;
+            let now_time = new Date().getTime();
+            let time;
+            var y = this.xiuxianConfigData.work.time;//固定时间
+            var x = this.xiuxianConfigData.work.cycle;//循环次数
 
-        if (end_time > now_time) {//属于提前结束
-            time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
+            if (end_time > now_time) {//属于提前结束
+                time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                //如果<15，不给收益
+                if (time < y) {
+                    time = 0;
+                }
+            } else {//属于结束了未结算
+                time = parseInt((action.time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                //如果<15，不给收益
+                if (time < y) {
+                    time = 0;
                 }
             }
-            //如果<15，不给收益
-            if (time < y) {
-                time = 0;
-            }
-        } else {//属于结束了未结算
-            time = parseInt((action.time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
-            //如果<15，不给收益
-            if (time < y) {
-                time = 0;
-            }
-        }
 
-        if (e.isGroup) {
-            await this.dagong_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
-        } else {
-            await this.dagong_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
-        }
+            if (e.isGroup) {
+                await this.dagong_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+            } else {
+                await this.dagong_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
+            }
 
-        let arr = action;
-        arr.is_jiesuan = 1;//结算状态
-        arr.shutup = 1;//闭关状态
-        arr.working = 1;//降妖状态
-        arr.power_up = 1;//渡劫状态
-        arr.Place_action = 1;//秘境
-        //结束的时间也修改为当前时间
-        arr.end_time = new Date().getTime();
-        delete arr.group_id;//结算完去除group_id
-        await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
+            const sql2 = `delete from action where usr_id=${e.user_id};`
+            db.query(sql2)
+            return;
+        })
     }
     /**
      * 闭关结算
