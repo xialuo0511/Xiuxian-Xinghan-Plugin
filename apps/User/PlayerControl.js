@@ -141,7 +141,7 @@ export class PlayerControl extends plugin {
                 group_id = e.group_id
             }
             let sql3 = `insert into action values(${usr_qq},'闭关',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,1,0,0,0) `
-            sql_run(sql3)
+            db.query(sql3)
             e.reply(msg + `现在开始闭关${time}分钟,两耳不闻窗外事了`);
             return;
         })
