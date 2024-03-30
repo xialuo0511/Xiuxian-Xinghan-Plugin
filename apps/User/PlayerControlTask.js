@@ -65,11 +65,11 @@ export class PlayerControlTask extends plugin {
                 //现在的时间
                 let now_time = new Date().getTime();
                 //闭关状态
-                if (action.action_biguan == 1) {
+                if (player_action.action_biguan == 1) {
                     if (now_time < end_time) {
                         return;
                     }
-                    let time = (parseInt(action.time) / 1000 / 60) * 2;//分钟
+                    let time = (parseInt(player_action.time) / 1000 / 60) * 2;//分钟
                     if (time > 7200) {
                         time = 7200
                     }
@@ -182,7 +182,7 @@ export class PlayerControlTask extends plugin {
 
                 }
                 //降妖
-                if (action.action_xiangyao == 1) {
+                if (player_action.action_xiangyao == 1) {
                     //这里改一改,要在结束时间的前一分钟提前结算
                     end_time = end_time - 60000 * 2;
                     //时间过了
@@ -198,7 +198,7 @@ export class PlayerControlTask extends plugin {
                         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
                         var size = this.xiuxianConfigData.work.size;
                         let lingshi = size * now_level_id;
-                        let time = (parseInt(action.time) / 1000 / 60) * 2;//分钟
+                        let time = (parseInt(player_action.time) / 1000 / 60) * 2;//分钟
                         let other_lingshi = 0;
                         let other_xueqi = 0;
                         let rand = Math.random();
@@ -223,10 +223,6 @@ export class PlayerControlTask extends plugin {
                         let get_lingshi = lingshi * time + other_lingshi;//最后获取到的灵石
                         //
                         await this.setFileValue(player_id, get_lingshi, "灵石");//添加灵石
-                        //redis动作
-                        if (action.acount == null) {
-                            action.acount = 0;
-                        }
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
                         db1.query(sql2)
                         msg.push("\n降妖得到" + get_lingshi + "灵石");
