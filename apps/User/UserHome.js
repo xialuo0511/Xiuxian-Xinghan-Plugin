@@ -198,40 +198,23 @@ export class UserHome extends plugin {
             return;
         }
         //特殊兑换码调整
-        if (data.duihuan[i].name.includes("存档补偿")) {
-            for (var o = 0; o < data.duihuan[i].qq.length; o++) {
-                if (usr_qq == data.duihuan[i].qq[o].name) {
-                    action.push(name);
-                    await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
-                    let msg = [];
-                    for (var k = 0; k < data.duihuan[i].thing.length; k++) {
-                        await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
-                        msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
-                    }
-                    e.reply("非常抱歉游戏bug影响了你的体验！特此奉上:" + msg);
-                    return;
-                }
-            }
-            e.reply("您不符合此兑换码的兑换条件");
-            return;
-        }
-        if (data.duihuan[i].name.includes("渡劫补偿")) {
-            for (var o = 0; o < data.duihuan[i].qq.length; o++) {
-                if (usr_qq == data.duihuan[i].qq[o].name) {
-                    action.push(name);
-                    await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
-                    let msg = [];
-                    for (var k = 0; k < data.duihuan[i].thing.length; k++) {
-                        await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
-                        msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
-                    }
-                    e.reply("由于bug给您带来的不快敬请谅解！恭喜获得:" + msg);
-                    return;
-                }
-            }
-            e.reply("您不符合这个兑换码的领取要求，请详读布告后再来领取！");
-            return;
-        }
+        // if (data.duihuan[i].name.includes("存档补偿")) {
+        //     for (var o = 0; o < data.duihuan[i].qq.length; o++) {
+        //         if (usr_qq == data.duihuan[i].qq[o].name) {
+        //             action.push(name);
+        //             await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));
+        //             let msg = [];
+        //             for (var k = 0; k < data.duihuan[i].thing.length; k++) {
+        //                 await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
+        //                 msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
+        //             }
+        //             e.reply("非常抱歉游戏bug影响了你的体验！特此奉上:" + msg);
+        //             return;
+        //         }
+        //     }
+        //     e.reply("您不符合此兑换码的兑换条件");
+        //     return;
+        // }
         //普通兑换流程
         action.push(name);
         await redis.set("xiuxian:player:" + usr_qq + ":duihuan", JSON.stringify(action));

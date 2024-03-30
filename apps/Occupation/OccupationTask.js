@@ -190,12 +190,14 @@ export class OccupationTask extends plugin {
                         let end_amount2 = Math.floor(4 * (rate + 1) * (mine_amount3))//稀有
                         if (player.level_id <= 21) {
 
-                            end_amount *= player.level_id / 40
-                            end_amount2 *= player.level_id / 40
+                            end_amount *= player.level_id / 35
+                            end_amount2 *= player.level_id / 35
+                            end_amount *= (1 - (1 - player.level_id / 40) * 50)
+                            end_amount2 *= (1 - (1 - player.level_id / 40) * 50)
                             msg.push("由于你境界不足化神,在琥牢山爬上爬下总被石珀困住，挣脱花了很多时间，收入降低" + (1 - player.level_id / 40) * 50 + "%\n")
                         } else {
-                            end_amount *= player.level_id / 40
-                            end_amount2 *= player.level_id / 40
+                            end_amount *= player.level_id / 35
+                            end_amount2 *= player.level_id / 35
                         }
                         let usr_qq = player.id
                         end_amount = Math.floor(end_amount);
