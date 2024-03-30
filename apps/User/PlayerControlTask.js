@@ -6,6 +6,15 @@ import fs from "node:fs"
 
 import { isNotNull, exist_najie_thing, Add_najie_thing, Add_血气, Add_修为 } from "../Xiuxian/xiuxian.js"
 
+var mysql = require('mysql');
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
+const db1 = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+})
 /**
  * 定时任务
  */
@@ -28,39 +37,33 @@ export class PlayerControlTask extends plugin {
     }
 
     async Playercontroltask() {
-        //获取缓存中人物列表
-        let playerList = [];
-        let files = fs
-            .readdirSync("./plugins/xiuxian-emulator-plugin/resources/data/xiuxian_player")
-            .filter((file) => file.endsWith(".json"));
-        for (let file of files) {
-            file = file.replace(".json", "");
-            playerList.push(file);
-        }
-        for (let player_id of playerList) {
-            let log_mag = "";//查询当前人物动作日志信息
-            log_mag = log_mag + "查询" + player_id + "是否有动作,";
-            //得到动作
-            let action = await redis.get("xiuxian:player:" + player_id + ":action");
-            action = JSON.parse(action);
-            //不为空，存在动作
-            if (action != null) {
+        let sql1 = `select * from action where action_zhiye=1;`
+        db1.query(sql1, async (err, result) => {
+            if (err) {
+                console.log(err)
+                return
+            }
+
+            let action_list0 = result
+            if (!action_list0) { return }
+            var datas = JSON.stringify(action_list0)
+            let action_list = JSON.parse(datas)
+            for (var i = 0; i < action_list.length; i++) {
+                let player_action = action_list[i]
                 let push_address;//消息推送地址
                 let is_group = false;//是否推送到群
-                if (action.hasOwnProperty("group_id")) {
-                    if (isNotNull(action.group_id)) {
-                        is_group = true;
-                        push_address = action.group_id;
-                    }
+                if (player_action.group_id != 0) {
+                    is_group = true;
+                    push_address = player_action.group_id;
                 }
                 //最后发送的消息
-                let msg = [segment.at(Number(player_id))];
+                let msg = [];
                 //动作结束时间
-                let end_time = action.end_time;
+                let end_time = player_action.end_time;
                 //现在的时间
                 let now_time = new Date().getTime();
                 //闭关状态
-                if (action.shutup == "0") {
+                if (action.action_biguan == 1) {
                     if (now_time < end_time) {
                         return;
                     }
@@ -68,8 +71,9 @@ export class PlayerControlTask extends plugin {
                     if (time > 7200) {
                         time = 7200
                     }
-                    let usr_qq = player_id;
+                    let usr_qq = player_action.usr_id;
                     let player = data.getData("player", usr_qq);
+                    msg.push(`【${player.名号}】`)
                     let now_level_id;
                     if (!isNotNull(player.level_id)) {
                         return;
@@ -170,20 +174,13 @@ export class PlayerControlTask extends plugin {
                     }
 
                     await this.pushInfo(push_address, true, msg)
-                    let arr = action;
-                    //把状态都关了
-                    arr.shutup = 1;//闭关状态
-                    arr.working = 1;//降妖状态
-                    arr.power_up = 1;//渡劫状态
-                    arr.Place_action = 1;//秘境
-                    arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
-                    delete arr.group_id;//结算完去除group_id
-                    await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
+                    const sql2 = `delete from action where usr_id=${player_action.usr_id};`
+                    db1.query(sql2)
                     return;
 
                 }
                 //降妖
-                if (action.working == "0") {
+                if (action.action_xiangyao == 1) {
                     //这里改一改,要在结束时间的前一分钟提前结算
                     end_time = end_time - 60000 * 2;
                     //时间过了
@@ -191,6 +188,7 @@ export class PlayerControlTask extends plugin {
                         //现在大于结算时间，即为结算
                         log_mag = log_mag + "当前人物未结算，结算状态";
                         let player = data.getData("player", player_id);
+                        msg.push(`【${player.名号}】`)
                         let now_level_id;
                         if (!isNotNull(player.level_id)) {
                             return;
@@ -219,7 +217,7 @@ export class PlayerControlTask extends plugin {
                         }
                         //
                         player.血气 += other_xueqi;
-                        await data.setData("player", player_id, player);
+                        data.setData("player", player_id, player);
                         let get_lingshi = lingshi * time + other_lingshi;//最后获取到的灵石
                         //
                         await this.setFileValue(player_id, get_lingshi, "灵石");//添加灵石
@@ -227,15 +225,8 @@ export class PlayerControlTask extends plugin {
                         if (action.acount == null) {
                             action.acount = 0;
                         }
-                        let arr = action;
-                        //把状态都关了
-                        arr.shutup = 1;//闭关状态
-                        arr.working = 1;//降妖状态
-                        arr.power_up = 1;//渡劫状态
-                        arr.Place_action = 1;//秘境
-                        arr.Place_actionplus = 1;//沉迷状态
-                        delete arr.group_id;//结算完去除group_id
-                        await redis.set("xiuxian:player:" + player_id + ":action", JSON.stringify(arr));
+                        const sql2 = `delete from action where usr_id=${player_action.usr_id};`
+                        db1.query(sql2)
                         msg.push("\n降妖得到" + get_lingshi + "灵石");
                         log_mag += "收入" + get_lingshi;
                         if (is_group) {
@@ -246,8 +237,9 @@ export class PlayerControlTask extends plugin {
                     }
                 }
             }
-        }
+        })
     }
+
 
     /**
      * 增加player文件某属性的值（在原本的基础上增加）
@@ -264,7 +256,7 @@ export class PlayerControlTask extends plugin {
             new_num = user_data.血量上限;//治疗血量需要判读上限
         }
         user_data[type] = new_num;
-        await data.setData("player", user_qq, user_data);
+        data.setData("player", user_qq, user_data);
         return;
     }
 
