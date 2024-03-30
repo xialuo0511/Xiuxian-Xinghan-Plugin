@@ -64,9 +64,9 @@ export class PlayerControlTask extends plugin {
                 let end_time = player_action.end_time;
                 //现在的时间
                 let now_time = new Date().getTime();
+                console.log(player_action)
                 //闭关状态
                 if (player_action.action_biguan == "1") {
-                    console.log(player_action)
                     if (now_time < end_time) {
                         return;
                     }
