@@ -236,8 +236,8 @@ export async function xh_zd(A_player, B_player) {
             lingshi_atk *= xyxz_atk_add + 1
         }
 
-        let A_shanghai = Harm(lingshi_atk, B_player.防御, A_player.暴击, A_player.暴击伤害)
-        let B_shanghai = Harm(b_atk, A_player.防御, B_player.暴击, B_player.暴击伤害)
+        let A_shanghai = Harm(lingshi_atk, B_player.防御, A_player.暴击率, A_player.暴击伤害)
+        let B_shanghai = Harm(b_atk, A_player.防御, B_player.暴击率, B_player.暴击伤害)
         //A对B
         if (A_lingqi < A_player.灵气) {
             B_player.血量上限 -= A_shanghai
