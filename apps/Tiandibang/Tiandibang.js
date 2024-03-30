@@ -346,10 +346,14 @@ export class Tiandibang extends plugin {
 
                 console.log(tiandibang)
                 if (x != 0) {
-                    let k = Math.ceil(Math.random() * tiandibang.length);
-                    if (k == 0) {
-                        k = -1
+                    let k = i
+                    while (i != k) {
+                        k = Math.ceil(Math.random() * tiandibang.length);
+                        if (k == 0) {
+                            k = -1
+                        }
                     }
+
                     let B_player;
                     if (k != -1) {
                         if ((tiandibang[k].攻击 / tiandibang[x].攻击) > 2) {

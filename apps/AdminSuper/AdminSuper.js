@@ -155,7 +155,6 @@ export class AdminSuper extends plugin {
     let nowtime = new Date().getTime();
     let usr_qq
     try {
-      //获取at信息
       let atItem = e.message.filter(item => item.type === 'at');
       usr_qq = atItem[0].qq;
     } catch (error) {
