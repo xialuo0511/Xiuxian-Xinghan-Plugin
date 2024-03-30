@@ -97,24 +97,15 @@ export class PlayerControlTask extends plugin {
                         rand = Math.trunc(rand * 10) + 45;
                         other_xiuwei = rand * time;
                         xueqi = Math.trunc(rand * time);
-                        if (transformation == "血气") {
-                            msg.push("\n本次闭关顿悟,受到炼神之力修正,额外增加血气:" + xueqi);
-
-                        } else {
-                            msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
-                        }
+                        msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
                     }
                     //走火入魔
                     else if (rand > 0.8) {
                         rand = Math.trunc(rand * 10) + 5;
                         other_xiuwei = -1 * rand * time;
                         xueqi = Math.trunc(rand * time);
-                        if (transformation == "血气") {
-                            msg.push("\n,由于你闭关时隔壁装修,导致你差点走火入魔,受到炼神之力修正,血气下降" + xueqi);
+                        msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * time);
 
-                        } else {
-                            msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * time);
-                        }
                     }
                     let other_x = 0;
                     let qixue = 0;
@@ -135,14 +126,8 @@ export class PlayerControlTask extends plugin {
                     await this.setFileValue(usr_qq, blood * time, "当前血量");
 
                     //给出消息提示
-                    if (transformation == "血气") {
-                        await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);//丹药修正
-                        msg.push("\n受到炼神之力的影响,增加血气:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time);
-                    }
-                    else {
-                        await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
-                        msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
-                    }
+                    await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
+                    msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
 
                     let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
                     lianshen_action = JSON.parse(lianshen_action);
