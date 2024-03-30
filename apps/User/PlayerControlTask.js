@@ -65,7 +65,7 @@ export class PlayerControlTask extends plugin {
                 //现在的时间
                 let now_time = new Date().getTime();
                 //闭关状态
-                if (player_action.action_biguan == 1) {
+                if (player_action.action_biguan == "1") {
                     if (now_time < end_time) {
                         return;
                     }
@@ -182,7 +182,7 @@ export class PlayerControlTask extends plugin {
 
                 }
                 //降妖
-                if (player_action.action_xiangyao == 1) {
+                if (player_action.action_xiangyao == "1") {
                     //这里改一改,要在结束时间的前一分钟提前结算
                     end_time = end_time - 60000 * 2;
                     //时间过了
