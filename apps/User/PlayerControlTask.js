@@ -69,6 +69,7 @@ export class PlayerControlTask extends plugin {
                     if (now_time < end_time) {
                         return;
                     }
+                    console.log(player_action)
                     let time = (parseInt(player_action.time) / 1000 / 60) * 2;//分钟
                     if (time > 7200) {
                         time = 7200
@@ -181,7 +182,6 @@ export class PlayerControlTask extends plugin {
                     return;
 
                 }
-                console.log(player_action)
                 //降妖
                 if (player_action.action_xiangyao == "1") {
                     //这里改一改,要在结束时间的前一分钟提前结算
