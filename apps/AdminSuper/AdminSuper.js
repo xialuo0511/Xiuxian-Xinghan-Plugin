@@ -170,6 +170,7 @@ export class AdminSuper extends plugin {
     if (!player.all_touxiangkuang.find(item => item.name == "春花清明")) {
       let Touxiang = data.Touxiang_list.find(item => item.name == "春花清明")
       player.all_touxiangkuang.push(Touxiang)
+      await Write_player(usr_qq, player)
       e.reply("领取成功！恭喜获得本月限定头像框【春花清明】")
       return;
     } else {
