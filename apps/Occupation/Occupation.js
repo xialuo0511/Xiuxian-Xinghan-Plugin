@@ -363,16 +363,7 @@ export class Occupation extends plugin {
         }
 
         let sql1 = `select * from action where usr_id=${e.user_id};`
-        var mysql = require('mysql');
-        let databaseConfigData = config.getConfig("database", "database");
-        //创建连接
-        const db1 = mysql.createPool({
-            host: 'localhost',
-            user: databaseConfigData.Database.username,
-            password: databaseConfigData.Database.password,
-            database: 'xiuxiandatabase'
-        })
-        db1.query(sql1, (err, result) => {
+        db.query(sql1, (err, result) => {
             let b = JSON.stringify(result)
             console.log(b)
             let action0 = JSON.parse(b);
@@ -427,8 +418,8 @@ export class Occupation extends plugin {
                 this.plant_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
             }
             const sql2 = `delete from action where usr_id=${e.user_id};`
-            db1.query(sql2, (err, result) => {
-                db1.end()
+            db.query(sql2, (err, result) => {
+                db.end()
             })
         })
 

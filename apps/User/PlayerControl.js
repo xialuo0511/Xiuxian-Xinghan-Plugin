@@ -5,6 +5,17 @@ import config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import { player_efficiency, Read_player, existplayer, isNotNull, exist_najie_thing, Add_najie_thing, Add_血气, Add_修为 } from '../Xiuxian/xiuxian.js'
 
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
+import mysql from "mysql"
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
+const db = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+})
 
 /**
  * 定时任务
@@ -56,15 +67,6 @@ export class PlayerControl extends plugin {
         }
 
 
-        //获取游戏状态
-        let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-        //防止继续其他娱乐行为
-        if (game_action == 0) {
-            e.reply("修仙：游戏进行中...");
-            return;
-        }
-
-
         //获取时间
         let time = e.msg.replace("#", "");
         time = time.replace("闭关", "");
@@ -106,49 +108,43 @@ export class PlayerControl extends plugin {
             }
         }
 
-        let msg = ""
-        let biguan_action = await redis.get('xiuxian:player:' + usr_qq + ':biguang');
-        biguan_action = JSON.parse(biguan_action);
-        if (biguan_action) {
-            if (biguan_action.biguan > 0) {
-                msg += "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次(仅闭关获得收益后才会消耗次数)\n"
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                return;
             }
-        }
-        let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
-        lianshen_action = JSON.parse(lianshen_action);
-        if (lianshen_action) {
-            if (lianshen_action.lianti > 0) {
-                msg += "本次闭关消耗一次炼神之力(仅闭关获得收益后才会消耗次数)\n"
+            let msg = ""
+            let biguan_action = await redis.get('xiuxian:player:' + usr_qq + ':biguang');
+            biguan_action = JSON.parse(biguan_action);
+            if (biguan_action) {
+                if (biguan_action.biguan > 0) {
+                    msg += "本次闭关消耗一次辟谷丹效果，还剩" + (biguan_action.biguan - 1) + "次(仅闭关获得收益后才会消耗次数)\n"
+                }
             }
-        }
-
-        let action_time = time * 60 * 1000;//持续时间，单位毫秒
-        let arr = {
-            "action": "闭关",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "plant": "1",//采药-关闭
-            "shutup": "0",//闭关状态-开启
-            "working": "1",//降妖状态-关闭
-            "Place_action": "1",//秘境状态---关闭
-            "Place_actionplus": "1",//沉迷---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "xijie": "1", //洗劫状态开启
-            "plant": "1",//采药-开启
-            "mine": "1",//采矿-开启
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));//redis设置动作
-
-        e.reply(msg + `现在开始闭关${time}分钟,两耳不闻窗外事了`);
-
-        return true;
+            let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+            lianshen_action = JSON.parse(lianshen_action);
+            if (lianshen_action) {
+                if (lianshen_action.lianti > 0) {
+                    msg += "本次闭关消耗一次炼神之力(仅闭关获得收益后才会消耗次数)\n"
+                }
+            }
+            let action_time = time * 60 * 1000;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            let sql3 = `insert into action values(${usr_qq},'闭关',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,1,0,0,0) `
+            sql_run(sql3)
+            e.reply(msg + `现在开始闭关${time}分钟,两耳不闻窗外事了`);
+            return;
+        })
 
     }
 
@@ -580,9 +576,23 @@ export class PlayerControl extends plugin {
      * @returns {Promise<void>}
      */
     async getPlayerAction(usr_qq) {
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);//转为json格式数据
-        return action;
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        var mysql = require('mysql');
+        let databaseConfigData = config.getConfig("database", "database");
+        //创建连接
+        const db1 = mysql.createPool({
+            host: 'localhost',
+            user: databaseConfigData.Database.username,
+            password: databaseConfigData.Database.password,
+            database: 'xiuxiandatabase'
+        })
+        db1.query(sql1, (err, result) => {
+            var action0 = JSON.stringify(result)
+            let action = JSON.parse(action0);
+            let a = action[0]
+            console.log(a)
+            return a;
+        })
     }
 
     /**
@@ -591,17 +601,10 @@ export class PlayerControl extends plugin {
      * @returns {Promise<void>}
      */
     async getPlayerState(action) {
-        if (action == null) {
+        if (!action) {
             return "空闲";
         }
-        let now_time = new Date().getTime();
-        let end_time = action.end_time;
-        //当前时间>=结束时间，并且未结算 属于已经完成任务，却并没有结算的
-        //当前时间<=完成时间，并且未结算 属于正在进行
-        if (!((now_time >= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0)) || (now_time <= end_time && (action.shutup == 0 || action.working == 0 || action.plant == 0)))) {
 
-            return "空闲";
-        }
         return action.action;
     }
 
