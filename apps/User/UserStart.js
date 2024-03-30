@@ -648,9 +648,12 @@ export class UserStart extends plugin {
         let now = new Date();
         let nowTime = now.getTime(); //获取当前日期的时间戳
         let Today = await shijianc(nowTime);
-        //7-12 0点开启
         if (nowTime < 1711850400000) {
             e.reply(`「七日馈赠 · 仙韵绕春华」活动暂未开启！`);
+            return;
+        }
+        if (nowTime > 1712678399999) {
+            e.reply(`「七日馈赠 · 仙韵绕春华」活动已结束！`);
             return;
         }
         let time = await redis.get("xiuxian:player:" + usr_qq + ":huodonglastsign_time");
