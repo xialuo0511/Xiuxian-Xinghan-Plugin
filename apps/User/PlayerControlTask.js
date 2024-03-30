@@ -58,8 +58,6 @@ export class PlayerControlTask extends plugin {
                     is_group = true;
                     push_address = player_action.group_id;
                 }
-                //最后发送的消息
-                let msg = [];
                 //动作结束时间
                 let end_time = player_action.end_time;
                 //现在的时间
@@ -76,7 +74,7 @@ export class PlayerControlTask extends plugin {
                     }
                     let usr_qq = player_action.usr_id;
                     let player = data.getData("player", usr_qq);
-                    msg.push(`【${player.名号}】`)
+                    let msg = [`【${player.名号}】`];
                     let now_level_id;
                     if (!isNotNull(player.level_id)) {
                         return;
@@ -90,8 +88,6 @@ export class PlayerControlTask extends plugin {
                     let blood = parseInt(player.血量上限 * 0.02);
                     //额外修为
                     let other_xiuwei = 0;
-
-                    let msg = [segment.at(usr_qq)];
                     //炼丹师丹药修正
                     let transformation = "修为"
                     let xueqi = 0
@@ -191,7 +187,7 @@ export class PlayerControlTask extends plugin {
                         //现在大于结算时间，即为结算
                         log_mag = log_mag + "当前人物未结算，结算状态";
                         let player = data.getData("player", player_id);
-                        msg.push(`【${player.名号}】`)
+                        let msg = [`【${player.名号}】`]
                         let now_level_id;
                         if (!isNotNull(player.level_id)) {
                             return;
