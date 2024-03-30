@@ -181,6 +181,7 @@ export class PlayerControlTask extends plugin {
                     return;
 
                 }
+                console.log(player_action)
                 //降妖
                 if (player_action.action_xiangyao == "1") {
                     //这里改一改,要在结束时间的前一分钟提前结算
