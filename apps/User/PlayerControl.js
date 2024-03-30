@@ -250,70 +250,67 @@ export class PlayerControl extends plugin {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
-        let action = await this.getPlayerAction(e.user_id);
-        let state = await this.getPlayerState(action);
-        if (state == "空闲") {
-            return;
-        }
-        if (action.action != "闭关") {
-            return;
-        }
-
-        //结算
-        let end_time = action.end_time;
-        let start_time = action.end_time - action.time;
-        let now_time = new Date().getTime();
-        let time;
-
-
-        var y = this.xiuxianConfigData.biguan.time;//固定时间
-        var x = this.xiuxianConfigData.biguan.cycle;//循环次数
+        let sql1 = `select * from action where usr_id=${e.user_id};`
+        db.query(sql1, async (err, result) => {
+            let b = JSON.stringify(result)
+            let action0 = JSON.parse(b);
+            var action = action0[0]
+            if (!action) {
+                return;
+            }
+            if (action.action != "闭关") {
+                return;
+            }
+            //结算
+            let end_time = action.end_time;
+            let start_time = action.end_time - action.time;
+            let now_time = new Date().getTime();
+            let time;
 
 
-        if (end_time > now_time) {
-            //属于提前结束
-            time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
+            var y = this.xiuxianConfigData.biguan.time;//固定时间
+            var x = this.xiuxianConfigData.biguan.cycle;//循环次数
+
+
+            if (end_time > now_time) {
+                //属于提前结束
+                time = parseInt((new Date().getTime() - start_time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                if (time < y) {
+                    time = 0;
+                }
+            } else {//属于结束了未结算
+                time = parseInt((action.time) / 1000 / 60);
+                //超过就按最低的算，即为满足30分钟才结算一次
+                //如果是 >=16*33 ----   >=30
+                for (var i = x; i > 0; i--) {
+                    if (time >= y * i) {
+                        time = y * i;
+                        break;
+                    }
+                }
+                if (time < y) {
+                    time = 0;
                 }
             }
-            if (time < y) {
-                time = 0;
-            }
-        } else {//属于结束了未结算
-            time = parseInt((action.time) / 1000 / 60);
-            //超过就按最低的算，即为满足30分钟才结算一次
-            //如果是 >=16*33 ----   >=30
-            for (var i = x; i > 0; i--) {
-                if (time >= y * i) {
-                    time = y * i;
-                    break;
-                }
-            }
-            if (time < y) {
-                time = 0;
-            }
-        }
 
-        if (e.isGroup) {
-            await this.biguan_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
-        } else {
-            await this.biguan_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
-        }
+            if (e.isGroup) {
+                await this.biguan_jiesuan(e.user_id, time, false, e.group_id);//提前闭关结束不会触发随机事件
+            } else {
+                await this.biguan_jiesuan(e.user_id, time, false);//提前闭关结束不会触发随机事件
+            }
 
-        let arr = action;
-        //把状态都关了
-        arr.shutup = 1;//闭关状态
-        arr.working = 1;//降妖状态
-        arr.power_up = 1;//渡劫状态
-        arr.Place_action = 1;//秘境
-        arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
-        delete arr.group_id;//结算完去除group_id
-        await redis.set("xiuxian:player:" + e.user_id + ":action", JSON.stringify(arr));
+            const sql2 = `delete from action where usr_id=${e.user_id};`
+            db.query(sql2)
+            return;
+        })
     }
 
 

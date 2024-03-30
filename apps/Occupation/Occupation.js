@@ -368,8 +368,7 @@ export class Occupation extends plugin {
             console.log(b)
             let action0 = JSON.parse(b);
             var action = action0[0]
-            let state = this.getPlayerState(action);
-            if (state == "空闲") {
+            if (!action) {
                 return;
             }
             if (action.action != "采药") {
@@ -418,9 +417,8 @@ export class Occupation extends plugin {
                 this.plant_jiesuan(e.user_id, time);//提前闭关结束不会触发随机事件
             }
             const sql2 = `delete from action where usr_id=${e.user_id};`
-            db.query(sql2, (err, result) => {
-                db.end()
-            })
+            db.query(sql2)
+            return;
         })
 
 
