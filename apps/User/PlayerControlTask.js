@@ -6,6 +6,8 @@ import fs from "node:fs"
 
 import { isNotNull, exist_najie_thing, Add_najie_thing, Add_血气, Add_修为 } from "../Xiuxian/xiuxian.js"
 
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
 var mysql = require('mysql');
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
