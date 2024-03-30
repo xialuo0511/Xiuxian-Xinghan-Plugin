@@ -353,7 +353,7 @@ export class Tiandibang extends plugin {
                             k = -1
                         }
                     }
-
+                    console.log(k)
                     let B_player;
                     if (k != -1) {
                         if ((tiandibang[k].攻击 / tiandibang[x].攻击) > 2) {
