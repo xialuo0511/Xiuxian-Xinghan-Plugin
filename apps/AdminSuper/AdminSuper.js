@@ -139,13 +139,43 @@ export class AdminSuper extends plugin {
         {
           reg: '#取消开通初级道法仙术.*$',
           fnc: 'qx_ktdfxt',
-        }, {
+        },
+        {
           reg: '#开通高级道法仙术.*$',
           fnc: 'ktgjdfxt',
+        },
+        {
+          reg: '#领取本月头像框$',
+          fnc: 'lqtxk',
         }
       ],
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  async lqtxk(e) {
+    let usr_qq = e.user_id
+    //有无存档
+    let ifexistplay = await existplayer(usr_qq);
+    if (!ifexistplay) {
+      e.reply(`请先踏入仙途`);
+      return;
+    }
+    let player = await Read_player(usr_qq)
+    let nowtime = new Date().getTime();
+    if (player.daofaxianshu_endtime < nowtime) {
+      e.reply(`请先开通【道法仙术】！`);
+      return;
+    }
+    if (!player.all_touxiangkuang.find(item => item.name == "春花清明")) {
+      let Touxiang = data.Touxiang_list.find(item => item.name == "春花清明")
+      player.all_touxiangkuang.push(Touxiang)
+      e.reply("领取成功！恭喜获得本月限定头像框【春花清明】")
+      return;
+    } else {
+      e.reply("您已经领取过啦！")
+      return;
+    }
   }
 
   async ktdfxt(e) {
@@ -165,20 +195,15 @@ export class AdminSuper extends plugin {
       return;
     }
     let player = await Read_player(usr_qq);
-    let daofaxianshu_endtime = 2592000000
+    let daofaxianshu_endtime = 2678400000
     if (player.daofaxianshu_endtime < nowtime) {
       player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
     } else {
       player.daofaxianshu_endtime += daofaxianshu_endtime
     }
-    if (!player.all_touxiangkuang.find(item => item.name == "元宵节头像框")) {
-      let Touxiang = data.Touxiang_list.find(item => item.name == "元宵节头像框")
-      player.all_touxiangkuang.push(Touxiang)
-      e.reply("本月开通道法仙术,获得本月限定头像框【元宵节头像框】")
-    }
     player.daofaxianshu = 1
     await Write_player(usr_qq, player)
-    e.reply("开通成功！【初级道法仙术】的有效时长增加30天")
+    e.reply("开通成功！【初级道法仙术】的有效时长增加31天")
     return;
   }
 

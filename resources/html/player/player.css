@@ -60,6 +60,14 @@
     height: 280px;
 }
 
+.user_head_pic_3 {
+    margin: auto;
+    background-image: url("../../img/player/head3.png");
+    background-size: 100% auto;
+    width: 280px;
+    height: 280px;
+}
+
 .user_top_img:before {
     margin: auto;
     background-image: url("../../img/player/head2.png");
