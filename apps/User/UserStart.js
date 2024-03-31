@@ -8,6 +8,7 @@ import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.j
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid, verc } from '../../api/api.js'
+import { player_efficiency } from '../Xiuxian/xiuxian.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
