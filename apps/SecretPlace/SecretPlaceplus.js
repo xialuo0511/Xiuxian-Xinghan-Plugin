@@ -197,7 +197,7 @@ export class SecretPlaceplus extends plugin {
             if (e.isGroup) {
                 group_id = e.group_id
             }
-            let sql3 = `insert into action values(${usr_qq},'沉迷秘境',${new Date().getTime() + action_time},${action_time / time},${group_id},0,0,0,0,0,0,0,0,0,0,${i * 10},'${didian}') `
+            let sql3 = `insert into action values(${usr_qq},'沉迷秘境',${new Date().getTime()},${new Date().getTime() + action_time},${group_id},0,0,0,0,0,0,0,0,0,0,${i * 10},'${didian}') `
             db.query(sql3, (err) => {
                 e.reply("开始沉迷秘境" + didian + "," + time + "分钟后归来!");
             })
@@ -301,7 +301,7 @@ export class SecretPlaceplus extends plugin {
             if (e.isGroup) {
                 group_id = e.group_id
             }
-            let sql3 = `insert into action values(${usr_qq},'沉迷禁地',${new Date().getTime() + action_time},${action_time / time},${group_id},0,0,0,0,0,0,0,0,0,0,${i * 10},'${weizhi.name}') `
+            let sql3 = `insert into action values(${usr_qq},'沉迷禁地',${new Date().getTime()},${new Date().getTime() + action_time},${group_id},0,0,0,0,0,0,0,0,0,0,${i * 10},'${weizhi.name}') `
             db.query(sql3, (err) => {
                 e.reply("开始沉迷禁地" + didian + "," + time + "分钟后归来!");
             })
@@ -477,7 +477,7 @@ export class SecretPlaceplus extends plugin {
             if (e.isGroup) {
                 group_id = e.group_id
             }
-            let sql3 = `insert into action values(${usr_qq},'沉迷仙境',${new Date().getTime() + action_time},${action_time / time},${group_id},0,0,0,0,0,0,0,0,0,0,${i * 10},'${didian}') `
+            let sql3 = `insert into action values(${usr_qq},'沉迷仙境',${new Date().getTime()},${new Date().getTime() + action_time},${group_id},0,0,0,0,0,0,0,0,0,0,${i * 10},'${didian}') `
             db.query(sql3, (err) => {
                 e.reply("开始沉迷仙境" + didian + "," + time + "分钟后归来!");
             })
