@@ -1054,6 +1054,7 @@ export async function get_player_img(e) {
     let sql1 = `select * from action where usr_id=${usr_qq};`
     let status = '空闲';
     db.query(sql1, async (err, result) => {
+        console.log(err)
         let action1 = JSON.stringify(result)
         action1 = JSON.parse(action1)
         action1 = action1[0]
