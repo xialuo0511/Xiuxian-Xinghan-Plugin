@@ -483,35 +483,24 @@ export class SecretPlaceplusTask extends plugin {
             return;
           }
           msg.push(`【${player.名号}】` + last_msg + fyd_msg);
-          if (action.cishu <= 0) {
-            const sql2 = `delete from action where usr_id=${action.usr_id};`
-            db.query(sql2, async (err, result) => {
-              //先完结再结算
-              await Add_血气(action.usr_id, qixue);
-              await Add_修为(action.usr_id, xiuwei);
-              await Add_HP(action.usr_id, Data_battle.A_xue);
-              //发送消息
-              if (is_group) {
-                await this.pushInfo(push_address, is_group, msg);
-              } else {
-                await this.pushInfo(action.usr_id, is_group, msg);
-              }
-            })
+          let sql2
+          if (action.action_chengmi <= 0) {
+            sql2 = `delete from action where usr_id=${action.usr_id};`
           } else {
-            const sql2 = `update action set action_chengmi=${action.action_chengmi - 1},end_time=${new Date().getTime()} where usr_id=${action.usr_id};`
-            db.query(sql2, async (err, result) => {
-              //先完结再结算
-              await Add_血气(action.usr_id, qixue);
-              await Add_修为(action.usr_id, xiuwei);
-              await Add_HP(action.usr_id, Data_battle.A_xue);
-              //发送消息
-              if (is_group) {
-                await this.pushInfo(push_address, is_group, msg);
-              } else {
-                await this.pushInfo(action.usr_id, is_group, msg);
-              }
-            })
+            sql2 = `update action set action_chengmi=${action.action_chengmi - 1},end_time=${new Date().getTime()} where usr_id=${action.usr_id};`
           }
+          db.query(sql2, async (err, result) => {
+            //先完结再结算
+            await Add_血气(action.usr_id, qixue);
+            await Add_修为(action.usr_id, xiuwei);
+            await Add_HP(action.usr_id, Data_battle.A_xue);
+            //发送消息
+            if (is_group) {
+              await this.pushInfo(push_address, is_group, msg);
+            } else {
+              await this.pushInfo(action.usr_id, is_group, msg);
+            }
+          })
         }
       }
     })
