@@ -784,7 +784,7 @@ export async function Go(e) {
             let now_time = new Date().getTime();
             let timee = 0
             if (action.action_chengmi != 0) {
-                timee = now_time - action.end_time + (action.action_chengmi - 1) * action.time
+                timee = action.action_chengmi * action.time - now_time
             } else {
                 timee = action.end_time - now_time
             }
