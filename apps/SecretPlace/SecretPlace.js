@@ -228,8 +228,14 @@ export class SecretPlace extends plugin {
             action = action[0]
             if (action) {
                 let now_time = new Date().getTime();
-                let m = parseInt((action.end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
@@ -313,8 +319,14 @@ export class SecretPlace extends plugin {
             action = action[0]
             if (action) {
                 let now_time = new Date().getTime();
-                let m = parseInt((action.end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
@@ -397,8 +409,14 @@ export class SecretPlace extends plugin {
             action = action[0]
             if (action) {
                 let now_time = new Date().getTime();
-                let m = parseInt((action.end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
@@ -481,8 +499,14 @@ export class SecretPlace extends plugin {
             action = action[0]
             if (action) {
                 let now_time = new Date().getTime();
-                let m = parseInt((action.end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
@@ -528,7 +552,7 @@ export class SecretPlace extends plugin {
                 e.reply('哪都没去，你逃个锤子')
                 return;
             }
-            if (action.action_mijing != "1") {
+            if (action.action_mijing != "1" && action.action_chengmi == 0) {
                 e.reply('哪都没去，你逃个锤子')
                 return;
             }
