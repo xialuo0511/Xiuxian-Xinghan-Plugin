@@ -358,7 +358,7 @@ export class SecretPlaceplusTask extends plugin {
               ',剩余血量' +
               A_player.当前血量 +
               ',剩余次数' +
-              (action.cishu - 1);
+              (action.action_chengmi - 1);
             let random = Math.random();
             if (random < 0.0001) {
               last_msg +=
