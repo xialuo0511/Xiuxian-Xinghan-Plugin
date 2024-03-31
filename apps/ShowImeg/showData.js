@@ -1338,6 +1338,7 @@ export async function get_player_img(e) {
             法宝评级: 法宝评级,
             修仙版本: versionData,
         };
+        console.log(player_data)
         const data1 = await new Show(e).get_playerData(player_data);
         return await puppeteer.screenshot('player', {
             ...data1,
