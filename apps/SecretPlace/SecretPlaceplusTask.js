@@ -70,7 +70,7 @@ export class SecretPlaceplusTask extends plugin {
         //用户信息
         let player = await Read_player(action.usr_id);
         //最后发送的消息
-        let msg = [];
+        let msg = [`【${player.名号}】`];
         end_time = end_time - action.time;
         //时间过了
         if (now_time > end_time) {
