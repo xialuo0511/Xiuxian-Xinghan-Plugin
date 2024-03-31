@@ -99,12 +99,12 @@ export class Tiandibang extends plugin {
                 e.reply("您未报名")
                 return;
             }
-            if (a.jifen < data.tianditang[i].积分) {
-                e.reply(`积分不足,还需${data.tianditang[i].积分 - a.jifen}积分兑换${thing_name}`);
+            if (a.jifen < ifexist.积分) {
+                e.reply(`积分不足,还需${ifexist.积分 - a.jifen}积分兑换${thing_name}`);
                 return;
             }
-            a.jifen -= data.tianditang[i].积分;
-            await Add_najie_thing(usr_qq, thing_name, data.tianditang[i].class, 1);
+            a.jifen -= ifexist.积分;
+            await Add_najie_thing(usr_qq, thing_name, ifexist.class, 1);
             sql2 = `update tiandibang set jifen='${a.jifen}' where usr_id=${usr_qq};`
             db.query(sql2, (err, result) => {
                 e.reply([`兑换成功!获得[${thing_name}],剩余[${a.jifen}]积分`, '\n可以在【我的纳戒】中查看']);
