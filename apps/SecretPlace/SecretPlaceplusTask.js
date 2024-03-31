@@ -58,7 +58,6 @@ export class SecretPlaceplusTask extends plugin {
         console.log(err)
         return
       }
-      console.log(result)
       let action_list0 = result
       if (!action_list0) { return }
       var datas = JSON.stringify(action_list0)
@@ -484,7 +483,7 @@ export class SecretPlaceplusTask extends plugin {
           }
           msg.push(`【${player.名号}】` + last_msg + fyd_msg);
           let sql2
-          if (action.action_chengmi <= 0) {
+          if (action.action_chengmi == 1) {
             sql2 = `delete from action where usr_id=${action.usr_id};`
           } else {
             sql2 = `update action set action_chengmi=${action.action_chengmi - 1},end_time=${new Date().getTime()} where usr_id=${action.usr_id};`
