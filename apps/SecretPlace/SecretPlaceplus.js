@@ -14,6 +14,7 @@ import {
     Add_najie_thing
 } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
+import { Gulid } from '../../api/api.js'
 
 import { createRequire } from "module"
 const require = createRequire(import.meta.url)
