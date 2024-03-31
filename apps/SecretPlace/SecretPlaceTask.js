@@ -488,7 +488,7 @@ export class SecretPlaceTask extends plugin {
             return;
           }
           msg.push(`【${player.名号}】` + last_msg + fyd_msg);
-          const sql2 = `delete from action where usr_id=${e.user_id};`
+          const sql2 = `delete from action where usr_id=${action.usr_id};`
           db.query(sql2, async (err, result) => {
             //先完结再结算
             await Add_血气(action.usr_id, qixue);
