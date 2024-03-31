@@ -483,7 +483,7 @@ export class SecretPlaceplusTask extends plugin {
             return;
           }
           msg.push(`【${player.名号}】` + last_msg + fyd_msg);
-          if (action.cishu == 1) {
+          if (action.cishu <= 0) {
             const sql2 = `delete from action where usr_id=${action.usr_id};`
             db.query(sql2, async (err, result) => {
               //先完结再结算
