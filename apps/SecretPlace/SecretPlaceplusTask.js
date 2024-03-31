@@ -52,7 +52,7 @@ export class SecretPlaceplusTask extends plugin {
   }
 
   async Secretplaceplustask() {
-    let sql1 = `select * from action where action_chengmi not 0;`
+    let sql1 = `select * from action where action_chengmi not (select * from action where action_chengmi=0);`
     db.query(sql1, async (err, result) => {
       if (err) {
         console.log(err)
