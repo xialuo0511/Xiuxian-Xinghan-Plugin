@@ -843,12 +843,12 @@ export class UserHome extends plugin {
             lingshi = N.灵石
         }
         if (parseInt(lingshi) != parseInt(lingshi)) {
-            e.reply([segment.at(usr_qq), `请在指令后面加上灵石数量`]);
+            e.reply([`【${ifexistplay.名号}】`, `请在指令后面加上灵石数量`]);
             return;
         } else {
             lingshi = parseInt(lingshi);
             if (lingshi < 1) {
-                e.reply([segment.at(usr_qq), `灵石数量不能为负数`]);
+                e.reply([`【${ifexistplay.名号}】`, `灵石数量不能为负数`]);
                 return;
             }
         }
@@ -856,32 +856,32 @@ export class UserHome extends plugin {
             let player_lingshi = await Read_player(usr_qq);
             player_lingshi = player_lingshi.灵石;
             if (player_lingshi < lingshi) {
-                e.reply([segment.at(usr_qq), `灵石不足,你目前只有${player_lingshi}灵石`]);
+                e.reply([`【${ifexistplay.名号}】`, `灵石不足,你目前只有${player_lingshi}灵石`]);
                 return;
             }
             let najie = await Read_najie(usr_qq);
             if (najie.灵石上限 < najie.灵石 + lingshi) {
                 await Add_najie_灵石(usr_qq, najie.灵石上限 - najie.灵石);
                 await Add_灵石(usr_qq, -najie.灵石上限 + najie.灵石);
-                e.reply([segment.at(usr_qq), `已为您放入${najie.灵石上限 - najie.灵石}灵石,纳戒存满了`]);
+                e.reply([`【${ifexistplay.名号}】`, `已为您放入${najie.灵石上限 - najie.灵石}灵石,纳戒存满了`]);
                 return;
             }
             await Add_najie_灵石(usr_qq, lingshi);
             await Add_灵石(usr_qq, -lingshi);
-            e.reply([segment.at(usr_qq), `储存完毕,你目前还有${player_lingshi - lingshi}灵石,纳戒内有${najie.灵石 + lingshi}灵石`]);
+            e.reply([`【${ifexistplay.名号}】`, `储存完毕,你目前还有${player_lingshi - lingshi}灵石,纳戒内有${najie.灵石 + lingshi}灵石`]);
             return;
         }
         if (func == "取") {
             let najie = await Read_najie(usr_qq);
             if (najie.灵石 < lingshi) {
-                e.reply([segment.at(usr_qq), `纳戒灵石不足,你目前最多取出${najie.灵石}灵石`]);
+                e.reply([`【${ifexistplay.名号}】`, `纳戒灵石不足,你目前最多取出${najie.灵石}灵石`]);
                 return;
             }
             let player_lingshi = await Read_player(usr_qq);
             player_lingshi = player_lingshi.灵石;
             await Add_najie_灵石(usr_qq, -lingshi);
             await Add_灵石(usr_qq, lingshi);
-            e.reply([segment.at(usr_qq), `本次取出灵石${lingshi},你的纳戒还剩余${najie.灵石 - lingshi}灵石`]);
+            e.reply([`【${ifexistplay.名号}】`, `本次取出灵石${lingshi},你的纳戒还剩余${najie.灵石 - lingshi}灵石`]);
             return;
             e.reply('修仙游戏请在群聊中游玩');
         }
