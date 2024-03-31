@@ -2,6 +2,7 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
+import Config from "../../model/Config.js"
 import fs from "fs"
 import { Read_player, existplayer, get_random_talent, getLastsign, Read_yijie_player, yijie_existplayer, Add_星魂币 } from '../Xiuxian/xiuxian.js'
 import { Write_equipment, Write_player, Write_najie, Read_qinmidu } from '../Xiuxian/xiuxian.js'
