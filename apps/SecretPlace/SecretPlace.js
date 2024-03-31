@@ -213,10 +213,6 @@ export class SecretPlace extends plugin {
             return;
         }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        // if (now_level_id > 41) {
-        //     e.reply("境界不符！");
-        //     return;
-        // }
         let rate = player.occupation_level
         if (player.occupation == "采药师" && rate < 15 && didian == "须弥") {
             e.reply("冒险等级不足(职业等级不足)")
@@ -230,30 +226,31 @@ export class SecretPlace extends plugin {
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "历练",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关
-            "working": "1",//降妖
-            "Place_action": "0",//秘境状态---开启
-            "Place_actionplus": "1",//沉迷秘境状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "xijie": "1", //洗劫状态开启
-            "plant": "1",//采药-开启
-            "mine": "1",//采矿-开启
-            //这里要保存秘境特别需要留存的信息
-            "Place_address": weizhi,
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-        arr.user_id = e.user_id.toString()
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        e.reply("开始降临" + didian + "," + time + "分钟后归来!");
-        return;
+
+        //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                return;
+            }
+            let action_time = 60000 * time;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            let sql3 = `insert into action values(${usr_qq},'秘境历练',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,0,1,0,'${didian}') `
+            db.query(sql3, (err) => {
+                e.reply("开始降临" + didian + "," + time + "分钟后归来!");
+            })
+            return;
+        })
     }
 
     //前往禁地
@@ -321,30 +318,30 @@ export class SecretPlace extends plugin {
         await Add_灵石(usr_qq, -Price);
         await Add_修为(usr_qq, -weizhi.experience);
         const time = this.xiuxianConfigData.CD.forbiddenarea;//时间（分钟）
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "禁地",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关
-            "working": "1",//降妖
-            "Place_action": "0",//秘境状态---开启
-            "Place_actionplus": "1",//沉迷秘境状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "xijie": "1", //洗劫状态开启
-            "plant": "1",//采药-开启
-            "mine": "1",//采矿-开启
-            //这里要保存秘境特别需要留存的信息
-            "Place_address": weizhi,
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-        arr.user_id = e.user_id
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        e.reply("正在前往" + weizhi.name + "," + time + "分钟后归来!");
-        return;
+        //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                return;
+            }
+            let action_time = 60000 * time;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            let sql3 = `insert into action values(${usr_qq},'禁地历练',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,0,1,0,'${weizhi.name}') `
+            db.query(sql3, (err) => {
+                e.reply("正在前往" + weizhi.name + "," + time + "分钟后归来!");
+            })
+            return;
+        })
     }
 
     //探索仙府
@@ -410,36 +407,36 @@ export class SecretPlace extends plugin {
         let Price = weizhi.Price * dazhe;
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.timeplace;//时间（分钟）
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "探索",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关
-            "working": "1",//降妖
-            "Place_action": "0",//秘境状态---开启
-            "Place_actionplus": "1",//沉迷秘境状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "xijie": "1", //洗劫状态开启
-            "plant": "1",//采药-开启
-            "mine": "1",//采矿-开启
-            //这里要保存秘境特别需要留存的信息
-            "Place_address": weizhi,
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id;
-        }
-        arr.user_id = e.user_id
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        await Add_修为(usr_qq, -100000);
-        if (suiji == 0) {
-            e.reply("你买下了那份地图,历经九九八十一天,终于到达了地图上的仙府,洞府上模糊得刻着[" + weizhi.name + "仙府]你兴奋地冲进去探索机缘,被强大的仙气压制，消耗了100000修为成功突破封锁闯了进去" + time + "分钟后归来!");
-        }
-        if (suiji == 1) {
-            e.reply("你买下了那份地图,历经九九八十一天,终于到达了地图上的地点,这座洞府仿佛是上个末法时代某个仙人留下的遗迹,你兴奋地冲进去探索机缘,被强大的仙气压制，消耗了100000修为成功突破封锁闯了进去" + time + "分钟后归来!");
-        }
-        return;
+        //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                return;
+            }
+            let action_time = 60000 * time;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            await Add_修为(usr_qq, -100000);
+            let sql3 = `insert into action values(${usr_qq},'探索仙府',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,0,1,0,'${weizhi.name}') `
+            db.query(sql3, (err) => {
+                if (suiji == 0) {
+                    e.reply("你买下了那份地图,历经九九八十一天,终于到达了地图上的仙府,洞府上模糊得刻着[" + weizhi.name + "仙府]你兴奋地冲进去探索机缘,被强大的仙气压制，消耗了100000修为成功突破封锁闯了进去" + time + "分钟后归来!");
+                }
+                if (suiji == 1) {
+                    e.reply("你买下了那份地图,历经九九八十一天,终于到达了地图上的地点,这座洞府仿佛是上个末法时代某个仙人留下的遗迹,你兴奋地冲进去探索机缘,被强大的仙气压制，消耗了100000修为成功突破封锁闯了进去" + time + "分钟后归来!");
+                }
+            })
+            return;
+        })
     }
 
     //前往仙境
@@ -500,30 +497,31 @@ export class SecretPlace extends plugin {
         let Price = weizhi.Price * dazhe;
         await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "历练",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关
-            "working": "1",//降妖
-            "Place_action": "0",//秘境状态---开启
-            "Place_actionplus": "1",//沉迷秘境状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "xijie": "1", //洗劫状态开启
-            "plant": "1",//采药-开启
-            "mine": "1",//采矿-开启
-            //这里要保存秘境特别需要留存的信息
-            "Place_address": weizhi,
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-        arr.user_id = e.user_id
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        e.reply("开始镇守" + didian + "," + time + "分钟后归来!");
-        return;
+        //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                return;
+            }
+            let action_time = 60000 * time;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            await Add_修为(usr_qq, -100000);
+            let sql3 = `insert into action values(${usr_qq},'镇守仙境',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,0,1,0,'${didian}') `
+            db.query(sql3, (err) => {
+                e.reply("开始镇守" + didian + "," + time + "分钟后归来!");
+            })
+            return;
+        })
     }
 
     async Giveup(e) {
@@ -545,31 +543,24 @@ export class SecretPlace extends plugin {
             e.reply("修仙：游戏进行中...");
             return;
         }
-        //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        //不为空，有状态
-        if (action != null) {
-            //是在秘境状态
-            if (action.Place_action == "0" || action.Place_actionplus == "0" || action.mojie == "0") {
-                //把状态都关了
-                let arr = action;
-                arr.is_jiesuan = 1;//结算状态
-                arr.shutup = 1;//闭关状态
-                arr.working = 1;//降妖状态
-                arr.power_up = 1;//渡劫状态
-                arr.Place_action = 1;//秘境
-                arr.Place_actionplus = 1;//沉迷状态
-                arr.mojie = 1;
-                arr.end_time = new Date().getTime();//结束的时间也修改为当前时间
-                delete arr.group_id;//结算完去除group_id
-                delete arr.user_id;//结算完去除user_id
-                await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-                e.reply("你已逃离！");
+        let sql1 = `select * from action where usr_id=${e.user_id};`
+        db.query(sql1, (err, result) => {
+            let b = JSON.stringify(result)
+            let action0 = JSON.parse(b);
+            var action = action0[0]
+            if (!action) {
+                e.reply('哪都没去，你逃个锤子')
                 return;
             }
-        }
-        return;
+            if (action.action_mijing != "1") {
+                e.reply('哪都没去，你逃个锤子')
+                return;
+            }
+            const sql2 = `delete from action where usr_id=${e.user_id};`
+            db.query(sql2, (err, result) => {
+                e.reply('逃离成功！')
+            })
+        })
     }
 
     /**
@@ -630,30 +621,31 @@ export class SecretPlace extends plugin {
             msg = "【道法仙术】护您左右，为您指引了遗迹秘宝方向！\n"
             time -= 3
         }
-
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "探寻遗迹",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关
-            "working": "1",//降妖
-            "Place_action": "0",//秘境状态---开启
-            "Place_actionplus": "1",//沉迷秘境状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "mojie": "1",//魔界状态---关闭
-            "xijie": "1", //洗劫状态开启
-            "plant": "1",//采药-开启
-            "mine": "1",//采矿-开启
-            //这里要保存秘境特别需要留存的信息
-            "Place_address": weizhi,
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        e.reply(msg + "开始探寻遗迹" + didian + "," + time + "分钟后归来!");
-        return;
+        //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, async (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let m = parseInt((action.end_time - now_time) / 1000 / 60);
+                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                return;
+            }
+            let action_time = 60000 * time;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            await Add_修为(usr_qq, -100000);
+            let sql3 = `insert into action values(${usr_qq},'探寻遗迹',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,0,1,0,'${didian}') `
+            db.query(sql3, (err) => {
+                e.reply("开始探寻遗迹" + didian + "," + time + "分钟后归来!");
+            })
+            return;
+        })
     }
 
     /**
@@ -716,7 +708,7 @@ export class SecretPlace extends plugin {
 }
 
 /**
- *活动商店
+ *遗迹商店
  */
 export async function get_yijishop_img(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '')

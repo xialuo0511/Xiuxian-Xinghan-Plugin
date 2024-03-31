@@ -1464,7 +1464,6 @@ export class Occupation extends plugin {
 
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        let action = await sql_run(sql1)
         db.query(sql1, (err, result) => {
             let action = JSON.stringify(result)
             action = JSON.parse(action)
@@ -1483,8 +1482,9 @@ export class Occupation extends plugin {
                 group_id = e.group_id
             }
             sql3 = `insert into action values(${usr_qq},'打猎',${new Date().getTime() + action_time},${action_time},${group_id},1,0,0,1,0,0,0,0,0,0,0,'') `
-            sql_run(sql3)
-            e.reply(`现在开始外出打猎${time}分钟`);
+            db.query(sql3, (err) => {
+                e.reply(`现在开始外出打猎${time}分钟`);
+            })
 
             return true;
         })
@@ -1496,16 +1496,7 @@ export class Occupation extends plugin {
             return;
         }
         let sql1 = `select * from action where usr_id=${e.user_id};`
-        var mysql = require('mysql');
-        let databaseConfigData = config.getConfig("database", "database");
-        //创建连接
-        const db1 = mysql.createPool({
-            host: 'localhost',
-            user: databaseConfigData.Database.username,
-            password: databaseConfigData.Database.password,
-            database: 'xiuxiandatabase'
-        })
-        db1.query(sql1, (err, result) => {
+        db.query(sql1, (err, result) => {
             let b = JSON.stringify(result)
             let action0 = JSON.parse(b);
             var action = action0[0]
@@ -1547,8 +1538,8 @@ export class Occupation extends plugin {
             }
 
             const sql2 = `delete from action where usr_id=${e.user_id};`
-            db1.query(sql2, (err, result) => {
-                db1.end()
+            db.query(sql2, (err, result) => {
+
             })
         })
 

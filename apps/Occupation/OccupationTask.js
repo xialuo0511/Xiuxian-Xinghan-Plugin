@@ -1,18 +1,15 @@
-
 import plugin from '../../../../lib/plugins/plugin.js'
 import common from "../../../../lib/common/common.js"
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-
-import { createRequire } from "module"
-const require = createRequire(import.meta.url)
-
 import { isNotNull, Read_player } from "../Xiuxian/xiuxian.js"
 import { Add_najie_thing, Add_职业经验 } from '../Xiuxian/xiuxian.js'
 
+//创建连接
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
 var mysql = require('mysql');
 let databaseConfigData = config.getConfig("database", "database");
-//创建连接
 const db1 = mysql.createPool({
     host: 'localhost',
     user: databaseConfigData.Database.username,
