@@ -145,7 +145,7 @@ export class SecretPlaceplus extends plugin {
             return;
         }
         let weizhi = await data.didian_list.find(item => item.name == didian);
-        if (!isNotNull(weizhi)) {
+        if (!weizhi) {
             return;
         }
         let player = await Read_player(usr_qq);
@@ -160,7 +160,6 @@ export class SecretPlaceplus extends plugin {
         }
 
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        console.log(1)
         if (didian == "小千世界" || didian == "中千世界" || didian == "大千世界") {
             e.reply("打工本不支持沉迷哦");
             return;
