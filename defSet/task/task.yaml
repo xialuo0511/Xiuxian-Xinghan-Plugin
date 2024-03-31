@@ -1,7 +1,7 @@
 # 检测人物动作是否结束定时任务
 action_task: 0/30 * * * * ?
 # 检测沉迷是否结束定时任务
-actionplus_task: 0 0/7 * * * ?
+actionplus_task: 0 0/5 * * * ?
 # 游戏锁定
 GamesTask: 0 */5 * * * ?
 # 赛季结算
