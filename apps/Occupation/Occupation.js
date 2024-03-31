@@ -327,7 +327,7 @@ export class Occupation extends plugin {
             if (e.isGroup) {
                 group_id = e.group_id
             }
-            let sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0) `
+            let sql3 = `insert into action values(${usr_qq},'采药',${new Date().getTime() + action_time},${action_time},${group_id},1,1,0,0,0,0,0,0,0,0,0,'') `
             sql_run(sql3)
             e.reply(`现在开始采药${time}分钟`);
 
@@ -484,7 +484,7 @@ export class Occupation extends plugin {
             if (e.isGroup) {
                 group_id = e.group_id
             }
-            sql3 = `insert into action values(${usr_qq},'采矿',${new Date().getTime() + action_time},${action_time},${group_id},1,0,1,0,0,0,0,0,0,0,0) `
+            sql3 = `insert into action values(${usr_qq},'采矿',${new Date().getTime() + action_time},${action_time},${group_id},1,0,1,0,0,0,0,0,0,0,0,'') `
             sql_run(sql3)
             e.reply(`现在开始采矿${time}分钟`);
 
@@ -1482,7 +1482,7 @@ export class Occupation extends plugin {
             if (e.isGroup) {
                 group_id = e.group_id
             }
-            sql3 = `insert into action values(${usr_qq},'打猎',${new Date().getTime() + action_time},${action_time},${group_id},1,0,0,1,0,0,0,0,0,0,0) `
+            sql3 = `insert into action values(${usr_qq},'打猎',${new Date().getTime() + action_time},${action_time},${group_id},1,0,0,1,0,0,0,0,0,0,0,'') `
             sql_run(sql3)
             e.reply(`现在开始外出打猎${time}分钟`);
 
