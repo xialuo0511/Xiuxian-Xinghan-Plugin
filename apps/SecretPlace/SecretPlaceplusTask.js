@@ -18,9 +18,17 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { mjzd_battle } from '../Battle/Battle.js';
 
-//如需截图必须引入以下两库
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
-import Show from '../../model/show.js';
+//创建连接
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
+var mysql = require('mysql');
+let databaseConfigData = config.getConfig("database", "database");
+const db = mysql.createPool({
+  host: 'localhost',
+  user: databaseConfigData.Database.username,
+  password: databaseConfigData.Database.password,
+  database: 'xiuxiandatabase'
+})
 
 /**
  * 定时任务
