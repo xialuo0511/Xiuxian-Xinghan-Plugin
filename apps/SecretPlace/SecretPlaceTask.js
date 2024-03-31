@@ -501,7 +501,6 @@ export class SecretPlaceTask extends plugin {
               await this.pushInfo(action.usr_id, is_group, msg);
             }
           })
-
         }
       }
     })
