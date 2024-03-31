@@ -187,8 +187,14 @@ export class SecretPlaceplus extends plugin {
             action = action[0]
             if (action) {
                 let now_time = new Date().getTime();
-                let m = parseInt((action.end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
@@ -291,8 +297,14 @@ export class SecretPlaceplus extends plugin {
             action = action[0]
             if (action) {
                 let now_time = new Date().getTime();
-                let m = parseInt((action.end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
@@ -467,8 +479,14 @@ export class SecretPlaceplus extends plugin {
             action = action[0]
             if (action) {
                 let now_time = new Date().getTime();
-                let m = parseInt((action.end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
                 return;
             }
@@ -542,7 +560,7 @@ export async function Go(e) {
             let now_time = new Date().getTime();
             let timee = 0
             if (action.action_chengmi != 0) {
-                timee = now_time - action.end_time + (action.action_chengmi - 1) * action.time
+                timee = action.time - now_time
             } else {
                 timee = action.end_time - now_time
             }
