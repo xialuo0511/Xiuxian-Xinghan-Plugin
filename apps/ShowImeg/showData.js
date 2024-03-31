@@ -1051,7 +1051,6 @@ export async function get_player_img(e) {
     }
     let player = await Read_player(usr_qq)
     let equipment = await data.getData('equipment', usr_qq);
-    let player_status
     let sql1 = `select * from action where usr_id=${usr_qq};`
     let status = '空闲';
     db.query(sql1, async (err, result) => {
@@ -1069,7 +1068,6 @@ export async function get_player_img(e) {
             let m = parseInt(timee / 1000 / 60);
             let s = parseInt((timee - m * 60 * 1000) / 1000);
             status = action1.action + "(剩余时间:" + m + "分" + s + "秒)"
-            return;
         }
         let lingshi = Math.trunc(player.灵石);
 
