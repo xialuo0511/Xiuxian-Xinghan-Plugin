@@ -9,6 +9,7 @@ import { Read_player, Read_najie } from '../Xiuxian/xiuxian.js'
 import { existplayer, Get_xiuwei, sortBy, sleep, ForwardMsg, isNotNull } from '../Xiuxian/xiuxian.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid, verc } from '../../api/api.js'
+import { common } from '../../api/api.js'
 
 /**
  * 所有榜单

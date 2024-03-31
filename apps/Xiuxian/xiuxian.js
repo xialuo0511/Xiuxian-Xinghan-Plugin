@@ -3,6 +3,7 @@ import fs from "fs"
 import path from "path"
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
+import { common } from '../../api/api.js'
 
 /**
  * 全局
@@ -3060,7 +3061,7 @@ export async function ForwardMsg(e, data) {
     if (msgList.length == 1) {
         await e.reply(msgList[0].message);
     } else {
-        await e.reply(await Bot.makeForwardMsg(msgList));
+        await e.reply(await common.makeForwardMsg(msgList));
     }
     return;
 }
