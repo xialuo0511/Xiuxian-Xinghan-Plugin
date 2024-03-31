@@ -105,7 +105,7 @@ export class Tiandibang extends plugin {
             }
             a.jifen -= ifexist.积分;
             await Add_najie_thing(usr_qq, thing_name, ifexist.class, 1);
-            sql2 = `update tiandibang set jifen='${a.jifen}' where usr_id=${usr_qq};`
+            let sql2 = `update tiandibang set jifen='${a.jifen}' where usr_id=${usr_qq};`
             db.query(sql2, (err, result) => {
                 e.reply([`兑换成功!获得[${thing_name}],剩余[${a.jifen}]积分`, '\n可以在【我的纳戒】中查看']);
                 return;
