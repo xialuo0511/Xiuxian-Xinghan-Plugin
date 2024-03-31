@@ -190,12 +190,6 @@ export class SecretPlace extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
-        allaction = false;
         let player = await Read_player(usr_qq);
         let didian = e.msg.replace("#降临秘境", '');
         didian = didian.trim();
@@ -261,12 +255,6 @@ export class SecretPlace extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
-        allaction = false;
         let player = await Read_player(usr_qq);
         let now_level_id;
         if (!isNotNull(player.level_id)) {
@@ -352,11 +340,6 @@ export class SecretPlace extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
         allaction = false;
         let player = await Read_player(usr_qq);
         let didianlist = ["无欲天仙", "仙遗之地"]
@@ -447,12 +430,6 @@ export class SecretPlace extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
-        allaction = false;
         let player = await Read_player(usr_qq);
         let didian = e.msg.replace("#镇守仙境", '');
         didian = didian.trim();
