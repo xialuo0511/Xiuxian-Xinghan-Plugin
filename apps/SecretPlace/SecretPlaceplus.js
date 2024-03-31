@@ -123,12 +123,6 @@ export class SecretPlaceplus extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
-        allaction = false;
         let didian = e.msg.replace("#沉迷秘境", '');
         let code = didian.split("\*");
         didian = code[0];
@@ -217,12 +211,6 @@ export class SecretPlaceplus extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
-        allaction = false;
         let player = await Read_player(usr_qq);
         let now_level_id;
         if (!isNotNull(player.level_id)) {
@@ -414,12 +402,6 @@ export class SecretPlaceplus extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
-        allaction = false;
         let didian = e.msg.replace("#沉迷仙境", '');
         let code = didian.split("\*");
         didian = code[0];
