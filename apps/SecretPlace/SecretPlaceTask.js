@@ -110,7 +110,7 @@ export class SecretPlaceTask extends plugin {
             player.灵根 = await get_random_talent();
             player.修炼效率提升 += player.灵根.eff;
           }
-          data.setData('player', player_id, player);
+          data.setData('player', action.usr_id, player);
           let A_player = {
             名号: player.名号,
             攻击: player.攻击,
@@ -325,7 +325,7 @@ export class SecretPlaceTask extends plugin {
                   player.幸运 -= player.addluckyNo;
                   player.addluckyNo = 0;
                 }
-                data.setData('player', player_id, player);
+                data.setData('player', action.usr_id, player);
               }
             }
             m += `]×${n}个。`;
@@ -355,7 +355,7 @@ export class SecretPlaceTask extends plugin {
               2000 + 100 * now_physique_id * now_physique_id * t2 * 0.1
             );
             if (thing_name != '' || thing_class != '') {
-              await Add_najie_thing(player_id, thing_name, thing_class, n, r);
+              await Add_najie_thing(action.usr_id, thing_name, thing_class, n, r);
             }
             last_msg +=
               m +
@@ -365,33 +365,17 @@ export class SecretPlaceTask extends plugin {
               xiuwei +
               ',气血' +
               qixue;
-            let random = Math.random(); //万分之一出神迹
-            //春节活动相关代码
-
-            // if (random < 0.2) {
-            //   last_msg += `\n本次探寻还遇见了年兽！击败它获得了【浮空石】*1`
-            //   await Add_najie_thing(player_id, '浮空石', '材料', 1);
-            // }
-            // if (random < 0.4 && random >= 0.2) {
-            //   last_msg += `\n本次探寻还遇见了年兽！击败它获得了【灵木】*1`
-            //   await Add_najie_thing(player_id, '灵木', '材料', 1);
-            // }
-            // if (random < 0.6 && random >= 0.4) {
-            //   last_msg += `\n本次探寻还遇见了年兽！击败它获得了【木浆纸】*1`
-            //   await Add_najie_thing(player_id, '木浆纸', '材料', 1);
-            // }
-
-            //春节活动相关代码
+            let random = Math.random();
 
             if (random < 0.0001) {
               last_msg +=
                 '\n' +
                 B_player.名号 +
                 '倒下后,一道刺眼的圣光落下,你缓缓睁开了眼,发现了[无主的神之心]正散发着幽芒的白光';
-              await Add_najie_thing(player_id, '[无主的神之心]', '道具', 1);
+              await Add_najie_thing(action.usr_id, '[无主的神之心]', '道具', 1);
             }
             let newrandom = 0.995; let action1 = await redis.get(
-              'xiuxian:player:' + player_id + ':xianyuan'
+              'xiuxian:player:' + action.usr_id + ':xianyuan'
             );
             action1 = await JSON.parse(action1);
             if (action1) {
@@ -403,7 +387,7 @@ export class SecretPlaceTask extends plugin {
                 action1.ped = 0;
               }
               await redis.set(
-                'xiuxian:player:' + player_id + ':xianyuan',
+                'xiuxian:player:' + action.usr_id + ':xianyuan',
                 JSON.stringify(action1)
               );
             }
@@ -415,39 +399,39 @@ export class SecretPlaceTask extends plugin {
                 '\n七彩流光的神奇仙谷【' +
                 kouliang.name +
                 '】深埋在土壤中，是仙兽们的最爱。';
-              await Add_najie_thing(player_id, kouliang.name, '仙米', 1);
+              await Add_najie_thing(action.usr_id, kouliang.name, '仙米', 1);
             }
             if (random > 0.1 && random < 0.1002) {
               last_msg +=
                 '\n' +
                 B_player.名号 +
                 '倒下后,你正准备离开此地，看见路边草丛里有个长相奇怪的石头，顺手放进了纳戒。';
-              await Add_najie_thing(player_id, '长相奇怪的小石头', '道具', 1);
+              await Add_najie_thing(action.usr_id, '长相奇怪的小石头', '道具', 1);
             }
             let random2 = Math.random();
             let caoyao = '';
             if (A_player.职业 == '采药师') {
               if (random2 > 0.95 && random2 <= 1) {
                 caoyao += '"仙蕴花"';
-                await Add_najie_thing(player_id, '仙蕴花', '草药', 1);
+                await Add_najie_thing(action.usr_id, '仙蕴花', '草药', 1);
               } else if (random2 > 0.9 && random2 <= 0.95) {
                 caoyao += '"魔蕴花"';
-                await Add_najie_thing(player_id, '魔蕴花', '草药', 1);
+                await Add_najie_thing(action.usr_id, '魔蕴花', '草药', 1);
               } else if (random2 > 0.88 && random2 < 0.885) {
                 caoyao += '"太玄仙草"';
-                await Add_najie_thing(player_id, '太玄仙草', '草药', 1);
+                await Add_najie_thing(action.usr_id, '太玄仙草', '草药', 1);
               } else if (random2 > 0.83 && random2 <= 0.88) {
                 caoyao += '"古神藤"';
-                await Add_najie_thing(player_id, '古神藤', '草药', 1);
+                await Add_najie_thing(action.usr_id, '古神藤', '草药', 1);
               } else if (random2 > 0 && random2 <= 0.005) {
                 caoyao += '"神之眼"';
-                await Add_najie_thing(player_id, '神之眼', '草药', 1);
+                await Add_najie_thing(action.usr_id, '神之眼', '草药', 1);
               } else if (random2 > 0.80 && random2 <= 0.83) {
                 caoyao += '"炼骨花"';
-                await Add_najie_thing(player_id, '炼骨花', '草药', 1);
+                await Add_najie_thing(action.usr_id, '炼骨花', '草药', 1);
               } else if (random2 > 0.005 && random2 <= 0.01) {
                 caoyao += '"仙缘草"';
-                await Add_najie_thing(player_id, '仙缘草', '草药', 1);
+                await Add_najie_thing(action.usr_id, '仙缘草', '草药', 1);
               }
               if (
                 random2 > 0.95 && random2 <= 1 ||
@@ -490,7 +474,7 @@ export class SecretPlaceTask extends plugin {
                 '倒下后,他的身体开始坍塌，你向前伸出手来，却只抓住了一张[' +
                 wangzi +
                 ']';
-              await Add_najie_thing(player_id, wangzi, '道具', 1);
+              await Add_najie_thing(action.usr_id, wangzi, '道具', 1);
             }
           } else if (msgg.find(item => item == B_win)) {
             xiuwei = 800;
@@ -504,32 +488,20 @@ export class SecretPlaceTask extends plugin {
             return;
           }
           msg.push(`【${player.名号}】` + last_msg + fyd_msg);
-          let arr = action;
-          //把状态都关了
-          arr.shutup = 1; //闭关状态
-          arr.working = 1; //降妖状态
-          arr.power_up = 1; //渡劫状态
-          arr.Place_action = 1; //秘境
-          arr.Place_actionplus = 1; //沉迷状态
-          //结束的时间也修改为当前时间
-          arr.end_time = new Date().getTime();
-          //结算完去除group_id
-          delete arr.group_id;
-          //写入redis
-          await redis.set(
-            'xiuxian:player:' + player_id + ':action',
-            JSON.stringify(arr)
-          );
-          //先完结再结算
-          await Add_血气(player_id, qixue);
-          await Add_修为(player_id, xiuwei);
-          await Add_HP(player_id, Data_battle.A_xue);
-          //发送消息
-          if (is_group) {
-            await this.pushInfo(push_address, is_group, msg);
-          } else {
-            await this.pushInfo(player_id, is_group, msg);
-          }
+          const sql2 = `delete from action where usr_id=${e.user_id};`
+          db.query(sql2, async (err, result) => {
+            //先完结再结算
+            await Add_血气(action.usr_id, qixue);
+            await Add_修为(action.usr_id, xiuwei);
+            await Add_HP(action.usr_id, Data_battle.A_xue);
+            //发送消息
+            if (is_group) {
+              await this.pushInfo(push_address, is_group, msg);
+            } else {
+              await this.pushInfo(action.usr_id, is_group, msg);
+            }
+          })
+
         }
       }
     })
