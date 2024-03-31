@@ -45,7 +45,7 @@ export class SecretPlaceplusTask extends plugin {
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
     this.set = config.getdefSet('task', 'task');
     this.task = {
-      cron: this.set.action_task,
+      cron: this.set.actionplus_task,
       name: 'SecretPlaceplusTask',
       fnc: () => this.Secretplaceplustask(),
     };
