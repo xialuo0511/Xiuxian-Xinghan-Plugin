@@ -80,7 +80,7 @@ export class XiuxianDatabase extends plugin {
             e.reply("初始化数据表3完成")
         })
 
-        let sql4 = 'alter table if not exists action add Place_address text not null'
+        let sql4 = 'alter table action add Place_address text not null'
         db1.query(sql4, (err, result) => {
             if (err) throw err
             e.reply("数据表2添加字段完成完成")
