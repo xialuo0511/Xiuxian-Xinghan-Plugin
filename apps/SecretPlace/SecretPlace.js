@@ -122,7 +122,6 @@ export class SecretPlace extends plugin {
             return;
         }
         await Go(e);
-        allaction = false;
         return;
     }
 
@@ -564,12 +563,6 @@ export class SecretPlace extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
-        await Go(e);
-        if (allaction) {
-        } else {
-            return;
-        }
-        allaction = false;
         let player = await Read_player(usr_qq);
         let didian = e.msg.replace("#探寻遗迹", '');
         didian = didian.trim();
@@ -789,8 +782,14 @@ export async function Go(e) {
         action = action[0]
         if (action) {
             let now_time = new Date().getTime();
-            let m = parseInt((action.end_time - now_time) / 1000 / 60);
-            let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+            let timee = 0
+            if (action.action_chengmi != 0) {
+                timee = now_time - action.end_time + (action.action_chengmi - 1) * action.time
+            } else {
+                timee = action.end_time - now_time
+            }
+            let m = parseInt(timee / 1000 / 60);
+            let s = parseInt((timee - m * 60 * 1000) / 1000);
             e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
             return;
         }
