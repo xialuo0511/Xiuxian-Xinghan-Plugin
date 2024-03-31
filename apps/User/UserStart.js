@@ -25,6 +25,11 @@ const db = mysql.createPool({
     database: 'xiuxiandatabase'
 })
 
+const versionData = Config.getdefSet("version", "version");
+//如需截图必须引入以下两库
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+
 /**
  * 全局
  */
