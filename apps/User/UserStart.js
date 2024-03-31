@@ -4,11 +4,12 @@ import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
 import fs from "fs"
 import { Read_player, existplayer, get_random_talent, getLastsign, Read_yijie_player, yijie_existplayer, Add_星魂币 } from '../Xiuxian/xiuxian.js'
-import { Write_equipment, Write_player, Write_najie } from '../Xiuxian/xiuxian.js'
+import { Write_equipment, Write_player, Write_najie, Read_qinmidu } from '../Xiuxian/xiuxian.js'
 import { shijianc, get_random_fromARR, isNotNull } from '../Xiuxian/xiuxian.js'
 import { Add_HP, Add_修为, Add_najie_thing, Add_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import { Gulid, Read_Gulid, Write_Gulid, fstadd_Gulid, verc } from '../../api/api.js'
 import { player_efficiency } from '../Xiuxian/xiuxian.js'
+import { GetPower, bigNumberTransform } from '../ShowImeg/showData.js'
 
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
