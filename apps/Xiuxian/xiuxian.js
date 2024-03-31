@@ -3061,7 +3061,7 @@ export async function ForwardMsg(e, data) {
     if (msgList.length == 1) {
         await e.reply(msgList[0].message);
     } else {
-        await e.reply(await common.makeForwardMsg(e, [data], `修仙`));
+        await e.reply(await common.makeForwardMsg(e, data, `修仙`));
     }
     return;
 }
