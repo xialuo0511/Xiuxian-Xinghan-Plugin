@@ -2,7 +2,6 @@ import plugin from '../../../../lib/plugins/plugin.js';
 import fs from 'node:fs';
 import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
-import { get_player_img } from '../ShowImeg/showData.js';
 import {
   existplayer,
   Add_修为,
@@ -1075,24 +1074,6 @@ export class AdminSuper extends plugin {
       await redis.set('xiuxian:player:' + player_id + ':Exchange', 0);
     }
     e.reply('清除完成！');
-    return;
-  }
-
-  //#我的信息
-  async Show_player(e) {
-    let usr_qq = e.user_id;
-    //有无存档
-    let ifexistplay = await existplayer(usr_qq);
-    if (!ifexistplay) {
-      return;
-    }
-    //不开放私聊功能
-    if (!e.isGroup) {
-      e.reply('此功能暂时不开放私聊');
-      return;
-    }
-    let img = await get_player_img(e);
-    e.reply(img);
     return;
   }
 
