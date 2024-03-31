@@ -498,7 +498,7 @@ export class SecretPlaceplusTask extends plugin {
               }
             })
           } else {
-            const sql2 = `update fuzhi set action_chengmi=${action.action_chengmi - 1},end_time=${new Date().getTime()} where usr_id=${action.usr_id};`
+            const sql2 = `update action set action_chengmi=${action.action_chengmi - 1},end_time=${new Date().getTime()} where usr_id=${action.usr_id};`
             db.query(sql2, async (err, result) => {
               //先完结再结算
               await Add_血气(action.usr_id, qixue);
