@@ -14,7 +14,7 @@ const require = createRequire(import.meta.url)
 var mysql = require('mysql');
 let databaseConfigData = config.getConfig("database", "database");
 //创建连接
-const db1 = mysql.createPool({
+const db = mysql.createPool({
     host: 'localhost',
     user: databaseConfigData.Database.username,
     password: databaseConfigData.Database.password,
