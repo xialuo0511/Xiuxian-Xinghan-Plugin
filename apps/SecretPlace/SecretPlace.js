@@ -9,6 +9,18 @@ import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
 
 import { Gulid } from '../../api/api.js'
 
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
+var mysql = require('mysql');
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
+const db1 = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+})
+
 /**
  * 秘境模块
  */
@@ -801,25 +813,25 @@ export async function Go(e) {
         e.reply("修仙：游戏进行中...");
         return;
     }
-    //查询redis中的人物动作
-    let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-    action = JSON.parse(action);
-    if (action != null) {
-        //人物有动作查询动作结束时间
-        let action_end_time = action.end_time;
-        let now_time = new Date().getTime();
-        if (now_time <= action_end_time) {
-            let m = parseInt((action_end_time - now_time) / 1000 / 60);
-            let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
-            e.reply("正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
+    let sql1 = `select * from action where usr_id=${usr_qq};`
+    db.query(sql1, async (err, result) => {
+        let action = JSON.stringify(result)
+        action = JSON.parse(action)
+        action = action[0]
+        if (action) {
+            let now_time = new Date().getTime();
+            let m = parseInt((action.end_time - now_time) / 1000 / 60);
+            let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
+            e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
             return;
         }
-    }
-    let player = await Read_player(usr_qq);
-    if (player.当前血量 < 200) {
-        e.reply("你都伤成这样了,就不要出去浪了");
+        let player = await Read_player(usr_qq);
+        if (player.当前血量 < 200) {
+            e.reply("你都伤成这样了,就不要出去浪了");
+            return;
+        }
+        allaction = true;
         return;
-    }
-    allaction = true;
-    return;
+    })
+
 }
