@@ -1096,3 +1096,23 @@ export async function Go(e) {
     allaction = true;
     return;
 }
+
+/**
+ * @description: 进度条渲染
+ * @param {Number} res 百分比小数
+ * @return {*} css样式
+ */
+function Strand(now, max) {
+    let num = (now / max * 100).toFixed(0);
+    let mini
+    if (num > 100) {
+        mini = 100
+    } else {
+        mini = num
+    }
+    let strand = {
+        style: `style=width:${mini}%`,
+        num: num
+    };
+    return strand
+}
