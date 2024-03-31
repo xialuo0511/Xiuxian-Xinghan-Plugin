@@ -681,7 +681,7 @@ export class SecretPlace extends plugin {
         commodities_list = commodities_list.filter(function (commodities_list) {
             return commodities_list.name === thing_name;
         });
-        commodities_list = commodities_list.filter(name => thing_name);
+        commodities_list = commodities_list.filter(item => item.name = thing_name);
         //搜索纳戒物品
         let shu = await exist_najie_thing(usr_qq, commodities_list[0].daibi, "道具");
         //转为整数
