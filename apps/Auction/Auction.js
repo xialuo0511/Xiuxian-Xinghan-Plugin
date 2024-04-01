@@ -247,7 +247,7 @@ export class Auction extends plugin {
         auction.groupList = await redis.sMembers(redisGlKey);
 
         const msg = `${player.名号}叫价${new_price} `;
-        auction.groupList.forEach(group_id => pushInfo(group_id, true, msg));
+        e.reply(msg)
         // ↑新的：RetuEase
 
         auction.last_price = new_price;
