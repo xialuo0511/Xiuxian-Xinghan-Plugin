@@ -21,7 +21,6 @@ import { mjzd_battle } from '../Battle/Battle.js';
 
 //创建连接
 import { createRequire } from "module"
-import { split } from 'lodash';
 const require = createRequire(import.meta.url)
 var mysql = require('mysql');
 let databaseConfigData = config.getConfig("database", "database");
