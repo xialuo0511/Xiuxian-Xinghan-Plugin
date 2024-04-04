@@ -133,11 +133,6 @@ export class Occupation extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-        await Go(e);
-        if (!allaction) {
-            return;
-        }
-        allaction = false;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             return;
@@ -221,11 +216,6 @@ export class Occupation extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-        await Go(e);
-        if (!allaction) {
-            return;
-        }
-        allaction = false;
         let ifexistplay = await existplayer(usr_qq);
         if (!ifexistplay) {
             return;
@@ -1914,61 +1904,4 @@ export async function get_tuzhi_img(e, all_level) {
         ...data1,
     });
     return img;
-}
-
-
-/**
- * 常用查询合集
- */
-export async function Go(e) {
-    let usr_qq = e.user_id.toString().replace('qg_', '')
-    usr_qq = await Gulid(usr_qq);
-    //不开放私聊
-    if (!e.isGroup) {
-        return;
-    }
-    //有无存档
-    let ifexistplay = await existplayer(usr_qq);
-    if (!ifexistplay) {
-        return;
-    }
-    //获取游戏状态
-    let game_action = await redis.get("xiuxian:player:" + usr_qq + ":game_action");
-    //防止继续其他娱乐行为
-    if (game_action == 0) {
-        e.reply("修仙：游戏进行中...");
-        return;
-    }
-    let sql1 = `select * from action where usr_id=${usr_qq};`
-    db.query(sql1, async (err, result) => {
-        let action = JSON.stringify(result)
-        action = JSON.parse(action)
-        action = action[0]
-        if (action) {
-            let now_time = new Date().getTime();
-            let timee = 0
-            if (action.action_chengmi != 0) {
-                timee = action.time - now_time
-            } else {
-                timee = action.end_time - now_time
-            }
-            let m = parseInt(timee / 1000 / 60);
-            let s = parseInt((timee - m * 60 * 1000) / 1000);
-            if (m <= 0 && s <= 0) {
-                e.reply(action.action + "结算中");
-            } else {
-                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
-            }
-
-            return;
-        }
-        let player = await Read_player(usr_qq);
-        if (player.当前血量 < 200) {
-            e.reply("你都伤成这样了,就不要出去浪了");
-            return;
-        }
-        allaction = true;
-        return;
-    })
-
 }
