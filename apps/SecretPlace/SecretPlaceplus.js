@@ -566,7 +566,12 @@ export async function Go(e) {
             }
             let m = parseInt(timee / 1000 / 60);
             let s = parseInt((timee - m * 60 * 1000) / 1000);
-            e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+            if (m <= 0 && s <= 0) {
+                e.reply(action.action + "结算中");
+            } else {
+                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+            }
+
             return;
         }
         let player = await Read_player(usr_qq);
