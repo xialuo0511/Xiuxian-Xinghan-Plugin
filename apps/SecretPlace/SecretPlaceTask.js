@@ -79,7 +79,6 @@ export class SecretPlaceTask extends plugin {
         let now_time = new Date().getTime();
         //用户信息
         let player = await Read_player(action.usr_id);
-        msg.push(`【${player.名号}】`)
         //时间过了
         if (now_time > end_time) {
           let weizhi
