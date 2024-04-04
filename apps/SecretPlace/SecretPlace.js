@@ -236,7 +236,11 @@ export class SecretPlace extends plugin {
                 }
                 let m = parseInt(timee / 1000 / 60);
                 let s = parseInt((timee - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                if (m <= 0 && s <= 0) {
+                    e.reply(action.action + "结算中...");
+                } else {
+                    e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                }
                 return;
             }
             let action_time = 60000 * time;//持续时间，单位毫秒
@@ -327,7 +331,11 @@ export class SecretPlace extends plugin {
                 }
                 let m = parseInt(timee / 1000 / 60);
                 let s = parseInt((timee - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                if (m <= 0 && s <= 0) {
+                    e.reply(action.action + "结算中...");
+                } else {
+                    e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                }
                 return;
             }
             let action_time = 60000 * time;//持续时间，单位毫秒
@@ -417,7 +425,11 @@ export class SecretPlace extends plugin {
                 }
                 let m = parseInt(timee / 1000 / 60);
                 let s = parseInt((timee - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                if (m <= 0 && s <= 0) {
+                    e.reply(action.action + "结算中...");
+                } else {
+                    e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                }
                 return;
             }
             let action_time = 60000 * time;//持续时间，单位毫秒
@@ -507,7 +519,11 @@ export class SecretPlace extends plugin {
                 }
                 let m = parseInt(timee / 1000 / 60);
                 let s = parseInt((timee - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                if (m <= 0 && s <= 0) {
+                    e.reply(action.action + "结算中...");
+                } else {
+                    e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                }
                 return;
             }
             let action_time = 60000 * time;//持续时间，单位毫秒
@@ -625,7 +641,11 @@ export class SecretPlace extends plugin {
                 let now_time = new Date().getTime();
                 let m = parseInt((action.end_time - now_time) / 1000 / 60);
                 let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                if (m <= 0 && s <= 0) {
+                    e.reply(action.action + "结算中...");
+                } else {
+                    e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                }
                 return;
             }
             let action_time = 60000 * time;//持续时间，单位毫秒
@@ -652,7 +672,6 @@ export class SecretPlace extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
-        await Go(e);
 
         //获取输入信息
         let msg = e.msg.replace("#代币兑换", "");
@@ -815,7 +834,7 @@ export async function Go(e) {
             let m = parseInt(timee / 1000 / 60);
             let s = parseInt((timee - m * 60 * 1000) / 1000);
             if (m <= 0 && s <= 0) {
-                e.reply(action.action + "结算中");
+                e.reply(action.action + "结算中...");
             } else {
                 e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
             }

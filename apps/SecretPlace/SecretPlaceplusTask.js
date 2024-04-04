@@ -83,6 +83,14 @@ export class SecretPlaceplusTask extends plugin {
         //时间过了
         if (now_time > end_time) {
           let weizhi
+          let xf = -1;
+          if (action.action == "沉迷宗门秘境") {
+            let a = action.Place_address.split('-')
+            weizhi = await data.guildSecrets_list.find(item => item.name == a[0]);
+            if (weizhi.name == '高级' || weizhi.name == '中级' || weizhi.name == '低级') {
+              xf = a[1];
+            }
+          }
           if (action.action == "沉迷秘境") {
             weizhi = await data.didian_list.find(item => item.name == action.Place_address);
           }

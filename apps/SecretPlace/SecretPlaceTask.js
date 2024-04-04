@@ -21,6 +21,7 @@ import { mjzd_battle } from '../Battle/Battle.js';
 
 //创建连接
 import { createRequire } from "module"
+import { split } from 'lodash';
 const require = createRequire(import.meta.url)
 var mysql = require('mysql');
 let databaseConfigData = config.getConfig("database", "database");
@@ -83,8 +84,16 @@ export class SecretPlaceTask extends plugin {
         //时间过了
         if (now_time > end_time) {
           let weizhi
+          let xf = -1;
           if (action.action == "秘境历练") {
             weizhi = await data.didian_list.find(item => item.name == action.Place_address);
+          }
+          if (action.action == "宗门秘境历练") {
+            let a = action.Place_address.split('-')
+            weizhi = await data.guildSecrets_list.find(item => item.name == a[0]);
+            if (weizhi.name == '高级' || weizhi.name == '中级' || weizhi.name == '低级') {
+              xf = a[1];
+            }
           }
           if (action.action == "禁地历练") {
             weizhi = await data.forbiddenarea_list.find(item => item.name == action.Place_address);
@@ -98,14 +107,7 @@ export class SecretPlaceTask extends plugin {
           if (action.action == "探寻遗迹") {
             weizhi = await data.yiji_list.find(item => item.name == action.Place_address);
           }
-          let xf = -1;
-          if (
-            weizhi.name == '高级' ||
-            weizhi.name == '中级' ||
-            weizhi.name == '低级'
-          ) {
-            xf = action.XF;
-          }
+
           if (player.灵根 == null || player.灵根 == undefined) {
             player.灵根 = await get_random_talent();
             player.修炼效率提升 += player.灵根.eff;

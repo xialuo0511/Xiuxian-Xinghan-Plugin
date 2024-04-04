@@ -11,6 +11,18 @@ import { existplayer } from "../Xiuxian/xiuxian.js";
 let allaction = false;
 const 宗门灵石池上限 = [2000000, 5000000, 8000000, 11000000, 15000000, 20000000];
 
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
+var mysql = require('mysql');
+let databaseConfigData = config.getConfig("database", "database");
+//创建连接
+const db = mysql.createPool({
+    host: 'localhost',
+    user: databaseConfigData.Database.username,
+    password: databaseConfigData.Database.password,
+    database: 'xiuxiandatabase'
+})
+
 /**
  * 洞天福地
  */
@@ -311,11 +323,6 @@ export class BlessPlace extends plugin {
             return;
         }
         let usr_qq = e.user_id;
-        await Go(e);
-        if (!allaction) {
-            return;
-        }
-        allaction = false;
         let player = await Read_player(usr_qq);
         let ass = data.getAssociation(player.宗门.宗门名称);
         if (ass.宗门驻地 == 0) {
@@ -426,34 +433,45 @@ export class BlessPlace extends plugin {
         let Price = weizhi.Price;
 
         ass.灵石池 += Price * 0.05;
-        await data.setAssociation(ass.宗门名称, ass);
+        data.setAssociation(ass.宗门名称, ass);
 
         await Add_灵石(usr_qq, -Price);
         var time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "历练",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关
-            "working": "1",//降妖
-            "Place_action": "0",//秘境状态---开启
-            "Place_actionplus": "1",//沉迷秘境状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            //这里要保存秘境特别需要留存的信息
-            "Place_address": weizhi,
-            "XF": ass.power,
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        // setTimeout(() => {
-        //         SecretPlaceMax(e, weizhi);
-        //     }, 60000 );
 
-        e.reply("开始探索" + didian + "宗门秘境," + time + "分钟后归来!");
-        return;
+        //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
+                if (m <= 0 && s <= 0) {
+                    e.reply(action.action + "结算中...");
+                } else {
+                    e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                }
+                return;
+            }
+            let action_time = 60000 * time;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            let sql3 = `insert into action values(${usr_qq},'宗门秘境历练',${new Date().getTime() + action_time},${action_time},${group_id},0,0,0,0,0,0,0,0,0,1,0,'${didian}-${ass.power}') `
+            db.query(sql3, (err) => {
+                e.reply("开始探索宗门秘境" + didian + "," + time + "分钟后归来!");
+            })
+            return;
+        })
     }
 
     //沉迷秘境
@@ -598,35 +616,43 @@ export class BlessPlace extends plugin {
         let Price = weizhi.Price * i * 10;
 
         ass.灵石池 += Price * 0.05;
-        await data.setAssociation(ass.宗门名称, ass);
-
+        data.setAssociation(ass.宗门名称, ass);
         await Add_灵石(usr_qq, -Price);
         var time = i * 10 * 5 + 10;//时间（分钟）
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "历练",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关
-            "working": "1",//降妖
-            "Place_action": "1",//秘境状态---开启
-            "Place_actionplus": "0",//沉迷秘境状态---关闭
-            "power_up": "1",//渡劫状态--关闭
-            "cishu": 10 * i,
-            //这里要保存秘境特别需要留存的信息
-            "Place_address": weizhi,
-            "XF": ass.power,
-        };
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        // setTimeout(() => {
-        //         SecretPlaceMax(e, weizhi);
-        //     }, 60000 );
-
-        e.reply("开始探索" + didian + "宗门秘境," + time + "分钟后归来!");
-        return;
+        //查询人物动作
+        let sql1 = `select * from action where usr_id=${usr_qq};`
+        db.query(sql1, (err, result) => {
+            let action = JSON.stringify(result)
+            action = JSON.parse(action)
+            action = action[0]
+            if (action) {
+                let now_time = new Date().getTime();
+                let timee = 0
+                if (action.action_chengmi != 0) {
+                    timee = action.time - now_time
+                } else {
+                    timee = action.end_time - now_time
+                }
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
+                if (m <= 0 && s <= 0) {
+                    e.reply(action.action + "结算中...");
+                } else {
+                    e.reply("正在" + action.action + "中，剩余时间:" + m + "分" + s + "秒");
+                }
+                return;
+            }
+            let action_time = 60000 * time;//持续时间，单位毫秒
+            let group_id = 0
+            if (e.isGroup) {
+                group_id = e.group_id
+            }
+            let sql3 = `insert into action values(${usr_qq},'沉迷宗门秘境',${new Date().getTime()},${new Date().getTime() + action_time},${group_id},0,0,0,0,0,0,0,0,0,0,${i * 10},'${didian}-${ass.power}') `
+            db.query(sql3, (err) => {
+                e.reply("开始沉迷宗门秘境" + didian + "," + time + "分钟后归来!");
+            })
+            return;
+        })
     }
     async construction_Guild(e) {
         if (!e.isGroup) {
