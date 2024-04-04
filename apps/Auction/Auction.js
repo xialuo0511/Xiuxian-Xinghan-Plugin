@@ -99,7 +99,7 @@ export class Auction extends plugin {
 
         let msg = `___[星阁]___\n目前正在拍卖【${auction.thing.name}】\n`;
         if (auction.last_offer_player === 0) {
-            msg += '暂无人出价';
+            msg += `起拍价${auction.last_price}`;
         } else {
             const player = await Read_player(auction.last_offer_player);
             msg += `最高出价是${player.名号}叫出的${auction.last_price}`;
@@ -138,7 +138,7 @@ export class Auction extends plugin {
             const auction = await openAU();
             let msg = `___[星阁]___\n目前正在拍卖【${auction.thing.name}】\n`;
             if (auction.last_offer_player === 0) {
-                msg += '暂无人出价';
+                msg += `起拍价${auction.last_price}`;
             } else {
                 const player = await Read_player(auction.last_offer_player);
                 msg += `最高出价是${player.名号}叫出的${auction.last_price}`;
