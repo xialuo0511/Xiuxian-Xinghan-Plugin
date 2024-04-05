@@ -441,7 +441,7 @@ export class AdminSuper extends plugin {
       e.reply('你凑什么热闹');
       return;
     }
-    let a = await sql_run('select * from action')
+    let a = await sql_run('select * from acton')
     console.log(a)
     return;
   }
