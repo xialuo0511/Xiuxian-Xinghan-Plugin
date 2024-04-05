@@ -95,10 +95,11 @@ export class Ningyuandian extends plugin {
     }
 
     async tznyd(e) {
-        // if (!this.e.isMaster) {
-        //     e.reply('请等待开放')
-        //     return;
-        // }
+        let now_Time = new Date().getTime(); //获取当前时间戳
+        if (now_Time < 1712368800000) {
+            e.reply('凝渊殿紧锣密鼓准备中！请2024年4月6日10时后再来！')
+            return;
+        }
         if (!data.existData("player", e.user_id)) {
             e.reply("区区凡人，也想参与此等战斗中吗？请踏入仙途，好好修炼吧！");
             return true;
