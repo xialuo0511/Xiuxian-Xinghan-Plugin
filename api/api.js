@@ -10,13 +10,22 @@ import data from '../model/XiuxianData.js';
 import Show from '../model/show.js';
 import { __PATH } from '../apps/Xiuxian/xiuxian.js';
 
-import { createRequire } from "module"
-const require = createRequire(import.meta.url)
-
 export const verc = ({ e }) => {
   return true;
 };
 export { plugin, common, puppeteer, data, config, Show };
+
+//创建连接
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
+var mysql = require('mysql');
+let databaseConfigData = config.getConfig("database", "database");
+const db = mysql.createPool({
+  host: 'localhost',
+  user: databaseConfigData.Database.username,
+  password: databaseConfigData.Database.password,
+  database: 'xiuxiandatabase'
+})
 
 //检查存档是否存在，存在返回true;
 export async function existplayer(usr_qq) {
@@ -104,25 +113,16 @@ export async function Write_Gulid(Gulid) {
 }
 
 export async function sql_run(query) {
-  var mysql = require('mysql');
-  let databaseConfigData = config.getConfig("database", "database");
-  //创建连接
-  const db1 = mysql.createPool({
-    host: 'localhost',
-    user: databaseConfigData.Database.username,
-    password: databaseConfigData.Database.password,
-    database: 'xiuxiandatabase'
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(result)
+      });
+    });
   })
-  db1.query(query, (err, result) => {
-    if (!result) {
-      db1.end()
-      return;
-    }
-    var action0 = JSON.stringify(result)
-    return JSON.parse(action0);
-
-  })
-
 }
 
 export async function fstadd_Gulid(A, B, key) {

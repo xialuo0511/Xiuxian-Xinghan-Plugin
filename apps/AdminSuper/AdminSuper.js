@@ -34,7 +34,7 @@ const { execSync } = require("child_process")
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
-import { time } from 'node:console';
+import { sql_run } from '../../api/api.js';
 
 /**
  * 修仙设置
@@ -441,16 +441,8 @@ export class AdminSuper extends plugin {
       e.reply('你凑什么热闹');
       return;
     }
-    let str = [];
-    str.push("测试文本");
-    let log_data = {
-      log: str,
-    };
-    const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshot('log', {
-      ...data1,
-    });
-    e.reply(img);
+    let a = await sql_run('select * from action')
+    console.log(a)
     return;
   }
 
