@@ -114,15 +114,13 @@ export async function Write_Gulid(Gulid) {
 
 export async function sql_run(query) {
   return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      connection.query(query, (err, result) => {
-        if (err) {
-          reject(err)
-        }
-        resolve(result)
-      });
+    db.query(query, (err, result) => {
+      if (err) {
+        reject(err)
+      }
+      resolve(result)
     });
-  })
+  });
 }
 
 export async function fstadd_Gulid(A, B, key) {
