@@ -42,7 +42,7 @@ export class Ningyuandian extends plugin {
                     fnc: 'xyxz'
                 },
                 {
-                    reg: '^#初始化凝渊殿$',
+                    reg: '^#初始化凝渊殿类$',
                     fnc: 'csh'
                 }
             ]
@@ -54,12 +54,15 @@ export class Ningyuandian extends plugin {
         if (!this.e.isMaster) {
             return;
         }
-        //创建连接
-
         let sql2 = `create table if not exists ningyuandian(usr_id bigint,this_level_time bigint,this_level bigint,level_1_round int default 0,level_2_round int default 0,level_3_round int default 0,level_4_round int default 0,level_5_round int default 0,level_6_round int default 0,level_7_round int default 0,level_8_round int default 0,last_challenged_time bigint,PRIMARY KEY(usr_id))`
         db.query(sql2, (err, result) => {
             if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
             e.reply("初始化凝渊殿数据表完成")
+        })
+        let sql3 = `create table if not exists baoyufang(name text,type text,number int)`
+        db.query(sql3, (err, result) => {
+            if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
+            e.reply("初始化宝玉坊数据表完成")
         })
     }
 
