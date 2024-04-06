@@ -99,6 +99,7 @@ export class MoneyOperation extends plugin {
             return;
         }
         let atItem = e.message.filter((item) => item.type === "at");//获取at信息
+        console.log(atItem)
         let B_qq = atItem[0].qq;//对方qq
         //检查存档
         let ifexistplay = await existplayer(B_qq);
