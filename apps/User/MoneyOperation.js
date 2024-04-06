@@ -94,7 +94,7 @@ export class MoneyOperation extends plugin {
         //这是自己的
         let A_qq = e.user_id;
         //对方
-        let isat = e.message.some((item) => item.type === "at");
+        let isat = e.message.filter((item) => item.type === "at");
         if (!isat) {
             return;
         }
