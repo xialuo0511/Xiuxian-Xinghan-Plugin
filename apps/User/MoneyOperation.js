@@ -131,7 +131,12 @@ export class MoneyOperation extends plugin {
             e.reply(`这方世界没有[${thing_name}]`);
             return;
         }
-        await Add_najie_thing(B_qq, thing_name, thing_exist.class, amount)
+        if (pinji) {
+            await Add_najie_thing(B_qq, thing_name, thing_exist.class, amount, pinji)
+        } else {
+            await Add_najie_thing(B_qq, thing_name, thing_exist.class, amount)
+        }
+
         e.reply("发放成功")
     }
 
