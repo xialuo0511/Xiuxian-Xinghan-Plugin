@@ -119,7 +119,7 @@ export class MoneyOperation extends plugin {
         if (thing_name_pinji_amount.length == 2) {
             amount = Number(thing_name_pinji_amount[1]);
         } else if (thing_name_pinji_amount.length == 3) {
-            pinji = thing_name_pinji_amount[1];
+            pinji = Number(thing_name_pinji_amount[1]);
             amount = Number(thing_name_pinji_amount[2]);
         }
         if (amount == NaN) {
