@@ -980,7 +980,7 @@ export class UserStart extends plugin {
             e.reply(`「七日馈赠 · 仙韵绕春华」活动暂未开启！`);
             return;
         }
-        if (nowTime > 1712678399999) {
+        if (nowTime > 1713110399999) {
             e.reply(`「七日馈赠 · 仙韵绕春华」活动已结束！`);
             return;
         }
