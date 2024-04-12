@@ -49,7 +49,7 @@ export class AuctionTask extends plugin {
         (last_offer_price + 5 * 60 * 1000 - nowTime - m * 60 * 1000) / 1000
       );
       msg = `${auction.thing.name}拍卖中，距离拍卖结束还有${m}分${s}秒，目前最高价${auction.last_price}`;
-      for (let group_id of group_ids) {
+      for (let group_id of groupList) {
         this.pushInfo(group_id, true, msg);
       }
     } else {
@@ -78,7 +78,7 @@ export class AuctionTask extends plugin {
         msg = `拍卖结束，${player.名号}最终拍得该物品！`;
       }
 
-      for (let group_id of group_ids) {
+      for (let group_id of groupList) {
         this.pushInfo(group_id, true, msg);
       }
       await redis.del('xiuxian:auction');
