@@ -39,7 +39,6 @@ export class AuctionTask extends plugin {
     }
     auction = JSON.parse(auction);
     let nowTime = new Date().getTime();
-    let group_ids = auction.group_id.split('|');
     let msg = '';
     let last_offer_price = auction.last_offer_price;
     if (auction.last_offer_price + 5 * 60 * 1000 > nowTime) {
