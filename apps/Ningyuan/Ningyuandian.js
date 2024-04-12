@@ -4,7 +4,7 @@ import data from '../../model/XiuxianData.js'
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
-import { Gulid } from '../../api/api.js';
+import { Gulid, sql_run } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
 import { Add_najie_thing } from '../Xiuxian/xiuxian.js';
 
@@ -98,11 +98,6 @@ export class Ningyuandian extends plugin {
     }
 
     async tznyd(e) {
-        let now_Time = new Date().getTime(); //获取当前时间戳
-        if (now_Time < 1712368800000) {
-            e.reply('凝渊殿紧锣密鼓准备中！请2024年4月6日10时后再来！')
-            return;
-        }
         if (!data.existData("player", e.user_id)) {
             e.reply("区区凡人，也想参与此等战斗中吗？请踏入仙途，好好修炼吧！");
             return true;
@@ -111,66 +106,61 @@ export class Ningyuandian extends plugin {
         usr_qq = await Gulid(usr_qq)
         let player = await Read_player(usr_qq)
         let sql1 = `select * from ningyuandian where this_level_time=${this.ningyuandianConfigData.Ningyuandian.level} and usr_id=${usr_qq};`
-        db.query(sql1, async (err, result) => {
-
-            let a = JSON.stringify(result)
-            console.log(a)
-            if (a.length <= 2) {
-                e.reply('请先#报名凝渊殿')
-                return;
-            }
-            let b = JSON.parse(a)
-            b = b[0]
-            let now_time = new Date().getTime();
-            if (now_time - b.last_challenged_time < 600000) {
-                let m = parseInt((600000 - (now_time - b.last_challenged_time)) / 1000 / 60);
-                let s = parseInt(((600000 - (now_time - b.last_challenged_time)) - m * 60 * 1000) / 1000);
-                e.reply("两次挑战应间隔10分钟，剩余时间:" + m + "分" + s + "秒");
-                return;
-            }
-            if (b.this_level == 8) {
-                e.reply("勇士，你已到达凝渊殿最深处，请回吧！")
-                return;
-            }
-            //战斗模块
-            let bosszt = data.ningyuan_guai_list_1.find(item => item.id == b.this_level)
-            let zd_json = await xh_zd(player, bosszt)
-            //结算
-            let bi = 0
-            if (zd_json.ok) {
-                bi += 60
-                if (b.this_level + 1 <= 4) {
-                    if (zd_json.round <= 20) {
-                        bi += 20
-                    }
+        let result = await sql_run(sql1)
+        let a = JSON.stringify(result)
+        console.log(a)
+        if (a.length <= 2) {
+            e.reply('请先#报名凝渊殿')
+            return;
+        }
+        let b = JSON.parse(a)
+        b = b[0]
+        let now_time = new Date().getTime();
+        if (now_time - b.last_challenged_time < 600000) {
+            let m = parseInt((600000 - (now_time - b.last_challenged_time)) / 1000 / 60);
+            let s = parseInt(((600000 - (now_time - b.last_challenged_time)) - m * 60 * 1000) / 1000);
+            e.reply("两次挑战应间隔10分钟，剩余时间:" + m + "分" + s + "秒");
+            return;
+        }
+        if (b.this_level == 8) {
+            e.reply("勇士，你已到达凝渊殿最深处，请回吧！")
+            return;
+        }
+        //战斗模块
+        let bosszt = data.ningyuan_guai_list_1.find(item => item.id == b.this_level)
+        let zd_json = await xh_zd(player, bosszt)
+        //结算
+        let bi = 0
+        if (zd_json.ok) {
+            bi += 60
+            if (b.this_level + 1 <= 4) {
+                if (zd_json.round <= 20) {
+                    bi += 20
                 }
-                if (b.this_level + 1 > 4) {
-                    if (zd_json.round <= 10) {
-                        bi += 20
-                    }
-                }
-                if (a.this_level_time != 0) {
-                    await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
-                }
-                let sql = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where this_level_time=${this.ningyuandianConfigData.Ningyuandian.level} and usr_id=${usr_qq};`
-                db.query(sql, (err, result) => {
-                    e.reply(`恭喜挑战成功，获得鎏金碎币*${bi}，进入下一层--第${b.this_level + 1}层!`)
-                })
-
             }
+            if (b.this_level + 1 > 4) {
+                if (zd_json.round <= 10) {
+                    bi += 20
+                }
+            }
+            if (a.this_level_time != 0) {
+                await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
+            }
+            let sql = `update ningyuandian set this_level='${b.this_level + 1}',level_${b.this_level + 1}_round=${zd_json.round},last_challenged_time=${now_time} where this_level_time=${this.ningyuandianConfigData.Ningyuandian.level} and usr_id=${usr_qq};`
+            db.query(sql, (err, result) => {
+                e.reply(`恭喜挑战成功，获得鎏金碎币*${bi}，进入下一层--第${b.this_level + 1}层!`)
+            })
 
-            let log_data = {
-                log: zd_json.msg,
-            };
-            const data1 = await new Show(e).get_logData(log_data);
-            let img = await puppeteer.screenshot(`log`, {
-                ...data1,
-            });
-            e.reply(img);
+        }
 
-
-
-        })
+        let log_data = {
+            log: zd_json.msg,
+        };
+        const data1 = await new Show(e).get_logData(log_data);
+        let img = await puppeteer.screenshot(`log`, {
+            ...data1,
+        });
+        e.reply(img);
         return true;
     }
 }
