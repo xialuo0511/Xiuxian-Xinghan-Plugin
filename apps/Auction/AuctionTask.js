@@ -30,8 +30,11 @@ export class AuctionTask extends plugin {
   }
 
   async Auctiontask() {
-    let auction = await redis.get('xiuxian:auction');
-    if (!isNotNull(auction)) {
+    let auction = await redis.get('xiuxian:AuctionofficialTask');
+    const redisGlKey = 'xiuxian:AuctionofficialTask_GroupList';
+    const groupList = await redis.sMembers(redisGlKey);
+    console.log(groupList)
+    if (!isNotNull(auction) || !groupList) {
       return;
     }
     auction = JSON.parse(auction);
