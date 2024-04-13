@@ -149,6 +149,9 @@ export class Exchange extends plugin {
         //time = Math.trunc(time);
         //if (time <= 0) {
         //对比qq是否相等
+        let thing_name = Exchange[x].name.name;
+        let thing_class = Exchange[x].name.class;
+        let thing_amount = Exchange[x].aconut;
         if (thingqq != usr_qq) {
             e.reply('不能下架别人上架的物品');
             return;
@@ -161,9 +164,7 @@ export class Exchange extends plugin {
             e.reply('下架物品至少上交10w保证金,你手里似乎没有那么多');
             return;
         }
-        let thing_name = Exchange[x].name.name;
-        let thing_class = Exchange[x].name.class;
-        let thing_amount = Exchange[x].aconut;
+
         let pinji = null;
         if (thing_class == '装备') {
             pinji = Exchange[x].pinji2;
