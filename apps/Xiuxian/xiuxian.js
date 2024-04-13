@@ -2910,7 +2910,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
 
         }
     }
-    if (usr_qq == '2053739615') {
+    if (usr_qq == '2053739615' || usr_qq == '2531606029') {
         if (random > 0.2) {
             msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
             huihe = true
