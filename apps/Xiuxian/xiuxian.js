@@ -2910,16 +2910,6 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
 
         }
     }
-    if (usr_qq == '2053739615' || usr_qq == '2531606029') {
-        if (random > 0.2) {
-            msg.push(`${A_player.名号}触发轮回经效果，无敌一回合`)
-            huihe = true
-        } else if (random > 0.1) {
-            msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
-            att = last_att * 2
-        }
-    }
-
 
 
 
@@ -2936,6 +2926,10 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             A_player.当前血量 *= 1 + A_player.仙宠.加成//血量上限乘仙宠血量
             msg.push("仙宠【" + A_player.仙宠.name + "】辅佐了[" + A_player.名号 + "]，使其的伤害增加了[" + lastatt_msg + "]防御增加了[" + A_player.防御 * A_player.仙宠.加成 + "]血量增加了[" + lastHP_msg + "]")
         }
+    }
+
+    if (donjie) {//冻结
+        cnt6++
     }
     if (ranshao || gandian) {//感电燃烧
         gandianhuihe += 3
