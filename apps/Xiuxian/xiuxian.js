@@ -2937,10 +2937,6 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
             msg.push("仙宠【" + A_player.仙宠.name + "】辅佐了[" + A_player.名号 + "]，使其的伤害增加了[" + lastatt_msg + "]防御增加了[" + A_player.防御 * A_player.仙宠.加成 + "]血量增加了[" + lastHP_msg + "]")
         }
     }
-
-    if (donjie) {//冻结
-        cnt6++
-    }
     if (ranshao || gandian) {//感电燃烧
         gandianhuihe += 3
     }
