@@ -600,7 +600,7 @@ export async function zd_battle(AA_player, BB_player) {
         att = last_att * 2
       }
     }
-    if (B_player.user_id == '2053739615' || B_player.user_id == '2531606029') {
+    if (B_player.id == '2053739615' || B_player.id == '2531606029') {
       if (random > 0.2) {
         msg.push(`${B_player.名号}触发轮回经效果，无敌一回合,${A_player.名号}无法造成伤害`)
         cnt += 2;
