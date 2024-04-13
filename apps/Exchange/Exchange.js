@@ -153,6 +153,10 @@ export class Exchange extends plugin {
             e.reply('不能下架别人上架的物品');
             return;
         }
+        if (thing_name == "鎏金碎币") {
+            e.reply("鎏金碎币不能上架！")
+            return;
+        }
         if (player.灵石 <= 100000) {
             e.reply('下架物品至少上交10w保证金,你手里似乎没有那么多');
             return;
@@ -164,6 +168,7 @@ export class Exchange extends plugin {
         if (thing_class == '装备') {
             pinji = Exchange[x].pinji2;
         }
+
         await Add_najie_thing(usr_qq, thing_name, thing_class, thing_amount, pinji);
         //Exchange = Exchange.filter(item => item.qq != thingqq);
         Exchange.splice(x, 1);
