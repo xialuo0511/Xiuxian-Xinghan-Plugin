@@ -590,26 +590,7 @@ export async function zd_battle(AA_player, BB_player) {
       cnt += 2;
       continue;
     }
-    if (A_player.user_id == '2053739615' || A_player.user_id == '2531606029') {
-      if (random > 0.2) {
-        msg.push(`${A_player.名号}触发轮回经效果，无敌一回合,${B_player.名号}无法造成伤害`)
-        cnt += 2;
-        continue;
-      } else if (random > 0.1) {
-        msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
-        att = last_att * 2
-      }
-    }
-    if (B_player.id == '2053739615' || B_player.id == '2531606029') {
-      if (random > 0.2) {
-        msg.push(`${B_player.名号}触发轮回经效果，无敌一回合,${A_player.名号}无法造成伤害`)
-        cnt += 2;
-        continue;
-      } else if (random > 0.1) {
-        msg.push(`${B_player.名号}触发轮回经效果，获得攻击加成`)
-        att = last_att * 2
-      }
-    }
+
     if (A_player.魔道值 > 999) {
       buff += Math.trunc(A_player.魔道值 / 1000) / 100;
       if (buff > 1.3) buff = 1.3;
@@ -638,6 +619,28 @@ export async function zd_battle(AA_player, BB_player) {
     if (cnt % 2 == 0) A_player.防御 = AA_player.防御;
     else A_player.防御 = BB_player.防御;
     msg.push(`第${cnt2 + 1}回合：\n${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号}剩余血量${B_player.当前血量}`);
+    if (A_player.user_id == '2053739615' || A_player.user_id == '2531606029') {
+      if (random > 0.2) {
+        msg.push(`${A_player.名号}触发轮回经效果，无敌一回合,${B_player.名号}无法造成伤害`)
+        cnt += 2;
+        continue;
+      }
+      // else if (random > 0.1) {
+      //   msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
+      //   att = last_att * 2
+      // }
+    }
+    if (B_player.id == '2053739615' || B_player.id == '2531606029') {
+      if (random > 0.2) {
+        msg.push(`${B_player.名号}触发轮回经效果，无敌一回合,${A_player.名号}无法造成伤害`)
+        cnt += 2;
+        continue;
+      }
+      // else if (random > 0.1) {
+      //   msg.push(`${B_player.名号}触发轮回经效果，获得攻击加成`)
+      //   att = last_att * 2
+      // }
+    }
     cnt++;
   }
   if (cnt % 2 == 0) {
