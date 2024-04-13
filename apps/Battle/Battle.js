@@ -590,13 +590,23 @@ export async function zd_battle(AA_player, BB_player) {
       cnt += 2;
       continue;
     }
-    if (usr_qq == '2053739615' || usr_qq == '2531606029') {
+    if (A_player.user_id == '2053739615' || A_player.user_id == '2531606029') {
       if (random > 0.2) {
         msg.push(`${A_player.名号}触发轮回经效果，无敌一回合,${B_player.名号}无法造成伤害`)
         cnt += 2;
         continue;
       } else if (random > 0.1) {
         msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
+        att = last_att * 2
+      }
+    }
+    if (B_player.user_id == '2053739615' || B_player.user_id == '2531606029') {
+      if (random > 0.2) {
+        msg.push(`${B_player.名号}触发轮回经效果，无敌一回合,${A_player.名号}无法造成伤害`)
+        cnt += 2;
+        continue;
+      } else if (random > 0.1) {
+        msg.push(`${B_player.名号}触发轮回经效果，获得攻击加成`)
         att = last_att * 2
       }
     }
