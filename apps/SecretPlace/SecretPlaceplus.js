@@ -177,11 +177,10 @@ export class SecretPlaceplus extends plugin {
             return;
         }
         let Price = weizhi.Price * 10 * i;
-        await Add_灵石(usr_qq, -Price);
         const time = i * 10 * 5 + 10;//时间（分钟）
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        db.query(sql1, (err, result) => {
+        db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
             action = JSON.parse(action)
             action = action[0]
@@ -202,6 +201,7 @@ export class SecretPlaceplus extends plugin {
                 }
                 return;
             }
+            await Add_灵石(usr_qq, -Price);
             let action_time = 60000 * time;//持续时间，单位毫秒
             let group_id = 0
             if (e.isGroup) {
@@ -290,12 +290,10 @@ export class SecretPlaceplus extends plugin {
         }
         let Price = weizhi.Price * 10 * i;
         let Exp = weizhi.experience * 10 * i;
-        await Add_灵石(usr_qq, -Price);
-        await Add_修为(usr_qq, -Exp);
         const time = i * 10 * 5 + 10;//时间（分钟）
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        db.query(sql1, (err, result) => {
+        db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
             action = JSON.parse(action)
             action = action[0]
@@ -316,6 +314,8 @@ export class SecretPlaceplus extends plugin {
                 }
                 return;
             }
+            await Add_灵石(usr_qq, -Price);
+            await Add_修为(usr_qq, -Exp);
             let action_time = 60000 * time;//持续时间，单位毫秒
             let group_id = 0
             if (e.isGroup) {
@@ -477,11 +477,10 @@ export class SecretPlaceplus extends plugin {
             return;
         }
         let Price = weizhi.Price * 10 * i;
-        await Add_灵石(usr_qq, -Price);
         const time = i * 10 * 5 + 10;//时间（分钟）
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        db.query(sql1, (err, result) => {
+        db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
             action = JSON.parse(action)
             action = action[0]
@@ -502,6 +501,7 @@ export class SecretPlaceplus extends plugin {
                 }
                 return;
             }
+            await Add_灵石(usr_qq, -Price);
             let action_time = 60000 * time;//持续时间，单位毫秒
             let group_id = 0
             if (e.isGroup) {

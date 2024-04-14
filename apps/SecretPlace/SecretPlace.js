@@ -217,12 +217,11 @@ export class SecretPlace extends plugin {
         }
         //记录时间
         let Price = weizhi.Price;
-        await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
 
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        db.query(sql1, (err, result) => {
+        db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
             action = JSON.parse(action)
             action = action[0]
@@ -243,6 +242,7 @@ export class SecretPlace extends plugin {
                 }
                 return;
             }
+            await Add_灵石(usr_qq, -Price);
             let action_time = 60000 * time;//持续时间，单位毫秒
             let group_id = 0
             if (e.isGroup) {
@@ -312,12 +312,10 @@ export class SecretPlace extends plugin {
             return true;
         }
         let Price = weizhi.Price;
-        await Add_灵石(usr_qq, -Price);
-        await Add_修为(usr_qq, -weizhi.experience);
         const time = this.xiuxianConfigData.CD.forbiddenarea;//时间（分钟）
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
-        db.query(sql1, (err, result) => {
+        db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
             action = JSON.parse(action)
             action = action[0]
@@ -338,6 +336,8 @@ export class SecretPlace extends plugin {
                 }
                 return;
             }
+            await Add_灵石(usr_qq, -Price);
+            await Add_修为(usr_qq, -weizhi.experience);
             let action_time = 60000 * time;//持续时间，单位毫秒
             let group_id = 0
             if (e.isGroup) {
@@ -407,7 +407,6 @@ export class SecretPlace extends plugin {
             await Add_najie_thing(usr_qq, "仙府通行证", "道具", -1);
         }
         let Price = weizhi.Price * dazhe;
-        await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.timeplace;//时间（分钟）
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
@@ -432,6 +431,7 @@ export class SecretPlace extends plugin {
                 }
                 return;
             }
+            await Add_灵石(usr_qq, -Price);
             let action_time = 60000 * time;//持续时间，单位毫秒
             let group_id = 0
             if (e.isGroup) {
@@ -501,7 +501,6 @@ export class SecretPlace extends plugin {
             await Add_najie_thing(usr_qq, "仙境优惠券", "道具", -1);
         }
         let Price = weizhi.Price * dazhe;
-        await Add_灵石(usr_qq, -Price);
         const time = this.xiuxianConfigData.CD.secretplace;//时间（分钟）
         //查询人物动作
         let sql1 = `select * from action where usr_id=${usr_qq};`
@@ -526,6 +525,7 @@ export class SecretPlace extends plugin {
                 }
                 return;
             }
+            await Add_灵石(usr_qq, -Price);
             let action_time = 60000 * time;//持续时间，单位毫秒
             let group_id = 0
             if (e.isGroup) {
