@@ -677,10 +677,6 @@ export async function Add_player_学习功法(usr_qq, gongfa_name) {
 }
 
 export async function Reduse_player_学习功法(usr_qq, gongfa_name) {
-    let Whitelist = await data.Whitelist.find(item => item.qq == usr_qq);
-    if (Whitelist) {
-        return;
-    }
     let player = await Read_player(usr_qq);
     Array.prototype.remove = function (v) {
         for (let i = 0, j = 0; i < this.length; i++) {
