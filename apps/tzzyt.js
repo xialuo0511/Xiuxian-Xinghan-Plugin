@@ -36,37 +36,6 @@ export class tzzyt extends plugin {
             let CurrentPlayerAttributes = await data.getData("player", e.user_id);
             let usr_qq = e.user_id;
             let player = data.getData("player", usr_qq);
-            //\apps\User\UserStart.js里面改
-            //初始化玩家信息
-            //        let File_msg = fs.readdirSync(__PATH.player_path);
-            //        let n = File_msg.length + 1;
-            //        let talent = await get_random_talent();
-            //        let new_player = {
-            //       "名号": `路人甲${n}号`,
-            //       "宣言": "这个人很懒还没有写",
-            //       "level_id": 1,//练气境界
-            //       "Physique_id": 1,//练体境界
-            //       "race": 1,//种族
-            //       "修为": 1,//练气经验
-            //       "血气": 1,//练体经验
-            //       "灵石": 1000,
-            //       "灵根": talent,
-            //       "favorability":0,
-            //       "breakthrough":false,
-            //       "linggen":[],
-            //       "linggenshow": 1,//灵根显示，隐藏
-            //       "学习的功法": [],
-            //       "修炼效率提升": talent.eff,
-            //       "连续签到天数": 0,
-            //       "power_place":1,//仙界状态
-            //       "当前血量": 8000,
-            //       "occupation":[],//职业
-            //       "镇妖塔层数":0 这里，添加上去就行了！！！！！！！
-            //同步信息那里也要 apps\AdminSuper\AdminSuper.js在这里
-            //大概115条左右的 ”补“哪里
-            //if ( !isNotNull(player.镇妖塔层数)) {
-            //                player.镇妖塔层数 = 0;
-            //            }
             let ZYTcs = player.镇妖塔层数
             let Health = 0;
             let Attack = 0;

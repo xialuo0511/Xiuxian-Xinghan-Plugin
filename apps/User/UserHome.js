@@ -996,6 +996,13 @@ export class UserHome extends plugin {
         let func = reg.exec(e.msg);
         let msg = e.msg.replace(reg, '');
         msg = msg.replace("#", '');
+
+        let quanbu = false
+        if (msg.includes("全部")) {
+            msg = msg.replace("全部", '');
+            quanbu = true
+        }
+
         let code = msg.split("\*");
         let thing_name = code[0];
         let quantity = code[1];
@@ -1064,8 +1071,8 @@ export class UserHome extends plugin {
             return;
         }
         if (func == "服用") {
-            let action = await redis.get("xiuxian:player:" + 10 + ":biguang");
-            action = await JSON.parse(action);
+            let action = await redis.get("xiuxian:player:" + usr_qq + ":biguang");
+            action = JSON.parse(action);
             let x = await exist_najie_thing(usr_qq, thing_name, thing_exist.class);
             if (!x) {
                 e.reply(`你没有【${thing_name}】这样的【${thing_exist.class}】`);
@@ -1208,18 +1215,12 @@ export class UserHome extends plugin {
             }
             //这里要找到丹药
             let this_danyao;
-            try {
-                this_danyao = data.danyao_list.find(item => item.name == thing_name)
-                    || data.newdanyao_list.find(item => item.name == thing_name);
-                try {
-                    if (this_danyao == undefined) {
-                        this_danyao = data.timedanyao_list.find(item => item.name == thing_name);
-                    }
-                } catch {
-                    this_danyao = data.timedanyao_list.find(item => item.name == thing_name);
-                }
-            } catch {
+            this_danyao = data.danyao_list.find(item => item.name == thing_name)
+            if (!this_danyao) {
                 this_danyao = data.timedanyao_list.find(item => item.name == thing_name);
+            }
+            if (!this_danyao) {
+                this_danyao = data.newdanyao_list.find(item => item.name == thing_name);
             }
             if ((this_danyao.type == "幸运" || this_danyao.type == "补天" || this_danyao.type == "补根") && quantity > 1) {
                 e.reply("说明书上写了：本丹药一次仅能服用一枚！");
@@ -1268,146 +1269,187 @@ export class UserHome extends plugin {
                 player.islucky = 10;
                 player.addluckyNo = this_danyao.xingyun;
                 player.幸运 += this_danyao.xingyun;
-                await data.setData("player", usr_qq, player);
+                data.setData("player", usr_qq, player);
                 e.reply(`${thing_name}服用成功，将在之后的 10 次冒险旅途中为你提高幸运值！`);
                 return;
             }
-            if (this_danyao.type == '闭关') {
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].biguan > 0) {
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            e.reply(`上次服用的药效还没过,等以后再服用吧`);
-                            return;
-                        }
-                        if (typeof action[i].biguan != "number" || action[i].biguan < 0) {
-                            action[i].biguan = quantity;
-                        } else {
-                            action[i].biguan += quantity;
-                        }
-                        action[i].biguanxl += this_danyao.biguan;
-                        player.修炼效率提升 += action[i].biguanxl;
-                        e.reply(
-                            `${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${action[i].biguanxl * 100
-                            }%`
-                        );
+            if (this_danyao.type == "闭关") {
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":biguang");
+                ac = JSON.parse(ac);
+                if (ac) {
+                    if (ac.biguan > 0) {
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                        e.reply(`上次服用的药效还没过,等以后再服用吧`);
+                        return;
                     }
+                    if (ac.biguan < 0) {
+                        ac.biguan = quantity;
+                    } else {
+                        ac.biguan += quantity;
+                    }
+                    ac.biguanxl += this_danyao.biguan;
+                    player.修炼效率提升 += ac.biguanxl;
+                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${ac.biguanxl * 100}%`);
+                } else {
+                    ac = {
+                        "biguan": quantity,
+                        "biguanxl": this_danyao.biguan,
+                    }
+                    player.修炼效率提升 += ac.biguanxl;
+                    e.reply(`${thing_name}提高了你的忍耐力,提高了下次闭关的效率,当前提高${ac.biguanxl * 100}%`);
                 }
                 await redis.set(
-                    'xiuxian:player:' + 10 + ':biguang',
-                    JSON.stringify(action)
+                    'xiuxian:player:' + usr_qq + ':biguang',
+                    JSON.stringify(ac)
                 );
                 data.setData('player', usr_qq, player);
                 return;
             }
-            if (this_danyao.type == '仙缘') {
+            if (this_danyao.type == "仙缘") {
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":xianyuan");
+                ac = JSON.parse(ac);
                 if (quantity != 1) {
                     e.reply(`只能服用一枚仙缘丹哦`);
                     await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
                     return;
                 }
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].ped <= 0 || typeof action[i].ped != 'number') {
-                            action[i].ped = 5;
-                        } else {
-                            e.reply(`还有药力剩余,等使用完再服用吧`);
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            return;
-                        }
-                        action[i].beiyong1 = this_danyao.gailv;
-                        if (action[i].beiyong1 > 0.3 && action[i].beiyong1 != 1) {
-                            action[i].beiyong1 = 0.3
-                        }
-                    }
-                }
-                await redis.set(
-                    'xiuxian:player:' + 10 + ':biguang',
-                    JSON.stringify(action)
-                );
-                await data.setData('player', usr_qq, player);
-                e.reply(
-                    `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
-                );
-                return;
-            }
-            if (this_danyao.type == '凝仙') {
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].beiyong1 == 1 || action[i].beiyong3 == 1) {
-                            e.reply(`圣品丹药过于强大无法凝仙`)
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity)
-                            return;
-                        } else {
-                            if (action[i].biguan > 0) {
-                                action[i].biguan += this_danyao.机缘 * quantity
-                            }
-                            if (action[i].lianti > 0) {
-                                action[i].lianti += this_danyao.机缘 * quantity
-                            }
-                            if (action[i].ped > 0) {
-                                action[i].ped += this_danyao.机缘 * quantity
-                            }
-                            if (action[i].beiyong2 > 0) {
-                                action[i].beiyong2 += this_danyao.机缘 * quantity
-                            }
-                            e.reply(`丹韵入体,身体内蕴含的仙丹药效增加了${this_danyao.机缘 * quantity}次`)
-                            await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action))
-                        }
+                if (ac) {
+                    if (ac.ped <= 0) {
+                        ac.ped = 5;
+                    } else {
+                        e.reply(`还有药力剩余,等使用完再服用吧`);
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
                         return;
                     }
+                    ac.xianyuangl = this_danyao.gailv;
+                    if (ac.xianyuangl > 0.3 && ac.xianyuangl != 1) {
+                        ac.xianyuangl = 0.3
+                    }
+                    e.reply(
+                        `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
+                    );
+                } else {
+                    ac = {
+                        "ped": 5
+                    }
+                    ac.xianyuangl = this_danyao.gailv;
+                    if (ac.xianyuangl > 0.3 && ac.xianyuangl != 1) {
+                        ac.xianyuangl = 0.3
+                    }
+                    e.reply(
+                        `${thing_name}赐予${player.名号}仙缘,${player.名号}得到了仙兽的祝福`
+                    );
                 }
+                await redis.set(
+                    'xiuxian:player:' + usr_qq + ':xianyuan',
+                    JSON.stringify(ac)
+                );
+                data.setData('player', usr_qq, player);
+                return;
             }
-            if (this_danyao.type == '炼神') {
+            if (this_danyao.type == "凝仙") {
+                //闭关
+                let ac1 = await redis.get("xiuxian:player:" + usr_qq + ":biguan");
+                ac1 = JSON.parse(ac1);
+                //仙缘
+                let ac2 = await redis.get("xiuxian:player:" + usr_qq + ":xianyuan");
+                ac2 = JSON.parse(ac2);
+                //炼神
+                let ac3 = await redis.get("xiuxian:player:" + usr_qq + ":lianshen");
+                ac3 = JSON.parse(ac3);
+                //神赐
+                let ac4 = await redis.get("xiuxian:player:" + usr_qq + ":shenci");
+                ac4 = JSON.parse(ac4);
+
+                if (ac.xianyuangl == 1 || ac.beiyong3 == 1) {
+                    e.reply(`圣品丹药过于强大无法凝仙`)
+                    await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity)
+                    return;
+                } else {
+                    if (ac1.biguan > 0) {
+                        ac1.biguan += this_danyao.机缘 * quantity
+                    }
+                    if (ac3.lianti > 0) {
+                        ac3.lianti += this_danyao.机缘 * quantity
+                    }
+                    if (ac2.ped > 0) {
+                        ac2.ped += this_danyao.机缘 * quantity
+                    }
+                    if (ac4.quantity > 0) {
+                        ac4.quantity += this_danyao.机缘 * quantity
+                    }
+                    e.reply(`丹韵入体,身体内蕴含的仙丹药效增加了${this_danyao.机缘 * quantity}次`)
+                    await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(ac1))
+                    await redis.set("xiuxian:player:" + usr_qq + ":xianyuan", JSON.stringify(ac2))
+                    await redis.set("xiuxian:player:" + usr_qq + ":lianshen", JSON.stringify(ac3))
+                    await redis.set("xiuxian:player:" + usr_qq + ":shenci", JSON.stringify(ac4))
+                }
+                return;
+            }
+            if (this_danyao.type == "炼神") {
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":lianshen");
+                ac = JSON.parse(ac);
                 if (quantity != 1) {
                     e.reply(`一次闭关只能拥有一条炼神之力`);
                     await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
                     return;
                 }
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].lianti != 0) {
-                            e.reply(`已经拥有一道炼神之力了,身体无法承受第二道炼神之力`);
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            return;
-                        }
-                        if (action[i].lianti > 0) {
-                        } else {
-                            action[i].lianti = 1;
-                            action[i].beiyong4 = this_danyao.lianshen
-                            await redis.set(
-                                'xiuxian:player:' + 10 + ':biguang',
-                                JSON.stringify(action)
-                            );
-                            e.reply(
-                                `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${this_danyao.lianshen * 100
-                                }%`
-                            );
-                            return;
-                        }
-                    }
+                if (ac && ac.lianti != 0) {
+                    e.reply(`已经拥有一道炼神之力了,身体无法承受第二道炼神之力`);
+                    await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                    return;
                 }
-            }
-            if (this_danyao.type == '神赐') {
-                for (i = 0; i < action.length; i++) {
-                    if (action[i].qq == usr_qq) {
-                        if (action[i].beiyong2 != 0) {
-                            e.reply(`已经拥有神兽赐福了,下次再用吧`);
-                            await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
-                            return;
-                        }
-                        if (action[i].beiyong2 > 0) {
-                            action[i].beiyong2 += quantity
-                        } else {
-                            action[i].beiyong2 = 3 * quantity
-                        }
-                        action[i].beiyong3 = this_danyao.概率
-                        e.reply(`${player.名号}获得了神兽的恩赐,赐福的概率增加了,当前剩余次数${action[i].beiyong2}`)
-                        await redis.set("xiuxian:player:" + 10 + ":biguang", JSON.stringify(action))
+                if (ac) {
+                    if (ac.lianti > 0) {
+                        e.reply(`一次闭关只能拥有一条炼神之力`);
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                        return;
+                    } else {
+                        ac.lianti = 1;
+                        ac.lianshen = this_danyao.lianshen
+                        e.reply(
+                            `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${this_danyao.lianshen * 100
+                            }%`
+                        );
                     }
+                } else {
+                    ac = {
+                        "lianti": 1,
+                        "lianshen": this_danyao.lianshen
+                    }
+                    e.reply(
+                        `服用了${thing_name},获得了炼神之力,下次闭关获得了炼神之力,当前炼神之力为${this_danyao.lianshen * 100
+                        }%`
+                    );
                 }
+                await redis.set(
+                    'xiuxian:player:' + usr_qq + ':lianshen',
+                    JSON.stringify(action)
+                );
+                return;
             }
-            if (this_danyao.type == '灵根') {
+            if (this_danyao.type == "神赐") {
+                let ac = await redis.get("xiuxian:player:" + usr_qq + ":shenci");
+                ac = JSON.parse(ac);
+                if (ac) {
+                    if (ac.quantity != 0) {
+                        e.reply(`已经拥有神兽赐福了,下次再用吧`);
+                        await Add_najie_thing(usr_qq, this_danyao.name, '丹药', quantity);
+                        return;
+                    }
+                    ac.quantity = 3 * quantity
+                    ac.gailv = this_danyao.概率
+                    e.reply(`${player.名号}获得了神兽的恩赐,赐福的概率增加了,当前剩余次数${ac.quantity}`)
+                } else {
+                    ac = {
+                        "quantity": 3 * quantity,
+                        "gailv": this_danyao.概率
+                    }
+                    e.reply(`${player.名号}获得了神兽的恩赐,赐福的概率增加了,当前剩余次数${ac.quantity}`)
+                }
+                await redis.set("xiuxian:player:" + usr_qq + ":shenci", JSON.stringify(ac))
+            }
+            if (this_danyao.type == "灵根") {
                 if (player.lunhui != 0) {
                     let lhxg = await redis.get("xiuxian:player:" + usr_qq + ":Player_use");
                     if (lhxg != 4) {
@@ -1433,12 +1475,12 @@ export class UserHome extends plugin {
                 change_神之心(usr_qq)
                 e.reply(`异界的力量汇涌入${player.名号}的体内,${player.名号}获得了七神的祝福`)
             }
-            if (this_danyao.type == '魔道值') {
+            if (this_danyao.type == "魔道值") {
                 await Add_魔道值(usr_qq, -quantity * this_danyao.modao);
                 e.reply(`获得了转生之力,降低了${quantity * this_danyao.modao}魔道值`);
                 return;
             }
-            if (this_danyao.type == '入魔') {
+            if (this_danyao.type == "入魔") {
                 await Add_魔道值(usr_qq, quantity * this_danyao.modao);
                 e.reply(`${quantity}道黑色魔气入体,增加了${quantity * this_danyao.modao}魔道值`);
                 return;
@@ -1587,11 +1629,6 @@ export class UserHome extends plugin {
                 await Add_najie_thing(usr_qq, th, "装备", 1);
                 await Add_najie_thing(usr_qq, thing_name, "装备", -1);
                 e.reply(`成功兑换：` + th);
-                return
-            }
-            if (thing_name == "多莉的消息") {
-                e.reply([segment.at(3140947982), "多莉！！来客人了！！"])
-                await Add_najie_thing(usr_qq, "多莉的消息", "道具", -1);
                 return
             }
             if (thing_name == "屑洛呼唤器") {
@@ -1774,71 +1811,134 @@ export class UserHome extends plugin {
                 }
             }
             if (thing_name == "钓鱼掉上来的奇怪盒子") {
-                let daomu = Math.random();
-                if (daomu == 0.01) {
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子,里面什么都没有"])
-                    return
-                }
-                if (daomu > 0.01 && daomu <= 0.1) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一些经验瓶"])
-                    return
-                }
-                if (daomu > 0.1 && daomu <= 0.15) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 20);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有20个经验瓶"])
-                    return
-                }
-                if (daomu > 0.15 && daomu <= 0.2) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有30个经验瓶"])
-                    return
-                }
-                if (daomu > 0.25 && daomu <= 0.3) {
-                    await Add_najie_thing(usr_qq, "血气瓶", "丹药", 10);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有10个血气瓶"])
-                    return
-                }
-                if (daomu > 0.3 && daomu <= 0.4) {
-                    await Add_najie_thing(usr_qq, "血气瓶", "丹药", 5);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有5个血气瓶"])
-                    return
-                }
-                if (daomu > 0.4 && daomu <= 0.5) {
-                    await Add_najie_thing(usr_qq, "血气瓶", "丹药", 4);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个血气瓶"])
-                    return
-                }
-                if (daomu > 0.5 && daomu <= 0.7) {
-                    await Add_najie_thing(usr_qq, "经验瓶", "丹药", 4);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个经验瓶"])
-                    return
-                }
-                if (daomu > 0.7 && daomu <= 0.8) {
-                    await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", 1);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个屑洛呼唤器"])
-                    return
-                }
-                if (daomu > 0.8 && daomu <= 0.9) {
-                    await Add_najie_thing(usr_qq, "起死回生丹", "丹药", 1);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个起死回生丹"])
-                    return
-                }
-                if (daomu > 0.9 && daomu <= 1) {
-                    await Add_najie_thing(usr_qq, "重铸石", "道具", 1);
-                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
-                    e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个重铸石"])
-                    return
+                if (quanbu) {
+                    await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -x);
+                    let wu = 0
+                    let jyp = 0
+                    let xqp = 0
+                    let xlhhq = 0
+                    let qshs = 0
+                    let czs = 0
+                    let msg = "你一次性打开了全部【钓鱼掉上来的奇怪盒子】，共" + x + "个，获得了："
+                    for (var i = 0; i < x; i++) {
+                        let daomu = Math.random();
+                        if (daomu <= 0.01) {
+                            wu++
+                        }
+                        if (daomu > 0.1 && daomu <= 0.15) {
+                            jyp += 20
+                        }
+                        if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.2)) {
+                            jyp += 30
+                        }
+                        if (daomu > 0.25 && daomu <= 0.3) {
+                            xqp += 10
+                        }
+                        if (daomu > 0.3 && daomu <= 0.4) {
+                            xqp += 5
+                        }
+                        if (daomu > 0.4 && daomu <= 0.5) {
+                            xqp += 4
+                        }
+                        if (daomu > 0.5 && daomu <= 0.7) {
+                            jyp += 4
+                        }
+                        if (daomu > 0.7 && daomu <= 0.8) {
+                            xlhhq++
+                        }
+                        if (daomu > 0.8 && daomu <= 0.9) {
+                            qshs++
+                        }
+                        if (daomu > 0.9 && daomu <= 1) {
+                            czs++
+                        }
+                    }
+                    if (jyp != 0) {
+                        msg += "\n【经验瓶】*" + jyp
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", jyp);
+                    }
+                    if (xqp != 0) {
+                        msg += "\n【血气瓶】*" + xqp
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", xqp);
+                    }
+                    if (xlhhq != 0) {
+                        msg += "\n【屑洛呼唤器】*" + xlhhq
+                        await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", xlhhq);
+                    }
+                    if (qshs != 0) {
+                        msg += "\n【起死回生丹】*" + qshs
+                        await Add_najie_thing(usr_qq, "起死回生丹", "丹药", qshs);
+                    }
+                    if (czs != 0) {
+                        msg += "\n【重铸石】*" + czs
+                        await Add_najie_thing(usr_qq, "重铸石", "道具", czs);
+                    }
+                    if (wu != 0) {
+                        msg += "\n其中，有" + wu + "个打开后是空的"
+                    }
+                    e.reply(msg)
+                    return;
+                } else {
+                    let daomu = Math.random();
+                    if (daomu <= 0.01) {
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子,里面什么都没有"])
+                        return
+                    }
+                    if (daomu > 0.1 && daomu <= 0.15) {
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 20);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有20个经验瓶"])
+                        return
+                    }
+                    if ((daomu > 0.01 && daomu <= 0.1) || (daomu > 0.15 && daomu <= 0.2)) {
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 30);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有30个经验瓶"])
+                        return
+                    }
+                    if (daomu > 0.25 && daomu <= 0.3) {
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", 10);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有10个血气瓶"])
+                        return
+                    }
+                    if (daomu > 0.3 && daomu <= 0.4) {
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", 5);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有5个血气瓶"])
+                        return
+                    }
+                    if (daomu > 0.4 && daomu <= 0.5) {
+                        await Add_najie_thing(usr_qq, "血气瓶", "丹药", 4);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个血气瓶"])
+                        return
+                    }
+                    if (daomu > 0.5 && daomu <= 0.7) {
+                        await Add_najie_thing(usr_qq, "经验瓶", "丹药", 4);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有4个经验瓶"])
+                        return
+                    }
+                    if (daomu > 0.7 && daomu <= 0.8) {
+                        await Add_najie_thing(usr_qq, "屑洛呼唤器", "道具", 1);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个屑洛呼唤器"])
+                        return
+                    }
+                    if (daomu > 0.8 && daomu <= 0.9) {
+                        await Add_najie_thing(usr_qq, "起死回生丹", "丹药", 1);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个起死回生丹"])
+                        return
+                    }
+                    if (daomu > 0.9 && daomu <= 1) {
+                        await Add_najie_thing(usr_qq, "重铸石", "道具", 1);
+                        await Add_najie_thing(usr_qq, "钓鱼掉上来的奇怪盒子", "道具", -1);
+                        e.reply(["你打开了钓鱼掉上来的奇怪盒子，里面有一个重铸石"])
+                        return
+                    }
                 }
             }
 

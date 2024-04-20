@@ -140,6 +140,35 @@ export class PlayerControlTask extends plugin {
                         await this.setFileValue(usr_qq, xiuwei * time + other_xiuwei, transformation);
                         msg.push("\n增加气血:" + xiuwei * time, "\n获得治疗,血量增加:" + blood * time + "炼神之力消散了");
                     }
+
+                    let lianshen_action = await redis.get('xiuxian:player:' + usr_qq + ':lianshen');
+                    lianshen_action = JSON.parse(lianshen_action);
+                    if (lianshen_action) {
+                        if (lianshen_action.lianti > 0) {
+                            await this.setFileValue(usr_qq, (xiuwei * time + other_xiuwei) * lianshen_action.lianshen, transformation);
+                            msg.push("本次闭关消耗一次炼神之力,获得额外血气" + (xiuwei * time + other_xiuwei) * lianshen_action.lianshen)
+                            lianshen_action.lianti -= 1
+                        }
+                    }
+                    await redis.set(
+                        'xiuxian:player:' + usr_qq + ':lianshen',
+                        JSON.stringify(lianshen_action)
+                    );
+
+                    let biguan_action = await redis.get("xiuxian:player:" + usr_qq + ":biguan")
+                    biguan_action = JSON.parse(biguan_action)
+                    if (biguan_action) {
+                        if (biguan_action.biguan > 0) {
+                            biguan_action.biguan -= 1
+                            if (biguan_action.biguan == 0) {
+                                msg.push("本次闭关后，辟谷丹丹药药效已过。")
+                                let type = "修炼效率提升"
+                                await this.setFileValue(usr_qq, player.修炼效率提升 - biguan_action.biguanxl, type);
+                            }
+                        }
+                        await redis.set("xiuxian:player:" + usr_qq + ":biguang", JSON.stringify(arr));
+                    }
+
                     await this.pushInfo(push_address, true, msg)
                     let arr = action;
                     //把状态都关了
@@ -151,6 +180,7 @@ export class PlayerControlTask extends plugin {
                     delete arr.group_id;//结算完去除group_id
                     await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
                     return;
+
                 }
                 //降妖
                 if (action.working == "0") {

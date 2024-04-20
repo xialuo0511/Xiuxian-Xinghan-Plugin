@@ -57,13 +57,7 @@ body {
     height: 280px;
 }
 
-.user_top_img {
-    margin-top: 50px;
-    margin-left: 2px;
-    width: 172px;
-    height: 172px;
-    border-radius: 100px;
-}
+
 
 .user_top_font_left {
     position: inherit;
@@ -139,6 +133,12 @@ body {
     display: -webkit-flex;
     display: flex;
     flex-wrap: wrap;
+}
+
+.user_top_img {
+    margin: 10px;
+    width: 185px;
+    border-radius: 5px;
 }
 
 .item {

@@ -594,7 +594,7 @@ export class SecretPlace extends plugin {
         let didian = e.msg.replace("#探寻遗迹", '');
         didian = didian.trim();
         let weizhi = await data.yiji_list.find(item => item.name == didian);
-        if (!isNotNull(weizhi)) {
+        if (!weizhi) {
             return;
         }
         if (player.灵石 < weizhi.Price) {
@@ -602,14 +602,23 @@ export class SecretPlace extends plugin {
             return true;
         }
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
+        if (!player.level_id) {
             e.reply("请先#同步信息");
             return;
         }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
-        const time = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
+        const ctime = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
+        let time = ctime
+
+        let now_Time = new Date().getTime(); //获取当前时间戳
+        let msg = ""
+        if (player.daofaxianshu_endtime > now_Time) {
+            msg = "【道法仙术】护您左右，为您指引了遗迹秘宝方向！\n"
+            time -= 3
+        }
+
         let action_time = 60000 * time;//持续时间，单位毫秒
         let arr = {
             "action": "探寻遗迹",//动作
@@ -631,7 +640,7 @@ export class SecretPlace extends plugin {
             arr.group_id = e.group_id
         }
         await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        e.reply("开始探寻遗迹" + didian + "," + time + "分钟后归来!");
+        e.reply(msg + "开始探寻遗迹" + didian + "," + time + "分钟后归来!");
         return;
     }
 

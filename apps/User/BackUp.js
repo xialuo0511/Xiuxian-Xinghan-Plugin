@@ -26,6 +26,10 @@ export class BackUp extends plugin {
           reg: '^#读取存档(.*)',
           fnc: 'loadBackUp',
         },
+        {
+          reg: '^#读取数据库存档(.*)',
+          fnc: 'loadBackUp_datebase',
+        }
       ],
     });
     this.saving = false;
@@ -50,7 +54,7 @@ export class BackUp extends plugin {
         'tiandibang',
         'equipment_path',
         'najie_path',
-        'player_path',
+        'player_path'
       ];
 
       // [[fn, fn...], ...]
@@ -99,7 +103,7 @@ export class BackUp extends plugin {
       const nowTimeStamp = Date.now();
       const saveFolder = `${__PATH.backup}/${nowTimeStamp}`;
       if (fs.existsSync(saveFolder)) {
-        return e?.reply('致命错误，请联系DD');
+        return e?.reply('致命错误，请联系管理员');
       }
       fs.mkdirSync(saveFolder);
 
@@ -265,6 +269,55 @@ export class BackUp extends plugin {
 
       const timeStr = getTimeStr(backUpList[saveDataNum - 1]);
       return e.reply(`存档已读取：${timeStr}`);
+    } catch (err) {
+      await e.reply(`读取失败，${err}`);
+      throw err;
+    }
+  }
+  
+  async loadBackUp_datebase(e) {
+    try {
+      if (!e.isMaster) return e.reply('只有主人可以执行操作');
+      const saveDataNum = Number(e.msg.replace('#读取数据库存档', '').trim());
+      if (!(1 <= saveDataNum && saveDataNum <= 80)) {
+        return e.reply('正确格式：#读取存档[1~80]\n如：#读取存档18');
+      }
+
+      await e.reply('开始读取存档...');
+
+      // redis
+      let redisObj = {};
+      let includeBackup = true;
+      try {
+        redisObj = JSON.parse(fs.readFileSync(`${backUpPath}/redis.json`));
+      } catch (_) {
+        includeBackup = false; // 这个备份不包含redis
+      }
+      
+
+      
+        // 删原本的redis
+        if (includeBackup) {
+          const originRedisKeys = await redis.keys('xiuxian:*');
+          const clearRedisTask = originRedisKeys.map(key => redis.del(key));
+          await Promise.all(clearRedisTask);
+        }
+
+        // 写入备份的redis
+        if (includeBackup) {
+          await Promise.all(
+            Object.keys(redisObj).map(key => {
+              switch (redisObj[key][0]) {
+                case 'string':
+                  return redis.set(key, redisObj[key][1]);
+                case 'set':
+                  return redis.sAdd(key, redisObj[key][1]);
+              }
+            })
+          );
+        }
+
+      return e.reply(`数据库存档已读取`);
     } catch (err) {
       await e.reply(`读取失败，${err}`);
       throw err;

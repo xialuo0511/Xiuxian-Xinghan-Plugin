@@ -135,6 +135,10 @@ export class AdminSuper extends plugin {
         {
           reg: '#开通初级道法仙术.*$',
           fnc: 'ktdfxt',
+        },
+        {
+          reg: '#取消开通初级道法仙术.*$',
+          fnc: 'qx_ktdfxt',
         }, {
           reg: '#开通高级道法仙术.*$',
           fnc: 'ktgjdfxt',
@@ -169,11 +173,14 @@ export class AdminSuper extends plugin {
     } else {
       player.daofaxianshu_endtime += daofaxianshu_endtime
     }
-    let Touxiang = data.Touxiang_list.find(item => item.name == "元宵节头像框")
-    player.all_touxiangkuang.push(Touxiang)
+    if (!player.all_touxiangkuang.find(item => item.name == "元宵节头像框")) {
+      let Touxiang = data.Touxiang_list.find(item => item.name == "元宵节头像框")
+      player.all_touxiangkuang.push(Touxiang)
+      e.reply("本月开通道法仙术,获得本月限定头像框【元宵节头像框】")
+    }
     player.daofaxianshu = 1
     await Write_player(usr_qq, player)
-    e.reply("开通成功！【初级道法仙术】的有效时长增加30天，获得本月限定头像框【元宵节头像框】")
+    e.reply("开通成功！【初级道法仙术】的有效时长增加30天")
     return;
   }
 

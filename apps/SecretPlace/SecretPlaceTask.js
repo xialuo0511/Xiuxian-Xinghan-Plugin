@@ -78,8 +78,7 @@ export class SecretPlaceTask extends plugin {
         let player = await Read_player(player_id);
         //有秘境状态:这个直接结算即可
         if (action.Place_action == '0') {
-          //这里改一改,要在结束时间的前两分钟提前结算
-          end_time = end_time - 60000 * 2;
+          // end_time = end_time;
           //时间过了
           if (now_time > end_time) {
             let weizhi = action.Place_address;
@@ -353,18 +352,18 @@ export class SecretPlaceTask extends plugin {
               let random = Math.random(); //万分之一出神迹
               //春节活动相关代码
 
-              if (random < 0.2) {
-                last_msg += `\n本次探寻还遇见了年兽！击败它获得了【浮空石】*1`
-                await Add_najie_thing(player_id, '浮空石', '材料', 1);
-              }
-              if (random < 0.4 && random >= 0.2) {
-                last_msg += `\n本次探寻还遇见了年兽！击败它获得了【灵木】*1`
-                await Add_najie_thing(player_id, '灵木', '材料', 1);
-              }
-              if (random < 0.6 && random >= 0.4) {
-                last_msg += `\n本次探寻还遇见了年兽！击败它获得了【木浆纸】*1`
-                await Add_najie_thing(player_id, '木浆纸', '材料', 1);
-              }
+              // if (random < 0.2) {
+              //   last_msg += `\n本次探寻还遇见了年兽！击败它获得了【浮空石】*1`
+              //   await Add_najie_thing(player_id, '浮空石', '材料', 1);
+              // }
+              // if (random < 0.4 && random >= 0.2) {
+              //   last_msg += `\n本次探寻还遇见了年兽！击败它获得了【灵木】*1`
+              //   await Add_najie_thing(player_id, '灵木', '材料', 1);
+              // }
+              // if (random < 0.6 && random >= 0.4) {
+              //   last_msg += `\n本次探寻还遇见了年兽！击败它获得了【木浆纸】*1`
+              //   await Add_najie_thing(player_id, '木浆纸', '材料', 1);
+              // }
 
               //春节活动相关代码
 
@@ -375,30 +374,22 @@ export class SecretPlaceTask extends plugin {
                   '倒下后,一道刺眼的圣光落下,你缓缓睁开了眼,发现了[无主的神之心]正散发着幽芒的白光';
                 await Add_najie_thing(player_id, '[无主的神之心]', '道具', 1);
               }
-              let newrandom = 0.995;
-              let action1 = await redis.get(
-                'xiuxian:player:' + 10 + ':biguang'
+              let newrandom = 0.995; let action1 = await redis.get(
+                'xiuxian:player:' + player_id + ':xianyuan'
               );
               action1 = await JSON.parse(action1);
               if (action1) {
-                for (let i = 0; i < action1.length; i++) {
-                  if (action1[i].qq == player_id) {
-                    if (typeof action1[i].beiyong1 != 'number') {
-                      action1[i].beiyong1 = 5;
-                    }
-                    newrandom -= action1[i].beiyong1;
-                    if (action1[i].ped > 0) {
-                      action1[i].ped--;
-                    } else {
-                      action1[i].beiyong1 = 0;
-                      action1[i].ped = 0;
-                    }
-                    await redis.set(
-                      'xiuxian:player:' + 10 + ':biguang',
-                      JSON.stringify(action1)
-                    );
-                  }
+                newrandom -= action1.xianyuangl;
+                if (action1.ped > 0) {
+                  action1.ped--;
+                } else {
+                  action1.xianyuangl = 0;
+                  action1.ped = 0;
                 }
+                await redis.set(
+                  'xiuxian:player:' + player_id + ':xianyuan',
+                  JSON.stringify(action1)
+                );
               }
               if (random > newrandom) {
                 let length = data.xianchonkouliang.length;

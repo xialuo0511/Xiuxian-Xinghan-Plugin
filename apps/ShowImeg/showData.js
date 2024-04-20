@@ -1026,7 +1026,13 @@ export async function get_player_img(e) {
     let 武器评级;
     let usr_qq = e.user_id.toString().replace('qg_', '');;
     usr_qq = await Gulid(usr_qq)
-    let head_pic = e.member.getAvatarUrl()
+    let head_pic
+    try {
+        head_pic = e.member.getAvatarUrl()
+    } catch (error) {
+
+    }
+
     if (!head_pic) {
         head_pic = `https://q1.qlogo.cn/g?b=qq&s=0&nk=` + usr_qq
     }
@@ -1041,6 +1047,28 @@ export async function get_player_img(e) {
 
     //头像框
     let touxiang = player.zb_touxiangkuang[0].id
+
+    //道法仙术
+    let daofa
+    let now_Time = new Date().getTime(); //获取当前时间戳
+    if (player.daofaxianshu_endtime > now_Time) {
+        var date = new Date(player.daofaxianshu_endtime - now_Time)
+        var YY = date.getFullYear() - 1970;
+        var MM = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+        var DD = date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate();
+        var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+        var mm = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+        var ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+        daofa = `剩余时长:`
+        if (YY != 0) {
+            daofa += `${YY}年`
+        }
+        daofa += `${MM}月${DD}日 ${hh}时${mm}分${ss}秒`
+    } else if (player.daofaxianshu > 0) {
+        daofa = "已过期"
+    } else {
+        daofa = "未购买"
+    }
 
 
     if (player.灵石 > 999999999999) {
@@ -1216,6 +1244,7 @@ export async function get_player_img(e) {
     }
     let action = player.练气皮肤;
     let player_data = {
+        daofa: daofa,
         touxiang: touxiang,
         head_pic: head_pic,
         dingjixianshi: dingjixianshi,
@@ -1564,11 +1593,7 @@ export async function get_najie_img(e) {
     const lingshi2 = Math.trunc(najie.灵石上限);
     let strand_hp = Strand(player.当前血量, player.血量上限)
     let strand_lingshi = Strand(najie.灵石, najie.灵石上限)
-    // let pifu = await redis.get("xiuxian:player:" + usr_qq + ":najiepifu");
-    // e.reply(pifu);
-    // if (!pifu) {
-    //     pifu = 0
-    // }
+
     let action = player.练气皮肤;
     let player_data = {
         user_id: usr_qq,

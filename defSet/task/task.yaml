@@ -1,5 +1,5 @@
 # 检测人物动作是否结束定时任务
-action_task: 0 0/1 * * * ?
+action_task: 0/30 * * * * ?
 # 检测沉迷是否结束定时任务
 actionplus_task: 0 0/5 * * * ?
 # 游戏锁定
@@ -23,5 +23,5 @@ BossEndTask: 0 30 12,19 * * ?
 # 修仙论坛
 ForumTask: 0 0 4,16 * * ?
 #备份存档
-AutoBackUpTask: 0 0 4 * * ?
+AutoBackUpTask: 0 0 0/1 * * ?
 #Cron表达式

@@ -892,15 +892,20 @@ async function GetAverageDamage() {
     let fairyNums = 0;
     let TotalPlayer = 0;
     for (var i = 0; i < File.length; i++) {
-        let this_qq = File[i].replace(".json", '');
-        this_qq = parseInt(this_qq);
-        let player = await data.getData("player", this_qq);
-        let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        if (level_id > 21 && level_id < 42) {
-            temp[TotalPlayer] = parseInt(player.攻击);
-            //Bot.logger.mark(`[天理] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
-            TotalPlayer++;
+        try {
+            let this_qq = File[i].replace(".json", '');
+            this_qq = parseInt(this_qq);
+            let player = await data.getData("player", this_qq);
+            let level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
+            if (level_id > 21 && level_id < 42) {
+                temp[TotalPlayer] = parseInt(player.攻击);
+                //Bot.logger.mark(`[天理] ${this_qq}玩家攻击:${temp[TotalPlayer]}`);
+                TotalPlayer++;
+            }
+        } catch (error) {
+            console.log(error)
         }
+
     }
     //排序
     temp.sort(function (a, b) { return b - a });
