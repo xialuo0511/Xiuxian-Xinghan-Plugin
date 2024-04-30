@@ -86,7 +86,7 @@ export class Ningyuandian extends plugin {
             return;
         }
         await Add_najie_thing(usr_qq, thing, wuping.type, wuping.shu1)
-        let sql2 = `update baoyufang set number=${wuping.number--} where name=${thing} `
+        let sql2 = `update baoyufang set number=${wuping.number--} where name='${thing}' `
         await sql_run(sql2)
         e.reply("购买成功！欢迎下次光临！")
         return;
