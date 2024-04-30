@@ -126,7 +126,6 @@ body {
 .use_data_body {
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-  height: auto;
   background-color: rgba(19, 21, 22, 0.486);
 }
 
