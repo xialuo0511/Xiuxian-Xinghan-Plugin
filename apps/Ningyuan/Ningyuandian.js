@@ -48,6 +48,10 @@ export class Ningyuandian extends plugin {
                 {
                     reg: '^#宝玉坊$',
                     fnc: 'byf'
+                },
+                {
+                    reg: '^#宝玉坊购买.*$',
+                    fnc: 'buy'
                 }
             ]
         })
@@ -72,7 +76,8 @@ export class Ningyuandian extends plugin {
         let img = await puppeteer.screenshot("byf", {
             ...data1,
         });
-        return img;
+        e.reply(img)
+        return;
     }
 
     async csh(e) {
