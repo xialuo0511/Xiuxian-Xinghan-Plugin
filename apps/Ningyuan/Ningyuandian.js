@@ -57,7 +57,8 @@ export class Ningyuandian extends plugin {
 
     async byf(e) {
         let sql1 = `select * from baoyufang`
-        let byf_text = JSON.parse(await sql_run(sql1))
+        let byf_text = await sql_run(sql1)
+        console.log(byf_text)
         let suibi = await exist_najie_thing(e.user_id, "鎏金碎币", "道具")
         if (!suibi) {
             suibi = 0
