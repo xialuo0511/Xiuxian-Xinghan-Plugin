@@ -208,7 +208,7 @@ export class UserHome extends plugin {
                         await Add_najie_thing(usr_qq, data.duihuan[i].thing[k].name, data.duihuan[i].thing[k].class, data.duihuan[i].thing[k].数量);
                         msg.push("\n[" + data.duihuan[i].thing[k].name + "]*" + data.duihuan[i].thing[k].数量);
                     }
-                    e.reply("非常抱歉游戏bug影响了你的体验！特此奉上:" + msg);
+                    e.reply("感谢参与问卷调研！特此奉上:" + msg);
                     return;
                 }
             }
