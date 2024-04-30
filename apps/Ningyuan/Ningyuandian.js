@@ -78,7 +78,7 @@ export class Ningyuandian extends plugin {
             return;
         }
         if (wuping.number < 1) {
-            e.reply("物品售罄，待小店准备一会可否")
+            e.reply("物品售罄，请待小店准备一会")
             return;
         }
         if (suibi < wuping.shu2) {
