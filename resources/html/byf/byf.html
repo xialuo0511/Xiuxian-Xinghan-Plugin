@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/byf/byf.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="../../html/player/player.css" /> -->
+	<link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
+	<!-- <link rel="preload" href="../../img/player/xiuxian-01.png" as="image" /> -->
+	<link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+	<div>
+		<div class="user_bottom1">
+			<!-- 你要是闲得无聊,每个装备可以搞个icon -->
+			<div class="use_data">
+				<div class="user_font use_data_head" style="text-align: center;padding-left: 0px;">
+					<div>宝玉坊</div>
+					<div style="font-size:0.8em;">当前拥有鎏金碎币：{{item.suibi}}</div>
+					<div style="font-size:0.8em;">购买指令：#宝玉坊购买+物品名</div>
+				</div>
+				<div class="use_data_body">
+					{{each commodities_list item}}
+					<div class="user_font">
+						<div>
+							<div style="display:inline-block;">【{{item.type}}】{{item.name}}*{{item.shu1}}</div>
+							<div class="price">剩余物品数量：{{item.number}}</div>
+							<div class="price">所需鎏金碎币：{{item.shu2}}</div>
+						</div>
+					</div>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+	</div>
+	<style>
+
+	</style>
+
+</body>
+
+</html>

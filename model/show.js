@@ -328,6 +328,16 @@ export default class Game extends base {
     };
   }
 
+  //宝玉坊
+  async get_byfData(myData) {
+    this.model = 'byf';
+    return {
+      ...this.screenData,
+      saveId: 'byf',
+      ...myData,
+    };
+  }
+
   //琉璃堂
   async get_liuli(myData) {
     this.model = 'liuli';

@@ -6,7 +6,7 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import { Gulid, sql_run } from '../../api/api.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
-import { Add_najie_thing } from '../Xiuxian/xiuxian.js';
+import { Add_najie_thing, exist_najie_thing } from '../Xiuxian/xiuxian.js';
 
 import mysql from "mysql"
 let databaseConfigData = config.getConfig("database", "database");
@@ -44,12 +44,36 @@ export class Ningyuandian extends plugin {
                 {
                     reg: '^#初始化凝渊殿类$',
                     fnc: 'csh'
+                },
+                {
+                    reg: '^#宝玉坊$',
+                    fnc: 'byf'
                 }
             ]
         })
         this.databaseConfigData = config.getConfig("database", "database");
         this.ningyuandianConfigData = config.getConfig("ningyuandian", "ningyuandian");
     }
+
+    async byf(e) {
+        let sql1 = `select * from baoyufang`
+        let byf_text = JSON.parse(await sql_run(sql1))
+        let suibi = await exist_najie_thing(e.user_id, "鎏金碎币", "道具")
+        if (!suibi) {
+            suibi = 0
+        }
+        let byf_data = {
+            user_id: e.user_id,
+            suibi: suibi,
+            byf_text: byf_text
+        }
+        const data1 = await new Show(e).get_byfData(byf_data);
+        let img = await puppeteer.screenshot("byf", {
+            ...data1,
+        });
+        return img;
+    }
+
     async csh(e) {
         if (!this.e.isMaster) {
             return;
