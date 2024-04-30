@@ -83,7 +83,7 @@ export class Ningyuandian extends plugin {
             if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
             e.reply("初始化凝渊殿数据表完成")
         })
-        let sql3 = `create table if not exists baoyufang(name text,type text,shu1 int default 0,shu2 int default 0,number int default 0,PRIMARY KEY(name))`
+        let sql3 = `create table if not exists baoyufang(name text,type text,shu1 int default 0,shu2 int default 0,number int default 0)`
         db.query(sql3, (err, result) => {
             if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
             e.reply("初始化宝玉坊数据表完成")
