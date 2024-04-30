@@ -59,6 +59,39 @@ export class Ningyuandian extends plugin {
         this.ningyuandianConfigData = config.getConfig("ningyuandian", "ningyuandian");
     }
 
+    async buy(e) {
+        let thing = e.msg.replace("#宝玉坊购买", '');
+        if (!thing) {
+            e.reply("这位客官，你要买啥呢~")
+            return;
+        }
+        let usr_qq = e.user_id
+        let suibi = await exist_najie_thing(usr_qq, "鎏金碎币", "道具")
+        if (!suibi) {
+            suibi = 0
+        }
+        let sql1 = `select * from baoyufang`
+        let byf_text = JSON.parse(JSON.stringify(await sql_run(sql1)))
+        let wuping = byf_text.find(item => item.name == thing)
+        if (!wuping) {
+            e.reply("客官说的东西小店暂时没有，如果能弄到一定尽量给你弄来~")
+            return;
+        }
+        if (wuping.number < 1) {
+            e.reply("物品售罄，待小店准备一会可否")
+            return;
+        }
+        if (suibi < wuping.shu2) {
+            e.reply("碎币不够哦客官~再去凝渊殿试试身手吧")
+            return;
+        }
+        await Add_najie_thing(usr_qq, thing, wuping.type, wuping.shu1)
+        let sql2 = `update baoyufang set number=${wuping.number--} where name=${thing} `
+        await sql_run(sql2)
+        e.reply("购买成功！欢迎下次光临！")
+        return;
+    }
+
     async byf(e) {
         let sql1 = `select * from baoyufang`
         let byf_text = JSON.parse(JSON.stringify(await sql_run(sql1)))

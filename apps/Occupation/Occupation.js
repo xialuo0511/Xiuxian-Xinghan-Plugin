@@ -244,8 +244,8 @@ export class Occupation extends plugin {
 
             a = action.occupation;
             b = action.occupation_exp;
-            c = action.occupation_level;
-            const sql2 = `update fuzhi set occupation='${player.occupation}',occupation_exp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
+            c = action.occupation_level; ation_e
+            const sql2 = `update fuzhi set occupation='${player.occupation}',occupxp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
             db.query(sql2, (err, result) => {
                 if (err) {
                     e.reply("出现错误，请联系管理员，错误码fuzhi_03")
@@ -1104,8 +1104,7 @@ export class Occupation extends plugin {
         try {
             qq = action.arm[num].QQ;
         }
-        catch
-        {
+        catch {
             e.reply("不要伤及无辜")//输错了，没有该目标
             return
         }
@@ -1214,8 +1213,7 @@ export class Occupation extends plugin {
         try {
             player_B = await Read_player(qq);
         }
-        catch
-        {
+        catch {
             e.reply("世间没有这人")//查无此人
             return;
         }
@@ -1320,8 +1318,7 @@ export class Occupation extends plugin {
         try {
             qq = action[num].QQ;
         }
-        catch
-        {
+        catch {
             e.reply("不要伤及无辜")//输错了，没有该目标
             return
         }
@@ -1728,8 +1725,7 @@ export class Occupation extends plugin {
         try {
             qq = action.arm[num].QQ;
         }
-        catch
-        {
+        catch {
             e.reply("没找到这个地方")//输错了，没有该目标
             return
         }
