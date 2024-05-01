@@ -118,7 +118,7 @@ export class Ningyuandian extends plugin {
         if (!this.e.isMaster) {
             return;
         }
-        let sql2 = `create table if not exists ningyuandian(usr_id bigint,this_level_time bigint,this_level bigint,level_1_round int default 0,level_2_round int default 0,level_3_round int default 0,level_4_round int default 0,level_5_round int default 0,level_6_round int default 0,level_7_round int default 0,level_8_round int default 0,last_challenged_time bigint,PRIMARY KEY(usr_id))`
+        let sql2 = `create table if not exists ningyuandian(baoming_time bigint,usr_id bigint,this_level_time bigint,this_level bigint,level_1_round int default 0,level_2_round int default 0,level_3_round int default 0,level_4_round int default 0,level_5_round int default 0,level_6_round int default 0,level_7_round int default 0,level_8_round int default 0,last_challenged_time bigint,PRIMARY KEY(baoming_time))`
         db.query(sql2, (err, result) => {
             if (err) throw e.reply("数据库连接失败，请先配置好并#初始化数据库")
             e.reply("初始化凝渊殿数据表完成")
@@ -146,13 +146,12 @@ export class Ningyuandian extends plugin {
         let sql1 = `select * from ningyuandian where usr_id=${usr_qq} and this_level_time=${this.ningyuandianConfigData.Ningyuandian.level};`
         db.query(sql1, (err, result) => {
             var dataString = JSON.stringify(result);
-            let a = JSON.parse(dataString)
-            a = a[0]
+            let a = JSON.parse(dataString)[0]
             if (a) {
                 e.reply("您已报名！")
                 return;
             }
-            let sql2 = `insert into ningyuandian values (${usr_qq},${this.ningyuandianConfigData.Ningyuandian.level},1,0,0,0,0,0,0,0,0,0)`
+            let sql2 = `insert into ningyuandian values (${new Date().getTime()},${usr_qq},${this.ningyuandianConfigData.Ningyuandian.level},1,0,0,0,0,0,0,0,0,0)`
             db.query(sql2, (err, result) => {
                 console.log(err)
                 e.reply('报名成功！')
