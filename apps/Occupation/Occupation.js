@@ -241,7 +241,7 @@ export class Occupation extends plugin {
 
             a = action.occupation;
             b = action.occupation_exp;
-            c = action.occupation_level; ation_e
+            c = action.occupation_level;
             const sql2 = `update fuzhi set occupation='${player.occupation}',occupxp=${player.occupation_exp},occupation_level=${player.occupation_level} where usr_id=${usr_qq};`
             db.query(sql2, (err, result) => {
                 if (err) {
