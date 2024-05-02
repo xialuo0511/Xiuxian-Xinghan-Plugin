@@ -232,15 +232,12 @@ export class Occupation extends plugin {
                 console.log(err)
                 return;
             }
-            var dataString = JSON.stringify(result);
+            var dataString = JSON.parse(JSON.stringify(result));
             if (!dataString) {
                 e.reply(`您还没有副职哦`);
                 return;
             }
-            action0 = JSON.parse(dataString);
-            console.log(action0[0])
-            action = action0[0]
-
+            action0 = dataString[0]
 
             a = action.occupation;
             b = action.occupation_exp;
