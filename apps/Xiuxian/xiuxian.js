@@ -268,9 +268,15 @@ export async function Read_player(usr_qq) {
         }
         return data;
     })
-    //将字符串数据转变成数组格式
-    player = JSON.parse(player);
-    return player;
+    try {
+        //将字符串数据转变成数组格式
+        player = JSON.parse(player);
+        return player;
+    } catch (error) {
+        console.log(error)
+        return "error";
+    }
+
 }
 
 //读取异界存档信息，返回成一个JavaScript对象
