@@ -195,17 +195,18 @@ export class Ningyuandian extends plugin {
         //结算
         let bi = 0
         if (zd_json.ok) {
-            bi += 120
+            bi += 60
             if (b.this_level + 1 <= 4) {
                 if (zd_json.round <= 20) {
-                    bi += 40
+                    bi += 20
                 }
             }
             if (b.this_level + 1 > 4) {
                 if (zd_json.round <= 10) {
-                    bi += 40
+                    bi += 20
                 }
             }
+            bi *= 2
             if (a.this_level_time != 0) {
                 await Add_najie_thing(usr_qq, "鎏金碎币", "道具", bi)
             }
