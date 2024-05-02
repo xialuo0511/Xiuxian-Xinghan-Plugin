@@ -233,6 +233,7 @@ export class Occupation extends plugin {
                 return;
             }
             var dataString = JSON.parse(JSON.stringify(result));
+            console.log(dataString)
             if (!dataString) {
                 e.reply(`您还没有副职哦`);
                 return;
