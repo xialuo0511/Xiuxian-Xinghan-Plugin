@@ -169,7 +169,7 @@ export class PlayerControlTask extends plugin {
                     end_time = end_time - 60000 * 2;
                     //时间过了
                     if (now_time > end_time) {
-                        let player = data.getData("player", player_id);
+                        let player = data.getData("player", usr_qq);
                         let msg = [`【${player.名号}】`]
                         let now_level_id;
                         if (!isNotNull(player.level_id)) {
@@ -199,10 +199,10 @@ export class PlayerControlTask extends plugin {
                         }
                         //
                         player.血气 += other_xueqi;
-                        data.setData("player", player_id, player);
+                        data.setData("player", usr_qq, player);
                         let get_lingshi = lingshi * time + other_lingshi;//最后获取到的灵石
                         //
-                        await this.setFileValue(player_id, get_lingshi, "灵石");//添加灵石
+                        await this.setFileValue(usr_qq, get_lingshi, "灵石");//添加灵石
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
                         db1.query(sql2, async (err, result) => {
                             msg.push("\n降妖得到" + get_lingshi + "灵石");
@@ -210,7 +210,7 @@ export class PlayerControlTask extends plugin {
                             if (is_group) {
                                 await this.pushInfo(push_address, is_group, msg)
                             } else {
-                                await this.pushInfo(player_id, is_group, msg);
+                                await this.pushInfo(usr_qq, is_group, msg);
                             }
                         })
                     }
