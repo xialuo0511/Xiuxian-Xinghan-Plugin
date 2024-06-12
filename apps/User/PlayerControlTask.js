@@ -169,6 +169,7 @@ export class PlayerControlTask extends plugin {
                     end_time = end_time - 60000 * 2;
                     //时间过了
                     if (now_time > end_time) {
+                        let usr_qq = player_action.usr_id;
                         let player = data.getData("player", usr_qq);
                         let msg = [`【${player.名号}】`]
                         let now_level_id;
