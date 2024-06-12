@@ -207,7 +207,6 @@ export class PlayerControlTask extends plugin {
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
                         db1.query(sql2, async (err, result) => {
                             msg.push("\n降妖得到" + get_lingshi + "灵石");
-                            log_mag += "收入" + get_lingshi;
                             if (is_group) {
                                 await this.pushInfo(push_address, is_group, msg)
                             } else {
