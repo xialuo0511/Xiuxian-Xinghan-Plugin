@@ -169,8 +169,6 @@ export class PlayerControlTask extends plugin {
                     end_time = end_time - 60000 * 2;
                     //时间过了
                     if (now_time > end_time) {
-                        //现在大于结算时间，即为结算
-                        log_mag = log_mag + "当前人物未结算，结算状态";
                         let player = data.getData("player", player_id);
                         let msg = [`【${player.名号}】`]
                         let now_level_id;
