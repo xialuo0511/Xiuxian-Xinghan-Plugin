@@ -432,6 +432,10 @@ export class UserStart extends plugin {
         db.query(sql1, async (err, result) => {
             console.log(err)
             let action1 = JSON.stringify(result)
+            if (action == undefined || action == "undefined") {
+                e.reply("用户未注册")
+                return;
+            }
             action1 = JSON.parse(action1)
             action1 = action1[0]
             if (action1) {
