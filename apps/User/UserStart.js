@@ -432,11 +432,10 @@ export class UserStart extends plugin {
         db.query(sql1, async (err, result) => {
             console.log(err)
             let action1 = JSON.stringify(result)
-
-            action1 = JSON.parse(action1)
-            action1 = action1[0]
             try {
                 if (action1) {
+                    action1 = JSON.parse(action1)
+                    action1 = action1[0]
                     let now_time = new Date().getTime();
                     let timee = 0
                     if (action1.action_chengmi != 0) {
