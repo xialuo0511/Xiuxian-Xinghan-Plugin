@@ -432,27 +432,23 @@ export class UserStart extends plugin {
         db.query(sql1, async (err, result) => {
             console.log(err)
             let action1 = JSON.stringify(result)
-            try {
-                if (action1 != undefined || action1 != "undefined") {
-                    action1 = JSON.parse(action1)
-                    action1 = action1[0]
-                    let now_time = new Date().getTime();
-                    let timee = 0
-                    if (action1.action_chengmi != 0) {
-                        timee = action1.time - now_time
-                    } else {
-                        timee = action1.end_time - now_time
-                    }
-                    let m = parseInt(timee / 1000 / 60);
-                    let s = parseInt((timee - m * 60 * 1000) / 1000);
-                    if (m <= 0 && s <= 0) {
-                        status = action1.action + "(结算中)"
-                    } else {
-                        status = action1.action + "(剩余时间:" + m + "分" + s + "秒)"
-                    }
-
+            if (action1 != undefined || action1 != "undefined") {
+                action1 = JSON.parse(action1)
+                action1 = action1[0]
+                let now_time = new Date().getTime();
+                let timee = 0
+                if (action1.action_chengmi != 0) {
+                    timee = action1.time - now_time
+                } else {
+                    timee = action1.end_time - now_time
                 }
-            } catch (error) {
+                let m = parseInt(timee / 1000 / 60);
+                let s = parseInt((timee - m * 60 * 1000) / 1000);
+                if (m <= 0 && s <= 0) {
+                    status = action1.action + "(结算中)"
+                } else {
+                    status = action1.action + "(剩余时间:" + m + "分" + s + "秒)"
+                }
 
             }
             let lingshi = Math.trunc(player.灵石);
