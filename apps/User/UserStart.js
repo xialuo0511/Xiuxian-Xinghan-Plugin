@@ -432,10 +432,7 @@ export class UserStart extends plugin {
         db.query(sql1, async (err, result) => {
             console.log(err)
             let action1 = JSON.stringify(result)
-            if (action1 == undefined || action1 == "undefined") {
-                e.reply("用户未注册")
-                return;
-            }
+
             action1 = JSON.parse(action1)
             action1 = action1[0]
             if (action1) {
@@ -454,6 +451,8 @@ export class UserStart extends plugin {
                     status = action1.action + "(剩余时间:" + m + "分" + s + "秒)"
                 }
 
+            } else if (action1 == undefined || action1 == "undefined") {
+                return;
             }
             let lingshi = Math.trunc(player.灵石);
 
