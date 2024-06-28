@@ -433,6 +433,7 @@ export class UserStart extends plugin {
             console.log(err)
             let action1 = JSON.stringify(result)
             if (action1 != undefined || action1 != "undefined") {
+                console.log(action1)
                 action1 = JSON.parse(action1)
                 action1 = action1[0]
                 let now_time = new Date().getTime();
