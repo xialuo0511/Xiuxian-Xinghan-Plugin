@@ -432,7 +432,7 @@ export class UserStart extends plugin {
         db.query(sql1, async (err, result) => {
             console.log(err)
             let action1 = JSON.stringify(result)
-            if (action1 != undefined && action1 != "undefined" && action1.isNotNull()) {
+            if (action1 != undefined && action1 != "undefined" && isNotNull(action1)) {
                 console.log(action1)
                 action1 = JSON.parse(action1)
                 action1 = action1[0]
