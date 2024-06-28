@@ -437,7 +437,7 @@ export class UserStart extends plugin {
                 action1 = action1[0]
                 let now_time = new Date().getTime();
                 let timee = 0
-                if (action1.action_chengmi != 0) {
+                if (action1 != undefined && action1.action_chengmi != 0) {
                     timee = action1.time - now_time
                 } else {
                     timee = action1.end_time - now_time
