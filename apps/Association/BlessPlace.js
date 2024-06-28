@@ -442,9 +442,9 @@ export class BlessPlace extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, (err, result) => {
             let action = JSON.stringify(result)
-            action = JSON.parse(action)
-            action = action[0]
-            if (action) {
+            if (action != undefined && action != "undefined" && action.length > 2) {
+                action = JSON.parse(action)
+                action = action[0]
                 let now_time = new Date().getTime();
                 let timee = 0
                 if (action.action_chengmi != 0) {
@@ -623,9 +623,9 @@ export class BlessPlace extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, (err, result) => {
             let action = JSON.stringify(result)
-            action = JSON.parse(action)
-            action = action[0]
-            if (action) {
+            if (action != undefined && action != "undefined" && action.length > 2) {
+                action = JSON.parse(action)
+                action = action[0]
                 let now_time = new Date().getTime();
                 let timee = 0
                 if (action.action_chengmi != 0) {

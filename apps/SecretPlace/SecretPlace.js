@@ -223,7 +223,7 @@ export class SecretPlace extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
-            if (action != undefined || action != "undefined") {
+            if (action != undefined && action != "undefined" && action.length > 2) {
                 action = JSON.parse(action)
                 action = action[0]
                 let now_time = new Date().getTime();
@@ -317,9 +317,9 @@ export class SecretPlace extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
-            action = JSON.parse(action)
-            action = action[0]
-            if (action) {
+            if (action != undefined && action != "undefined" && action.length > 2) {
+                action = JSON.parse(action)
+                action = action[0]
                 let now_time = new Date().getTime();
                 let timee = 0
                 if (action.action_chengmi != 0) {
@@ -412,9 +412,9 @@ export class SecretPlace extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
-            action = JSON.parse(action)
-            action = action[0]
-            if (action) {
+            if (action != undefined && action != "undefined" && action.length > 2) {
+                action = JSON.parse(action)
+                action = action[0]
                 let now_time = new Date().getTime();
                 let timee = 0
                 if (action.action_chengmi != 0) {
@@ -506,9 +506,9 @@ export class SecretPlace extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
-            action = JSON.parse(action)
-            action = action[0]
-            if (action) {
+            if (action != undefined && action != "undefined" && action.length > 2) {
+                action = JSON.parse(action)
+                action = action[0]
                 let now_time = new Date().getTime();
                 let timee = 0
                 if (action.action_chengmi != 0) {
@@ -562,20 +562,22 @@ export class SecretPlace extends plugin {
         let sql1 = `select * from action where usr_id=${e.user_id};`
         db.query(sql1, (err, result) => {
             let b = JSON.stringify(result)
-            let action0 = JSON.parse(b);
-            var action = action0[0]
-            if (!action) {
-                e.reply('哪都没去，你逃个锤子')
-                return;
+            if (b != undefined && b != "undefined" && b.length > 2) {
+                let action = JSON.parse(b)
+                action = action[0]
+                if (!action) {
+                    e.reply('哪都没去，你逃个锤子')
+                    return;
+                }
+                if (action.action_mijing != "1" && action.action_chengmi == 0) {
+                    e.reply('哪都没去，你逃个锤子')
+                    return;
+                }
+                const sql2 = `delete from action where usr_id=${e.user_id};`
+                db.query(sql2, (err, result) => {
+                    e.reply('逃离成功！')
+                })
             }
-            if (action.action_mijing != "1" && action.action_chengmi == 0) {
-                e.reply('哪都没去，你逃个锤子')
-                return;
-            }
-            const sql2 = `delete from action where usr_id=${e.user_id};`
-            db.query(sql2, (err, result) => {
-                e.reply('逃离成功！')
-            })
         })
     }
 
@@ -635,9 +637,9 @@ export class SecretPlace extends plugin {
         let sql1 = `select * from action where usr_id=${usr_qq};`
         db.query(sql1, async (err, result) => {
             let action = JSON.stringify(result)
-            action = JSON.parse(action)
-            action = action[0]
-            if (action) {
+            if (action != undefined && action != "undefined" && action.length > 2) {
+                action = JSON.parse(action)
+                action = action[0]
                 let now_time = new Date().getTime();
                 let m = parseInt((action.end_time - now_time) / 1000 / 60);
                 let s = parseInt(((action.end_time - now_time) - m * 60 * 1000) / 1000);
@@ -821,9 +823,9 @@ export async function Go(e) {
     let sql1 = `select * from action where usr_id=${usr_qq};`
     db.query(sql1, async (err, result) => {
         let action = JSON.stringify(result)
-        action = JSON.parse(action)
-        action = action[0]
-        if (action) {
+        if (action != undefined && action != "undefined" && action.length > 2) {
+            action = JSON.parse(action)
+            action = action[0]
             let now_time = new Date().getTime();
             let timee = 0
             if (action.action_chengmi != 0) {
