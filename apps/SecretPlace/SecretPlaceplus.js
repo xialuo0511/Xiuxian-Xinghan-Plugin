@@ -148,10 +148,7 @@ export class SecretPlaceplus extends plugin {
             return true;
         }
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
 
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (didian == "小千世界" || didian == "中千世界" || didian == "大千世界") {
@@ -223,14 +220,6 @@ export class SecretPlaceplus extends plugin {
         let usr_qq = e.user_id;
         let player = await Read_player(usr_qq);
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
-        if (!isNotNull(player.power_place)) {
-            e.reply("请#同步信息");
-            return;
-        }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (now_level_id < 22) {
             e.reply("没有达到化神之前还是不要去了")
@@ -349,10 +338,6 @@ export class SecretPlaceplus extends plugin {
     //     e.reply("你在冲水堂发现有人上架了一份仙府地图")
     //     let didian = didianlist[suiji];//赋值
     //     let now_level_id;
-    //     if (!isNotNull(player.level_id)) {
-    //         e.reply("请先#同步信息");
-    //         return;
-    //     }
     //     await sleep(1000)
     //     if (yunqi > 0.9) {//10%寄
     //         if (player.灵石 < 50000) {
@@ -447,10 +432,7 @@ export class SecretPlaceplus extends plugin {
             return true;
         }
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
         if (didian == "仙界矿场") {
             e.reply("打工本不支持沉迷哦");
             return;
@@ -460,10 +442,6 @@ export class SecretPlaceplus extends plugin {
         if (now_level_id < 42) {
             return;
         } else {
-            if (!isNotNull(player.power_place)) {
-                e.reply("请#同步信息");
-                return;
-            }
             if (player.power_place != 0) {
                 e.reply("你已无法重返仙界！");
                 return;

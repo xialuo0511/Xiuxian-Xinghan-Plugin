@@ -425,10 +425,7 @@ export class BlessPlace extends plugin {
             return true;
         }
 
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
 
         let Price = weizhi.Price;
 
@@ -601,10 +598,7 @@ export class BlessPlace extends plugin {
             return true;
         }
 
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
         let number = await exist_najie_thing(usr_qq, "秘境之匙", "道具")
         if (isNotNull(number) && number >= i) {
             await Add_najie_thing(usr_qq, "秘境之匙", "道具", -i);

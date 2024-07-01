@@ -154,10 +154,6 @@ export class Games extends plugin {
         //得到用户信息
         let player = await Read_player(usr_qq);
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply('请先#同步信息');
-            return;
-        }
         now_level_id = data.Level_list.find(
             item => item.level_id == player.level_id
         ).level_id;

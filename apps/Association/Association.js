@@ -138,10 +138,7 @@ export class Association extends plugin {
             return;
         }
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
         let association_name = e.msg.replace("#加入宗门", '');
         association_name = association_name.trim();
         let ifexistass = data.existData("association", association_name);

@@ -1,8 +1,8 @@
 import plugin from '../../../../lib/plugins/plugin.js'
 import data from '../../model/XiuxianData.js'
 import config from "../../model/Config.js"
-import { existplayer, Read_player, get_random_talent, Getmsg_battle,isNotNull,ForwardMsg } from '../Xiuxian/xiuxian.js'
-import { Add_灵石,Add_血气 } from '../Xiuxian/xiuxian.js'
+import { existplayer, Read_player, get_random_talent, Getmsg_battle, isNotNull, ForwardMsg } from '../Xiuxian/xiuxian.js'
+import { Add_灵石, Add_血气 } from '../Xiuxian/xiuxian.js'
 
 /**
  * 全局
@@ -23,27 +23,27 @@ export class BossAll extends plugin {
             /** 优先级，数字越小等级越高 */
             priority: 600,
             rule: [
-                 {
-                      reg: '^#怪物状态$',
-                      fnc: 'Bosstate'
-                  },
-                  {
-                      reg: '^#讨伐魔王$',
-                      fnc: 'BossMaxplus'
-                  },
-                  {
-                      reg: '^#讨伐金角大王$',
-                      fnc: 'BossMax'
-                  },
-                  {
-                      reg: '^#讨伐散兵$',
-                      fnc: 'Ssanbing'
-                  },
-                  {
-                      reg: '^#讨伐银角大王$',
-                      fnc: 'BossMini'
-                  }
-                
+                {
+                    reg: '^#怪物状态$',
+                    fnc: 'Bosstate'
+                },
+                {
+                    reg: '^#讨伐魔王$',
+                    fnc: 'BossMaxplus'
+                },
+                {
+                    reg: '^#讨伐金角大王$',
+                    fnc: 'BossMax'
+                },
+                {
+                    reg: '^#讨伐散兵$',
+                    fnc: 'Ssanbing'
+                },
+                {
+                    reg: '^#讨伐银角大王$',
+                    fnc: 'BossMini'
+                }
+
             ]
         })
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
@@ -51,8 +51,8 @@ export class BossAll extends plugin {
 
     //怪物状态
     async Bosstate(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -65,14 +65,14 @@ export class BossAll extends plugin {
             BossMaxplus = JSON.parse(BossMaxplus);
             if (BossMaxplus != null) {
                 msg.push("【魔王】" +
-                "\n攻击：" + BossMaxplus.attack +
-                "\n防御：" + BossMaxplus.defense +
-                "\n血量：" + BossMaxplus.blood +
-                "\n灵根：" + BossMaxplus.linggen +
-                "\n掉落：" + BossMaxplus.money);
+                    "\n攻击：" + BossMaxplus.attack +
+                    "\n防御：" + BossMaxplus.defense +
+                    "\n血量：" + BossMaxplus.blood +
+                    "\n灵根：" + BossMaxplus.linggen +
+                    "\n掉落：" + BossMaxplus.money);
             }
         }
-        else{
+        else {
             msg.push("魔王未开启！");
         }
         let bossMax = await redis.get("BossMax");
@@ -81,14 +81,14 @@ export class BossAll extends plugin {
             BossMax = JSON.parse(BossMax);
             if (BossMax != null) {
                 msg.push("【金角大王】" +
-                "\n攻击：" + BossMax.attack +
-                "\n防御：" + BossMax.defense +
-                "\n血量：" + BossMax.blood +
-                "\n灵根：" + BossMax.linggen+
-                "\n掉落：" + BossMax.money);
+                    "\n攻击：" + BossMax.attack +
+                    "\n防御：" + BossMax.defense +
+                    "\n血量：" + BossMax.blood +
+                    "\n灵根：" + BossMax.linggen +
+                    "\n掉落：" + BossMax.money);
             }
         }
-        else{            
+        else {
             msg.push("金角大王未开启！");
         }
         let bossMini = await redis.get("BossMini");
@@ -97,14 +97,14 @@ export class BossAll extends plugin {
             BossMini = JSON.parse(BossMini);
             if (BossMini != null) {
                 msg.push("【银角大王】" +
-                "\n攻击：" + BossMini.attack +
-                "\n防御：" + BossMini.defense +
-                "\n血量：" + BossMini.blood +
-                "\n灵根：" + BossMini.linggen +
-                "\n掉落：" + BossMini.money);
+                    "\n攻击：" + BossMini.attack +
+                    "\n防御：" + BossMini.defense +
+                    "\n血量：" + BossMini.blood +
+                    "\n灵根：" + BossMini.linggen +
+                    "\n掉落：" + BossMini.money);
             }
         }
-        else{
+        else {
             msg.push("银角大王未开启！");
         }
         let Sanbing = await redis.get("sanbing");
@@ -113,14 +113,14 @@ export class BossAll extends plugin {
             sanbing = JSON.parse(sanbing);
             if (sanbing != null) {
                 msg.push("【散兵(活动限定))】" +
-                "\n攻击：" + sanbing.attack +
-                "\n防御：" + sanbing.defense +
-                "\n血量：" + sanbing.blood +
-                "\n灵根：" + "?" +
-                "\n掉落：" + sanbing.money);
+                    "\n攻击：" + sanbing.attack +
+                    "\n防御：" + sanbing.defense +
+                    "\n血量：" + sanbing.blood +
+                    "\n灵根：" + "?" +
+                    "\n掉落：" + sanbing.money);
             }
         }
-        else{
+        else {
             msg.push("散兵周本未开启！");
         }
         await ForwardMsg(e, msg);
@@ -129,8 +129,8 @@ export class BossAll extends plugin {
 
     //讨伐魔王
     async BossMaxplus(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -147,19 +147,15 @@ export class BossAll extends plugin {
         let boss = await redis.get("BossMaxplus");
         if (boss == 0) {
         }
-        else{
+        else {
             e.reply("魔王未开启！");
             return;
         }
         //按攻打次数获得奖励
         let player = await Read_player(usr_qq);
         let now_level_id;
-        if (!isNotNull(player.level_id)){
-            e.reply("请先#同步信息");
-            return;
-        }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-        
+
         if (now_level_id >= 42) {
             let cd = await BossCD(e);
             if (cd == 1) {
@@ -175,7 +171,7 @@ export class BossAll extends plugin {
                     防御: parseInt(BossMaxplus.defense),
                     当前血量: parseInt(BossMaxplus.blood),
                     暴击率: parseInt(BossMaxplus.probability),
-                    灵根:parseInt(BossMaxplus.linggen),
+                    灵根: parseInt(BossMaxplus.linggen),
                     法球倍率: 0
                 }
                 let Data_battle = await Getmsg_battle(A_player, B_player);
@@ -183,7 +179,7 @@ export class BossAll extends plugin {
                 let A_win = `${A_player.名号}击败了${B_player.名号}`;
                 let B_win = `${B_player.名号}击败了${A_player.名号}`;
                 if (msgg.find(item => item == A_win)) {
-                    await  Add_灵石(usr_qq, BossMaxplus.money);
+                    await Add_灵石(usr_qq, BossMaxplus.money);
                     e.reply(A_player.名号 + "击败了" + B_player.名号 + "，得到了" + BossMaxplus.money + "灵石");
                 }
                 else if (msgg.find(item => item == B_win)) {
@@ -192,8 +188,8 @@ export class BossAll extends plugin {
                         await Add_灵石(usr_qq, -BossMaxplus.money);
                         e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + BossMaxplus.money + "灵石");
                     }
-                    else{
-                        await Add_灵石(usr_qq, -player.灵石+1);
+                    else {
+                        await Add_灵石(usr_qq, -player.灵石 + 1);
                         e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + BossMaxplus.money + "灵石");
                     }
                 }
@@ -201,11 +197,11 @@ export class BossAll extends plugin {
                     //出错了
                     return;
                 }
-                await Add_血气(usr_qq, 500*player.Physique_id);
+                await Add_血气(usr_qq, 500 * player.Physique_id);
                 let now_time = new Date().getTime();
                 //获得时间戳
                 await redis.set("xiuxian:player:" + usr_qq + ":Bosstime", now_time);
-            } 
+            }
         }
         else if (now_level_id <= 41) {
             e.reply("凡人不可阶跃！");
@@ -214,8 +210,8 @@ export class BossAll extends plugin {
     }
     //讨伐金角大王
     async BossMax(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -232,7 +228,7 @@ export class BossAll extends plugin {
         let boss = await redis.get("BossMax");
         if (boss == 0) {
         }
-        else{
+        else {
             e.reply("金角大王未开启！");
             return;
         }
@@ -240,10 +236,6 @@ export class BossAll extends plugin {
 
 
         let now_level_id;
-        if (!isNotNull(player.level_id)){
-            e.reply("请先#同步信息");
-            return;
-        }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
 
         if (now_level_id >= 21 && now_level_id < 42) {
@@ -261,7 +253,7 @@ export class BossAll extends plugin {
                     防御: parseInt(BossMax.defense),
                     当前血量: parseInt(BossMax.blood),
                     暴击率: parseInt(BossMax.probability),
-                    灵根:parseInt(BossMax.linggen),
+                    灵根: parseInt(BossMax.linggen),
                     法球倍率: 0
                 }
                 let Data_battle = await Getmsg_battle(A_player, B_player);
@@ -275,11 +267,11 @@ export class BossAll extends plugin {
                 else if (msgg.find(item => item == B_win)) {
                     //输了，被抢了灵石
                     if (player.灵石 > BossMax.money) {
-                        await  Add_灵石(usr_qq, -BossMax.money);
+                        await Add_灵石(usr_qq, -BossMax.money);
                         e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + BossMax.money + "灵石");
                     }
-                    else{
-                        await Add_灵石(usr_qq, -player.灵石+1);
+                    else {
+                        await Add_灵石(usr_qq, -player.灵石 + 1);
                         e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + BossMax.money + "灵石");
                     }
                 }
@@ -287,7 +279,7 @@ export class BossAll extends plugin {
                     //出错了
                     return;
                 }
-                await Add_血气(usr_qq, 500*player.Physique_id);
+                await Add_血气(usr_qq, 500 * player.Physique_id);
                 let now_time = new Date().getTime();
                 //获得时间戳
                 await redis.set("xiuxian:player:" + usr_qq + ":Bosstime", now_time);
@@ -307,8 +299,8 @@ export class BossAll extends plugin {
 
     //讨伐银角大王
     async BossMini(e) {
-         //不开放私聊功能
-         if (!e.isGroup) {
+        //不开放私聊功能
+        if (!e.isGroup) {
             e.reply('修仙游戏请在群聊中游玩');
             return;
         }
@@ -325,16 +317,12 @@ export class BossAll extends plugin {
         let boss = await redis.get("BossMini");
         if (boss == 0) {
         }
-        else{
+        else {
             e.reply("银角大王未开启！");
             return;
         }
         let player = await Read_player(usr_qq);
         let now_level_id;
-        if (!isNotNull(player.level_id)){
-            e.reply("请先#同步信息");
-            return;
-        }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (now_level_id < 21) {
             let cd = await BossCD(e);
@@ -354,7 +342,7 @@ export class BossAll extends plugin {
                     防御: parseInt(BossMini.defense),
                     当前血量: parseInt(BossMini.blood),
                     暴击率: parseInt(BossMini.probability),
-                    灵根:parseInt(BossMini.linggen),
+                    灵根: parseInt(BossMini.linggen),
                     法球倍率: 0
                 }
                 let Data_battle = await Getmsg_battle(A_player, B_player);
@@ -368,12 +356,12 @@ export class BossAll extends plugin {
                 else if (msgg.find(item => item == B_win)) {
                     //输了，被抢了灵石
                     if (player.灵石 > BossMini.money) {
-                        
+
                         await Add_灵石(usr_qq, -BossMini.money);
                         e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + BossMini.money + "灵石");
                     }
-                    else{
-                        await Add_灵石(usr_qq, -player.灵石+1);
+                    else {
+                        await Add_灵石(usr_qq, -player.灵石 + 1);
                         e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + BossMini.money + "灵石");
                     }
 
@@ -381,7 +369,7 @@ export class BossAll extends plugin {
                 else {
                     return;
                 }
-                await Add_血气(usr_qq, 500*player.Physique_id);
+                await Add_血气(usr_qq, 500 * player.Physique_id);
                 //获取当前时间
                 let now_time = new Date().getTime();
                 //获得时间戳
@@ -402,87 +390,83 @@ export class BossAll extends plugin {
     async Ssanbing(e) {
         //不开放私聊功能
         if (!e.isGroup) {
-           return;
-       }
-       let usr_qq = e.user_id;
-       //看状态
-       await Go(e);
-       if (allaction) {
-       }
-       else {
-           return;
-       }
-       allaction = false;
-       //查看boss状态
-       let boss = await redis.get("sanbing");
-       if (boss == 0) {
-       }
-       else{
-           e.reply("散兵未开启！");
-           return;
-       }
-       let player = await Read_player(usr_qq);
-       let now_level_id;
-       if (!isNotNull(player.level_id)){
-           e.reply("请先#同步信息");
-           return;
-       }
-       now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-       if (now_level_id < 999) {
-           let cd = await BossCD(e);
-           if (cd == 1) {
-               return;
-           }
-           //这里接受用户信息
-           let A_player = await Bossbattle(e);
-           //攻打
-           let sanbing = await redis.get("xiuxian:sanbing");
-           sanbing = JSON.parse(sanbing);
+            return;
+        }
+        let usr_qq = e.user_id;
+        //看状态
+        await Go(e);
+        if (allaction) {
+        }
+        else {
+            return;
+        }
+        allaction = false;
+        //查看boss状态
+        let boss = await redis.get("sanbing");
+        if (boss == 0) {
+        }
+        else {
+            e.reply("散兵未开启！");
+            return;
+        }
+        let player = await Read_player(usr_qq);
+        let now_level_id;
+        now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
+        if (now_level_id < 999) {
+            let cd = await BossCD(e);
+            if (cd == 1) {
+                return;
+            }
+            //这里接受用户信息
+            let A_player = await Bossbattle(e);
+            //攻打
+            let sanbing = await redis.get("xiuxian:sanbing");
+            sanbing = JSON.parse(sanbing);
 
-           if (sanbing != null) {
-               let B_player = {
-                   名号: "散兵",
-                   攻击: parseInt(sanbing.attack),
-                   防御: parseInt(sanbing.defense),
-                   当前血量: parseInt(sanbing.blood),
-                   暴击率: parseInt(sanbing.probability),
-                   法球倍率: 0
-               }
-               let Data_battle = await Getmsg_battle(A_player, B_player);
-               let msgg = Data_battle.msg;
-               let A_win = `${A_player.名号}击败了${B_player.名号}`;
-               let B_win = `${B_player.名号}击败了${A_player.名号}`;
-               if (msgg.find(item => item == A_win)) {
-                   await Add_灵石(usr_qq, sanbing.money);
-                   e.reply(A_player.名号 + "击败了" + B_player.名号 + "，得到了" + sanbing.money + "灵石");
-               }
-               else if (msgg.find(item => item == B_win)) {
-                   //输了，被抢了灵石
-                   if (player.灵石 > sanbing.money*0.01) {
-                       
-                       await Add_灵石(usr_qq, -sanbing.money*0.01);
-                       e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + sanbing.money*0.01 + "灵石");
-                   }
-                   else{
-                       await Add_灵石(usr_qq, -player.灵石+1);
-                       e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + sanbing.money*0.01 + "灵石");
-                   }
+            if (sanbing != null) {
+                let B_player = {
+                    名号: "散兵",
+                    攻击: parseInt(sanbing.attack),
+                    防御: parseInt(sanbing.defense),
+                    当前血量: parseInt(sanbing.blood),
+                    暴击率: parseInt(sanbing.probability),
+                    法球倍率: 0
+                }
+                let Data_battle = await Getmsg_battle(A_player, B_player);
+                let msgg = Data_battle.msg;
+                let A_win = `${A_player.名号}击败了${B_player.名号}`;
+                let B_win = `${B_player.名号}击败了${A_player.名号}`;
+                if (msgg.find(item => item == A_win)) {
+                    await Add_灵石(usr_qq, sanbing.money);
+                    e.reply(A_player.名号 + "击败了" + B_player.名号 + "，得到了" + sanbing.money + "灵石");
+                }
+                else if (msgg.find(item => item == B_win)) {
+                    //输了，被抢了灵石
+                    if (player.灵石 > sanbing.money * 0.01) {
 
-               }
-               else {
-                   return;
-               }
-               await Add_血气(usr_qq, 500*player.Physique_id);
-               //获取当前时间
-               let now_time = new Date().getTime();
-               //获得时间戳
-               await redis.set("xiuxian:player:" + usr_qq + ":Bosstime", now_time);
-           }
-           else {
-           }
-       }
-       return;
-   }
+                        await Add_灵石(usr_qq, -sanbing.money * 0.01);
+                        e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + sanbing.money * 0.01 + "灵石");
+                    }
+                    else {
+                        await Add_灵石(usr_qq, -player.灵石 + 1);
+                        e.reply(A_player.名号 + "打不过" + B_player.名号 + "，被抢走了" + sanbing.money * 0.01 + "灵石");
+                    }
+
+                }
+                else {
+                    return;
+                }
+                await Add_血气(usr_qq, 500 * player.Physique_id);
+                //获取当前时间
+                let now_time = new Date().getTime();
+                //获得时间戳
+                await redis.set("xiuxian:player:" + usr_qq + ":Bosstime", now_time);
+            }
+            else {
+            }
+        }
+        return;
+    }
 
 
 }
@@ -504,7 +488,7 @@ export async function Bossbattle(e) {
         当前血量: player.当前血量,
         暴击率: player.暴击率,
         法球倍率: player.灵根.法球倍率,
-        灵根:player.灵根
+        灵根: player.灵根
     }
     return A_player;
 }

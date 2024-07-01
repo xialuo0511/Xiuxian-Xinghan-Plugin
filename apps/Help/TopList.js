@@ -207,10 +207,6 @@ export class TopList extends plugin {
             this_qq = await Gulid(this_qq);
             let player = await Read_player(this_qq);
             let sum_exp = await Get_xiuwei(this_qq);
-            if (!isNotNull(player.level_id)) {
-                e.reply("请先#同步信息");
-                return;
-            }
             //境界名字需要查找境界名
             let level = data.Level_list.find(item => item.level_id == player.level_id).level;
             temp[i] = {

@@ -86,10 +86,6 @@ export class AssociationAdmin extends plugin {
         let player = data.getData("player", usr_qq);
 
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            this.reply("请先#同步信息");
-            return;
-        }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
 
         if (now_level_id < 22) {

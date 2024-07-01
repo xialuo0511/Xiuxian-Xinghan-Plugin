@@ -384,10 +384,6 @@ export async function Write_equipment(usr_qq, equipment) {
     //每次写入都要更新新的攻防生
     //
     let player = await Read_player(usr_qq);
-    if (!isNotNull(player.level_id)) {
-        await e.reply("请先#同步信息");
-        return;
-    }
     let equ_atk = equipment.武器.atk + equipment.护具.atk + equipment.法宝.atk + player.攻击加成;
     let equ_def = equipment.武器.def + equipment.护具.def + equipment.法宝.def + player.防御加成;
     let equ_HP = equipment.武器.HP + equipment.护具.HP + equipment.法宝.HP + player.生命加成;

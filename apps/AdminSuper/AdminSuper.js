@@ -698,10 +698,7 @@ export class AdminSuper extends plugin {
     for (let player_id of playerList) {
       let player = await Read_player(player_id);
       let now_level_id;
-      if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息');
-        return;
-      }
+
       now_level_id = data.Level_list.find(
         item => item.level_id == player.level_id
       ).level_id;
@@ -1191,10 +1188,6 @@ export class AdminSuper extends plugin {
       return;
     }
     let player = await Read_player(qq);
-    if (!isNotNull(player.power_place)) {
-      e.reply('请#同步信息');
-      return;
-    }
     player.power_place = 1;
     e.reply('已打落凡间！');
     await Write_player(qq, player);

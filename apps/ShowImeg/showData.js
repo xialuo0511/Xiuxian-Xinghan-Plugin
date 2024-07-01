@@ -246,10 +246,7 @@ export async function get_XianChong_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let najie = await Read_najie(usr_qq);
     let user_name = player.名号
     let XianChong_have = [];
@@ -293,10 +290,7 @@ export async function get_daoju_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let najie = await Read_najie(usr_qq);
     let user_name = player.名号
     let daoju_have = []
@@ -349,10 +343,7 @@ export async function get_huanying_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let najie = await Read_najie(usr_qq);
     let user_name = player.名号
     let daoju_have = []
@@ -407,10 +398,7 @@ export async function get_Touxiang_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let touxiang = await player.all_touxiangkuang
     let user_name = player.名号
     let touxiang_need = []
@@ -447,10 +435,7 @@ export async function get_huju_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let najie = await Read_najie(usr_qq);
     let equipment = await Read_equipment(usr_qq);
     let user_name = player.名号
@@ -537,10 +522,7 @@ export async function get_fabao_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let najie = await Read_najie(usr_qq);
     let equipment = await Read_equipment(usr_qq);
     let user_name = player.名号
@@ -627,10 +609,7 @@ export async function get_wuqi_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let najie = await Read_najie(usr_qq);
     let equipment = await Read_equipment(usr_qq);
     let user_name = player.名号
@@ -717,10 +696,7 @@ export async function get_danyao_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let najie = await Read_najie(usr_qq);
     let user_name = player.名号
     let danyao_have = []
@@ -912,10 +888,7 @@ export async function get_gongfa_img(e) {
         return
     }
     let player = await data.getData('player', usr_qq)
-    if (!isNotNull(player.level_id)) {
-        e.reply('请先#同步信息')
-        return
-    }
+
     let user_name = player.名号
     let gongfa = player.学习的功法
     let gongfa_have = []
@@ -992,10 +965,6 @@ export async function get_power_img(e) {
     }
     data.setData("player", usr_qq, player);
     await player_efficiency(usr_qq);
-    if (!isNotNull(player.level_id)) {
-        e.reply("请先#同步信息");
-        return;
-    }
     let this_association;
     if (!isNotNull(player.宗门)) {
         this_association = {
@@ -1103,12 +1072,6 @@ export async function get_association_img(e) {
     //门派
     let player = data.getData("player", usr_qq);
     if (!isNotNull(player.宗门)) {
-        return;
-    }
-    //境界
-    //let now_level_id;
-    if (!isNotNull(player.level_id)) {
-        e.reply("请先#同步信息");
         return;
     }
     //now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
@@ -1605,10 +1568,6 @@ export async function get_adminset_img(e) {
 
 export async function get_ranking_power_img(e, Data, usr_paiming, thisplayer) {
     let usr_qq = e.user_id;
-    if (!isNotNull(thisplayer.level_id)) {
-        e.reply("请先#同步信息");
-        return;
-    }
     let level = data.Level_list.find(item => item.level_id == thisplayer.level_id).level;
     let ranking_power_data = {
         user_id: usr_qq,

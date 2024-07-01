@@ -201,10 +201,7 @@ export class SecretPlace extends plugin {
             return true;
         }
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         let rate = player.occupation_level
         if (player.occupation == "采药师" && rate < 15 && didian == "须弥") {
@@ -266,14 +263,6 @@ export class SecretPlace extends plugin {
         usr_qq = await Gulid(usr_qq);
         let player = await Read_player(usr_qq);
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
-        if (!isNotNull(player.power_place)) {
-            e.reply("请#同步信息");
-            return;
-        }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (now_level_id < 22) {
             e.reply("没有达到化神之前还是不要去了")
@@ -368,10 +357,7 @@ export class SecretPlace extends plugin {
         e.reply("你在冲水堂发现有人上架了一份仙府地图")
         let didian = didianlist[suiji];//赋值
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
         await sleep(1000)
         if (yunqi > 0.9) {//10%寄
             if (player.灵石 < 50000) {
@@ -471,18 +457,11 @@ export class SecretPlace extends plugin {
             return true;
         }
         let now_level_id;
-        if (!isNotNull(player.level_id)) {
-            e.reply("请先#同步信息");
-            return;
-        }
+
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         if (now_level_id < 42) {
             return;
         } else {
-            if (!isNotNull(player.power_place)) {
-                e.reply("请#同步信息");
-                return;
-            }
             if (player.power_place != 0) {
                 e.reply("你已无法重返仙界！");
                 return;
@@ -615,11 +594,6 @@ export class SecretPlace extends plugin {
         if (player.灵石 < weizhi.Price) {
             e.reply("需要" + weizhi.Price + "灵石才能探索噢~");
             return true;
-        }
-        let now_level_id;
-        if (!player.level_id) {
-            e.reply("请先#同步信息");
-            return;
         }
         now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         let Price = weizhi.Price;
