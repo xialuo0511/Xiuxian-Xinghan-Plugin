@@ -584,7 +584,9 @@ export class SecretPlace extends plugin {
         }
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
+        console.log(usr_qq)
         let player = await Read_player(usr_qq);
+        console.log(player)
         let didian = e.msg.replace("#探寻遗迹", '');
         didian = didian.trim();
         let weizhi = await data.yiji_list.find(item => item.name == didian);
