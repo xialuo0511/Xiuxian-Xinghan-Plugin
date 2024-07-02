@@ -597,7 +597,6 @@ export class SecretPlace extends plugin {
             e.reply("需要" + weizhi.Price + "灵石才能探索噢~");
             return true;
         }
-        now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
         let Price = weizhi.Price;
         await Add_灵石(usr_qq, -Price);
         const ctime = this.xiuxianConfigData.CD.yijiplace;//时间（分钟）
