@@ -274,6 +274,7 @@ export async function Read_player(usr_qq) {
         return player;
     } catch (error) {
         console.log(error)
+        console.log(player)
         return "error";
     }
 

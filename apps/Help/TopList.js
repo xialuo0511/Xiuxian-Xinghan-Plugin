@@ -212,8 +212,6 @@ export class TopList extends plugin {
             try {
                 level = data.Level_list.find(item => item.level_id == player.level_id).level;
             } catch (error) {
-                console.log(this_qq)
-                console.log(player)
             }
 
             temp[i] = {
