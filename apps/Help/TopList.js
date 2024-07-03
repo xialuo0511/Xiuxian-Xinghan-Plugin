@@ -207,9 +207,10 @@ export class TopList extends plugin {
             this_qq = await Gulid(this_qq);
             let player = await Read_player(this_qq);
             let sum_exp = await Get_xiuwei(this_qq);
+            let level
             //境界名字需要查找境界名
             try {
-                let level = data.Level_list.find(item => item.level_id == player.level_id).level;
+                level = data.Level_list.find(item => item.level_id == player.level_id).level;
             } catch (error) {
                 console.log(this_qq)
                 console.log(player)
