@@ -208,8 +208,13 @@ export class TopList extends plugin {
             let player = await Read_player(this_qq);
             let sum_exp = await Get_xiuwei(this_qq);
             //境界名字需要查找境界名
-            console.log(data.Level_list.find(item => item.level_id == player.level_id))
-            let level = data.Level_list.find(item => item.level_id == player.level_id).level;
+            try {
+                let level = data.Level_list.find(item => item.level_id == player.level_id).level;
+            } catch (error) {
+                console.log(this_qq)
+                console.log(player)
+            }
+
             temp[i] = {
                 总修为: sum_exp,
                 境界: level,
