@@ -1000,259 +1000,253 @@ export async function find_najiething(usr_qq, thing_name) {
  * @returns 无
  */
 export async function Add_najie_thing(usr_qq, thing_name, thing_class, n, pinji = null) {
-    var x = n;
-    if (x == 0) {
-        return;
-    }
-    x = Number(x)
-    let najie = await Read_najie(usr_qq);
-    var name = thing_name;
-    if (!isNotNull(najie.草药)) {//判断老存档有没有草药字段
-        najie.草药 = [];
-    }
-    if (!isNotNull(najie.食材)) {//判断老存档有没有草药字段
-        najie.食材 = [];
-    }
-
-    if (!isNotNull(najie.盒子)) {//判断老存档有没有草药字段
-        najie.盒子 = [];
-    }
-    //写入
-    await Write_najie(usr_qq, najie);
-    let exist = await exist_najie_thing(usr_qq, name, thing_class);
-    //这部分写得很冗余,但能跑
-    if (thing_class == "装备") {
-        //失败
-        // if (x > 0 && !exist) {//无中生有
-        // let equipment = data.equipment_list.find(item => item.name == name);
-        // if (equipment == undefined) {
-        // equipment = data.timeequipmen_list.find(item => item.name == name);
-        // najie.装备.push(equipment);
-        // } else {
-        // najie.装备.push(equipment);
-        // }
-        // najie.装备.find(item => item.name == name).数量 = x;
-        // await Write_najie(usr_qq, najie);
-        // return;
-        // }
-        if (x > 0) {
-            if (pinji == null || pinji == undefined) {
-                let random = Math.floor(Math.random())
-                if (random > 0.99) {//1%
-                    pinji = 6;
-                }
-                if (random < 0.99 && random > 0.95) {//4%
-                    pinji = 5
-                }
-                if (random < 0.95 && random > 0.6) {//35%
-                    pinji = 4
-                }
-                if (random < 0.6 && random > 0.2) {//40%
-                    pinji = 3
-                } else {//21%,0到2每个概率相等
-                    pinji = Math.floor(Math.random() * 3)
-                }
-            }
-            let e = await najie.装备.find(item => item.name == name && item.pinji == pinji);
-            if (!isNotNull(e)) {
-                let z = [0.8, 1, 1.1, 1.2, 1.3, 1.5, 2.0][pinji];
-                var equipment = data.equipment_list.find(item => item.name == name);
-                if (!isNotNull(equipment)) {
-                    equipment = data.timeequipmen_list.find(item => item.name == name);
-                }
-                //for(let i=0;i<x;i++){
-                let equipment0 = JSON.parse(JSON.stringify(equipment));
-                equipment0.pinji = pinji;
-                if (isNotNull(equipment0.加成)) {
-                    equipment0.加成 = Number((equipment.加成 * z).toFixed(2));
-                    if (equipment0.加成 == 0) {
-                        equipment0.加成 = 0.10
+    try {
+        var x = n;
+        if (x == 0) {
+            return;
+        }
+        x = Number(x)
+        let najie = await Read_najie(usr_qq);
+        var name = thing_name;
+        //写入
+        await Write_najie(usr_qq, najie);
+        let exist = await exist_najie_thing(usr_qq, name, thing_class);
+        //这部分写得很冗余,但能跑
+        if (thing_class == "装备") {
+            //失败
+            // if (x > 0 && !exist) {//无中生有
+            // let equipment = data.equipment_list.find(item => item.name == name);
+            // if (equipment == undefined) {
+            // equipment = data.timeequipmen_list.find(item => item.name == name);
+            // najie.装备.push(equipment);
+            // } else {
+            // najie.装备.push(equipment);
+            // }
+            // najie.装备.find(item => item.name == name).数量 = x;
+            // await Write_najie(usr_qq, najie);
+            // return;
+            // }
+            if (x > 0) {
+                if (pinji == null || pinji == undefined) {
+                    let random = Math.floor(Math.random())
+                    if (random > 0.99) {//1%
+                        pinji = 6;
                     }
-                } else {
-                    equipment0.atk = Math.floor(equipment.atk * z);
-                    equipment0.def = Math.floor(equipment.def * z);
-                    equipment0.HP = Math.floor(equipment.HP * z);
+                    if (random < 0.99 && random > 0.95) {//4%
+                        pinji = 5
+                    }
+                    if (random < 0.95 && random > 0.6) {//35%
+                        pinji = 4
+                    }
+                    if (random < 0.6 && random > 0.2) {//40%
+                        pinji = 3
+                    } else {//21%,0到2每个概率相等
+                        pinji = Math.floor(Math.random() * 3)
+                    }
                 }
-                equipment0.数量 = x;
-                equipment0.islockd = 0;
-                najie.装备.push(equipment0);
-                //}
+                let e = await najie.装备.find(item => item.name == name && item.pinji == pinji);
+                if (!isNotNull(e)) {
+                    let z = [0.8, 1, 1.1, 1.2, 1.3, 1.5, 2.0][pinji];
+                    var equipment = data.equipment_list.find(item => item.name == name);
+                    if (!isNotNull(equipment)) {
+                        equipment = data.timeequipmen_list.find(item => item.name == name);
+                    }
+                    //for(let i=0;i<x;i++){
+                    let equipment0 = JSON.parse(JSON.stringify(equipment));
+                    equipment0.pinji = pinji;
+                    if (isNotNull(equipment0.加成)) {
+                        equipment0.加成 = Number((equipment.加成 * z).toFixed(2));
+                        if (equipment0.加成 == 0) {
+                            equipment0.加成 = 0.10
+                        }
+                    } else {
+                        equipment0.atk = Math.floor(equipment.atk * z);
+                        equipment0.def = Math.floor(equipment.def * z);
+                        equipment0.HP = Math.floor(equipment.HP * z);
+                    }
+                    equipment0.数量 = x;
+                    equipment0.islockd = 0;
+                    najie.装备.push(equipment0);
+                    //}
+                    await Write_najie(usr_qq, najie);
+                    return;
+                }
+                e.数量 += x;
                 await Write_najie(usr_qq, najie);
                 return;
             }
-            e.数量 += x;
-            await Write_najie(usr_qq, najie);
-            return;
-        }
-        if (pinji == null || pinji == undefined) {
-            if (isNotNull(najie.装备.find(item => item.name == name).数量)) {
-                najie.装备.find(item => item.name == name).数量 += x;
+            if (pinji == null || pinji == undefined) {
+                if (isNotNull(najie.装备.find(item => item.name == name).数量)) {
+                    najie.装备.find(item => item.name == name).数量 += x;
+                } else {
+                    najie.装备.find(item => item.name == name).数量 = x;
+                }
             } else {
-                najie.装备.find(item => item.name == name).数量 = x;
+                najie.装备.find(item => item.name == name && item.pinji == pinji).数量 += x;
             }
-        } else {
-            najie.装备.find(item => item.name == name && item.pinji == pinji).数量 += x;
+            najie.装备 = najie.装备.filter(item => item.数量 > 0);
+            await Write_najie(usr_qq, najie);
+            return;
         }
-        najie.装备 = najie.装备.filter(item => item.数量 > 0);
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "丹药") {
-        if (x > 0 && !exist) {//无中生有
-            let daoyao = data.danyao_list.find(item => item.name == name) || data.newdanyao_list.find(item => item.name == name);
-            if (daoyao == undefined) {
-                daoyao = data.timedanyao_list.find(item => item.name == name);
-                najie.丹药.push(daoyao);
-            } else {
-                najie.丹药.push(daoyao);
+        if (thing_class == "丹药") {
+            if (x > 0 && !exist) {//无中生有
+                let daoyao = data.danyao_list.find(item => item.name == name) || data.newdanyao_list.find(item => item.name == name);
+                if (daoyao == undefined) {
+                    daoyao = data.timedanyao_list.find(item => item.name == name);
+                    najie.丹药.push(daoyao);
+                } else {
+                    najie.丹药.push(daoyao);
+                }
+                najie.丹药.find(item => item.name == name).数量 = x;
+                najie.丹药.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
             }
-            najie.丹药.find(item => item.name == name).数量 = x;
-            najie.丹药.find(item => item.name == name).islockd = 0;
-            await Write_najie(usr_qq, najie);
-            return;
-        }
-        najie.丹药.find(item => item.name == name).数量 += x;
-        if (najie.丹药.find(item => item.name == name).数量 < 1) {
-            najie.丹药 = najie.丹药.filter(item => item.name != name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "道具") {
-        if (x > 0 && !exist) {
-            //无中生有
-            let daoju = data.daoju_list.find(item => item.name == name)
-            najie.道具.push(daoju);
-            najie.道具.find(item => item.name == name).数量 = x;
-            najie.道具.find(item => item.name == name).islockd = 0;
-            await Write_najie(usr_qq, najie);
-            return;
-        }
-        najie.道具.find(item => item.name == name).数量 += x;
-        if (najie.道具.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.道具 = najie.道具.filter(item => item.name != name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "功法") {
-        if (x > 0 && !exist) {//无中生有
-            let gonfa = data.gongfa_list.find(item => item.name == name) || data.homegongfa_list.find(item => item.name == name);
-            if (gonfa == undefined) {
-                gonfa = data.timegongfa_list.find(item => item.name == name);
-                najie.功法.push(gonfa);
-            } else {
-                najie.功法.push(gonfa);
+            najie.丹药.find(item => item.name == name).数量 += x;
+            if (najie.丹药.find(item => item.name == name).数量 < 1) {
+                najie.丹药 = najie.丹药.filter(item => item.name != name);
             }
-            najie.功法.find(item => item.name == name).数量 = x;
-            najie.功法.find(item => item.name == name).islockd = 0;
             await Write_najie(usr_qq, najie);
             return;
         }
-        najie.功法.find(item => item.name == name).数量 += x;
-        if (najie.功法.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.功法 = najie.功法.filter(item => item.name != name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "草药") {
-        if (x > 0 && !exist) {//无中生有
-            najie.草药.push(data.caoyao_list.find(item => item.name == name));
-            najie.草药.find(item => item.name == name).数量 = x;
-            najie.草药.find(item => item.name == name).islockd = 0;
+        if (thing_class == "道具") {
+            if (x > 0 && !exist) {
+                //无中生有
+                let daoju = data.daoju_list.find(item => item.name == name)
+                najie.道具.push(daoju);
+                najie.道具.find(item => item.name == name).数量 = x;
+                najie.道具.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.道具.find(item => item.name == name).数量 += x;
+            if (najie.道具.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.道具 = najie.道具.filter(item => item.name != name);
+            }
             await Write_najie(usr_qq, najie);
             return;
         }
-        najie.草药.find(item => item.name == name).数量 += x;
-        if (najie.草药.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.草药 = najie.草药.filter(item => item.name != thing_name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "材料") {
-        if (x > 0 && !exist) {//无中生有
-            najie.材料.push(data.cailiao_list.find(item => item.name == name));
-            najie.材料.find(item => item.name == name).数量 = x;
-            najie.材料.find(item => item.name == name).islockd = 0;
+        if (thing_class == "功法") {
+            if (x > 0 && !exist) {//无中生有
+                let gonfa = data.gongfa_list.find(item => item.name == name) || data.homegongfa_list.find(item => item.name == name);
+                if (gonfa == undefined) {
+                    gonfa = data.timegongfa_list.find(item => item.name == name);
+                    najie.功法.push(gonfa);
+                } else {
+                    najie.功法.push(gonfa);
+                }
+                najie.功法.find(item => item.name == name).数量 = x;
+                najie.功法.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.功法.find(item => item.name == name).数量 += x;
+            if (najie.功法.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.功法 = najie.功法.filter(item => item.name != name);
+            }
             await Write_najie(usr_qq, najie);
             return;
         }
-        najie.材料.find(item => item.name == name).数量 += x;
-        if (najie.材料.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.材料 = najie.材料.filter(item => item.name != thing_name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "食材") {
-        if (x > 0 && !exist) {//无中生有
-            najie.食材.push(data.shicai_list.find(item => item.name == name));
-            najie.食材.find(item => item.name == name).数量 = x;
-            najie.食材.find(item => item.name == name).islockd = 0;
+        if (thing_class == "草药") {
+            if (x > 0 && !exist) {//无中生有
+                najie.草药.push(data.caoyao_list.find(item => item.name == name));
+                najie.草药.find(item => item.name == name).数量 = x;
+                najie.草药.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.草药.find(item => item.name == name).数量 += x;
+            if (najie.草药.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.草药 = najie.草药.filter(item => item.name != thing_name);
+            }
             await Write_najie(usr_qq, najie);
             return;
         }
-        najie.食材.find(item => item.name == name).数量 += x;
-        if (najie.食材.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.食材 = najie.食材.filter(item => item.name != thing_name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "盒子") {
-        if (x > 0 && !exist) {//无中生有
-            najie.盒子.push(data.hezi_list.find(item => item.name == name));
-            najie.盒子.find(item => item.name == name).数量 = x;
-            najie.盒子.find(item => item.name == name).islockd = 0;
+        if (thing_class == "材料") {
+            if (x > 0 && !exist) {//无中生有
+                najie.材料.push(data.cailiao_list.find(item => item.name == name));
+                najie.材料.find(item => item.name == name).数量 = x;
+                najie.材料.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.材料.find(item => item.name == name).数量 += x;
+            if (najie.材料.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.材料 = najie.材料.filter(item => item.name != thing_name);
+            }
             await Write_najie(usr_qq, najie);
             return;
         }
-        najie.盒子.find(item => item.name == name).数量 += x;
-        if (najie.盒子.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.盒子 = najie.盒子.filter(item => item.name != thing_name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "仙宠") {
-        if (x > 0 && !exist) {//无中生有
-            najie.仙宠.push(data.xianchon.find(item => item.name == name));
-            najie.仙宠.find(item => item.name == name).数量 = x;
-            najie.仙宠.find(item => item.name == name).islockd = 0;
+        if (thing_class == "食材") {
+            if (x > 0 && !exist) {//无中生有
+                najie.食材.push(data.shicai_list.find(item => item.name == name));
+                najie.食材.find(item => item.name == name).数量 = x;
+                najie.食材.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.食材.find(item => item.name == name).数量 += x;
+            if (najie.食材.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.食材 = najie.食材.filter(item => item.name != thing_name);
+            }
             await Write_najie(usr_qq, najie);
             return;
         }
-        najie.仙宠.find(item => item.name == name).数量 += x;
-        if (najie.仙宠.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.仙宠 = najie.仙宠.filter(item => item.name != thing_name);
-        }
-        await Write_najie(usr_qq, najie);
-        return;
-    }
-    if (thing_class == "仙米") {
-        if (x > 0 && !exist) {//无中生有
-            najie.仙宠口粮.push(data.xianchonkouliang.find(item => item.name == name));
-            najie.仙宠口粮.find(item => item.name == name).数量 = x;
-            najie.仙宠口粮.find(item => item.name == name).islockd = 0;
+        if (thing_class == "盒子") {
+            if (x > 0 && !exist) {//无中生有
+                najie.盒子.push(data.hezi_list.find(item => item.name == name));
+                najie.盒子.find(item => item.name == name).数量 = x;
+                najie.盒子.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.盒子.find(item => item.name == name).数量 += x;
+            if (najie.盒子.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.盒子 = najie.盒子.filter(item => item.name != thing_name);
+            }
             await Write_najie(usr_qq, najie);
             return;
         }
-        najie.仙宠口粮.find(item => item.name == name).数量 += x;
-        if (najie.仙宠口粮.find(item => item.name == name).数量 < 1) {
-            //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
-            najie.仙宠口粮 = najie.仙宠口粮.filter(item => item.name != thing_name);
+        if (thing_class == "仙宠") {
+            if (x > 0 && !exist) {//无中生有
+                najie.仙宠.push(data.xianchon.find(item => item.name == name));
+                najie.仙宠.find(item => item.name == name).数量 = x;
+                najie.仙宠.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.仙宠.find(item => item.name == name).数量 += x;
+            if (najie.仙宠.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.仙宠 = najie.仙宠.filter(item => item.name != thing_name);
+            }
+            await Write_najie(usr_qq, najie);
+            return;
         }
-        await Write_najie(usr_qq, najie);
-        return;
+        if (thing_class == "仙米") {
+            if (x > 0 && !exist) {//无中生有
+                najie.仙宠口粮.push(data.xianchonkouliang.find(item => item.name == name));
+                najie.仙宠口粮.find(item => item.name == name).数量 = x;
+                najie.仙宠口粮.find(item => item.name == name).islockd = 0;
+                await Write_najie(usr_qq, najie);
+                return;
+            }
+            najie.仙宠口粮.find(item => item.name == name).数量 += x;
+            if (najie.仙宠口粮.find(item => item.name == name).数量 < 1) {
+                //假如用完了,需要删掉数组中的元素,用.filter()把!=该元素的过滤出来
+                najie.仙宠口粮 = najie.仙宠口粮.filter(item => item.name != thing_name);
+            }
+            await Write_najie(usr_qq, najie);
+            return;
+        }
+    } catch (error) {
+        console.log("存档异常：" + usr_qq)
     }
 }
 
