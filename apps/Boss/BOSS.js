@@ -514,9 +514,6 @@ export class BOSS extends plugin {
                 WorldBossStatus.KilledTime = new Date().getTime();
                 redis.set("Xiuxian:WorldBossStatus", JSON.stringify(WorldBossStatus));
                 let PlayerList = await SortPlayer(PlayerRecordJSON);
-                e.reply("正在进行存档有效性检测，如果长时间没有回复请联系主人修复存档并手动按照贡献榜发放奖励");
-                for (let i = 0; i < PlayerList.length; i++)
-                    await data.getData("player", PlayerRecordJSON.QQ[PlayerList[i]]);
                 let Show_MAX;
                 let Rewardmsg = [
                     "****影鳞龙周本贡献排行榜****"
@@ -531,10 +528,6 @@ export class BOSS extends plugin {
                     if (i < Show_MAX) {
                         let Reward = Math.trunc((PlayerRecordJSON.TotalDamage[PlayerList[i]] / TotalDamage) * WorldBossStatus.Reward);
                         Reward = Reward < 1500 ? 1500 : Reward;
-                        if (Reward > 1000000) {
-                            e.reply("由于获利过多，被万仙盟收取了税费，剩下100w")
-                            Reward = 1000000
-                        }
                         Rewardmsg.push("第" + `${i + 1}` + "名:\n" + `名号:${CurrentPlayer.名号}` + '\n' + `伤害:${PlayerRecordJSON.TotalDamage[PlayerList[i]]}` + '\n' + `获得灵石奖励${Reward}`);
                         CurrentPlayer.灵石 += Reward;
                         data.setData("player", PlayerRecordJSON.QQ[PlayerList[i]], CurrentPlayer);
