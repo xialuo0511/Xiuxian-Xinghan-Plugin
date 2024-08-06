@@ -576,12 +576,13 @@ async function InitWorldBoss(e) {
     //Bot.logger.mark(`[影鳞龙] 化神玩家总数：${player_quantity}`);
     //Bot.logger.mark(`[影鳞龙] 生成基数:${X}`);
     let cishu = await redis.get("xiuxian:boss1:cishu")
+    console.log(cishu)
+    console.log(!cishu)
     if (!cishu) {
         cishu = 1
     }
     let random1 = Math.random() + 1
     let Health = Math.trunc(10000 * cishu * (random1 ^ cishu)).toFixed(0);//血量要根据击杀次数
-    console.log(Math.trunc(10000 * cishu * (random1 ^ cishu)).toFixed(0))
     let Attack = Math.trunc(X * 120);
     let Defence = Math.trunc(X);
     let Reward = Math.trunc(X * (fairyNums > 7 ? 2 : 4) * (player_quantity > 20 ? 20 : player_quantity));
