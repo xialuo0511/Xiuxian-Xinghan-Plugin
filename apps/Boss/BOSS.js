@@ -228,6 +228,7 @@ export class BOSS extends plugin {
             }
             if (WorldBossStatus.Health <= 0) {
                 e.reply("未知错误");
+                console.log(WorldBossStatus.Health)
                 return true;
             }
             let PlayerRecordJSON, Userid;
