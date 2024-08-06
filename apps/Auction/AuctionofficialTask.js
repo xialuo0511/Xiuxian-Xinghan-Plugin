@@ -103,7 +103,8 @@ export class AuctionofficialTask extends plugin {
       const openTime = todayTime + openHour * 60 * 60 * 1000;
       const nowTime = nowDate.getTime();
       const closeTime = todayTime + closeHour * 60 * 60 * 1000;
-      if (nowTime < openTime || nowTime > closeTime) return;
+      const day1 = nowDate.getDay();
+      if (nowTime < openTime || nowTime > closeTime || day1 != 6) return;
 
       // 在开启时间且未开启拍卖则开启拍卖
       const auction = await openAU();
