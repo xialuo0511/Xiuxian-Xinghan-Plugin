@@ -175,10 +175,8 @@ class XiuxianData {
         this.timeequipmen_list = JSON.parse(fs.readFileSync(`${this.Timelimit}/限定装备.json`));
         //加载限定丹药
         this.timedanyao_list = JSON.parse(fs.readFileSync(`${this.Timelimit}/限定丹药.json`));
-        //加载散兵列表
-        this.sanbin = JSON.parse(fs.readFileSync(`${this.lib_path}/散兵列表.json`));
-        //加载雷电将军列表
-        this.leidianjiangjun = JSON.parse(fs.readFileSync(`${this.lib_path}/雷军列表.json`));
+        //加载列表
+        this.sanbin = JSON.parse(fs.readFileSync(`${this.lib_path}/世界boss列表.json`));
         //加载职业列表
         this.occupation_list = JSON.parse(fs.readFileSync(`${this.Occupation}/职业列表.json`));
         //加载职业经验列表

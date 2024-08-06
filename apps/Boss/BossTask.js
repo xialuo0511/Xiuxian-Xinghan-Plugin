@@ -77,65 +77,6 @@ export class BossTask extends plugin {
             User_maxplus = 30;
         }
         //这里判断一下，为1就不丢数据了。
-        await redis.set("BossMaxplus", 1);
-        if (User_maxplus != 1) {
-            //初始化属性
-            let BossMaxplus = {
-                "name": "魔王",
-                "attack": attack * User_maxplus * 3,
-                "defense": defense * User_maxplus * 3,
-                "blood": blood * User_maxplus * 3,
-                "probability": "0.7",
-                "money": money * User_maxplus * 3,
-                "linggen": "仙之心·水"
-
-            };
-            //redis初始化
-            await redis.set("xiuxian:BossMaxplus", JSON.stringify(BossMaxplus));
-            await redis.set("BossMaxplus", 0);
-        }
-        if (User_max >= 25) {
-            User_max = 25;
-        }
-        await redis.set("BossMax", 1);
-        if (User_max != 1) {
-            //初始化属性
-            let BossMax = {
-                "name": "金角大王",
-                "attack": attack * User_max * 2,
-                "defense": defense * User_max * 2,
-                "blood": blood * User_max * 2,
-                "probability": "0.5",
-                "money": money * User_max * 2,
-                "linggen": "仙之心·火"
-
-            };
-            //redis初始化
-            await redis.set("xiuxian:BossMax", JSON.stringify(BossMax));
-            //金角大王
-            await redis.set("BossMax", 0);
-        }
-        if (User_mini >= 20) {
-            User_mini = 20;
-        }
-        await redis.set("BossMini", 1);
-        if (User_mini != 1) {
-            //初始化属性
-            let BossMini = {
-                "name": "银角大王",
-                "attack": attack * User_mini,
-                "defense": defense * User_mini,
-                "blood": blood * User_mini,
-                "probability": "0.3",
-                "money": money * User_mini,
-                "linggen": "仙之心·风"
-
-            };
-            //redis初始化
-            await redis.set("xiuxian:BossMini", JSON.stringify(BossMini));
-            //银角大王
-            await redis.set("BossMini", 0);
-        }
         return;
     }
 
