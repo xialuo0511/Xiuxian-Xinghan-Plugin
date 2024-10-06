@@ -822,6 +822,7 @@ export async function exist_yijie_beibao_thing(usr_qq, thing_name, thing_class) 
 export async function exist_najie_thing(usr_qq, thing_name, thing_class, thing_pinji = null) {
     let najie = await Read_najie(usr_qq);
     if (!isNotNull(najie.草药)) {
+        console.log("canshu:" + usr_qq + " " + thing_name + " " + thing_class)
         najie.草药 = [];
         await Write_najie(usr_qq, najie);
     }
