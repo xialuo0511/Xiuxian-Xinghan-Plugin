@@ -62,7 +62,12 @@ export class SecretPlaceTask extends plugin {
       let action_list0 = result
       if (!action_list0) { return }
       var datas = JSON.stringify(action_list0)
-      let action_list = JSON.parse(datas)
+      let action_list;
+      try {
+        action_list = JSON.parse(datas)
+      } catch (error) {
+        console.log(error);
+      }
       for (var i = 0; i < action_list.length; i++) {
         let action = action_list[i]
         let push_address;//消息推送地址
@@ -377,7 +382,12 @@ export class SecretPlaceTask extends plugin {
             let newrandom = 0.995; let action1 = await redis.get(
               'xiuxian:player:' + action.usr_id + ':xianyuan'
             );
-            action1 = await JSON.parse(action1);
+            try {
+              action1 = await JSON.parse(action1);
+            } catch (error) {
+              console.log(error);
+            }
+
             if (action1) {
               newrandom -= action1.xianyuangl;
               if (action1.ped > 0) {

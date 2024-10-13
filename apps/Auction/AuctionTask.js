@@ -38,7 +38,12 @@ export class AuctionTask extends plugin {
       if (!isNotNull(auction) || !groupList) {
         return;
       }
-      auction = JSON.parse(auction);
+      try {
+        auction = JSON.parse(auction);
+      } catch (error) {
+        console.log(error);
+      }
+
       let nowTime = new Date().getTime();
       let msg = '';
       let last_offer_price = auction.last_offer_price;

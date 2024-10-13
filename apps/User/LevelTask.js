@@ -48,7 +48,12 @@ export class LevelTask extends plugin {
             log_mag = log_mag + "查询" + player_id + "是否有动作,";
             //得到动作
             let action = await redis.get("xiuxian:player:" + player_id + ":action");
-            action = JSON.parse(action);
+            try {
+                action = JSON.parse(action);
+            } catch (error) {
+                console.log(error);
+            }
+
             //不为空，存在动作
             if (action != null) {
                 let push_address;//消息推送地址

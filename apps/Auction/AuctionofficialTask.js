@@ -64,7 +64,12 @@ export class AuctionofficialTask extends plugin {
       }
 
       // 如果已在拍卖中
-      const wupin = JSON.parse(wupinStr);
+      try {
+        const wupin = JSON.parse(wupinStr);
+      } catch (error) {
+        console.log(error);
+      }
+
       let msg = '';
       const group_ids = wupin.groupList;
       const last_offer_price = wupin.last_offer_price;

@@ -61,7 +61,13 @@ export class SecretPlaceplusTask extends plugin {
       let action_list0 = result
       if (!action_list0) { return }
       var datas = JSON.stringify(action_list0)
-      let action_list = JSON.parse(datas)
+      let action_list;
+      try {
+        action_list = JSON.parse(datas)
+      } catch (error) {
+        console.log(error);
+      }
+
       for (var i = 0; i < action_list.length; i++) {
         let action = action_list[i]
         let push_address;//消息推送地址
