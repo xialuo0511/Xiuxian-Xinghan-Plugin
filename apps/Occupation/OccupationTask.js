@@ -1,9 +1,8 @@
-import plugin from '../../../../lib/plugins/plugin.js'
 import common from "../../../../lib/common/common.js"
-import data from '../../model/XiuxianData.js'
+import plugin from '../../../../lib/plugins/plugin.js'
 import config from "../../model/Config.js"
-import { isNotNull, Read_player } from "../Xiuxian/xiuxian.js"
-import { Add_najie_thing, Add_职业经验 } from '../Xiuxian/xiuxian.js'
+import data from '../../model/XiuxianData.js'
+import { Add_najie_thing, Add_职业经验, isNotNull } from "../Xiuxian/xiuxian.js"
 
 //创建连接
 import { createRequire } from "module"
@@ -155,7 +154,7 @@ export class OccupationTask extends plugin {
                         msg.push(`\n采药归来，${ext}${res_msg}`);
 
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
-                        db1.query(sql2, (err, result) => {
+                        db1.query(sql2, () => {
                             if (is_group) {
                                 this.pushInfo(push_address, is_group, msg)
                             } else {
@@ -214,7 +213,7 @@ export class OccupationTask extends plugin {
                         msg.push(`\n采矿归来，${ext}\n收获庚金×${end_amount}\n玄土×${end_amount}\n红宝石×${end_amount2}\n绿宝石×${end_amount2}\n蓝宝石×${end_amount2}`);
 
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
-                        db1.query(sql2, (err, result) => {
+                        db1.query(sql2, () => {
                             if (is_group) {
                                 this.pushInfo(push_address, is_group, msg)
                             } else {
@@ -264,7 +263,7 @@ export class OccupationTask extends plugin {
                         Add_职业经验(player_action.usr_id, exp);
                         msg.push(`\n狩猎归来，${ext}\n收获野兔×${end_amount}\n野鸡×${end_amount}\n野猪×${end_amount}\n野牛×${end_amount}\n野羊×${end_amount}\n`);
                         const sql2 = `delete from action where usr_id=${player_action.usr_id};`
-                        db1.query(sql2, (err, result) => {
+                        db1.query(sql2, () => {
                             if (is_group) {
                                 this.pushInfo(push_address, is_group, msg)
                             } else {
