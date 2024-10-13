@@ -171,7 +171,7 @@ export class Ningyuandian extends plugin {
         let sql1 = `select * from ningyuandian where this_level_time=${this.ningyuandianConfigData.Ningyuandian.level} and usr_id=${usr_qq};`
         let result = await sql_run(sql1)
         let a = JSON.stringify(result)
-        console.log(a)
+        console(a)
         if (a.length <= 2) {
             e.reply('请先#报名凝渊殿')
             return;

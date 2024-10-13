@@ -607,7 +607,6 @@ export async function get_yuansu_img(e, thing_type) {
         return;
     }
     let Exchange_list = data.yuansuwuqi_list;
-    console.log(Exchange_list);
     let supermarket_data = {
         user_id: usr_qq,
         Exchange_list: Exchange_list,

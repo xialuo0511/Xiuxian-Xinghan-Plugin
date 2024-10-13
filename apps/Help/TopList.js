@@ -94,7 +94,7 @@ export class TopList extends plugin {
         );
         //根据力量排序
         unique.sort(sortBy("power"));
-        console.log(unique);
+        console(unique);
         var length;
         if (unique.length > 10) {
             //只要十个
@@ -166,7 +166,7 @@ export class TopList extends plugin {
         );
         //根据力量排序
         unique.sort(sortBy("power"));
-        console.log(unique);
+        console(unique);
         var length;
         if (unique.length > 10) {
             //只要十个
