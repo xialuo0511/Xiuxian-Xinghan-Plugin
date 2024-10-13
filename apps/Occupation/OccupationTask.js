@@ -52,8 +52,9 @@ export class OccupationTask extends plugin {
             let action_list0 = result
             if (!action_list0) { return }
             var datas = JSON.stringify(action_list0)
+            let action_list
             try {
-                let action_list = JSON.parse(datas)
+                action_list = JSON.parse(datas)
             } catch (error) {
                 console.log(error);
             }
