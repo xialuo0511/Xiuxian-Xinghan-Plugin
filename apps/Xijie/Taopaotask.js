@@ -43,7 +43,11 @@ export class Taopaotask extends plugin {
             //得到动作
 
             let action = await redis.get("xiuxian:player:" + player_id + ":action");
-            action = await JSON.parse(action);
+            try {
+                action = await JSON.parse(action);
+            } catch (error) {
+                console.log(error);
+            }
             //不为空，存在动作
             if (action != null) {
                 let push_address;//消息推送地址
