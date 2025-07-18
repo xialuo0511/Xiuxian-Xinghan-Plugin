@@ -14,17 +14,18 @@ const __PATH = {
   player_path: path.join(pluginRoot, "/resources/data/xiuxian_player"),
   najie_path: path.join(pluginRoot, "/resources/data/xiuxian_najie"),
   equipment_path: path.join(pluginRoot, "/resources/data/xiuxian_equipment"),
-  config_path: path.join(pluginRoot, "/config")
+  // 数据库配置文件路径
+  db_config_path: path.join(pluginRoot, "config", "database", "database.yaml")
 };
 
 async function migrate() {
-  console.log("开始独立数据迁移...");
+  console.log("开始独立数据迁移 (定制版)...");
 
   // --- 2. 建立独立的数据库和Redis连接 ---
   let db, redisClient;
   try {
     // 直接读取数据库配置文件
-    const dbConfigYaml = fs.readFileSync(path.join(__PATH.config_path, 'database.yaml'), 'utf8');
+    const dbConfigYaml = fs.readFileSync(__PATH.db_config_path, 'utf8');
     const dbConfig = YAML.parse(dbConfigYaml);
 
     db = mysql.createPool({
@@ -35,7 +36,7 @@ async function migrate() {
     });
     const query = util.promisify(db.query).bind(db); // 将db.query转换为Promise函数
 
-    // 创建并连接Redis客户端 (请确保您的Redis服务正在运行)
+    // 创建并连接Redis客户端
     redisClient = redis.createClient();
     redisClient.on('error', err => console.log('Redis Client Error', err));
     await redisClient.connect();
@@ -53,33 +54,22 @@ async function migrate() {
         const najieData = JSON.parse(fs.readFileSync(path.join(__PATH.najie_path, file), 'utf-8'));
         const equipmentData = JSON.parse(fs.readFileSync(path.join(__PATH.equipment_path, file), 'utf-8'));
 
-        const redisPlayerData = {...playerData };
-        //定义需额外进行序列化的key
-        const complexFields = ['宗门', '仙宠', '灵根', 'occupation', 'lunhui', 'all_touxiangkuang', 'zb_touxiangkuang', '学习的功法'];
+        // 定义Redis主键
+        const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
 
-        for (const field of complexFields) {
-          if (redisPlayerData[field]) {
-            redisPlayerData[field] = JSON.stringify(redisPlayerData[field]);
-          }
-        }
+        // 将整个对象转换为JSON字符串，用于存入Hash的字段中
+        const playerString = JSON.stringify(playerData);
+        const najieString = JSON.stringify(najieData);
+        const equipmentString = JSON.stringify(equipmentData);
 
-        const redisNajieData = {};
-        for (const category in najieData) {
-          redisNajieData[category] = JSON.stringify(najieData[category]);
-        }
-
-        const redisEquipmentData = {};
-        for (const slot in equipmentData) {
-          redisEquipmentData[slot] = JSON.stringify(equipmentData[slot]);
-        }
-
+        // 使用pipeline将所有数据写入同一个Key的不同字段中
         const pipeline = redisClient.multi();
-        pipeline.del(`player:${userId}`);
-        pipeline.del(`player:${userId}:najie`);
-        pipeline.del(`player:${userId}:equipment`);
-        if (Object.keys(redisPlayerData).length > 0) pipeline.hSet(`player:${userId}`, redisPlayerData);
-        if (Object.keys(redisNajieData).length > 0) pipeline.hSet(`player:${userId}:najie`, redisNajieData);
-        if (Object.keys(redisEquipmentData).length > 0) pipeline.hSet(`player:${userId}:equipment`, redisEquipmentData);
+        pipeline.del(mainKey); // 清理旧数据，确保幂等性
+        pipeline.hSet(mainKey, {
+          'player': playerString,
+          'najie': najieString,
+          'equipment': equipmentString
+        });
         await pipeline.exec();
 
       } catch (error) {
@@ -88,7 +78,7 @@ async function migrate() {
     }
     console.log("玩家JSON文件迁移完成。");
 
-    // --- 4. 从MySQL迁移活动任务 ---
+    // --- 4. 从MySQL迁移活动任务 (这部分保持不变) ---
     console.log("正在从 MySQL 'action' 表迁移任务...");
     const results = await query('SELECT * FROM action');
     console.log(`发现 ${results.length} 个活动任务需要迁移。`);
