@@ -450,6 +450,7 @@ export class Level extends plugin {
         //有无账号
         let ifexistplay = await DAL.existPlayer(usr_qq);
         if (!ifexistplay) {
+            e.reply("weizhuce" + await DAL.getPlayerData(usr_qq));
             return;
         }
         //不开放私聊
