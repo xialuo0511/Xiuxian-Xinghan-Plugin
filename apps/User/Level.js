@@ -1,4 +1,3 @@
-//#tag已适配
 import { plugin, verc, data } from '../../api/api.js';
 import config from "../../model/Config.js"
 import fs from "fs"
@@ -14,6 +13,8 @@ import {
 import { Read_player, Read_equipment } from '../Xiuxian/xiuxian.js'
 import { Add_HP, exist_najie_thing, Add_修为, Add_血气, Add_najie_thing, sleep } from '../Xiuxian/xiuxian.js'
 import { Gulid } from '../../api/api.js'
+import * as DAL from '../../api/data-access.js';
+import { scheduleTask } from '../../api/task-scheduler';
 
 /**
  * 全局变量
@@ -447,7 +448,7 @@ export class Level extends plugin {
         let usr_qq = e.user_id.toString().replace('qg_', '')
         usr_qq = await Gulid(usr_qq);
         //有无账号
-        let ifexistplay = await existplayer(usr_qq);
+        let ifexistplay = await DAL.existPlayer(usr_qq);
         if (!ifexistplay) {
             return;
         }
@@ -474,20 +475,16 @@ export class Level extends plugin {
             e.reply(`你灵根未开，不能渡劫！`);
             return;
         }
-        //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        //不为空
-        if (action != null) {
-            let action_end_time = action.end_time;
-            let now_time = new Date().getTime();
-            if (now_time <= action_end_time) {
-                let m = parseInt((action_end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
-                return;
-            }
+
+        //查询人物动作
+        const currentAction = await DAL.getPlayerAction(usr_qq);
+        if (currentAction) {
+            let m = Math.floor((currentAction.end_time - Date.now()) / 60000);
+            let s = Math.floor(((currentAction.end_time - Date.now()) % 60000) / 1000);
+            e.reply(`你正在${currentAction.action}中，剩余时间: ${m}分${s}秒`);
+            return;
         }
+
         if (player.power_place == 0) {
             //已经开了
             e.reply("你已度过雷劫，请感应仙门#羽化登仙");
@@ -521,10 +518,7 @@ export class Level extends plugin {
             e.reply(`修为不足,再积累${need_exp - now_exp}修为后方可突破`);
             return;
         }
-        //当前系数计算
-        let x = await dujie(usr_qq);
-        //默认为3
-        var y = 3;
+        let y;
         if (player.灵根.type == "伪灵根") {
             y = 3;
         } else if (player.灵根.type == "真灵根") {
@@ -540,10 +534,11 @@ export class Level extends plugin {
         } else {
             y = 12;
         }
-        //渡劫系数区间
-        var n = 1380;//最低
-        var p = 280;//变动
-        var m = n + p;
+        let n = 1380, p = 280; // 您的参数
+        let x = await dujie(usr_qq); // dujie函数现在只用于计算雷抗
+        let l = (x - n) / (p + y * 0.1);
+
+        e.reply(`你感应到天劫将至，天空中乌云密布...第一道雷罚将在10秒后落下！`);
         if (x <= n) {
             //没有达到最低要求
             player.当前血量 = 0;
@@ -552,38 +547,33 @@ export class Level extends plugin {
             e.reply("天空一声巨响，未降下雷劫，就被天道的气势震死了。");
             return;
         }
-        //渡劫成功率
-        var l = (x - n) / (p + y * 0.1);
         l = l * 100;
         l = l.toFixed(2);
         e.reply("天道：就你，也敢逆天改命？");
         e.reply("[" + player.名号 + "]" + "\n雷抗：" + x + "\n成功率：" + l + "%\n灵根：" + player.灵根.type + "\n需渡" + y + "道雷劫\n将在一分钟后落下\n[温馨提示]\n请把其他渡劫期打死后再渡劫！");
-        //在redis中添加状态
-        var time = 60;//时间(分)九个雷，//60分钟。防延迟。
-        let action_time = 60000 * time;//持续时间，单位毫秒
-        let arr = {
-            "action": "渡劫",//动作
-            "end_time": new Date().getTime() + action_time,//结束时间
-            "time": action_time,//持续时间
-            "shutup": "1",//闭关状态-关闭
-            "working": "1",//降妖状态-关闭
-            "Place_action": "1",//秘境状态---关闭
-            "Place_actionplus": "1",//沉迷---关闭
-            "power_up": "0",//渡劫状态--开启
-            ///以下都不是基础字段
-            "power_Grade": y,//雷等级，也就是最多次数限制
-            "power_n": n,//雷畸变最小区间
-            "power_m": m,//雷畸变最大区间
+
+        const LEI_JIE_INTERVAL = 10 * 1000; // 雷劫间隔10秒
+        const totalDuration = y * LEI_JIE_INTERVAL; // 渡劫总时长
+        const finalEndTime = Date.now() + totalDuration;
+
+        const actionDetails = {
+            action: "渡劫", // 动作名称
+            end_time: finalEndTime // [重要] 记录的是整个过程的最终结束时间
         };
-        //消息设置
-        if (e.isGroup) {
-            arr.group_id = e.group_id
-        }
-        //初始化雷数
-        redis.set("xiuxian:player:" + usr_qq + ":power_aconut", 1);
-        //redis设置动作
-        await redis.set("xiuxian:player:" + usr_qq + ":action", JSON.stringify(arr));
-        return;
+        // 这个键将作为“忙碌”的唯一判断依据
+        await redis.set(`XinghanXiuxian:Player:${usr_qq}:action`, JSON.stringify(actionDetails));
+
+        // 2. 调度第一道雷劫任务
+        const firstStrikeTime = Date.now() + LEI_JIE_INTERVAL;
+        const taskPayload = {
+            type: 'tribulation_strike',
+            userId: usr_qq,
+            current_strike: 1,
+            total_strikes: y,
+            success_rate: l,
+            group_id: e.group_id
+        };
+        await scheduleTask(taskPayload, firstStrikeTime);
     }
 
     //#羽化登仙
@@ -716,7 +706,7 @@ export class Level extends plugin {
 }
 
 export async function dujie(usr_qq) {
-    let player = await Read_player(usr_qq);
+    let player = (await DAL.getPlayerData(usr_qq)).player;
     //根据当前血量才算
     //计算系数
     var new_blood = player.当前血量;

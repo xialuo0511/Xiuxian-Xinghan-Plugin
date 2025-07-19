@@ -24,11 +24,11 @@ export class LevelTask extends plugin {
             ]
         });
         this.set = config.getdefSet('task', 'task')
-        this.task = {
-            cron: this.set.action_task,
-            name: 'LevelTask',
-            fnc: () => this.LevelTask()
-        }
+        // this.task = {
+        //     cron: this.set.action_task,
+        //     name: 'LevelTask',
+        //     fnc: () => this.LevelTask()
+        // }
     }
 
     async LevelTask() {
