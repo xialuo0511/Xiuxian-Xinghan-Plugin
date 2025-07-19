@@ -1,15 +1,21 @@
-// /logic/tribulation.js (最终独立版 v2)
-
 import * as DAL from '../api/data-access.js';
-import { scheduleTask } from '../api/task-scheduler.js';
 import * as Notifier from '../handlers/notifier.js';
+import { createNewClient } from '../workers/redis-client.js'; // 使用共享客户端
 import fs from 'fs';
 import path from 'path';
 
-// --- [核心修正] 独立计算路径并加载数据，彻底移除对 /apps/ 文件的依赖 ---
+// 独立加载所需的数据
 const pluginRoot = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
 const dataPath = path.join(pluginRoot, 'resources', 'data');
 const Level_list = JSON.parse(fs.readFileSync(path.join(dataPath, 'Level', '练气境界.json'), 'utf-8'));
+
+// 独立调度任务的函数
+async function scheduleTask(payload, endTime) {
+  const client = createNewClient();
+  await client.connect();
+  await client.zAdd('tasks:scheduled', { score: endTime, value: JSON.stringify(payload) });
+  await client.quit();
+}
 
 const LEI_JIE_INTERVAL = 10 * 1000; // 雷劫间隔，10秒
 

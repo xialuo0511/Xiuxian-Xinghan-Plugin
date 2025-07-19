@@ -1,7 +1,7 @@
-// /handlers/task-handlers.js (最终修正版 v5)
+// /handlers/task-handlers.js (最终版)
 
-import { handleTribulationStrike as processTribulation } from '../logic/tribulation.js';
+import { handleTribulationStrike } from '../logic/tribulation.js';
 
-export async function handleTribulationStrike(task) {
-  await processTribulation(task);
-}
+export {
+  handleTribulationStrike
+};
