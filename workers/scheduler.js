@@ -7,7 +7,7 @@ import YAML from 'yaml';
 import path from 'path';
 
 // --- [新增] Redis 客户端初始化 ---
-const redisConfigPath = path.join(process.cwd(), 'config', 'redis.yaml');
+const redisConfigPath = path.join(process.cwd(), 'config','config', 'redis.yaml');
 const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
 
 const redisClient = createClient({
