@@ -1,8 +1,4 @@
-// /api/data-access.js
-
-import redis from 'redis'; // 您的 Redis 客户端
-
-// --- 数据读取 (GET) ---
+import redis from 'redis';
 
 /**
  * 获取并解析一个玩家的完整数据
@@ -111,8 +107,8 @@ export async function updatePlayerAttribute(userId, attributeName, amount) {
  */
 export async function existPlayer(userId) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const result = await redis.hGet(mainKey, 'player');
-  return result !== null;
+  const data = await redis.hGetAll(mainKey);
+  return data && Object.keys(data).length > 0;
 }
 /**
  * 取玩家当前正在执行的动作
