@@ -1,5 +1,5 @@
 // /handlers/notifier.js
-import { createNewClient } from '../workers/redis-client.js'; // 使用共享客户端
+import { redisClient } from '../api/redis.js';
 
 export async function notify(groupId, userId, message) {
   const notification = {
@@ -7,5 +7,5 @@ export async function notify(groupId, userId, message) {
     user_id: userId,
     message: message
   };
-  await createNewClient.lPush('xiuxian:tasks:notifications', JSON.stringify(notification));
+  await redisClient.lPush('xiuxian:tasks:notifications', JSON.stringify(notification));
 }
