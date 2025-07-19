@@ -111,8 +111,8 @@ export async function updatePlayerAttribute(userId, attributeName, amount) {
  */
 export async function existPlayer(userId) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const result = await redis.exists(mainKey);
-  // redis.exists 返回1代表存在，0代表不存在
+  const result = await redis.sendCommand(['EXISTS', mainKey]);
+  // EXISTS 命令在键存在时返回 1，不存在时返回 0
   return result === 1;
 }
 /**
