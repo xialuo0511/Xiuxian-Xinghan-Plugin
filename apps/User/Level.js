@@ -465,7 +465,8 @@ export class Level extends plugin {
             e.reply("修仙：游戏进行中...");
             return;
         }
-        let player = await Read_player(usr_qq);
+        let playerData = await DAL.getAllPlayerData(usr_qq);
+        let player = playerData.player;
         //境界
         let now_level = data.Level_list.find(item => item.level_id == player.level_id).level;
         if (now_level != "渡劫期") {

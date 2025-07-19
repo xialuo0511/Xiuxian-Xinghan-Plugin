@@ -40,3 +40,91 @@ export async function savePlayer(userId, playerData) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
   await redisClient.hSet(mainKey, 'player', JSON.stringify(playerData));
 }
+
+/**
+ * 覆写式保存玩家的纳戒数据
+ * @param {string} userId 玩家QQ号
+ * @param {object} najieData 完整的纳戒数据对象
+ */
+export async function saveNajie(userId, najieData) {
+  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+  await redisClient.hSet(mainKey, 'najie', JSON.stringify(najieData));
+}
+
+/**
+ * 覆写式保存玩家的装备数据
+ * @param {string} userId 玩家QQ号
+ * @param {object} equipmentData 完整的装备数据对象
+ */
+export async function saveEquipment(userId, equipmentData) {
+  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+  await redisClient.hSet(mainKey, 'equipment', JSON.stringify(equipmentData));
+}
+
+
+/**
+ * 使用事务安全地更新玩家数据
+ * @param {string} userId 玩家QQ号
+ * @param {(playerData: object) => void} updateFunction
+ * @returns {Promise<boolean>}
+ */
+export async function transaction_update(userId, updateFunction) {
+  // 事务需要一个独立的连接来执行 WATCH
+  const transactionClient = redisClient.duplicate();
+  await transactionClient.connect();
+
+  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+  const fieldName = 'player';
+
+  try {
+    await transactionClient.watch(mainKey);
+
+    const playerJson = await transactionClient.hGet(mainKey, fieldName);
+    if (!playerJson) {
+      return false;
+    }
+
+    const playerData = JSON.parse(playerJson);
+    updateFunction(playerData);
+
+    const multi = transactionClient.multi();
+    multi.hSet(mainKey, fieldName, JSON.stringify(playerData));
+
+    const result = await multi.exec();
+
+    if (result === null) {
+      return await transaction_update(userId, updateFunction);
+    }
+    return true;
+
+  } catch (error) {
+    logger.error(`[DAL-TX] 更新用户 ${userId} 数据时发生错误:`, error);
+    return false;
+  } finally {
+    await transactionClient.quit();
+  }
+}
+/**
+ * [新] 获取玩家当前正在执行的动作。
+ * @param {string} userId 玩家QQ号
+ * @returns {Promise<object|null>}
+ */
+export async function getPlayerAction(userId) {
+  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+  const actionJson = await redisClient.get(actionKey);
+
+  if (!actionJson) return null;
+
+  try {
+    const actionDetails = JSON.parse(actionJson);
+    if (Date.now() > actionDetails.end_time) {
+      await redisClient.del(actionKey);
+      return null;
+    }
+    return actionDetails;
+  } catch (e) {
+    logger.error(`[DAL] 解析玩家 ${userId} 的 action 数据失败:`, actionJson, e);
+    await redisClient.del(actionKey);
+    return null;
+  }
+}
