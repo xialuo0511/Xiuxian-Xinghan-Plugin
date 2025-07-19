@@ -14,7 +14,7 @@ import { Read_player, Read_equipment } from '../Xiuxian/xiuxian.js'
 import { Add_HP, exist_najie_thing, Add_修为, Add_血气, Add_najie_thing, sleep } from '../Xiuxian/xiuxian.js'
 import { Gulid } from '../../api/api.js'
 import * as DAL from '../../api/data-access.js';
-import { scheduleTask } from '../../api/task-scheduler';
+import { scheduleTask } from '../../api/task-scheduler.js';
 
 /**
  * 全局变量

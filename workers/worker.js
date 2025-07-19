@@ -1,4 +1,5 @@
 import * as TaskHandlers from '../handlers/task-handlers.js';
+import redis from 'redis';
 
 async function startWorker() {
   console.log(`[工作单元] 进程已启动，等待任务...`);
