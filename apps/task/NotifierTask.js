@@ -1,9 +1,7 @@
-// /apps/tasks/NotifierTask.js
-
 import plugin from '../../../../lib/plugins/plugin.js';
 import common from "../../../../lib/common/common.js";
-import { createNewClient } from '../../workers/redis-client.js'; // 使用共享客户端
-
+// [CORRECTION] Import the single, shared client instance, not the factory function
+import { redisClient } from '../../api/redis.js';
 
 export class NotifierTask extends plugin {
   constructor() {
@@ -15,19 +13,24 @@ export class NotifierTask extends plugin {
       rule: []
     });
     this.task = {
-      cron: '*/1 * * * * ?', // 每秒执行一次
+      cron: '*/1 * * * * ?',
       name: 'NotifierTask',
       fnc: () => this.runNotifier()
     };
   }
 
   async runNotifier() {
-    // [修正] 使用 rPop 确保消息顺序
-    const notificationJson = await createNewClient.rPop('xiuxian:tasks:notifications');
+    // Check if our custom client is connected and ready
+    if (!redisClient.isOpen) {
+      return;
+    }
+
+    // [CORRECTION] Use the imported redisClient instance to call rPop
+    const notificationJson = await redisClient.rPop('xiuxian:tasks:notifications');
+
     if (notificationJson) {
       try {
         const notification = JSON.parse(notificationJson);
-        // 优先使用群号
         if (notification.group_id) {
           await common.relpyGroup(notification.group_id, notification.message);
         } else {
