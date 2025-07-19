@@ -1,142 +1,169 @@
-import redis from 'redis';
+// /api/data-access.js (最终决定版 v5 - 包含独立的全局Redis客户端)
+
+import { createClient } from 'redis';
+import fs from 'fs';
+import YAML from 'yaml';
+import path from 'path';
+import { __PATH } from '../apps/Xiuxian/xiuxian.js';
+
+// --- [核心修正] 创建插件专属的、全局的 Redis 客户端 ---
+const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
+const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
+
+// 创建客户端实例
+const redisClient = createClient({
+  url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`,
+});
+
+// 监听错误事件
+redisClient.on('error', (err) => {
+  logger.error('[星瀚修仙DAL] Redis 客户端发生错误:', err);
+});
+
+// 立即连接，并在后台保持连接
+redisClient.connect().then(() => {
+  logger.info('[星瀚修仙DAL] 专属Redis客户端连接成功。');
+}).catch((err) => {
+  logger.error('[星瀚修仙DAL] 专属Redis客户端连接失败:', err);
+});
+
+// --- 状态与存在性检查 ---
 
 /**
- * 获取并解析一个玩家的完整数据
+ * [新] 检查玩家存档是否存在于 Redis 中
+ * @param {string} userId 玩家QQ号
+ * @returns {Promise<boolean>}
+ */
+export async function existPlayer(userId) {
+  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+  // [修正] 使用我们自己创建的 redisClient
+  const result = await redisClient.exists(mainKey);
+  return result === 1;
+}
+
+/**
+ * [新] 获取玩家当前正在执行的动作。
+ * @param {string} userId 玩家QQ号
+ * @returns {Promise<object|null>}
+ */
+export async function getPlayerAction(userId) {
+  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+  const actionJson = await redisClient.get(actionKey);
+
+  if (!actionJson) return null;
+
+  try {
+    const actionDetails = JSON.parse(actionJson);
+    if (Date.now() > actionDetails.end_time) {
+      await redisClient.del(actionKey);
+      return null;
+    }
+    return actionDetails;
+  } catch (e) {
+    logger.error(`[DAL] 解析玩家 ${userId} 的 action 数据失败:`, actionJson, e);
+    await redisClient.del(actionKey);
+    return null;
+  }
+}
+
+// --- 数据读取 (GET) ---
+
+/**
+ * 获取并完整解析一个玩家的所有数据
  * @param {string} userId 玩家QQ号
  * @returns {Promise<{player: object, najie: object, equipment: object}|null>}
  */
-export async function getPlayerData(userId) {
+export async function getAllPlayerData(userId) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const data = await redis.hgetall(mainKey);
-
-  if (!data || Object.keys(data).length === 0) {
+  const data = await redisClient.hGetAll(mainKey);
+  if (!data || Object.keys(data).length === 0) return null;
+  try {
+    return {
+      player: data.player ? JSON.parse(data.player) : {},
+      najie: data.najie ? JSON.parse(data.najie) : {},
+      equipment: data.equipment ? JSON.parse(data.equipment) : {}
+    };
+  } catch (error) {
+    logger.error(`[DAL] 解析用户 ${userId} 的数据失败:`, error);
     return null;
   }
-
-  // 分别解析 player, najie, equipment 的 JSON 字符串
-  const playerData = data.player? JSON.parse(data.player) : {};
-  const najieData = data.najie? JSON.parse(data.najie) : {};
-  const equipmentData = data.equipment? JSON.parse(data.equipment) : {};
-
-  return {
-    player: playerData,
-    najie: najieData,
-    equipment: equipmentData
-  };
 }
 
 // --- 数据写入 (SET/UPDATE) ---
 
 /**
- * 保存玩家的核心数据 (player.json)
+ * 覆写式保存玩家的核心数据
  * @param {string} userId 玩家QQ号
  * @param {object} playerData 完整的玩家核心数据对象
  */
 export async function savePlayer(userId, playerData) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  await redis.hset(mainKey, 'player', JSON.stringify(playerData));
+  await redisClient.hSet(mainKey, 'player', JSON.stringify(playerData));
 }
 
+// ... saveNajie 和 saveEquipment 函数也应使用 redisClient ...
+// 为确保完整性，我将它们也一并提供
+
 /**
- * 保存玩家的纳戒数据 (najie.json)
+ * 覆写式保存玩家的纳戒数据
  * @param {string} userId 玩家QQ号
  * @param {object} najieData 完整的纳戒数据对象
  */
 export async function saveNajie(userId, najieData) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  await redis.hset(mainKey, 'najie', JSON.stringify(najieData));
+  await redisClient.hSet(mainKey, 'najie', JSON.stringify(najieData));
 }
 
 /**
- * 保存玩家的装备数据 (equipment.json)
+ * 覆写式保存玩家的装备数据
  * @param {string} userId 玩家QQ号
  * @param {object} equipmentData 完整的装备数据对象
  */
 export async function saveEquipment(userId, equipmentData) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  await redis.hset(mainKey, 'equipment', JSON.stringify(equipmentData));
+  await redisClient.hSet(mainKey, 'equipment', JSON.stringify(equipmentData));
 }
 
 
-
 /**
- * 原子性地增加/减少玩家核心属性中的某个数值
- * (此函数为高级用法，需要Redis支持LUA脚本，是解决高并发数据问题的最佳实践)
+ * 使用事务安全地更新玩家数据
  * @param {string} userId 玩家QQ号
- * @param {string} attributeName 要修改的属性名，例如 "修为"
- * @param {number} amount 要增加或减少的数量
- * @returns {Promise<number>} 修改后的新值
+ * @param {(playerData: object) => void} updateFunction
+ * @returns {Promise<boolean>}
  */
-export async function updatePlayerAttribute(userId, attributeName, amount) {
-  // const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  // const script = `
-  //       local key = KEYS[1]
-  //       local field = ARGV[1]
-  //       local attr = ARGV
-  //       local amount = tonumber(ARGV)
-  //
-  //       local data_str = redis.call('HGET', key, field)
-  //       if not data_str then
-  //           return nil
-  //       end
-  //
-  //       local data = cjson.decode(data_str)
-  //       data[attr] = (data[attr] or 0) + amount
-  //
-  //       local new_data_str = cjson.encode(data)
-  //       redis.call('HSET', key, field, new_data_str)
-  //
-  //       return data[attr]
-  //   `;
-  // 注意: Redis 默认可能不带 cjson 库，这是一个示例。
-  // 一个更通用的方法是读取、修改、然后用WATCH/MULTI/EXEC事务写回，这里为了简化，我们先用非原子性的方式。
-  // 让我们用一个更简单、无需LUA的方式实现它：
-  const data = await getPlayerData(userId);
-  if (data && data.player) {
-    data.player[attributeName] = (data.player[attributeName] || 0) + amount;
-    await savePlayer(userId, data.player);
-    return data.player[attributeName];
-  }
-  return null;
-}
+export async function transaction_update(userId, updateFunction) {
+  // 事务需要一个独立的连接来执行 WATCH
+  const transactionClient = redisClient.duplicate();
+  await transactionClient.connect();
 
-/**
- * 检查玩家存档是否存在于 Redis 中
- * @param {string} userId 玩家QQ号
- * @returns {Promise<boolean>} 如果存在则返回 true，否则返回 false
- */
-export async function existPlayer(userId) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const data = await redis.hGetAll(mainKey);
-  return data && Object.keys(data).length > 0;
-}
-/**
- * 取玩家当前正在执行的动作
- * @param {string} userId 玩家QQ号
- * @returns {Promise<object|null>} 如果玩家正在忙，返回动作详情对象；如果空闲，返回 null
- */
-export async function getPlayerAction(userId) {
-  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
-  const actionJson = await redis.get(actionKey);
-
-  if (!actionJson) {
-    return null; // 键不存在，玩家空闲
-  }
+  const fieldName = 'player';
 
   try {
-    const actionDetails = JSON.parse(actionJson);
-    const now = Date.now();
+    await transactionClient.watch(mainKey);
 
-    // 双重检查：如果任务已经到期但由于某种原因没被及时处理，也视为空闲
-    if (now > actionDetails.end_time) {
-      await redis.del(actionKey); // 清理过期的任务键
-      return null;
+    const playerJson = await transactionClient.hGet(mainKey, fieldName);
+    if (!playerJson) {
+      return false;
     }
 
-    return actionDetails; // 返回任务详情
-  } catch (e) {
-    logger.error(`[DAL] 解析玩家 ${userId} 的 action 数据失败`, e);
-    await redis.del(actionKey); // 删除格式错误的数据
-    return null;
+    const playerData = JSON.parse(playerJson);
+    updateFunction(playerData);
+
+    const multi = transactionClient.multi();
+    multi.hSet(mainKey, fieldName, JSON.stringify(playerData));
+
+    const result = await multi.exec();
+
+    if (result === null) {
+      return await transaction_update(userId, updateFunction);
+    }
+    return true;
+
+  } catch (error) {
+    logger.error(`[DAL-TX] 更新用户 ${userId} 数据时发生错误:`, error);
+    return false;
+  } finally {
+    await transactionClient.quit();
   }
 }
