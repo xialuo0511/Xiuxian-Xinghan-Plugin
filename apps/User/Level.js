@@ -568,7 +568,7 @@ export class Level extends plugin {
         // 2. 调度第一道雷劫任务
         const firstStrikeTime = Date.now() + LEI_JIE_INTERVAL;
         const taskPayload = {
-            type: 'tribulation_strike',
+            type: 'handleTribulationStrike',
             userId: usr_qq,
             current_strike: 1,
             total_strikes: y,
