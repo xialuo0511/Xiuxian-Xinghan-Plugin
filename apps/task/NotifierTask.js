@@ -1,6 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import common from "../../../../lib/common/common.js";
-// [CORRECTION] Import the single, shared client instance, not the factory function
 import { redisClient } from '../../api/redis.js';
 
 export class NotifierTask extends plugin {
@@ -32,7 +31,11 @@ export class NotifierTask extends plugin {
       try {
         const notification = JSON.parse(notificationJson);
         if (notification.group_id) {
-          await common.relpyGroup(notification.group_id, notification.message);
+          await Bot.pickGroup(notification.group_id)
+            .sendMsg(notification.message)
+            .catch((err) => {
+              logger.mark(err);
+            });
         } else {
           await common.relpyPrivate(notification.user_id, notification.message);
         }
