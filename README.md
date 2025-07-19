@@ -1,18 +1,20 @@
 # 绝云间修仙2.3.0 【仙韵绕春华】
 
-# 请注意！本插件进入停更状态！目前正在准备重写！有需要联系QQ2531606029
-
+## 请注意！本插件进入停更状态！目前正在重写！有需要联系QQ2531606029
 ## QQ游玩反馈群：906061358
 
-### 更新注意！2.3版本更新后，需要安装mysql支持
-1. 自行前往mysql官网下载最新版本mysql并安装完毕，设置好密码
-2. 在config/database文件夹下配置好MySQL用户信息
-3. Yunzai-Bot/目录下执行  
+# 存档迁移
+在目前最新版本中，由于json文件的访问效率低下，最新版本采用redis保存玩家数据，若升级版本，请按下面步骤执行：
+1. 备份数据文件：将下列玩家数据文件备份，避免造成异常导致损失(异界玩法暂停更新，所以暂不迁移)
 ```
-pnpm install mysql --workspace-root
-
+resource/data/xiuxian_player
+resource/data/xiuxian_najie
+resource/data/xiuxian_equipment
 ```
-
+2. 在机器人根目录执行下列代码（请在机器人不在运行时执行，但请保持redis开启）
+```
+node ./plugins/xiuxian-emulator-plugin/migrate-to-redis.js
+```
 
 
 ## 玩家攻略：
@@ -30,9 +32,9 @@ pnpm install mysql --workspace-root
 git clone  https://gitee.com/xialuo03/xiuxian-emulator-plugin.git ./plugins/xiuxian-emulator-plugin/
 
 ```
-> 如需拉取canary分支，请在Yunzai-Bot/目录下执行  
+> 如需拉取其他分支，请在Yunzai-Bot/目录下执行  
 ```
-git clone  -b canary https://gitee.com/xialuo03/xiuxian-emulator-plugin.git ./plugins/xiuxian-emulator-plugin/
+git clone  -b [分支名] https://gitee.com/xialuo03/xiuxian-emulator-plugin.git ./plugins/xiuxian-emulator-plugin/
 
 ```
 > 如需从原插件更改至本插件，可在Yunzai-Bot/plugins/xiuxian-emulator-plugin/目录下执行
@@ -43,21 +45,7 @@ git remote set-url master https://gitee.com/xialuo03/xiuxian-emulator-plugin.git
 git fetch
 
 ```
-> 然后安装依赖 （为适应频道，后续均需安装依赖）
-```
-pnpm install -P
 
-``` 
-
-## 转移存档            
-![转移存档](pic/photo4.jpg)     
-存档位置  
-```
-\Yunzai-Bot\plugins\xiuxian-emulator-plugin\resources\data
-由于异界版本，请在转移存档的同时转移data下yijie文件夹，否则会数据丢失！
-```      
-
-若要转移存档，将上面画框的文件保存，将修仙插件删除，执行上面安装命令
 
 ## 更新内容
 要获取最新更新内容发"#查看日志"即可查看
