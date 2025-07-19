@@ -497,7 +497,7 @@ export class Level extends plugin {
         let list_HP = data.Level_list.find(item => item.level == now_level).基础血量;
         if (now_HP < list_HP * 0.9) {
             player.当前血量 = 1;
-            await Write_player(usr_qq, player);
+            await DAL.savePlayer(usr_qq, player);
             e.reply(player.名号 + "血量亏损，强行渡劫后晕倒在地！");
             return;
         }
@@ -708,7 +708,7 @@ export class Level extends plugin {
 }
 
 export async function dujie(usr_qq) {
-    let player = (await DAL.getPlayerData(usr_qq)).player;
+    let player = (await DAL.getAllPlayerData(usr_qq)).player;
     //根据当前血量才算
     //计算系数
     var new_blood = player.当前血量;
