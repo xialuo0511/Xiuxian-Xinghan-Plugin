@@ -1,4 +1,4 @@
-
+import redis from 'redis';
 import { scheduleJob } from 'node-schedule';
 
 const BATCH_SIZE = 100; // 每次从调度池中取出的最大任务数
