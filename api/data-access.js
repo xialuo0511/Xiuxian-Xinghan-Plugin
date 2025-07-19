@@ -11,7 +11,7 @@ const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml
 const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
 
 // 创建客户端实例
-const redisClient = createClient({
+export const redisClient = createClient({
   url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`,
 });
 

@@ -1,4 +1,4 @@
-// /workers/scheduler.js (最终修正版 v2)
+// /workers/scheduler.js
 
 import { createClient } from 'redis';
 import { scheduleJob } from 'node-schedule';
@@ -6,31 +6,23 @@ import fs from 'fs';
 import YAML from 'yaml';
 import path from 'path';
 
-// --- Redis 客户端初始化 (保持不变) ---
-const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml'); // 修正了路径深度
+// --- Redis 客户端初始化 ---
+const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
 const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
 
 const redisClient = createClient({
   url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`,
-  disableOfflineQueue: true
 });
-
-redisClient.on('error', (err) => {
-  console.error('[调度器] Redis 客户端发生错误:', err);
-});
+redisClient.on('error', (err) => console.error('[调度器] Redis 客户端错误:', err));
 
 // --- 核心逻辑 ---
 const BATCH_SIZE = 100;
 
 async function pollAndDispatch() {
-  if (!redisClient.isOpen) {
-    return;
-  }
+  if (!redisClient.isOpen) return;
   try {
-    // [修正] 将命令改回旧的、兼容性更好的 ZRANGEBYSCORE
-    const dueTasks = await redisClient.zRangeByScore('tasks:scheduled', 0, Date.now(), {
-      LIMIT: { offset: 0, count: BATCH_SIZE }
-    });
+    // 使用 ZRANGEBYSCORE 和 LIMIT，这是 Redis 2.8+ 的语法，您的 5.6.0 版本完全支持
+    const dueTasks = await redisClient.sendCommand(['ZRANGEBYSCORE', 'tasks:scheduled', '0', String(Date.now()), 'LIMIT', '0', String(BATCH_SIZE)]);
 
     if (dueTasks && dueTasks.length > 0) {
       console.log(`[调度器] 发现 ${dueTasks.length} 个到期任务。`);

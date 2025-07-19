@@ -49,37 +49,33 @@ logger.info(`__________________________`);
 const apps = {};
 const appsPath = path.join(pluginRoot, "apps");
 
-// [修正] 使用顶层 await 来确保模块在导出前加载完成
-try {
-    const directories = [""]; // 从根 apps 目录开始
-    const allDirs = fs.readdirSync(appsPath).filter(file => {
-        return fs.statSync(path.join(appsPath, file)).isDirectory();
-    });
-    directories.push(...allDirs);
-
-    for (const dir of directories) {
-        const currentPath = path.join(appsPath, dir);
-        const files = fs.readdirSync(currentPath).filter((file) => file.endsWith(".js"));
-
-        for (const file of files) {
-            const name = file.replace(".js", "");
-            const modulePath = `file://${path.join(currentPath, file)}`;
-            try {
-                const module = await import(modulePath);
-                if (module[name]) {
-                    apps[name] = module[name];
-                } else {
-                    logger.warn(chalk.yellow(`[星瀚修仙] 模块 ${file} 中未找到同名导出。`));
+(async () => {
+    try {
+        const mainDirs = fs.readdirSync(appsPath).filter(file => {
+            const stat = fs.statSync(path.join(appsPath, file));
+            return stat.isDirectory();
+        });
+        const allDirs = ["", ...mainDirs];
+        for (const dir of allDirs) {
+            const currentPath = path.join(appsPath, dir);
+            const files = fs.readdirSync(currentPath).filter((file) => file.endsWith(".js"));
+            for (const file of files) {
+                const name = file.replace(".js", "");
+                const modulePath = `file://${path.join(currentPath, file).replace(/\\/g, '/')}`;
+                try {
+                    const module = await import(modulePath);
+                    if (module[name]) {
+                        apps[name] = module[name];
+                    }
+                } catch (importError) {
+                    logger.error(chalk.red(`[星瀚修仙] 导入模块失败: ${modulePath}`), importError);
                 }
-            } catch (importError) {
-                logger.error(chalk.red(`[星瀚修仙] 导入模块失败: ${modulePath}`), importError);
             }
         }
+        logger.info(chalk.green('[星瀚修仙] 所有功能模块加载完毕。'));
+    } catch (error) {
+        logger.error(chalk.red('[星瀚修仙] 加载功能模块时出现错误:'), error);
     }
-    logger.info(chalk.green('[星瀚修仙] 所有功能模块加载完毕。'));
-} catch (error) {
-    logger.error(chalk.red('[星瀚修仙] 加载功能模块时出现错误:'), error);
-}
+})();
 
-// 导出 - 现在 apps 对象已经是完全填充好的了
 export { apps };
