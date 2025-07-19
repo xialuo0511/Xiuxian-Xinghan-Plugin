@@ -1,5 +1,5 @@
 // /handlers/notifier.js
-import redis from 'redis'; // Yunzai 全局 redis
+import { createNewClient } from '../workers/redis-client.js'; // 使用共享客户端
 
 export async function notify(groupId, userId, message) {
   const notification = {
@@ -7,5 +7,5 @@ export async function notify(groupId, userId, message) {
     user_id: userId,
     message: message
   };
-  await redis.lPush('xiuxian:tasks:notifications', JSON.stringify(notification));
+  await createNewClient.lPush('xiuxian:tasks:notifications', JSON.stringify(notification));
 }

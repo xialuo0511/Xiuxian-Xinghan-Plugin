@@ -2,7 +2,7 @@
 
 import plugin from '../../../../lib/plugins/plugin.js';
 import common from "../../../../lib/common/common.js";
-import redis from 'redis';
+import { createNewClient } from '../../workers/redis-client.js'; // 使用共享客户端
 
 
 export class NotifierTask extends plugin {
@@ -23,7 +23,7 @@ export class NotifierTask extends plugin {
 
   async runNotifier() {
     // [修正] 使用 rPop 确保消息顺序
-    const notificationJson = await redis.rPop('xiuxian:tasks:notifications');
+    const notificationJson = await createNewClient.rPop('xiuxian:tasks:notifications');
     if (notificationJson) {
       try {
         const notification = JSON.parse(notificationJson);
