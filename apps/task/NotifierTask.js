@@ -2,7 +2,8 @@
 
 import plugin from '../../../../lib/plugins/plugin.js';
 import common from "../../../../lib/common/common.js";
-import { redisClient } from '../../api/data-access.js';
+import redis from 'redis';
+
 
 export class NotifierTask extends plugin {
   constructor() {
@@ -22,7 +23,7 @@ export class NotifierTask extends plugin {
 
   async runNotifier() {
     // [修正] 使用 rPop 确保消息顺序
-    const notificationJson = await redisClient.rPop('xiuxian:tasks:notifications');
+    const notificationJson = await redis.rPop('xiuxian:tasks:notifications');
     if (notificationJson) {
       try {
         const notification = JSON.parse(notificationJson);
