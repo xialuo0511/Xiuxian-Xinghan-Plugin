@@ -111,9 +111,8 @@ export async function updatePlayerAttribute(userId, attributeName, amount) {
  */
 export async function existPlayer(userId) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const result = await redis.sendCommand(['EXISTS', mainKey]);
-  // EXISTS 命令在键存在时返回 1，不存在时返回 0
-  return result === 1;
+  const keyType = await redis.type(mainKey);
+  return keyType !== 'none';
 }
 /**
  * 取玩家当前正在执行的动作
