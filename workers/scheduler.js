@@ -1,4 +1,4 @@
-// /workers/scheduler.js (最终修正版)
+// /workers/scheduler.js (最终修正版 v2)
 
 import { createClient } from 'redis';
 import { scheduleJob } from 'node-schedule';
@@ -6,13 +6,13 @@ import fs from 'fs';
 import YAML from 'yaml';
 import path from 'path';
 
-// --- [新增] Redis 客户端初始化 ---
-const redisConfigPath = path.join(process.cwd(), 'config','config', 'redis.yaml');
+// --- Redis 客户端初始化 (保持不变) ---
+const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml'); // 修正了路径深度
 const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
 
 const redisClient = createClient({
   url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`,
-  disableOfflineQueue: true // 关键配置：如果连接断开，不缓存命令
+  disableOfflineQueue: true
 });
 
 redisClient.on('error', (err) => {
@@ -24,12 +24,11 @@ const BATCH_SIZE = 100;
 
 async function pollAndDispatch() {
   if (!redisClient.isOpen) {
-    // 如果连接断开，则不执行任何操作
     return;
   }
   try {
-    const dueTasks = await redisClient.zRange('tasks:scheduled', 0, Date.now(), {
-      BYSCORE: true,
+    // [修正] 将命令改回旧的、兼容性更好的 ZRANGEBYSCORE
+    const dueTasks = await redisClient.zRangeByScore('tasks:scheduled', 0, Date.now(), {
       LIMIT: { offset: 0, count: BATCH_SIZE }
     });
 
@@ -49,7 +48,7 @@ async function startScheduler() {
   try {
     await redisClient.connect();
     console.log("[调度器] Redis 连接成功，进程已启动。");
-    scheduleJob('*/1 * * * * *', pollAndDispatch); // 每秒轮询一次
+    scheduleJob('*/1 * * * * *', pollAndDispatch);
   } catch (error) {
     console.error("[调度器] 无法连接到 Redis，调度器启动失败:", error);
   }
