@@ -126,24 +126,28 @@ export class PlayerControl extends plugin {
     const endTime = startTime + action_time;
 
 
-    // 设置玩家状态
+    // 这是为后台任务准备的 payload 对象
+    const taskPayload = {
+      type: 'settleBiguan',
+      userId: e.user_id,
+      startTime: startTime,
+      endTime: endTime,
+      groupId: e.group_id
+    };
+
+    const taskPayloadString = JSON.stringify(taskPayload);
+
+    // 设置玩家状态，把上面生成的字符串也存进去
     const actionDetails = {
       action: '闭关',
       startTime: startTime,
       endTime: endTime,
-      groupId: e.group_id
+      groupId: e.group_id,
+      taskPayloadString: taskPayloadString
     };
-    await redis.set(`XinghanXiuxian:Player:${usr_qq}:action`, JSON.stringify(actionDetails));
+    await redis.set(`XinghanXiuxian:Player:${e.user_id}:action`, JSON.stringify(actionDetails));
 
-    // 调度后台结算任务
-    const taskPayload = {
-      type: 'settleBiguan', // 对应 task-handler
-      userId: usr_qq,
-      startTime: startTime,
-      endTime: endTime,
-      groupId: e.group_id
-    };
-    await scheduleTask(taskPayload, endTime);
+    await scheduleTask(taskPayloadString, endTime);
     e.reply(`现在开始闭关${time}分钟,两耳不闻窗外事了`);
 
   }
@@ -250,25 +254,32 @@ export class PlayerControl extends plugin {
       return;
     }
 
-    e.reply('你提前结束了闭关，正在结算收益...');
-    //结算
-    const taskPayload = {
-      type: 'settleBiguan',
-      userId: usr_qq,
-      startTime: actionDetails.startTime,
-      endTime: actionDetails.endTime,
-      groupId: actionDetails.groupId
-    };
+    try {
+      e.reply('你提前结束了闭关，正在结算收益...');
 
-    console.log(taskPayload);
+      // 结算
+      const taskPayloadForSettle = {
+        type: 'settleBiguan',
+        userId: usr_qq,
+        startTime: actionDetails.startTime,
+        endTime: actionDetails.endTime,
+        groupId: actionDetails.groupId
+      };
+      await settleBiguan(taskPayloadForSettle, false);
 
-    // 执行结算
-    await settleBiguan(taskPayload, false); // isRandom=false 表示不触发随机事件
+      // 直接从 actionDetails 中读取之前存好的字符串
+      const taskPayloadString = actionDetails.taskPayloadString;
+      await redis.zRem('tasks:scheduled', taskPayloadString);
 
-    // 清理工作
-    await redis.zRem('tasks:scheduled', JSON.stringify(taskPayload));
-    // 清除玩家状态
-    await redis.del(actionKey);
+      // 清除玩家状态
+      await redis.del(actionKey);
+      // 此处可以再加一个成功提示，因为上面的 reply 可能因为结算耗时而显得有点延迟
+      // e.reply("已成功出关，修为已入账。");
+
+    } catch (error) {
+      console.error(`[ERROR] 用户 ${usr_qq} 出关失败:`, error);
+      e.reply('出关时发生未知错误，请联系管理员。');
+    }
   }
 
 
