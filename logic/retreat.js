@@ -1,10 +1,22 @@
 import * as DAL from '../api/data-access.js';
 import * as Notifier from '../handlers/notifier.js';
-import { player_efficiency } from '../apps/Xiuxian/xiuxian.js';
-import data from '../model/XiuxianData.js';
-import config from '../model/Config.js';
+import fs from 'fs';
+import path from 'path';
+const pluginRoot = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
+const dataPath = path.join(pluginRoot, 'resources', 'data');
+const configPath = path.join(pluginRoot, 'config', 'config');
 
-const xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
+const Level_list = JSON.parse(fs.readFileSync(path.join(dataPath, 'Level', '练气境界.json'), 'utf-8'));
+const xiuxianConfigData = JSON.parse(fs.readFileSync(path.join(configPath, 'xiuxian.json'), 'utf-8'));
+
+/**
+ * [新增] 从 xiuxian.js 中剥离出来的、纯净的 player_efficiency 函数
+ * @param {object} player 玩家数据对象
+ */
+function calculate_player_efficiency(player) {
+  let efficiency = player.修炼效率提升 || 0;
+  return efficiency;
+}
 
 /**
  * 闭关结算的核心逻辑
@@ -32,11 +44,10 @@ export async function settleBiguan(task, isRandom = true) {
     return;
   }
 
-  await player_efficiency(userId);
   const playerData = (await DAL.getAllPlayerData(userId))?.player;
   if (!playerData) return;
 
-  const now_level_id = data.Level_list.find(item => item.level_id == playerData.level_id)?.level_id || 1;
+  const now_level_id = Level_list.find(item => item.level_id == playerData.level_id)?.level_id || 1;
   const size = xiuxianConfigData.biguan.size;
   const xiuwei = parseInt((size * now_level_id) * (playerData.修炼效率提升 + 1));
   const blood = parseInt(playerData.血量上限 * 0.02);
@@ -48,16 +59,16 @@ export async function settleBiguan(task, isRandom = true) {
   if (isRandom) {
     if (rand < 0.2) {
       rand = Math.trunc(rand * 10) + 45;
-      other_xiuwei = rand * time;
+      other_xiuwei = rand * durationMinutes;
       // xueqi = Math.trunc(rand * time);
-      msg.push("\n本次闭关顿悟,额外增加修为:" + rand * time);
+      msg.push("\n本次闭关顿悟,额外增加修为:" + rand * durationMinutes);
     }
     //走火入魔
     else if (rand > 0.8) {
       rand = Math.trunc(rand * 10) + 5;
-      other_xiuwei = -1 * rand * time;
+      other_xiuwei = -1 * rand * durationMinutes;
       // xueqi = Math.trunc(rand * time);
-      msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * time);
+      msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * durationMinutes);
 
     }
   }
