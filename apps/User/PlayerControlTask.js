@@ -31,11 +31,11 @@ export class PlayerControlTask extends plugin {
         });
         this.xiuxianConfigData = config.getConfig("xiuxian", "xiuxian");
         this.set = config.getdefSet('task', 'task')
-        this.task = {
-            cron: this.set.action_task,
-            name: 'PlayerControlTask',
-            fnc: () => this.Playercontroltask()
-        }
+        // this.task = {
+        //     cron: this.set.action_task,
+        //     name: 'PlayerControlTask',
+        //     fnc: () => this.Playercontroltask()
+        // }
     }
 
     async Playercontroltask() {
