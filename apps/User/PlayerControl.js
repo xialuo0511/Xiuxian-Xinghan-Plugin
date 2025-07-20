@@ -125,6 +125,7 @@ export class PlayerControl extends plugin {
     const action_time = time * 60 * 1000;
     const endTime = startTime + action_time;
 
+
     // 设置玩家状态
     const actionDetails = {
       action: '闭关',
@@ -256,8 +257,10 @@ export class PlayerControl extends plugin {
       userId: usr_qq,
       startTime: actionDetails.startTime,
       endTime: actionDetails.endTime,
-      groupId: actionDetails.groupId // 使用 action 中保存的 groupId
+      groupId: actionDetails.groupId
     };
+
+    console.log(taskPayload);
 
     // 执行结算
     await settleBiguan(taskPayload, false); // isRandom=false 表示不触发随机事件
