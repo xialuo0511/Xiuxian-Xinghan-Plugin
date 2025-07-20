@@ -2,6 +2,7 @@ import plugin from '../../../../lib/plugins/plugin.js';
 import common from '../../../../lib/common/common.js';
 import config from '../../model/Config.js';
 import data from '../../model/XiuxianData.js';
+import * as DAL from '../../api/data-access.js';
 import {
   player_efficiency,
   Read_player,
@@ -68,7 +69,8 @@ export class PlayerControl extends plugin {
 
     let usr_qq = e.user_id;//用户qq
     //有无存档
-    if (!await existplayer(usr_qq)) {
+    if (!(await DAL.existPlayer(usr_qq))) {
+      e.reply('请先踏入仙途');
       return;
     }
 
@@ -223,11 +225,17 @@ export class PlayerControl extends plugin {
    * @returns {Promise<void>}
    */
   async chuGuan(e) {
+    const usr_qq = e.user_id;
+
+    if (!(await DAL.existPlayer(usr_qq))) {
+      e.reply('请先踏入仙途');
+      return;
+    }
+
     if (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }
-    const usr_qq = e.user_id;
     // 检查 action 状态
     const actionKey = `XinghanXiuxian:Player:${usr_qq}:action`;
     const actionJson = await redis.get(actionKey);
