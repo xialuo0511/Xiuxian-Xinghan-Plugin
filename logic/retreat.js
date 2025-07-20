@@ -2,12 +2,15 @@ import * as DAL from '../api/data-access.js';
 import * as Notifier from '../handlers/notifier.js';
 import fs from 'fs';
 import path from 'path';
+import YAML from 'yaml';
+
+
 const pluginRoot = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
 const dataPath = path.join(pluginRoot, 'resources', 'data');
 const configPath = path.join(pluginRoot, 'config', 'config');
 
 const Level_list = JSON.parse(fs.readFileSync(path.join(dataPath, 'Level', '练气境界.json'), 'utf-8'));
-const xiuxianConfigData = JSON.parse(fs.readFileSync(path.join(configPath, 'xiuxian.json'), 'utf-8'));
+const xiuxianConfigData = YAML.parse(fs.readFileSync(path.join(configPath, 'xiuxian', 'xiuxian.yaml'), 'utf-8'));
 
 /**
  * [新增] 从 xiuxian.js 中剥离出来的、纯净的 player_efficiency 函数
