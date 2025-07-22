@@ -147,7 +147,7 @@ export class PlayerControl extends plugin {
     };
     await redis.set(`XinghanXiuxian:Player:${e.user_id}:action`, JSON.stringify(actionDetails));
 
-    await scheduleTask(taskPayloadString, endTime);
+    await scheduleTask(taskPayload, endTime);
     e.reply(`现在开始闭关${time}分钟,两耳不闻窗外事了`);
 
   }
