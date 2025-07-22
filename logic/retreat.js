@@ -44,7 +44,8 @@ export async function settleBiguan(task, isRandom = true) {
     }
   }
   if (durationMinutes < y) {
-    await Notifier.notify(groupId, userId, "闭关时间过短，未获得任何收益。");
+    console.log('闭关时间过短，未获得任何收益。');
+    await Notifier.notify(groupId, userId, '闭关时间过短，未获得任何收益。');
     return;
   }
 
@@ -65,14 +66,14 @@ export async function settleBiguan(task, isRandom = true) {
       rand = Math.trunc(rand * 10) + 45;
       other_xiuwei = rand * durationMinutes;
       // xueqi = Math.trunc(rand * time);
-      msg.push("\n本次闭关顿悟,额外增加修为:" + rand * durationMinutes);
+      msg.push('\n本次闭关顿悟,额外增加修为:' + rand * durationMinutes);
     }
     //走火入魔
     else if (rand > 0.8) {
       rand = Math.trunc(rand * 10) + 5;
       other_xiuwei = -1 * rand * durationMinutes;
       // xueqi = Math.trunc(rand * time);
-      msg.push("\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降" + rand * durationMinutes);
+      msg.push('\n由于你闭关时隔壁装修,导致你差点走火入魔,修为下降' + rand * durationMinutes);
 
     }
   }
@@ -88,6 +89,6 @@ export async function settleBiguan(task, isRandom = true) {
 
   msg.push(`\n增加修为: ${totalXiuwei}`);
   msg.push(`\n恢复血量: ${totalBlood}`);
-
+  console.log('**' + msg);
   await Notifier.notify(groupId, userId, msg.join(''));
 }
