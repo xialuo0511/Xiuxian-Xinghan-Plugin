@@ -265,8 +265,8 @@ export class PlayerControl extends plugin {
         endTime: actionDetails.endTime,
         groupId: actionDetails.groupId
       };
-      await settleBiguan(taskPayloadForSettle, false);
-
+      let msg = await settleBiguan(taskPayloadForSettle, false);
+      e.reply(msg);
       // 直接从 actionDetails 中读取之前存好的字符串
       const taskPayloadString = actionDetails.taskPayloadString;
       await redis.zRem('tasks:scheduled', taskPayloadString);

@@ -46,8 +46,8 @@ export async function settleBiguan(task, isRandom = true) {
   try {
     if (durationMinutes < y) {
       console.log('闭关时间过短，未获得任何收益。');
-      await Notifier.notify(groupId, userId, '闭关时间过短，未获得任何收益。');
-      return;
+      // await Notifier.notify(groupId, userId, '闭关时间过短，未获得任何收益。');
+      return '闭关时间过短，未获得任何收益。';
     }
   } catch (err) {
     console.log(err);
