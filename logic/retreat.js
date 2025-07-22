@@ -43,11 +43,16 @@ export async function settleBiguan(task, isRandom = true) {
       break;
     }
   }
-  if (durationMinutes < y) {
-    console.log('闭关时间过短，未获得任何收益。');
-    await Notifier.notify(groupId, userId, '闭关时间过短，未获得任何收益。');
-    return;
+  try {
+    if (durationMinutes < y) {
+      console.log('闭关时间过短，未获得任何收益。');
+      await Notifier.notify(groupId, userId, '闭关时间过短，未获得任何收益。');
+      return;
+    }
+  } catch (err) {
+    console.log(err);
   }
+
 
   const playerData = (await DAL.getAllPlayerData(userId))?.player;
   if (!playerData) return;
