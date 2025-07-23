@@ -26,8 +26,9 @@ function calculate_player_efficiency(player) {
  * 闭关结算的核心逻辑
  * @param {object} task - 任务载荷
  * @param {boolean} [isRandom=true] - 是否触发随机事件（提前出关时不触发）
+ * @param e - 机器人对象，提前结算调用
  */
-export async function settleBiguan(task, isRandom = true) {
+export async function settleBiguan(task, isRandom = true, e = null) {
   const { userId, startTime, endTime, groupId } = task;
 
   // 计算实际闭关时长
@@ -46,8 +47,8 @@ export async function settleBiguan(task, isRandom = true) {
   try {
     if (durationMinutes < y) {
       console.log('闭关时间过短，未获得任何收益。');
-      await Notifier.notify(groupId, userId, `闭关时间过短，未获得任何收益。`);
-      return '闭关时间过短，未获得任何收益。';
+      await Notifier.notify(groupId, userId, `闭关时间过短，未获得任何收益。`, e);
+      return;
     }
   } catch (err) {
     console.log(err);
@@ -95,5 +96,5 @@ export async function settleBiguan(task, isRandom = true) {
   msg.push(`\n增加修为: ${totalXiuwei}`);
   msg.push(`\n恢复血量: ${totalBlood}`);
   console.log('**' + msg);
-  await Notifier.notify(groupId, userId, msg.join(''));
+  await Notifier.notify(groupId, userId, msg.join(''), e);
 }
