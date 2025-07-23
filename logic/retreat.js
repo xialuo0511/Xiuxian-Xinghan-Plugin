@@ -47,11 +47,17 @@ export async function settleBiguan(task, isRandom = true, e = null) {
   try {
     if (durationMinutes < y) {
       console.log('闭关时间过短，未获得任何收益。');
-      await Notifier.notify(groupId, userId, `闭关时间过短，未获得任何收益。`, e);
+      await Notifier.notify(groupId, userId, `出关成功！时间过短，未获得任何收益。`, e);
       return;
     }
   } catch (err) {
     console.log(err);
+  }
+
+  // 非手动结算就删除对应的动作
+  if (!e) {
+    const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+    await redis.del(actionKey);
   }
 
 

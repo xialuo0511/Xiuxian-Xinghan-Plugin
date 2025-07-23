@@ -255,8 +255,6 @@ export class PlayerControl extends plugin {
     }
 
     try {
-      e.reply('你提前结束了闭关，正在结算收益...');
-
       // 结算
       const taskPayloadForSettle = {
         type: 'settleBiguan',
@@ -266,14 +264,10 @@ export class PlayerControl extends plugin {
         groupId: actionDetails.groupId
       };
       await settleBiguan(taskPayloadForSettle, false, e);
-      // 直接从 actionDetails 中读取之前存好的字符串
       const taskPayloadString = actionDetails.taskPayloadString;
       await redis.zRem('tasks:scheduled', taskPayloadString);
 
-      // 清除玩家状态
       await redis.del(actionKey);
-      // 此处可以再加一个成功提示，因为上面的 reply 可能因为结算耗时而显得有点延迟
-      // e.reply("已成功出关，修为已入账。");
 
     } catch (error) {
       console.error(`[ERROR] 用户 ${usr_qq} 出关失败:`, error);
