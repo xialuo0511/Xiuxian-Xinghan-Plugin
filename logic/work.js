@@ -78,12 +78,7 @@ export async function work(task, isRandom = true, e = null) {
     player.灵石 += get_lingshi;
   });
 
-  //给出消息提示
-  if (is_random) {
-    msg.push('\n增加灵石' + get_lingshi);
-  } else {
-    msg.push('\n增加灵石' + get_lingshi);
-  }
+  msg.push('\n增加灵石' + get_lingshi);
 
   await Notifier.notify(groupId, userId, msg.join(''), e);
 }
