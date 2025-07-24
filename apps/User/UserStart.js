@@ -437,7 +437,7 @@ export class UserStart extends plugin {
     let currentAction = await DAL.getPlayerAction(usr_qq);
     let status = '空闲';
 
-    if (currentAction && currentAction.length > 2) {
+    if (currentAction) {
       let m = Math.floor((currentAction.endTime - Date.now()) / 60000);
       let s = Math.floor(((currentAction.endTime - Date.now()) % 60000) / 1000);
       status = currentAction.action + '(剩余时间:' + m + '分' + s + '秒)';
