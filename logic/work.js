@@ -57,21 +57,21 @@ export async function work(task, isRandom = true, e = null) {
   let size = xiuxianConfigData.work.size;
   let lingshi = size * now_level_id;
   let other_lingshi = 0;//额外的灵石
-  let Time = time * 2;
+
   let msg = [`【${playerData.名号}】降妖归来！`];
   if (isRandom) {//随机事件预留空间
     let rand = Math.random();
     if (rand < 0.2) {
       rand = Math.trunc(rand * 10) + 40;
-      other_lingshi = rand * Time;
-      msg.push('\n降妖路途偶遇珍宝，额外获得灵石' + rand * Time);
+      other_lingshi = rand * durationMinutes;
+      msg.push('\n降妖路途偶遇珍宝，额外获得灵石' + rand * durationMinutes);
     } else if (rand > 0.8) {
       rand = Math.trunc(rand * 10) + 5;
-      other_lingshi = -1 * rand * Time;
-      msg.push('\n由于你的疏忽,货物被人顺手牵羊,老板大发雷霆,灵石减少' + rand * Time);
+      other_lingshi = -1 * rand * durationMinutes;
+      msg.push('\n由于你的疏忽,货物被人顺手牵羊,老板大发雷霆,灵石减少' + rand * durationMinutes);
     }
   }
-  let get_lingshi = lingshi * Time + other_lingshi * 1.5;//最后获取到的灵石
+  let get_lingshi = lingshi * durationMinutes + other_lingshi * 1.5;//最后获取到的灵石
 
   // 使用 DAL 更新数据
   await DAL.transaction_update(userId, (player) => {
