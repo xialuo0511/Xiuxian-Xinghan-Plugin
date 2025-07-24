@@ -54,7 +54,7 @@ export async function work(task, isRandom = true, e = null) {
   const playerData = (await DAL.getAllPlayerData(userId))?.player;
   if (!playerData) return;
   let now_level_id = data.Level_list.find(item => item.level_id == playerData.level_id).level_id;
-  let size = this.xiuxianConfigData.work.size;
+  let size = xiuxianConfigData.work.size;
   let lingshi = size * now_level_id;
   let other_lingshi = 0;//额外的灵石
   let Time = time * 2;

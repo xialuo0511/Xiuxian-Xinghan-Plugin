@@ -1,35 +1,10 @@
 import plugin from '../../../../lib/plugins/plugin.js';
-import common from '../../../../lib/common/common.js';
 import config from '../../model/Config.js';
-import data from '../../model/XiuxianData.js';
 import * as DAL from '../../api/data-access.js';
-import {
-  player_efficiency,
-  Read_player,
-  existplayer,
-  isNotNull,
-  exist_najie_thing,
-  Add_najie_thing,
-  Add_血气,
-  Add_修为
-} from '../Xiuxian/xiuxian.js';
-
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
-import mysql from 'mysql';
 import { scheduleTask } from '../../api/task-scheduler.js';
 import { settleBiguan } from '../../logic/retreat.js';
 import { work } from '../../logic/work.js';
 
-let databaseConfigData = config.getConfig('database', 'database');
-//创建连接
-const db = mysql.createPool({
-  host: 'localhost',
-  user: databaseConfigData.Database.username,
-  password: databaseConfigData.Database.password,
-  database: 'xiuxiandatabase'
-});
 
 /**
  * 定时任务
