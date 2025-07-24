@@ -477,7 +477,7 @@ export class UserStart extends plugin {
     }
 
     data.setData('player', usr_qq, player);
-    await player_efficiency(usr_qq);
+    // await player_efficiency(usr_qq);
     if (player.linggenshow !== 0) {
       player.灵根.type = '无';
       player.灵根.name = '未知';

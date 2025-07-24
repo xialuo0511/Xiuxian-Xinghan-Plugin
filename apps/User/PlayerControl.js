@@ -154,7 +154,7 @@ export class PlayerControl extends plugin {
 
     //获取时间
     let time = e.msg.replace(/#|降妖|分|钟/g, '');
-    time = parseInt(time) || 15; // 默认15分钟
+    time = parseInt(time) || 30; // 默认15分钟
     let y = 15;//固定时间
     let x = 48;//循环次数
     for (let i = x; i > 0; i--) {
@@ -163,8 +163,8 @@ export class PlayerControl extends plugin {
         break;
       }
     }
-    if (time < 15) {
-      time = 15;
+    if (time < 30) {
+      time = 30;
     }
 
     let player = (await DAL.getAllPlayerData(usr_qq)).player;
