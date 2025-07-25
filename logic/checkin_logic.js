@@ -41,8 +41,7 @@ export async function processDailyCheckIn(userId) {
   };
 
   let updateResult = null;
-  const transactionSuccess = await DAL.transaction_update(userId, async (player) => {
-    // 计算连续签到天数
+  const transactionSuccess = await DAL.transaction_update(userId, (player) => {
     const wasYesterday = yesterday.Y === lastSignDay.Y && yesterday.M === lastSignDay.M && yesterday.D === lastSignDay.D;
     if (player.连续签到天数 >= 14 || !wasYesterday) {
       player.连续签到天数 = 0;
@@ -50,7 +49,6 @@ export async function processDailyCheckIn(userId) {
     player.连续签到天数 += 1;
     checkInData.consecutiveDays = player.连续签到天数;
 
-    // 计算奖励
     let gift_xiuwei = player.连续签到天数 * 15000;
     let lilian = xiuxianConfigData.Sign.ticket;
 
@@ -62,20 +60,10 @@ export async function processDailyCheckIn(userId) {
 
     rewards.修为 = gift_xiuwei;
     rewards.秘境之匙 = lilian;
-    player.修为 += gift_xiuwei; // 直接更新修为
+    player.修为 += gift_xiuwei;
 
-    // 检查异界存档并计算额外奖励
-    // if (await yijie_existplayer(userId)) {
-    //   const yijiePlayer = await Read_yijie_player(userId);
-    //   let xianding = yijiePlayer.xianding_level > 10 ? 64 : 16;
-    //   if (player.daofaxianshu_endtime > nowTime) {
-    //     xianding *= 2;
-    //   }
-    //   rewards.仙鼎历练券 = xianding;
-    // }
-
-    updateResult = { player, rewards }; // 临时存储更新结果
-    return true; // 提交事务
+    updateResult = { player, rewards };
+    return true;
   });
 
   if (!transactionSuccess) {
@@ -87,9 +75,6 @@ export async function processDailyCheckIn(userId) {
 
   // 添加物品奖励
   await Add_najie_thing(userId, '秘境之匙', '道具', rewards.秘境之匙);
-  if (rewards.仙鼎历练券 > 0) {
-    await Add_yijie_beibao_thing(userId, '仙鼎历练券', '道具', rewards.仙鼎历练券);
-  }
 
   // 记录本月签到日期
   const checkinKey = `XinghanXiuxian:Player:${userId}:Checkin:${today.Y}-${today.M}`;
