@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>修仙签到日历</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+      @font-face {
+          font-family: 'HYWenHei';
+          src: url('https://sf6-cdn-tos.douyinstatic.com/obj/ies-music/1655954624223431/HYWenHei-85W.ttf');
+      }
+      body {
+          font-family: 'HYWenHei', sans-serif;
+          background-image: url("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.pptbz.com%2Fpptpic%2FUploadFiles_6909%2F201204%2F2012041411155948.jpg&refer=http%3A%2F%2Fwww.pptbz.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1672502400&t=a82f3d73e72c1c385a4e58b350438f36");
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+      }
+      .calendar-container {
+          background: rgba(255, 253, 247, 0.85);
+          backdrop-filter: blur(5px);
+          border: 2px solid #8B4513;
+          box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      }
+      .day-cell {
+          border: 1px solid #D2B48C;
+          transition: all 0.3s ease;
+      }
+      .day-header {
+          color: #8B4513;
+      }
+      .checked-in {
+          background-color: rgba(138, 201, 134, 0.5);
+          position: relative;
+      }
+      .today-check-in {
+          background-color: rgba(60, 179, 113, 0.7);
+          border: 2px solid #2E8B57;
+          transform: scale(1.05);
+      }
+      .check-mark {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          width: 20px;
+          height: 20px;
+          opacity: 0.9;
+      }
+  </style>
+</head>
+<body class="p-4 bg-gray-100 flex items-center justify-center min-h-screen">
+<div id="capture" class="calendar-container w-[600px] rounded-lg p-6">
+  <div class="header text-center mb-4">
+    <h1 class="text-3xl font-bold text-[#6a3906] tracking-wider">仙途签到簿</h1>
+    <p id="calendar-title" class="text-lg text-[#8B4513]"></p>
+  </div>
+
+  <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+    <!-- Headers will be injected here -->
+  </div>
+
+  <div class="rewards-section mt-6 p-4 border-t-2 border-dashed border-[#D2B48C]">
+    <h2 class="text-xl font-semibold text-[#6a3906] mb-2">本次签到收获:</h2>
+    <div class="text-base text-[#8B4513] space-y-1">
+      <p>连续签到: <span class="font-bold text-green-700">{{consecutiveDays}}</span> 天</p>
+      <p>获得修为: <span class="font-bold text-green-700">{{rewards.修为}}</span></p>
+      <p>获得秘境之匙: <span class="font-bold text-green-700">{{rewards.秘境之匙}}</span> 个</p>
+      {{if rewards.仙鼎历练券 > 0}}
+      <p>获得仙鼎历练券: <span class="font-bold text-green-700">{{rewards.仙鼎历练券}}</span> 张</p>
+      {{/if}}
+      {{if rewards.message.length > 0}}
+      <p class="text-sm italic text-yellow-700 mt-2">{{rewards.message[0]}}</p>
+      {{/if}}
+    </div>
+  </div>
+</div>
+
+<script>
+  const year = {{year}};
+  const month = {{month}}; // 1-12
+  const today = {{today}};
+  const checkedInDays = {{@checkedInDays}};
+
+  const calendarTitle = document.getElementById('calendar-title');
+  const calendarGrid = document.getElementById('calendar-grid');
+
+  function renderCalendar() {
+    calendarTitle.textContent = `${year}年 ${month}月`;
+
+    const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
+    daysOfWeek.forEach(day => {
+      const dayHeader = document.createElement('div');
+      dayHeader.className = 'day-header text-center font-bold p-2';
+      dayHeader.textContent = day;
+      calendarGrid.appendChild(dayHeader);
+    });
+
+    const firstDay = new Date(year, month - 1, 1).getDay();
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const emptyCell = document.createElement('div');
+      emptyCell.className = 'day-cell p-2 h-20';
+      calendarGrid.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayCell = document.createElement('div');
+      dayCell.className = 'day-cell p-2 h-20 flex flex-col items-center justify-center';
+
+      const dayNumber = document.createElement('span');
+      dayNumber.textContent = day;
+      dayNumber.className = 'text-lg font-semibold text-[#6a3906]';
+      dayCell.appendChild(dayNumber);
+
+      if (checkedInDays.includes(day)) {
+        dayCell.classList.add('checked-in');
+        const checkMark = document.createElement('img');
+        checkMark.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E8B57'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E";
+        checkMark.className = 'check-mark';
+        dayCell.appendChild(checkMark);
+      }
+
+      if (day === today) {
+        dayCell.classList.add('today-check-in');
+      }
+
+      calendarGrid.appendChild(dayCell);
+    }
+  }
+
+  renderCalendar();
+</script>
+</body>
+</html>

@@ -382,16 +382,6 @@ export async function Read_yijie_beibao(usr_qq) {
 }
 
 //写入纳戒信息,第二个参数是一个JavaScript对象
-export async function log_return(usr_qq, name, number) {
-  let log_data = await redis.get('xiuxian:log');
-  log_data = Number(log_data);
-  if (log_data == 1) {
-    logger.mark(`【修仙日志】玩家${usr_qq}增加了${name}${number}`);
-  }
-  return;
-}
-
-//写入纳戒信息,第二个参数是一个JavaScript对象
 export async function Write_najie(usr_qq, najie) {
   let dir = path.join(__PATH.najie_path, `${usr_qq}.json`);
   let new_ARR = JSON.stringify(najie, '', '\t');
@@ -523,7 +513,7 @@ export async function change_神之心(usr_qq) {
 }
 
 export async function Add_HP(usr_qq, blood = 0) {
-  let player = await Read_player(usr_qq);
+  let player = (await DAL.getAllPlayerData(usr_qq)).player;
   player.当前血量 += Math.trunc(blood);
   if (player.当前血量 > player.血量上限) {
     player.当前血量 = player.血量上限;
@@ -531,9 +521,7 @@ export async function Add_HP(usr_qq, blood = 0) {
   if (player.当前血量 < 0) {
     player.当前血量 = 0;
   }
-  await log_return(usr_qq, '当前血量', blood);
-  await Write_player(usr_qq, player);
-  return;
+  await DAL.savePlayer(usr_qq, player);
 }
 
 /**
