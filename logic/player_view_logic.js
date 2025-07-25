@@ -122,6 +122,7 @@ export async function transformPlayerDataForRender(rawData, e) {
   return {
     // --- 基础信息 ---
     user_id: usr_qq,
+    player,
     nickname: player.名号,
     head_pic: e.member?.getAvatarUrl() || `https://q1.qlogo.cn/g?b=qq&s=0&nk=${usr_qq}`,
     declaration: player.宣言 || '这个人很懒什么都没写',
