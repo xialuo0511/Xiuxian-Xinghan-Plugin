@@ -45,11 +45,9 @@ export async function work(task, isRandom = true, e = null) {
     console.log(err);
   }
 
-  // 非手动结算就删除对应的动作
-  if (!e) {
-    const actionKey = `XinghanXiuxian:Player:${userId}:action`;
-    await redis.del(actionKey);
-  }
+  // 删除对应的动作
+  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+  await redis.del(actionKey);
 
   const playerData = (await DAL.getAllPlayerData(userId))?.player;
   if (!playerData) return;
