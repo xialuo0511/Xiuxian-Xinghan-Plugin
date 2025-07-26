@@ -1144,6 +1144,7 @@ export async function get_association_img(e) {
     //长老
     const zhanglao = [];
     for (item in ass.长老) {
+      console.log(ass.长老 + ':' + await DAL.getAllPlayerData(ass.长老));
       zhanglao[item] = '道号：' + (await DAL.getAllPlayerData(ass.长老)).player.名号 + 'QQ：' + ass.长老[item];
     }
     //内门弟子
