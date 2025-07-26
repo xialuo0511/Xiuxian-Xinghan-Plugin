@@ -1,12 +1,14 @@
-// 文件路径: Plugin/apps/User/MoneyOperation.js (完整重写)
-
 import plugin from '../../../../lib/plugins/plugin.js';
-import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
-import fs from 'fs';
 import * as DAL from '../../api/data-access.js';
-import { addLingshi, addNajieThing, handleGive } from '../../logic/money_logic.js';
-import { __PATH, isNotNull, foundthing, convert2integer, Check_thing, existplayer } from '../Xiuxian/xiuxian.js';
+import {
+  addLingshi,
+  addNajieThing,
+  handleClaimRedPacket, handleCreateRedPacket,
+  handleGive,
+  handleOpenWallet
+} from '../../logic/money_logic.js';
+import { foundthing, convert2integer, Check_thing } from '../Xiuxian/xiuxian.js';
 import { Go } from './UserHome.js'; // 假设Go函数已迁移或重构
 
 export class MoneyOperation extends plugin {
