@@ -1,13 +1,8 @@
 import plugin from '../../../../lib/plugins/plugin.js';
-import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
-import fs from 'fs';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
-import Show from '../../model/show.js';
-
+import { treasureHunt, getTreasureMapList } from '../logic/treasure_hunt_logic.js';
 // 新的数据访问层
 import * as DAL from '../../api/data-access.js';
-import { transaction_update } from '../../api/data-access.js';
 import { Gulid } from '../../api/api.js';
 
 // 业务逻辑层
@@ -19,15 +14,13 @@ import { refineEquipment } from '../../logic/refine_logic.js';
 import { drawFromPool } from '../../logic/gacha_logic.js';
 import { offerStone } from '../../logic/stone_logic.js';
 import { checkPlayerArchives } from '../../logic/admin_logic.js';
-import { buyItem, buyItemWithXianshi, sellItem } from '../../logic/shop_logic.js';
 import { equipItem, consumeItem, learnSkill } from '../../logic/item_use_logic.js';
 
 // 旧的工具函数（逐步替换）
 import {
   foundthing,
   exist_najie_thing,
-  sleep,
-  Add_najie_thing
+  sleep
 } from '../Xiuxian/xiuxian.js';
 import { __PATH } from '../Xiuxian/xiuxian.js';
 import { Add_仙宠 } from '../Pokemon/Pokemon.js';
@@ -333,8 +326,7 @@ export class UserHome extends plugin {
         result = await unsealItem(userId, itemName);
         break;
       case '寻宝':
-        // 寻宝功能已在 findThing 中实现
-        result = { success: false, message: '请使用 #寻物 命令' };
+        result = await treasureHunt(userId, itemName);
         break;
       case '合成':
         result = await synthesizeItem(userId, itemName);
@@ -403,7 +395,7 @@ export async function Go(e) {
 
   // 检查玩家是否存在
   if (!await existPlayer(userId)) {
-    e.reply('你还没有踏入仙途，请先发送 #我要修仙 开始修仙之路');
+    e.reply('你还没有踏入仙途，请先发送 #踏入仙途 开始修仙之路');
     return null;
   }
 
