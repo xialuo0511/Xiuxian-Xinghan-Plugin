@@ -1,456 +1,255 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-  <link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
-  <link rel="preload" href="../../font/NZBZ.ttf" as="font" />
-  <link rel="shortcut icon" href="#" />
-  <style>
-    @font-face {
-      font-family: "tttgbnumber";
-      src: url("../../font/tttgbnumber.ttf");
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: "NZBZ";
-      src: url("../../font/NZBZ.ttf");
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: "tttgbnumber", "NZBZ", sans-serif;
-      background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #CD853F 100%);
-      background-attachment: fixed;
-      min-height: 100vh;
-      color: #2F1B14;
-      overflow-x: hidden;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* 顶部核心信息区 */
-    .header-section {
-      background: rgba(245, 245, 220, 0.95);
-      backdrop-filter: blur(10px);
-      border: 2px solid #D2691E;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 8px 32px rgba(139, 69, 19, 0.3);
-    }
-
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-    }
-
-    .avatar-section {
-      flex-shrink: 0;
-    }
-
-    .avatar-container {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, #D2691E, #CD853F);
-      padding: 4px;
-      box-shadow: 0 4px 20px rgba(139, 69, 19, 0.4);
-    }
-
-    .avatar {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #F5F5DC;
-    }
-
-    .sect-info {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-    }
-
-    .sect-title {
-      grid-column: 1 / -1;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .sect-name {
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #8B4513;
-      text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.3);
-      margin-bottom: 10px;
-    }
-
-    .sect-level {
-      font-size: 1.2em;
-      color: #D2691E;
-      font-weight: 600;
-    }
-
-    .info-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 15px;
-      background: rgba(210, 105, 30, 0.1);
-      border-radius: 10px;
-      border-left: 4px solid #D2691E;
-    }
-
-    .info-label {
-      font-weight: 600;
-      color: #8B4513;
-    }
-
-    .info-value {
-      font-weight: bold;
-      color: #2F1B14;
-    }
-
-    /* 详细信息卡片 */
-    .details-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 20px;
-    }
-
-    .info-card {
-      background: rgba(245, 245, 220, 0.95);
-      backdrop-filter: blur(10px);
-      border: 2px solid #D2691E;
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: 0 6px 25px rgba(139, 69, 19, 0.2);
-    }
-
-    .card-title {
-      font-size: 1.4em;
-      font-weight: bold;
-      color: #8B4513;
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #D2691E;
-      position: relative;
-    }
-
-    .card-title::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 2px;
-      background: linear-gradient(90deg, #D2691E, #CD853F);
-    }
-
-    .card-content {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .stat-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 15px;
-      background: rgba(210, 105, 30, 0.08);
-      border-radius: 8px;
-      border-left: 3px solid #D2691E;
-      transition: all 0.3s ease;
-    }
-
-    .stat-item:hover {
-      background: rgba(210, 105, 30, 0.15);
-      transform: translateX(5px);
-    }
-
-    .stat-label {
-      font-weight: 600;
-      color: #8B4513;
-    }
-
-    .stat-value {
-      font-weight: bold;
-      color: #2F1B14;
-    }
-
-    /* 成员列表 */
-    .members-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .member-card {
-      background: rgba(245, 245, 220, 0.95);
-      backdrop-filter: blur(10px);
-      border: 2px solid #D2691E;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 6px 25px rgba(139, 69, 19, 0.2);
-    }
-
-    .member-list {
-      max-height: 300px;
-      overflow-y: auto;
-      padding-right: 10px;
-    }
-
-    .member-list::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .member-list::-webkit-scrollbar-track {
-      background: rgba(210, 105, 30, 0.1);
-      border-radius: 3px;
-    }
-
-    .member-list::-webkit-scrollbar-thumb {
-      background: #D2691E;
-      border-radius: 3px;
-    }
-
-    .member-item {
-      padding: 8px 12px;
-      margin-bottom: 8px;
-      background: rgba(210, 105, 30, 0.08);
-      border-radius: 8px;
-      border-left: 3px solid #D2691E;
-      font-size: 0.95em;
-      transition: all 0.3s ease;
-    }
-
-    .member-item:hover {
-      background: rgba(210, 105, 30, 0.15);
-      transform: translateX(3px);
-    }
-
-    .member-item:last-child {
-      margin-bottom: 0;
-    }
-
-    /* 创立时间 */
-    .footer-section {
-      background: rgba(245, 245, 220, 0.95);
-      backdrop-filter: blur(10px);
-      border: 2px solid #D2691E;
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 6px 25px rgba(139, 69, 19, 0.2);
-    }
-
-    .footer-text {
-      font-size: 1.1em;
-      font-weight: 600;
-      color: #8B4513;
-    }
-
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-      .container {
-        padding: 15px;
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <link href="#" rel="shortcut icon" />
+  <style type="text/css">
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("{{pluResPath}}/font/tttgbnumber.ttf");
       }
 
-      .header-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 20px;
+      @font-face {
+          font-family: "NZBZ";
+          src: url("{{pluResPath}}/font/NZBZ.TTF");
       }
 
-      .sect-info {
-        grid-template-columns: 1fr;
+      body {
+          width: 700px;
+          margin: 0;
+          padding: 20px;
+          background-image: url('{{pluResPath}}/img/player_pifu/beijing.jpg');
+          background-size: cover;
+          background-position: center;
+          font-family: "tttgbnumber", sans-serif;
+          color: #4a2c1a;
       }
 
-      .details-section {
-        grid-template-columns: 1fr;
+      .panel-container {
+          background: rgba(253, 250, 245, 0.88);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+          padding: 20px;
       }
 
-      .members-section {
-        grid-template-columns: 1fr;
+      .header {
+          text-align: center;
+          padding-bottom: 15px;
+          border-bottom: 2px dashed #d2b48c;
       }
 
       .sect-name {
-        font-size: 2em;
-      }
-    }
-
-    /* 特殊效果 */
-    .glow-effect {
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
-      from {
-        box-shadow: 0 6px 25px rgba(139, 69, 19, 0.2);
+          font-family: "NZBZ", sans-serif;
+          font-size: 42px;
+          color: #6a3906;
+          text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
       }
 
-      to {
-        box-shadow: 0 6px 35px rgba(139, 69, 19, 0.4);
+      .sect-master {
+          font-size: 18px;
+          margin-top: 5px;
+          color: #7a5533;
       }
-    }
 
-    .highlight {
-      color: #D2691E;
-      font-weight: bold;
-    }
+      .master-name {
+          font-weight: bold;
+          color: #8B4513;
+      }
+
+      .info-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          margin-top: 15px;
+          text-align: center;
+      }
+
+      .info-item {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 10px;
+          border-radius: 8px;
+          border: 1px solid rgba(168, 135, 99, 0.4);
+      }
+
+      .info-label {
+          display: block;
+          font-size: 14px;
+          color: #7a5533;
+          margin-bottom: 5px;
+      }
+
+      .info-value {
+          font-size: 18px;
+          font-weight: bold;
+      }
+
+      .members-section {
+          margin-top: 20px;
+      }
+
+      .section-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 24px;
+          text-align: center;
+          color: #6a3906;
+          margin-bottom: 15px;
+      }
+
+      .member-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+      }
+
+      .member-card {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 8px;
+          padding: 12px;
+          border: 1px solid rgba(168, 135, 99, 0.5);
+      }
+
+      .member-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 18px;
+          text-align: center;
+          color: #8B4513;
+          padding-bottom: 8px;
+          margin-bottom: 8px;
+          border-bottom: 1px solid #d2b48c;
+      }
+
+      .member-list {
+          font-size: 15px;
+          line-height: 1.8;
+          text-align: center;
+          max-height: 150px;
+          overflow-y: auto;
+      }
+
+      .member-list div {
+          padding: 2px 0;
+      }
+
+      .disciples-section .member-card {
+          grid-column: 1 / -1; /* 让内外门弟子卡片占满整行 */
+      }
+
+      .disciples-section .member-list {
+          columns: 2; /* 弟子列表分为两列 */
+          gap: 15px;
+          max-height: 200px;
+      }
+
+      .footer {
+          margin-top: 20px;
+          padding-top: 10px;
+          border-top: 1px solid #d2b48c;
+          font-size: 12px;
+          text-align: center;
+          color: #7a5533;
+      }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <!-- 顶部核心信息区 -->
-    <div class="header-section glow-effect">
-      <div class="header-content">
-        <div class="avatar-section">
-          <div class="avatar-container">
-            <img class="avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}" onerror="whenError(this)" />
-          </div>
-        </div>
+<div class="panel-container" id="capture">
+  <div class="header">
+    <div class="sect-name">{{ass.宗门名称}}</div>
+    <div class="sect-master">宗主: <span class="master-name">{{mainname}} ({{mainqq}})</span></div>
+  </div>
 
-        <div class="sect-info">
-          <div class="sect-title">
-            <div class="sect-name">{{ass.宗门名称}}</div>
-            <div class="sect-level">宗门等级：{{ass.宗门等级}}</div>
-          </div>
-
-          <div class="info-item">
-            <span class="info-label">宗主</span>
-            <span class="info-value">{{mainname}} ({{mainqq}})</span>
-          </div>
-
-          <div class="info-item">
-            <span class="info-label">灵石池</span>
-            <span class="info-value highlight">{{ass.灵石池}}</span>
-          </div>
-
-          <div class="info-item">
-            <span class="info-label">成员数量</span>
-            <span class="info-value">{{ass.所有成员.length}}人</span>
-          </div>
-
-          <div class="info-item">
-            <span class="info-label">宗门位置</span>
-            <span class="info-value">{{weizhi}}</span>
-          </div>
-        </div>
-      </div>
+  <div class="info-grid">
+    <div class="info-item">
+      <span class="info-label">宗门等级</span>
+      <span class="info-value">{{ass.宗门等级}} 级</span>
     </div>
-
-    <!-- 详细信息区 -->
-    <div class="details-section">
-      <!-- 宗门状态 -->
-      <div class="info-card">
-        <div class="card-title">宗门状态</div>
-        <div class="card-content">
-          <div class="stat-item">
-            <span class="stat-label">门派状态</span>
-            <span class="stat-value">{{state}}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">天赋加强</span>
-            <span class="stat-value highlight">{{xiulian}}%</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">大阵强度</span>
-            <span class="stat-value">{{ass.大阵血量}}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">入宗门槛</span>
-            <span class="stat-value">{{level}}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">建设等级</span>
-            <span class="stat-value">{{ass.宗门建设等级}}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">镇宗神兽</span>
-            <span class="stat-value highlight">{{ass.宗门神兽}}</span>
-          </div>
-        </div>
-      </div>
+    <div class="info-item">
+      <span class="info-label">宗门人数</span>
+      <span class="info-value">{{ass.所有成员.length}} 人</span>
     </div>
-
-    <!-- 成员列表区 -->
-    <div class="members-section">
-      <!-- 副宗主 -->
-      <div class="member-card">
-        <div class="card-title">副宗主</div>
-        <div class="member-list">
-          {{each fuzong item}}
-          <div class="member-item">{{item}}</div>
-          {{/each}}
-        </div>
-      </div>
-
-      <!-- 长老 -->
-      <div class="member-card">
-        <div class="card-title">长老</div>
-        <div class="member-list">
-          {{each zhanglao item}}
-          <div class="member-item">{{item}}</div>
-          {{/each}}
-        </div>
-      </div>
-
-      <!-- 内门弟子 -->
-      <div class="member-card">
-        <div class="card-title">内门弟子</div>
-        <div class="member-list">
-          {{each neimen item}}
-          <div class="member-item">{{item}}</div>
-          {{/each}}
-        </div>
-      </div>
-
-      <!-- 外门弟子 -->
-      <div class="member-card">
-        <div class="card-title">外门弟子</div>
-        <div class="member-list">
-          {{each waimen item}}
-          <div class="member-item">{{item}}</div>
-          {{/each}}
-        </div>
-      </div>
+    <div class="info-item">
+      <span class="info-label">灵石储备</span>
+      <span class="info-value">{{ass.灵石池}}</span>
     </div>
-
-    <!-- 页脚信息 -->
-    <div class="footer-section">
-      <div class="footer-text">创立于：{{ass.创立时间[0]}}</div>
+    <div class="info-item">
+      <span class="info-label">宗门位置</span>
+      <span class="info-value">{{weizhi}}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">天赋加成</span>
+      <span class="info-value">{{xiulian}}%</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">门派状态</span>
+      <span class="info-value">{{state}}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">入宗门槛</span>
+      <span class="info-value">{{level}}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">建设等级</span>
+      <span class="info-value">{{ass.宗门建设等级}}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">镇宗神兽</span>
+      <span class="info-value">{{ass.宗门神兽 || '暂无'}}</span>
     </div>
   </div>
 
-  <script>
-    function whenError(img) {
-      img.src = '../../img/player/default_avatar.jpg';
-    }
-  </script>
-</body>
+  <div class="members-section">
+    <div class="section-title">宗门栋梁</div>
+    <div class="member-grid">
+      <div class="member-card">
+        <div class="member-title">副宗主</div>
+        <div class="member-list">
+          {{if fuzong.length == 0}} 暂无 {{/if}}
+          {{each fuzong item}}
+          <div>{{item}}</div>
+          {{/each}}
+        </div>
+      </div>
+      <div class="member-card">
+        <div class="member-title">长老</div>
+        <div class="member-list">
+          {{if zhanglao.length == 0}} 暂无 {{/if}}
+          {{each zhanglao item}}
+          <div>{{item}}</div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class="members-section disciples-section">
+    <div class="section-title">宗门弟子</div>
+    <div class="member-grid">
+      <div class="member-card">
+        <div class="member-title">内门弟子</div>
+        <div class="member-list">
+          {{if neimen.length == 0}} 暂无 {{/if}}
+          {{each neimen item}}
+          <div>{{item}}</div>
+          {{/each}}
+        </div>
+      </div>
+      <div class="member-card">
+        <div class="member-title">外门弟子</div>
+        <div class="member-list">
+          {{if waimen.length == 0}} 暂无 {{/if}}
+          {{each waimen item}}
+          <div>{{item}}</div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    创立于: {{ass.创立时间[0]}}
+  </div>
+</div>
+</body>
 </html>
