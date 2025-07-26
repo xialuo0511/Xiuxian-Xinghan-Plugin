@@ -7,41 +7,42 @@
       /* --- 字体定义 --- */
       @font-face {
           font-family: "tttgbnumber";
-          src: url("{{pluResPath}}/font/tttgbnumber.ttf");
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
           font-weight: normal;
           font-style: normal;
       }
 
       @font-face {
           font-family: "NZBZ";
-          src: url("{{pluResPath}}/font/NZBZ.TTF");
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
           font-weight: normal;
           font-style: normal;
       }
 
       /* --- 基础样式 --- */
       body {
-          width: 880px; /* 稍微加宽以容纳更美观的布局 */
+          /* 【核心改动】: 调整为竖向布局的宽度 */
+          width: 600px;
           margin: 0;
           padding: 20px;
           text-align: center;
-          background-image: url('{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
+          background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
           background-size: cover;
           background-position: center center;
           background-repeat: no-repeat;
           font-family: "tttgbnumber", sans-serif;
-          color: #4a2c1a; /* 深褐色文字 */
+          color: #4a2c1a;
       }
 
       /* --- 容器样式 --- */
       .panel-container {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 15px; /* 模块间距 */
       }
 
       .card-base {
-          background: rgba(253, 250, 245, 0.85); /* 带有透明度的米色背景 */
+          background: rgba(253, 250, 245, 0.85);
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
           border: 2px solid #a88763;
@@ -50,39 +51,44 @@
           padding: 15px;
       }
 
-      /* --- 顶部信息区 --- */
-      .header-section {
+      /* --- 顶部核心区 --- */
+      .main-header {
           display: flex;
-          gap: 20px;
-      }
-
-      .avatar-section {
-          flex-shrink: 0;
-          text-align: center;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
       }
 
       .avatar-frame {
-          width: 240px;
-          height: 240px;
-          background-image: url("{{pluResPath}}/img/player/{{touxiang}}.png");
+          width: 180px;
+          height: 180px;
+          background-image: url("file:///{{pluResPath}}/img/player/{{touxiang}}.png");
           background-size: 100% 100%;
           display: flex;
           align-items: center;
           justify-content: center;
+          padding: 20px;
+          box-sizing: border-box;
       }
 
       .avatar-image {
-          width: 150px;
-          height: 150px;
+          width: 120px;
+          height: 120px;
           border-radius: 50%;
           border: 3px solid #c8a87e;
       }
 
-      .power-display {
-          margin-top: 10px;
-          padding: 8px 16px;
+      .player-name {
           font-family: "NZBZ", sans-serif;
-          font-size: 28px;
+          font-size: 32px;
+          color: #6a3906;
+          margin-top: 5px;
+      }
+
+      .power-display {
+          padding: 5px 20px;
+          font-family: "NZBZ", sans-serif;
+          font-size: 24px;
           background: linear-gradient(145deg, #c8a87e, #a88763);
           color: #fff;
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -90,98 +96,22 @@
           border: 1px solid #8c6f4d;
       }
 
-      .info-section {
-          flex-grow: 1;
+      .realm-progress-section {
+          width: 100%;
           display: flex;
-          flex-direction: column;
-          justify-content: space-between;
+          gap: 15px;
+          margin-top: 10px;
+      }
+
+      .progress-card {
+          flex: 1;
           text-align: left;
-          font-size: 18px;
-          padding-left: 10px;
       }
 
-      .info-section .info-row {
-          display: flex;
-          align-items: center;
-          margin-bottom: 8px;
-      }
-
-      .info-section .info-label {
+      .progress-title {
+          font-size: 16px;
           font-weight: 600;
           color: #7a5533;
-          width: 80px;
-          flex-shrink: 0;
-      }
-
-      .info-section .info-value {
-          color: #4a2c1a;
-          font-family: "tttgbnumber";
-      }
-
-      .health-bar-container {
-          width: 100%;
-          height: 24px;
-          background-color: rgba(0, 0, 0, 0.2);
-          border-radius: 12px;
-          padding: 3px;
-          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
-      }
-
-      .health-bar {
-          height: 100%;
-          background: linear-gradient(to right, #e57373, #d32f2f);
-          border-radius: 9px;
-          position: relative;
-          transition: width 0.5s ease-in-out;
-      }
-
-      .health-text {
-          position: absolute;
-          width: 100%;
-          text-align: center;
-          color: white;
-          font-size: 14px;
-          font-weight: bold;
-          text-shadow: 1px 1px 1px #000;
-          line-height: 18px;
-      }
-
-      /* --- 中部信息区 --- */
-      .stats-section {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 15px;
-      }
-
-      .stat-card {
-          background: rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
-          padding: 12px;
-          border: 1px solid rgba(168, 135, 99, 0.5);
-      }
-
-      .stat-card-title {
-          font-family: "NZBZ", sans-serif;
-          font-size: 20px;
-          text-align: center;
-          color: #6a3906;
-          margin-bottom: 10px;
-          border-bottom: 1px solid #d2b48c;
-          padding-bottom: 5px;
-      }
-
-      .stat-line {
-          display: flex;
-          align-items: center;
-          font-size: 16px;
-          margin-bottom: 6px;
-      }
-
-      .stat-line svg {
-          width: 18px;
-          height: 18px;
-          margin-right: 8px;
-          fill: #7a5533;
       }
 
       .progress-bar-container {
@@ -212,27 +142,89 @@
           line-height: 16px;
       }
 
-      /* --- 装备区 --- */
-      .equipment-section {
+      /* --- 中部信息区 --- */
+      .info-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: 1fr 1fr;
+          gap: 10px 20px; /* 行间距和列间距 */
+          text-align: left;
+          font-size: 16px;
+          padding: 0 10px;
+      }
+
+      .info-item {
+          display: flex;
+      }
+
+      .info-label {
+          font-weight: 600;
+          color: #7a5533;
+          width: 85px;
+          flex-shrink: 0;
+      }
+
+      .info-value {
+          color: #4a2c1a;
+      }
+
+      /* --- 属性与装备区 --- */
+      .details-section {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 15px;
       }
 
-      .equipment-card {
+      .details-card {
           background: rgba(255, 255, 255, 0.2);
           border-radius: 8px;
-          padding: 12px;
+          padding: 15px;
           border: 1px solid rgba(168, 135, 99, 0.5);
+      }
+
+      .details-card-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          text-align: center;
+          color: #6a3906;
+          margin-bottom: 10px;
+          border-bottom: 1px solid #d2b48c;
+          padding-bottom: 5px;
+      }
+
+      .stat-line {
+          display: flex;
+          align-items: center;
+          font-size: 16px;
+          margin-bottom: 8px;
+      }
+
+      .stat-line svg {
+          width: 18px;
+          height: 18px;
+          margin-right: 8px;
+          fill: #7a5533;
+      }
+
+      .equipment-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+      }
+
+      .equipment-item {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 6px;
+          padding: 10px;
+          border: 1px solid rgba(168, 135, 99, 0.3);
           text-align: center;
       }
 
-      .equipment-title {
+      .equipment-name {
           font-family: "NZBZ", sans-serif;
-          font-size: 18px;
+          font-size: 16px;
           color: #6a3906;
-          margin-bottom: 8px;
-          height: 40px; /* 固定高度防止错位 */
+          margin-bottom: 5px;
+          height: 35px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -240,8 +232,9 @@
 
       .equipment-stats {
           text-align: left;
-          font-size: 14px;
+          font-size: 13px;
           color: #4a2c1a;
+          line-height: 1.5;
       }
 
       /* --- 页脚 --- */
@@ -250,51 +243,64 @@
           font-size: 12px;
           color: #fff;
           text-shadow: 1px 1px 2px #000;
-          margin-top: 10px;
       }
   </style>
 </head>
 <body>
 <div class="panel-container" id="capture">
-  <!-- 上部：基础信息 -->
-  <div class="card-base header-section">
-    <div class="avatar-section">
-      <div class="avatar-frame">
-        <img class="avatar-image" onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" src="{{head_pic}}" />
-      </div>
-      <div class="power-display">战力 {{PowerMini}}</div>
+  <!-- 顶部核心信息 -->
+  <div class="card-base main-header">
+    <div class="avatar-frame">
+      <img class="avatar-image" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'"
+           src="{{head_pic}}" />
     </div>
-    <div class="info-section">
-      <div>
-        <div class="info-row"><span class="info-label">道号：</span><span class="info-value text-2xl font-bold">{{player.名号}}</span>
-        </div>
-        <div class="info-row"><span class="info-label">QQ：</span><span class="info-value">{{user_id}}</span></div>
-        <div class="info-row"><span class="info-label">性别：</span><span class="info-value">{{['未知','女','男','扶她'][player.sex]}}</span>
-        </div>
-        <div class="info-row"><span class="info-label">宗门：</span><span class="info-value">【{{this_association.宗门名称}}】{{if this_association.宗门名称 != "无"}}[{{this_association.职位}}]{{/if}}</span>
-        </div>
-        <div class="info-row"><span class="info-label">道侣：</span><span class="info-value">【{{婚姻状况}}】</span></div>
-        <div class="info-row"><span class="info-label">灵石：</span><span class="info-value">{{lingshi}}</span></div>
-      </div>
-      <div>
-        <div class="info-row"><span class="info-label">生命：</span>
-          <div class="health-bar-container">
-            <div class="health-bar" {{strand_hp.style}}>
-              <div class="health-text">{{(player.当前血量).toFixed(0)}} / {{(player.血量上限).toFixed(0)}}</div>
-            </div>
+    <div class="player-name">{{player.名号}}</div>
+    <div class="power-display">战力 {{PowerMini}}</div>
+    <div class="realm-progress-section">
+      <div class="progress-card">
+        <div class="progress-title">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" {{strand_lianqi.style}}>
+            <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
           </div>
         </div>
-        <div class="info-row"><span class="info-label">道宣：</span><span class="info-value text-sm italic">"{{player.宣言}}"</span>
+      </div>
+      <div class="progress-card">
+        <div class="progress-title">{{rank_llianti}}{{if player.血气 >= expmax_llianti}} [可破体] {{/if}}</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="background: linear-gradient(to right, #FFD700, #FFA500);"
+               {{strand_llianti.style}}>
+            <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 中部：核心属性 -->
-  <div class="card-base stats-section">
-    <!-- 战斗属性 -->
-    <div class="stat-card">
-      <div class="stat-card-title">斗法</div>
+  <!-- 个人信息 -->
+  <div class="card-base">
+    <div class="info-grid">
+      <div class="info-item"><span class="info-label">QQ：</span><span class="info-value">{{user_id}}</span></div>
+      <div class="info-item"><span class="info-label">性别：</span><span class="info-value">{{['未知','女','男','扶她'][player.sex]}}</span>
+      </div>
+      <div class="info-item"><span class="info-label">宗门：</span><span
+        class="info-value">【{{this_association.宗门名称}}】</span></div>
+      <div class="info-item"><span class="info-label">职位：</span><span class="info-value">{{if this_association.宗门名称 != "无"}}[{{this_association.职位}}]{{else}}无{{/if}}</span>
+      </div>
+      <div class="info-item"><span class="info-label">道侣：</span><span class="info-value">【{{婚姻状况}}】</span></div>
+      <div class="info-item"><span class="info-label">灵石：</span><span class="info-value">{{lingshi}}</span></div>
+      <div class="info-item"><span class="info-label">状态：</span><span class="info-value">【{{player_action}}】</span>
+      </div>
+      <div class="info-item"><span class="info-label">道法仙术：</span><span class="info-value">【{{daofa}}】</span></div>
+      <div class="info-item" style="grid-column: 1 / -1;"><span class="info-label">道宣：</span><span
+        class="info-value text-sm italic">"{{player.宣言}}"</span></div>
+    </div>
+  </div>
+
+  <!-- 详细属性与装备 -->
+  <div class="details-section">
+    <div class="details-card">
+      <div class="details-card-title">斗法属性</div>
       <div class="stat-line">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -322,88 +328,57 @@
         暴伤：{{(player.暴击伤害*100).toFixed(0)}}%
       </div>
     </div>
-    <!-- 境界进度 -->
-    <div class="stat-card">
-      <div class="stat-card-title">境界</div>
-      <div>
-        <div class="stat-line">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar" {{strand_lianqi.style}}>
-            <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
-          </div>
-        </div>
-      </div>
-      <div class="mt-2">
-        <div class="stat-line">{{rank_llianti}}{{if player.血气 >= expmax_llianti}} [可破体] {{/if}}</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar" style="background: linear-gradient(to right, #FFD700, #FFA500);"
-               {{strand_llianti.style}}>
-            <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- 杂项属性 -->
-    <div class="stat-card">
-      <div class="stat-card-title">天命</div>
+    <div class="details-card">
+      <div class="details-card-title">天命属性</div>
       <div class="stat-line">灵根：【{{linggen.type}}】{{linggen.name}}</div>
       <div class="stat-line">修炼加成：{{talent}}%</div>
       <div class="stat-line">职业：[{{occupation}}]</div>
-      <div class="stat-line">状态：【{{player_action}}】</div>
-      <div class="stat-line">道法仙术：【{{daofa}}】</div>
+      <div class="stat-line">幸运：{{(player.幸运*100).toFixed(1)}}%</div>
     </div>
   </div>
 
-  <!-- 底部：装备信息 -->
-  <div class="card-base equipment-section">
-    <div class="equipment-card">
-      <div class="equipment-title">{{equipment.武器.name}}</div>
-      <div class="equipment-stats">
-        <div>攻击：{{(equipment.武器.atk).toFixed(0)}}</div>
-        <div>防御：{{(equipment.武器.def).toFixed(0)}}</div>
-        <div>血量：{{(equipment.武器.HP).toFixed(0)}}</div>
-        <div>暴击：{{equipment.武器.bao}}</div>
-        <div>附魔：{{equipment.武器.fumo || '无'}}</div>
-        <div>评级：【{{武器评级}}】</div>
+  <div class="card-base">
+    <div class="details-card-title">装备仙宠</div>
+    <div class="equipment-grid">
+      <div class="equipment-item">
+        <div class="equipment-name">{{equipment.武器.name}}</div>
+        <div class="equipment-stats">
+          <div>攻击: {{(equipment.武器.atk).toFixed(0)}} | 防御: {{(equipment.武器.def).toFixed(0)}}</div>
+          <div>血量: {{(equipment.武器.HP).toFixed(0)}} | 暴击: {{equipment.武器.bao}}</div>
+          <div>评级：【{{武器评级}}】</div>
+        </div>
       </div>
-    </div>
-    <div class="equipment-card">
-      <div class="equipment-title">{{equipment.护具.name}}</div>
-      <div class="equipment-stats">
-        <div>攻击：{{(equipment.护具.atk).toFixed(0)}}</div>
-        <div>防御：{{(equipment.护具.def).toFixed(0)}}</div>
-        <div>血量：{{(equipment.护具.HP).toFixed(0)}}</div>
-        <div>暴击：{{equipment.护具.bao}}</div>
-        <div>附魔：{{equipment.护具.fumo || '无'}}</div>
-        <div>评级：【{{护具评级}}】</div>
+      <div class="equipment-item">
+        <div class="equipment-name">{{equipment.护具.name}}</div>
+        <div class="equipment-stats">
+          <div>攻击: {{(equipment.护具.atk).toFixed(0)}} | 防御: {{(equipment.护具.def).toFixed(0)}}</div>
+          <div>血量: {{(equipment.护具.HP).toFixed(0)}} | 暴击: {{equipment.护具.bao}}</div>
+          <div>评级：【{{护具评级}}】</div>
+        </div>
       </div>
-    </div>
-    <div class="equipment-card">
-      <div class="equipment-title">{{equipment.法宝.name}}</div>
-      <div class="equipment-stats">
-        <div>攻击：{{(equipment.法宝.atk).toFixed(0)}}</div>
-        <div>防御：{{(equipment.法宝.def).toFixed(0)}}</div>
-        <div>血量：{{(equipment.法宝.HP).toFixed(0)}}</div>
-        <div>暴击：{{equipment.法宝.bao}}</div>
-        <div>附魔：{{equipment.法宝.fumo || '无'}}</div>
-        <div>评级：【{{法宝评级}}】</div>
+      <div class="equipment-item">
+        <div class="equipment-name">{{equipment.法宝.name}}</div>
+        <div class="equipment-stats">
+          <div>攻击: {{(equipment.法宝.atk).toFixed(0)}} | 防御: {{(equipment.法宝.def).toFixed(0)}}</div>
+          <div>血量: {{(equipment.法宝.HP).toFixed(0)}} | 暴击: {{equipment.法宝.bao}}</div>
+          <div>评级：【{{法宝评级}}】</div>
+        </div>
       </div>
-    </div>
-    <div class="equipment-card">
-      {{if player.仙宠.length == 0}}
-      <div class="equipment-title">【仙宠暂无】</div>
-      {{else}}
-      <div class="equipment-title">【{{player.仙宠.品级}}】{{player.仙宠.name}}</div>
-      <div class="equipment-stats">
-        <div>等级：{{player.仙宠.等级}}</div>
-        {{if player.仙宠.type=="战斗"}}
-        <div>三维加成{{player.仙宠.atk}}</div>
+      <div class="equipment-item">
+        {{if player.仙宠.length == 0}}
+        <div class="equipment-name" style="line-height: 70px;">【仙宠暂无】</div>
         {{else}}
-        <div>{{player.仙宠.type}}加成:{{(player.仙宠.加成*100).toFixed(1)}}%</div>
+        <div class="equipment-name">【{{player.仙宠.品级}}】{{player.仙宠.name}}</div>
+        <div class="equipment-stats">
+          <div>等级：{{player.仙宠.等级}}</div>
+          {{if player.仙宠.type=="战斗"}}
+          <div>三维加成{{player.仙宠.atk}}</div>
+          {{else}}
+          <div>{{player.仙宠.type}}加成:{{(player.仙宠.加成*100).toFixed(1)}}%</div>
+          {{/if}}
+        </div>
         {{/if}}
-        <div>绑定：{{if player.仙宠.灵魂绑定==1}}有{{else}}无{{/if}}</div>
       </div>
-      {{/if}}
     </div>
   </div>
 
