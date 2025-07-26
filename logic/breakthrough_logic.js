@@ -2,7 +2,6 @@
 
 import * as DAL from '../api/data-access.js';
 import { redisClient as redis } from '../api/redis.js';
-import { shijianc, Add_najie_thing, Add_HP } from '../apps/Xiuxian/xiuxian.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
 
@@ -83,9 +82,6 @@ export async function handleQiBreakthrough(userId, useLuck = false) {
 
   if (transactionSuccess) {
     await redis.set(`xiuxian:player:${userId}:last_Levelup_time`, nowTime);
-    if (transactionSuccess !== 'failed_but_updated') {
-      await Add_HP(userId, 99999999);
-    }
     return { success: true, message: resultMessage };
   }
 
@@ -152,9 +148,6 @@ export async function handleBodyBreakthrough(userId, useLuck = false) {
 
   if (transactionSuccess) {
     await redis.set(`xiuxian:player:${userId}:last_LevelMaxup_time`, nowTime);
-    if (transactionSuccess !== 'failed_but_updated') {
-      await Add_HP(userId, 99999999);
-    }
     return { success: true, message: resultMessage };
   }
 

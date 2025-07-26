@@ -76,11 +76,20 @@ export class Level extends plugin {
   }
 
   async levelUpNormal(e) {
-    const userId = await this.preCheck(e);
-    if (!userId) return;
+    try {
+      const userId = await this.preCheck(e);
+      if (!userId) return;
 
-    const result = await handleQiBreakthrough(userId, false);
-    e.reply(result.message);
+      const result = await handleQiBreakthrough(userId, false);
+      e.reply(result.message);
+
+      if (result.breakthrough) {
+        await Add_HP(userId, 99999999);
+      }
+    } catch (error) {
+      console.error('突破时发生错误:', error);
+      e.reply('突破时似乎遇到了瓶颈，请稍后再试。');
+    }
   }
 
   async levelUpLuck(e) {
@@ -102,11 +111,20 @@ export class Level extends plugin {
   }
 
   async levelMaxUpNormal(e) {
-    const userId = await this.preCheck(e);
-    if (!userId) return;
+    try {
+      const userId = await this.preCheck(e);
+      if (!userId) return;
 
-    const result = await handleBodyBreakthrough(userId, false);
-    e.reply(result.message);
+      const result = await handleBodyBreakthrough(userId, false);
+      e.reply(result.message);
+
+      if (result.breakthrough) {
+        await Add_HP(userId, 99999999);
+      }
+    } catch (error) {
+      console.error('破体时发生错误:', error);
+      e.reply('破体时似乎遇到了瓶颈，请稍后再试。');
+    }
   }
 
   async levelMaxUpLuck(e) {
