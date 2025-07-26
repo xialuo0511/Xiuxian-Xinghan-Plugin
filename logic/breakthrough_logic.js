@@ -1,7 +1,6 @@
 // /logic/breakthrough_logic.js
 
 import * as DAL from '../api/data-access.js';
-import { redisClient as redis } from '../api/redis.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
 
@@ -13,90 +12,119 @@ const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
  * @param {boolean} useLuck - 使用增强运气的物品
  * @returns {Promise<{success: boolean, message: string}>}
  */
-// 在 handleQiBreakthrough 函数开头添加更多调试信息
-
 export async function handleQiBreakthrough(userId, useLuck = false) {
-  console.log('[DEBUG] handleQiBreakthrough 开始执行, userId:', userId, 'useLuck:', useLuck);
-
   try {
-    // 检查配置是否正确加载
-    console.log('[DEBUG] xiuxianConfigData 是否存在:', !!xiuxianConfigData);
-    console.log('[DEBUG] CD配置:', xiuxianConfigData?.CD);
-
     // CD 检查
     const nowTime = Date.now();
-    console.log('[DEBUG] 当前时间:', nowTime);
-
     const cdTime = xiuxianConfigData.CD.level_up * 60000;
-    console.log('[DEBUG] CD时间(毫秒):', cdTime);
-
     let lastTime = 0;
 
     try {
-      console.log('[DEBUG] 准备从Redis获取上次突破时间...');
-      const redisKey = `xiuxian:player:${userId}:last_Levelup_time`;
-      console.log('[DEBUG] Redis key:', redisKey);
-
-      const redisValue = await redis.get(redisKey);
-      console.log('[DEBUG] Redis返回值:', redisValue);
-
+      const redisValue = await redis.get(`xiuxian:player:${userId}:last_Levelup_time`);
       lastTime = parseInt(redisValue) || 0;
-      console.log('[DEBUG] 解析后的lastTime:', lastTime);
     } catch (redisError) {
-      console.error('[ERROR] Redis读取错误:', redisError);
-      console.error('[ERROR] Redis错误详情:', redisError.stack);
+      console.error('Redis读取错误:', redisError);
+      // 继续执行，使用默认值0
     }
 
     if (nowTime < lastTime + cdTime) {
       const remaining = lastTime + cdTime - nowTime;
       const m = Math.floor(remaining / 60000);
       const s = Math.floor((remaining % 60000) / 1000);
-      console.log('[DEBUG] 在CD中，返回CD消息');
       return { success: false, message: `突破正在CD中，剩余cd: ${m}分 ${s}秒` };
     }
-
-    console.log('[DEBUG] CD检查通过，准备执行突破逻辑');
-
-    // 检查 DAL 和 data 是否正确导入
-    console.log('[DEBUG] DAL 是否存在:', !!DAL);
-    console.log('[DEBUG] DAL.transaction_update 是否存在:', !!DAL.transaction_update);
-    console.log('[DEBUG] data 是否存在:', !!data);
-    console.log('[DEBUG] data.Level_list 是否存在:', !!data.Level_list);
-    console.log('[DEBUG] data.Level_list 长度:', data.Level_list?.length);
 
     // 突破逻辑
     let resultMessage = '突破失败，请稍后再试。';
     let actualSuccess = false;
 
-    console.log('[DEBUG] 准备调用 DAL.transaction_update...');
-
     const transactionResult = await DAL.transaction_update(userId, (player, equipment, najie) => {
-      console.log('[DEBUG] transaction_update 回调开始执行');
-      console.log('[DEBUG] player 数据:', JSON.stringify(player, null, 2));
-      console.log('[DEBUG] player.level_id:', player.level_id, '类型:', typeof player.level_id);
+      console.log('[DEBUG] 开始突破事务，玩家等级:', player.level_id);
 
       const levelInfo = data.Level_list.find(item => item.level_id == player.level_id);
-      console.log('[DEBUG] 查找到的 levelInfo:', levelInfo);
-
       if (!levelInfo) {
         console.error('[ERROR] 找不到当前等级信息，level_id:', player.level_id);
-        console.log('[DEBUG] Level_list 前几项:', data.Level_list.slice(0, 5));
         resultMessage = '无法找到当前等级信息';
         return false;
       }
 
-      // ... 其余逻辑保持不变
+      const nextLevelInfo = data.Level_list.find(item => item.level_id == (Number(player.level_id) + 1));
+
+      if (!nextLevelInfo) {
+        resultMessage = '您已达到当前等级上限';
+        return false;
+      }
+
+      if (levelInfo.level === '渡劫期') {
+        resultMessage = player.power_place === 0 ? '你已度过雷劫，请感应仙门#羽化登仙' : '请先渡劫！';
+        return false;
+      }
+
+      if (player.修为 < levelInfo.exp) {
+        resultMessage = `修为不足,再积累${levelInfo.exp - player.修为}修为后方可突破`;
+        return false;
+      }
+
+      if (levelInfo.level_id >= 51 && !['天五灵根', '垃圾五灵根', '九转轮回体', '九重魔功', '仙之心·火', '仙之心·水', '仙之心·雷', '仙之心·冰', '仙之心·岩', '仙之心·风', '仙之心·木'].includes(player.灵根.name)) {
+        resultMessage = `你灵根不齐，无成帝的资格！请先夺天地之造化，修补灵根后再来突破吧`;
+        return false;
+      }
+
+      let prob = 1 - levelInfo.level_id / 80;
+      if (useLuck) {
+        prob += (1 - prob) * 0.5;
+      }
+      if (player.breakthrough) {
+        prob += 0.2;
+        player.breakthrough = false;
+      }
+
+      const rand = Math.random();
+      console.log(`[DEBUG] 突破概率: ${(prob * 100).toFixed(2)}%, 随机数: ${rand}`);
+
+      if (rand > prob) {
+        // 突破失败
+        const bad_time = Math.random();
+        let lostExp = 0;
+        if (bad_time > 0.9) {
+          lostExp = Math.floor(levelInfo.exp * 0.3);
+          resultMessage = `（本次成功率: ${(prob * 100).toFixed(2)}%）\n突然听到一声鸡叫...是翠翎恐蕈！此地不宜久留，险些走火入魔，丧失了${lostExp}修为`;
+        } else if (bad_time > 0.8) {
+          lostExp = Math.floor(levelInfo.exp * 0.2);
+          resultMessage = `（本次成功率: ${(prob * 100).toFixed(2)}%）\n突破瓶颈时想到树脂满了,险些走火入魔，丧失了${lostExp}修为`;
+        } else {
+          resultMessage = `（本次成功率: ${(prob * 100).toFixed(2)}%）\n突破失败，不要气馁,等到${xiuxianConfigData.CD.level_up}分钟后再尝试吧`;
+        }
+        if (lostExp > 0) {
+          player.修为 = Math.max(0, player.修为 - lostExp);
+        }
+        return true; // 失败也要保存数据
+      }
+
+      // 突破成功
+      player.level_id += 1;
+      player.修为 -= levelInfo.exp;
+      resultMessage = `（本次成功率: ${(prob * 100).toFixed(2)}%）\n突破成功,当前境界为${nextLevelInfo.level}`;
+      actualSuccess = true;
+      return true;
     });
 
-    console.log('[DEBUG] transaction_update 返回结果:', transactionResult);
+    console.log('[DEBUG] 事务结果:', transactionResult, '实际成功:', actualSuccess);
 
-    // ... 其余代码
+    if (transactionResult) {
+      // 更新CD时间
+      try {
+        await redis.set(`xiuxian:player:${userId}:last_Levelup_time`, nowTime.toString());
+      } catch (redisError) {
+        console.error('Redis写入错误:', redisError);
+      }
+      return { success: actualSuccess, message: resultMessage };
+    }
+
+    return { success: false, message: resultMessage };
 
   } catch (error) {
     console.error('[ERROR] handleQiBreakthrough 发生异常:', error);
-    console.error('[ERROR] 错误类型:', error.constructor.name);
-    console.error('[ERROR] 错误消息:', error.message);
-    console.error('[ERROR] 错误堆栈:', error.stack);
     return {
       success: false,
       message: '突破过程中发生错误，请稍后再试。'
