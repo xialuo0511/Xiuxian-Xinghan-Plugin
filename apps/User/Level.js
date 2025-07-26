@@ -63,7 +63,7 @@ export class Level extends plugin {
       return null;
     }
     let userId = e.user_id;
-    if (!await DAL.existPlayer(userId)) {
+    if (!(await DAL.existPlayer(userId))) {
       return null;
     }
     const currentAction = await DAL.getPlayerAction(userId);
