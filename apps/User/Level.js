@@ -14,6 +14,7 @@ import { Add_HP, Add_najie_thing } from '../Xiuxian/xiuxian.js';
 import { Gulid } from '../../api/api.js';
 import * as DAL from '../../api/data-access.js';
 import { scheduleTask } from '../../api/task-scheduler.js';
+// 引入新的突破逻辑处理函数
 import { handleQiBreakthrough, handleBodyBreakthrough } from '../../logic/breakthrough_logic.js';
 
 export class Level extends plugin {
@@ -57,32 +58,39 @@ export class Level extends plugin {
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
   }
 
+  /**
+   * [新增] 前置检查函数，统一处理通用逻辑并增加错误捕获
+   */
   async preCheck(e) {
     if (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return null;
     }
-    let userId = e.user_id;
-    if (!(await DAL.existPlayer(userId))) {
+    const userId = e.user_id;
+    try {
+      if (!(await DAL.existPlayer(userId))) {
+        // 如果存档不存在，直接返回 null，不回复任何消息
+        return null;
+      }
+      const currentAction = await DAL.getPlayerAction(userId);
+      if (currentAction) {
+        e.reply(`你正在${currentAction.action}中，无法分心。`);
+        return null;
+      }
+      return userId;
+    } catch (error) {
+      console.error(`[修仙 preCheck] 检查用户 ${userId} 状态时出错:`, error);
+      e.reply('检查玩家状态时遇到问题，请稍后再试。');
       return null;
     }
-    const currentAction = await DAL.getPlayerAction(userId);
-    if (currentAction) {
-      e.reply(`你正在${currentAction.action}中，无法分心。`);
-      return null;
-    }
-    return userId;
   }
 
   async levelUpNormal(e) {
     try {
       const userId = await this.preCheck(e);
-      if (!userId) {
-        console.error('123');
-      }
+      if (!userId) return;
 
       const result = await handleQiBreakthrough(userId, false);
-      console.log('[DEBUG] 突破结果：', result);
       e.reply(result.message);
 
       if (result.success) {
@@ -105,6 +113,7 @@ export class Level extends plugin {
       return;
     }
 
+    // 注意：这里的 Add_najie_thing 仍然是旧版操作，您可能需要将其迁移到 DAL
     await Add_najie_thing(userId, '幸运草', '道具', -1);
     e.reply('你使用了幸运草，减少50%失败概率。');
 
@@ -140,6 +149,7 @@ export class Level extends plugin {
       return;
     }
 
+    // 注意：这里的 Add_najie_thing 仍然是旧版操作
     await Add_najie_thing(userId, '幸运草', '道具', -1);
     e.reply('你使用了幸运草，减少50%失败概率。');
 
