@@ -1,5 +1,3 @@
-// /plugins/xiuxian-emulator-plugin/migrate-to-redis.js
-
 import fs from 'fs';
 import path from 'path';
 import redis from 'redis';
@@ -7,14 +5,14 @@ import mysql from 'mysql';
 import YAML from 'yaml';
 import util from 'util';
 
-// --- 1. 定义路径和配置 ---
+// --- 定义路径和配置 ---
 const __dirname = process.cwd();
 const pluginRoot = path.join(__dirname, 'plugins', 'xiuxian-emulator-plugin');
 const __PATH = {
   player_path: path.join(pluginRoot, '/resources/data/xiuxian_player'),
   najie_path: path.join(pluginRoot, '/resources/data/xiuxian_najie'),
   equipment_path: path.join(pluginRoot, '/resources/data/xiuxian_equipment'),
-  // 【新增】: 宗门文件路径
+  // 宗门文件路径
   association_path: path.join(pluginRoot, '/resources/data/association'),
   db_config_path: path.join(pluginRoot, 'config', 'database', 'database.yaml')
 };
@@ -22,7 +20,7 @@ const __PATH = {
 async function migrate() {
   console.log('开始独立数据迁移 (包含宗门)...');
 
-  // --- 2. 建立数据库和Redis连接 ---
+  // --- 建立数据库和Redis连接 ---
   let db, redisClient;
   try {
     const dbConfigYaml = fs.readFileSync(__PATH.db_config_path, 'utf8');
@@ -42,7 +40,7 @@ async function migrate() {
 
     console.log('数据库和Redis连接已建立。');
 
-    // --- 3. 迁移玩家JSON文件 (此部分不变) ---
+    // --- 迁移玩家JSON文件 (此部分不变) ---
     const playerFiles = fs.readdirSync(__PATH.player_path).filter(file => file.endsWith('.json'));
     console.log(`发现 ${playerFiles.length} 个玩家文件需要迁移。`);
 
@@ -68,7 +66,7 @@ async function migrate() {
     }
     console.log('玩家JSON文件迁移完成。');
 
-    // --- 【新增】 4. 迁移宗门JSON文件 ---
+    // --- 迁移宗门JSON文件 ---
     const associationFiles = fs.readdirSync(__PATH.association_path).filter(file => file.endsWith('.json'));
     console.log(`发现 ${associationFiles.length} 个宗门文件需要迁移。`);
 
@@ -87,31 +85,10 @@ async function migrate() {
     }
     console.log('宗门JSON文件迁移完成。');
 
-
-    // --- 5. 从MySQL迁移活动任务 (此部分不变) ---
-    console.log('正在从 MySQL \'action\' 表迁移任务...');
-    const results = await query('SELECT * FROM action');
-    console.log(`发现 ${results.length} 个活动任务需要迁移。`);
-
-    if (results && results.length > 0) {
-      for (const action of results) {
-        const taskPayload = {
-          type: action.action_name,
-          userId: action.usr_id
-        };
-        const endTime = new Date(action.end_time).getTime();
-        await redisClient.zAdd('tasks:scheduled', {
-          score: endTime,
-          value: JSON.stringify(taskPayload)
-        });
-      }
-    }
-    console.log('任务迁移完成。');
-
   } catch (error) {
     console.error('迁移过程中发生严重错误:', error);
   } finally {
-    // --- 6. 关闭连接 ---
+    // --- 关闭连接 ---
     if (redisClient) {
       await redisClient.quit();
     }
