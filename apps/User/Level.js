@@ -77,7 +77,9 @@ export class Level extends plugin {
   async levelUpNormal(e) {
     try {
       const userId = await this.preCheck(e);
-      if (!userId) return;
+      if (!userId) {
+        console.error('123');
+      }
 
       const result = await handleQiBreakthrough(userId, false);
       console.log('[DEBUG] 突破结果：', result);
