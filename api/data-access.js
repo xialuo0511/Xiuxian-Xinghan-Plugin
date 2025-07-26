@@ -24,10 +24,10 @@ export async function existPlayer(userId) {
 
 // --- 数据读写 ---
 export async function getAllPlayerData(userId) {
-  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const data = await redisClient.hGetAll(mainKey);
-  if (!data || Object.keys(data).length === 0) return null;
   try {
+    const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+    const data = await redisClient.hGetAll(mainKey);
+    if (!data || Object.keys(data).length === 0) return null;
     return {
       player: JSON.parse(data.player || '{}'),
       najie: JSON.parse(data.najie || '{}'),
