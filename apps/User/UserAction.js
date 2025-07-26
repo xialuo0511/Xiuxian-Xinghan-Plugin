@@ -1,9 +1,6 @@
 import { prepareNajieRenderData } from '../../logic/najie_view_logic.js'; // 确保路径正确
 import plugin from '../../../../lib/plugins/plugin.js';
 import config from '../../model/Config.js';
-import { Read_player, existplayer, Read_najie, Write_najie } from '../Xiuxian/xiuxian.js';
-import { Add_灵石 } from '../Xiuxian/xiuxian.js';
-import { get_najie_img } from '../ShowImeg/showData.js';
 import { Gulid, puppeteer, Show } from '../../api/api.js';
 import * as DAL from '../../api/data-access.js';
 import { handleNajieUpgrade } from '../../logic/najie_logic.js'; // 引入新的逻辑函数
