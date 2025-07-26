@@ -63,11 +63,15 @@
   <div class="rewards-section mt-6 p-4 border-t-2 border-dashed border-[#D2B48C]">
     <h2 class="text-xl font-semibold text-[#6a3906] mb-2">本次签到收获:</h2>
     <div class="text-base text-[#8B4513] space-y-1">
-      <p>连续签到: <span class="font-bold text-green-700" id="consecutive-days">7</span> 天</p>
-      <p>获得修为: <span class="font-bold text-green-700" id="cultivation-reward">150</span></p>
-      <p>获得秘境之匙: <span class="font-bold text-green-700" id="keys-reward">3</span> 个</p>
-      <p id="ticket-reward" style="display: block;">获得仙鼎历练券: <span class="font-bold text-green-700">1</span> 张</p>
-      <p class="text-sm italic text-yellow-700 mt-2" id="reward-message">恭喜道友！连续签到7天，获得额外奖励！</p>
+      <p>连续签到: <span class="font-bold text-green-700">{{consecutiveDays}}</span> 天</p>
+      <p>获得修为: <span class="font-bold text-green-700">{{rewards.修为}}</span></p>
+      <p>获得秘境之匙: <span class="font-bold text-green-700">{{rewards.秘境之匙}}</span> 个</p>
+      {{if rewards.仙鼎历练券 > 0}}
+      <p>获得仙鼎历练券: <span class="font-bold text-green-700">{{rewards.仙鼎历练券}}</span> 张</p>
+      {{/if}}
+      {{if rewards.message.length > 0}}
+      <p class="text-sm italic text-yellow-700 mt-2">{{rewards.message[0]}}</p>
+      {{/if}}
     </div>
   </div>
 </div>
