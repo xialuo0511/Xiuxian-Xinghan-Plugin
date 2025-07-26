@@ -47,7 +47,7 @@ function formatToScientific(value) {
 /**
  * [聚合层] 负责从所有数据源收集渲染面板所需的原始数据
  */
-async function aggregatePlayerData(userId) {
+export async function aggregatePlayerData(userId) {
   if (!await DAL.existPlayer(userId)) {
     return null;
   }
