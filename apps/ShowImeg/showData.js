@@ -1139,22 +1139,22 @@ export async function get_association_img(e) {
     // 副宗主
     let fuzong = [];
     for (item in ass.副宗主) {
-      fuzong[item] = '道号：' + (await DAL.getAllPlayerData(ass.item)).player.名号 + 'QQ：' + ass.副宗主[item];
+      fuzong[item] = '道号：' + (await DAL.getAllPlayerData(ass.副宗主[item])).player.名号 + 'QQ：' + ass.副宗主[item];
     }
     //长老
     const zhanglao = [];
     for (item in ass.长老) {
-      zhanglao[item] = '道号：' + (await DAL.getAllPlayerData(ass.item)).player.名号 + 'QQ：' + ass.长老[item];
+      zhanglao[item] = '道号：' + (await DAL.getAllPlayerData(ass.长老[item])).player.名号 + 'QQ：' + ass.长老[item];
     }
     //内门弟子
     const neimen = [];
     for (item in ass.内门弟子) {
-      neimen[item] = '道号：' + (await DAL.getAllPlayerData(ass.item)).player.名号 + 'QQ：' + ass.内门弟子[item];
+      neimen[item] = '道号：' + (await DAL.getAllPlayerData(ass.内门弟子[item])).player.名号 + 'QQ：' + ass.内门弟子[item];
     }
     //外门弟子
     const waimen = [];
     for (item in ass.外门弟子) {
-      waimen[item] = '道号：' + (await DAL.getAllPlayerData(ass.item)).player.名号 + 'QQ：' + ass.外门弟子[item];
+      waimen[item] = '道号：' + (await DAL.getAllPlayerData(ass.外门弟子[item])).player.名号 + 'QQ：' + ass.外门弟子[item];
     }
 
     let state = '需要维护';
