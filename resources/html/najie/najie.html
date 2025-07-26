@@ -1,287 +1,262 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/najie/najie.css" />
-    <link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
-    <link rel="shortcut icon" href="#" />
-    <style type="text/css">
-        body {
-            width: 100%;
-            text-align: center;
-            background-image: url('{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
-            background-size: 100% auto;
-        }
-    </style>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <link href="#" rel="shortcut icon" />
+  <style type="text/css">
+      /* --- 字体定义 --- */
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
+
+      /* --- 基础样式 --- */
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
+          background-size: cover;
+          background-position: center;
+          font-family: "tttgbnumber", sans-serif;
+          color: #4a2c1a;
+      }
+
+      /* --- 主容器 --- */
+      .panel-container {
+          background: rgba(253, 250, 245, 0.88);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+      }
+
+      /* --- 顶部信息 --- */
+      .header-section {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding-bottom: 20px;
+          border-bottom: 2px dashed #d2b48c;
+      }
+
+      .avatar {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          border: 3px solid #c8a87e;
+          flex-shrink: 0;
+      }
+
+      .info-bars {
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .info-bar-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+
+      .info-label {
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          color: #7a5533;
+          width: 80px;
+      }
+
+      .progress-bar-container {
+          width: 100%;
+          height: 26px;
+          background-color: rgba(0, 0, 0, 0.15);
+          border-radius: 13px;
+          padding: 4px;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+
+      .progress-bar {
+          height: 100%;
+          border-radius: 9px;
+          position: relative;
+          transition: width 0.5s ease-in-out;
+      }
+
+      .progress-text {
+          position: absolute;
+          width: 100%;
+          text-align: center;
+          color: white;
+          font-size: 14px;
+          font-weight: bold;
+          text-shadow: 1px 1px 1px #000;
+          line-height: 18px;
+      }
+
+      /* --- 物品展示区 --- */
+      .content-section {
+          padding-top: 20px;
+      }
+
+      .grid-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 28px;
+          text-align: center;
+          color: #6a3906;
+          margin-bottom: 15px;
+      }
+
+      .item-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr); /* 每行4个物品 */
+          gap: 15px;
+          min-height: 450px; /* 固定高度防止图片抖动 */
+      }
+
+      .item-card {
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid #d2b48c;
+          border-radius: 8px;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #d2b48c;
+          padding-bottom: 5px;
+          margin-bottom: 5px;
+      }
+
+      .item-name {
+          font-family: "NZBZ", sans-serif;
+          font-size: 16px;
+          color: #6a3906;
+          font-weight: bold;
+      }
+
+      .item-category {
+          font-size: 12px;
+          background: #a88763;
+          color: white;
+          padding: 2px 6px;
+          border-radius: 4px;
+      }
+
+      .item-details {
+          font-size: 13px;
+          line-height: 1.6;
+          flex-grow: 1;
+      }
+
+      .item-footer {
+          margin-top: auto;
+          padding-top: 5px;
+          border-top: 1px solid #d2b48c;
+          font-size: 12px;
+          display: flex;
+          justify-content: space-between;
+      }
+
+      /* --- 分页与页脚 --- */
+      .pagination {
+          text-align: center;
+          margin-top: 20px;
+          font-size: 16px;
+          color: #7a5533;
+      }
+
+      .footer {
+          text-align: center;
+          font-size: 12px;
+          color: #a88763;
+          margin-top: 10px;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      }
+  </style>
 </head>
-
 <body>
-    <div>
-        <div class="header">
+<div class="panel-container" id="capture">
+  <div class="header-section">
+    <img class="avatar" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.png'"
+         src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}" />
+    <div class="info-bars">
+      <div class="info-bar-row">
+        <span class="info-label">{{player.名号}}</span>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="background: linear-gradient(to right, #e57373, #d32f2f);"
+               {{strand_hp.style}}>
+            <div class="progress-text">生命: {{player.当前血量}} / {{player.血量上限}}</div>
+          </div>
         </div>
-        <!--上-->
-        <div class="card_box">
-            <!--左-->
-            <div class="user_top_left">
-                <div class="user_top_img_bottom">
-                    <img class="user_top_img" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}"
-                        onerror="whenError(this)" />
-                </div>
-                <div class="user_top_font_left">{{user_id}}</div>
-            </div>
-            <!--右-->
-            <div class="user_top_right">
-                <div class="user_top_font_right">道号：{{player.名号}}</div>
-                <div class="user_top_font_right">
-                    生命：
-                    <div class="blood_box">
-                        <div class="blood_bar" {{strand_hp.style}}></div>
-                        <div class="blood_volume">{{player.当前血量}}/{{player.血量上限}}</div>
-                    </div>
-                </div>
-                <div class="user_top_font_right">等级：{{najie.等级}}</div>
-                <div class="user_top_font_right">
-                    储量：
-                    <div class="blood_box">
-                        <div class="blood_bar" {{strand_lingshi.style}}></div>
-                        <div class="blood_volume">{{najie.灵石}}/{{najie.灵石上限}}</div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="info-bar-row">
+        <span class="info-label">纳戒 L{{najie.等级}}</span>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="background: linear-gradient(to right, #64B5F6, #1976D2);"
+               {{strand_lingshi.style}}>
+            <div class="progress-text">灵石: {{najie.灵石}} / {{najie.灵石上限}}</div>
+          </div>
         </div>
+      </div>
     </div>
-    <!--下-->
-    {{if najie.装备.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【装备】</div>
-            <div class="user_font  wupin">
-                {{each najie.装备 item}}
-                <div class="item">
-                    <div class="item_title">
-                        【{{item.type}}】{{item.name}}({{['劣','普','优','精','极','绝','顶'][item.pinji]}})
-                    </div>
-                    {{if item.type != "项链"}}
-                    <div class="item_int">攻击：{{item.atk}}</div>
-                    <div class="item_int">防御：{{item.def}}</div>
-                    <div class="item_int">血量：{{item.HP}}</div>
-                    <div class="item_int">附魔：{{item.fumo}}</div>
-                    <div class="item_int">暴击：{{item.bao*100}}%</div>
-                    {{/if}}
-                    {{if item.type == "项链"}}
-                    <div class="item_int">{{item.属性}}属性加成：{{item.加成*100}}%</div>
-                    {{/if}}
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    <!--下-->
-    {{if najie.丹药.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【丹药】</div>
-            <div class="user_font  wupin">
-                {{each najie.丹药 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    {{if item.HPp > 0}}
-                    <div class="item_int">恢复百分比：{{item.HPp*100}}%</div>
-                    {{/if}}
-                    {{if item.exp > 0}}
-                    <div class="item_int">增加修为：{{item.exp}}</div>
-                    {{/if}}
-                    {{if item.maxAtK > 0}}
-                    <div class="item_int">增加攻击：{{item.maxAtK}}</div>
-                    {{/if}}
-                    {{if item.maxHP > 0}}
-                    <div class="item_int">生命上限：{{item.maxHP}}</div>
-                    {{/if}}
-                    {{if item.maxDef > 0}}
-                    <div class="item_int">防御上限：{{item.maxDef}}</div>
-                    {{/if}}
-                    {{if item.maxAtK > 0}}
-                    <div class="item_int">增加攻击：{{item.maxAtK}}</div>
-                    {{/if}}
-                    {{if item.xingyun > 0}}
-                    <div class="item_int">增加幸运：{{(item.xingyun*100).toFixed(1)}}%</div>
-                    {{/if}}
-                    {{if item.xueqi > 0}}
-                    <div class="item_int">增加血气：{{item.xueqi}}</div>
-                    {{/if}}
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    <!--下-->
-    {{if najie.道具.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【道具】</div>
-            <div class="user_font  wupin">
-                {{each najie.道具 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    <!--下-->
-    {{if najie.功法.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【功法】</div>
-            <div class="user_font  wupin">
-                {{each najie.功法 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    {{if item.修炼加成 > 0}}
-                    <div class="item_int">修炼加成：{{(item.修炼加成*100).toFixed(0)}}%</div>
-                    {{/if}}
-                    {{if item.法球加成 > 0}}
-                    <div class="item_int">攻击加成：{{item.法球加成*100}}%</div>
-                    {{/if}}
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    <!--下-->
-    {{if najie.草药.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【草药】</div>
-            <div class="user_font  wupin">
-                {{each najie.草药 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    {{if najie.材料.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【材料】</div>
-            <div class="user_font  wupin">
-                {{each najie.材料 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    {{if najie.食材.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【食材】</div>
-            <div class="user_font  wupin">
-                {{each najie.食材 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    {{if najie.盒子.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【盒子】</div>
-            <div class="user_font  wupin">
-                {{each najie.盒子 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    {{if najie.仙宠.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【仙宠】</div>
-            <div class="user_font  wupin">
-                {{each najie.仙宠 item}}
-                <div class="item">
-                    <div class="item_title">【{{item.品级}}】{{item.name}}
-                        {{if item.灵魂绑定==1}}
-                        <div class="item_int">【存在绑定】</div>
-                        {{/if}}
-                        {{if item.灵魂绑定==0}}
-                        <div class="item_int">【无绑定】</div>
-                        {{/if}}
-                    </div>
-                    <div class="item_int">等级：[{{item.等级}}/{{item.等级上限}}]</div>
-                    <div class="item_int">攻/防/血量加成:【{{item.atk}}/{{item.def}}/{{item.HP}}】</div>
-                    <div class="item_int">{{item.type}}加成:{{item.加成*100}}%</div>
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    {{if najie.仙宠口粮.length > 0}}
-    <div class="card_box">
-        <div class="use_data">
-            <div class="user_font user_font_title">【仙宠口粮】</div>
-            <div class="user_font  wupin">
-                {{each najie.仙宠口粮 item}}
-                <div class="item">
-                    <div class="item_title">{{item.name}}</div>
-                    <div class="item_int">数量：{{item.数量}}</div>
-                    <div class="item_int">出售价：{{item.出售价}}灵石</div>
-                    <div class="item_int">锁定状态：({{['未锁定','已锁定'][item.islockd]}})</div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </div>
-    {{/if}}
-    <div class="item_int">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
-    </div>
-    <div class="user_bottom2">
-    </div>
-</body>
+  </div>
 
+  <div class="content-section">
+    <div class="grid-title">洞天宝库</div>
+    <div class="item-grid">
+      {{each paginatedItems item}}
+      <div class="item-card">
+        <div class="item-header">
+          <span class="item-name">{{item.name}}</span>
+          <span class="item-category">{{item.category}}</span>
+        </div>
+        <div class="item-details">
+          {{if item.category == "装备"}}
+          <div>攻:{{item.atk}} | 防:{{item.def}} | 血:{{item.HP}}</div>
+          <div>{{item.属性 || '暴击'}}: {{(item.加成 || item.bao)*100}}%</div>
+          {{else if item.category == "丹药"}}
+          {{if item.exp > 0}}
+          <div>修为+{{item.exp}}</div>
+          {{/if}}
+          {{if item.HPp > 0}}
+          <div>生命恢复:{{item.HPp*100}}%</div>
+          {{/if}}
+          {{if item.maxHP > 0}}
+          <div>生命上限+{{item.maxHP}}</div>
+          {{/if}}
+          {{else if item.category == "功法"}}
+          <div>修炼加成: {{(item.修炼加成*100).toFixed(0)}}%</div>
+          {{else}}
+          <div>&nbsp;</div> <!-- 占位符 -->
+          {{/if}}
+        </div>
+        <div class="item-footer">
+          <span>数量: {{item.数量}}</span>
+          <span>{{if item.islockd == 1}}已锁定{{else}}售价: {{item.出售价}}{{/if}}</span>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="pagination">
+    第 {{pagination.currentPage}} / {{pagination.totalPages}} 页 (共 {{pagination.totalItems}} 件物品)
+  </div>
+  <div class="footer">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
+</div>
+</body>
 </html>
