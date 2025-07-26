@@ -34,7 +34,7 @@ export async function treasureHunt(userId, mapName) {
         const now = Date.now();
         const cooldownKey = `xiuxian:player:${userId}:treasure_hunt_cd`;
         const lastTime = await redis.get(cooldownKey);
-        const cooldownTime = 30 * 60 * 1000; // 30分钟冷却
+        const cooldownTime = 7 * 60 * 1000; // 30分钟冷却
 
         if (lastTime && now < parseInt(lastTime) + cooldownTime) {
             const remaining = parseInt(lastTime) + cooldownTime - now;
@@ -64,18 +64,6 @@ export async function treasureHunt(userId, mapName) {
         } else if (tianfuLevel >= 6 && tianfuLevel <= 10 && tianfuRand < 0.025) {
             tianfuBonus = 1;
             bonusMessage += '您触发了天赋效果，本次寻宝收益+1\n';
-        }
-
-        // 套装加成检查
-        const weapon = player.武器?.name || '';
-        const armor = player.护具?.name || '';
-        const fabao = player.法宝?.name || '';
-
-        if (weapon === '压缩金剑' && armor === '压缩金盾' && fabao === '压缩金葫芦') {
-            if (Math.random() >= 0.8) {
-                multiplier = 2;
-                bonusMessage += '您触发了【寻宝者的期许】套装效果，本次寻宝收益翻倍！\n';
-            }
         }
 
         // 根据地图类型生成奖励
@@ -178,7 +166,7 @@ function generateTreasureRewards(mapName, multiplier, bonus) {
 export async function getTreasureMapList() {
     try {
         // 从寻宝列表.json获取地图信息
-        const treasureList = data.treasure_maps || [
+        const treasureList = data.xunbao_list || [
             { name: '深渊', grade: '寻宝中的旧神界', best: ['七星海棠丹', '岩浆'], price: 12000000 },
             { name: '天衡山', grade: '寻宝挖矿本', best: ['煤炭', '铁矿', '魔山地图'], price: 120000 },
             { name: '低语森林', grade: '寻宝砍树本', best: ['水天丛林地图', '泥土', '树苗', '苹果'], price: 120000 },
