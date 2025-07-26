@@ -1,5 +1,4 @@
 import * as DAL from '../api/data-access.js';
-import { redisClient as redis } from '../api/redis.js';
 import {
   shijianc,
   Add_najie_thing,
