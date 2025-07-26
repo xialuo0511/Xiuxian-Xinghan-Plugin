@@ -912,8 +912,9 @@ export async function Add_najie_thing(usr_qq, thing_name, thing_class, n, pinji 
       return;
     }
     x = Number(x);
-    let najie = await Read_najie(usr_qq);
-    var name = thing_name;
+    let allPlayerData = await DAL.getAllPlayerData(usr_qq);
+    let najie = allPlayerData.najie;
+    let name = thing_name;
     //写入
     await Write_najie(usr_qq, najie);
     let exist = await exist_najie_thing(usr_qq, name, thing_class);

@@ -1,8 +1,7 @@
 import * as DAL from '../api/data-access.js';
 import {
   shijianc,
-  Add_najie_thing,
-  Add_yijie_beibao_thing
+  Add_najie_thing
 } from '../apps/Xiuxian/xiuxian.js';
 import config from '../model/Config.js';
 
