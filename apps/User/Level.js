@@ -62,42 +62,70 @@ export class Level extends plugin {
    * [新增] 前置检查函数，统一处理通用逻辑并增加错误捕获
    */
   async preCheck(e) {
-    if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return null;
-    }
-    const userId = e.user_id;
     try {
-      if (!(await DAL.existPlayer(userId))) {
-        // 如果存档不存在，直接返回 null，不回复任何消息
+      if (!e.isGroup) {
+        e.reply('修仙游戏请在群聊中游玩');
         return null;
       }
+
+      let userId = e.user_id;
+      console.log('[DEBUG] preCheck - 用户ID:', userId);
+
+      const playerExists = await DAL.existPlayer(userId);
+      console.log('[DEBUG] preCheck - 玩家是否存在:', playerExists);
+
+      if (!playerExists) {
+        e.reply('你还没有修仙账号，请先#踏入仙途');
+        return null;
+      }
+
       const currentAction = await DAL.getPlayerAction(userId);
+      console.log('[DEBUG] preCheck - 当前动作:', currentAction);
+
       if (currentAction) {
         e.reply(`你正在${currentAction.action}中，无法分心。`);
         return null;
       }
+
       return userId;
     } catch (error) {
-      console.error(`[修仙 preCheck] 检查用户 ${userId} 状态时出错:`, error);
-      e.reply('检查玩家状态时遇到问题，请稍后再试。');
+      console.error('[ERROR] preCheck 发生错误:', error);
+      e.reply('检查玩家状态时发生错误，请稍后再试。');
       return null;
     }
   }
 
   async levelUpNormal(e) {
+    console.log('[DEBUG] levelUpNormal 开始执行');
+
     try {
       const userId = await this.preCheck(e);
-      if (!userId) return;
+      console.log('[DEBUG] preCheck 返回的 userId:', userId);
 
+      if (!userId) {
+        console.log('[DEBUG] preCheck 返回 null，退出执行');
+        return;
+      }
+
+      console.log('[DEBUG] 调用 handleQiBreakthrough');
       const result = await handleQiBreakthrough(userId, false);
+      console.log('[DEBUG] 突破结果：', result);
+
+      if (!result || !result.message) {
+        console.error('[ERROR] handleQiBreakthrough 返回了无效结果:', result);
+        e.reply('突破过程中出现异常，请稍后再试。');
+        return;
+      }
+
       e.reply(result.message);
 
       if (result.success) {
+        console.log('[DEBUG] 突破成功，恢复血量');
         await Add_HP(userId, 99999999);
       }
     } catch (error) {
-      console.error('突破时发生错误:', error);
+      console.error('[ERROR] levelUpNormal 发生错误:', error);
+      console.error('[ERROR] 错误堆栈:', error.stack);
       e.reply('突破时似乎遇到了瓶颈，请稍后再试。');
     }
   }
