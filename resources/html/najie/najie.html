@@ -119,7 +119,7 @@
           display: grid;
           grid-template-columns: repeat(4, 1fr); /* 每行4个物品 */
           gap: 15px;
-          min-height: 450px; /* 固定高度防止图片抖动 */
+          min-height: 480px; /* 固定高度防止图片抖动 */
       }
 
       .item-card {
@@ -157,18 +157,39 @@
       }
 
       .item-details {
-          font-size: 13px;
-          line-height: 1.6;
+          font-size: 14px;
+          line-height: 1.7;
           flex-grow: 1;
       }
 
       .item-footer {
           margin-top: auto;
-          padding-top: 5px;
-          border-top: 1px solid #d2b48c;
-          font-size: 12px;
+          padding-top: 8px;
+          font-size: 13px;
           display: flex;
           justify-content: space-between;
+          align-items: center;
+      }
+
+      /* 【新增】锁定状态样式 */
+      .lock-status {
+          display: flex;
+          align-items: center;
+          font-weight: bold;
+      }
+
+      .lock-status.locked {
+          color: #c0392b; /* 红色 */
+      }
+
+      .lock-status.unlocked {
+          color: #27ae60; /* 绿色 */
+      }
+
+      .lock-status svg {
+          width: 14px;
+          height: 14px;
+          margin-right: 4px;
       }
 
       /* --- 分页与页脚 --- */
@@ -191,7 +212,7 @@
 <body>
 <div class="panel-container" id="capture">
   <div class="header-section">
-    <img class="avatar" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.png'"
+    <img class="avatar" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'"
          src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}" />
     <div class="info-bars">
       <div class="info-bar-row">
@@ -226,27 +247,61 @@
         </div>
         <div class="item-details">
           {{if item.category == "装备"}}
-          <div>攻:{{item.atk}} | 防:{{item.def}} | 血:{{item.HP}}</div>
-          <div>{{item.属性 || '暴击'}}: {{(item.加成 || item.bao)*100}}%</div>
+          <div>攻击: {{item.atk}}</div>
+          <div>防御: {{item.def}}</div>
+          <div>血量: {{item.HP}}</div>
+          <div>附魔: {{item.fumo || '无'}}</div>
+          <div>暴击: {{(item.bao * 100).toFixed(0)}}%</div>
           {{else if item.category == "丹药"}}
           {{if item.exp > 0}}
-          <div>修为+{{item.exp}}</div>
+          <div>增加修为: {{item.exp}}</div>
           {{/if}}
           {{if item.HPp > 0}}
-          <div>生命恢复:{{item.HPp*100}}%</div>
+          <div>生命恢复: {{item.HPp*100}}%</div>
           {{/if}}
           {{if item.maxHP > 0}}
-          <div>生命上限+{{item.maxHP}}</div>
+          <div>生命上限+: {{item.maxHP}}</div>
           {{/if}}
-          {{else if item.category == "功法"}}
-          <div>修炼加成: {{(item.修炼加成*100).toFixed(0)}}%</div>
+          {{if item.maxDef > 0}}
+          <div>防御上限+: {{item.maxDef}}</div>
+          {{/if}}
+          {{if item.maxAtK > 0}}
+          <div>攻击上限+: {{item.maxAtK}}</div>
+          {{/if}}
+          {{if item.xingyun > 0}}
+          <div>增加幸运: {{(item.xingyun*100).toFixed(1)}}%</div>
+          {{/if}}
+          {{if item.xueqi > 0}}
+          <div>增加血气: {{item.xueqi}}</div>
+          {{/if}}
+          {{else if item.category == "仙宠"}}
+          <div>等级: [{{item.等级}}/{{item.等级上限}}]</div>
+          <div>攻防血加成: [{{item.atk}}/{{item.def}}/{{item.HP}}]</div>
+          <div>{{item.type}}加成: {{(item.加成*100).toFixed(1)}}%</div>
+          <div>绑定: {{if item.灵魂绑定==1}}存在{{else}}无{{/if}}</div>
           {{else}}
-          <div>&nbsp;</div> <!-- 占位符 -->
+          <div>&nbsp;</div> <!-- 其他类型占位 -->
           {{/if}}
         </div>
         <div class="item-footer">
           <span>数量: {{item.数量}}</span>
-          <span>{{if item.islockd == 1}}已锁定{{else}}售价: {{item.出售价}}{{/if}}</span>
+          {{if item.islockd == 1}}
+          <div class="lock-status locked">
+            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+            </svg>
+            <span>已锁定</span>
+          </div>
+          {{else}}
+          <div class="lock-status unlocked">
+            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h2c0-1.65 1.35-3 3-3s3 1.35 3 3v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+            </svg>
+            <span>{{item.出售价}}灵石</span>
+          </div>
+          {{/if}}
         </div>
       </div>
       {{/each}}
