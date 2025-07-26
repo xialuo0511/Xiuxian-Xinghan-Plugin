@@ -62,8 +62,7 @@ export class Level extends plugin {
       e.reply('修仙游戏请在群聊中游玩');
       return null;
     }
-    let userId = e.user_id.toString().replace('qg_', '');
-    userId = await Gulid(userId);
+    let userId = e.user_id;
     if (!await DAL.existPlayer(userId)) {
       return null;
     }
