@@ -157,10 +157,10 @@ export async function transformPlayerDataForRender(rawData, e) {
 
   // 返回最终的视图模型
   return {
-    pluResPath: `../../../../../plugins/xiuxian-emulator-plugin/resources`, // 模板需要这个路径
+    // pluResPath: `../../../../../plugins/xiuxian-emulator-plugin/resources`, // 模板需要这个路径
     pifu: player.练气皮肤,
     touxiang: player.zb_touxiangkuang[0].id,
-    head_pic: e.member?.getAvatarUrl() || `https://q1.qlogo.cn/g?b=qq&s=0&nk=${usr_qq}`,
+    head_pic: e.member.getAvatarUrl() || `https://q1.qlogo.cn/g?b=qq&s=0&nk=${usr_qq}`,
     PowerMini: bigNumberTransform(GetPower(player.攻击, player.防御, player.血量上限, player.暴击率)),
     player: player, // 原始player对象，模板中多处用到
     user_id: usr_qq,
