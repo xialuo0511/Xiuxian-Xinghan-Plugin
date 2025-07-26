@@ -1,26 +1,28 @@
+// /logic/player_view_logic.js (优化版)
+
 import * as DAL from '../api/data-access.js';
 import {
+  Read_player,
   Read_qinmidu,
-  isNotNull
+  Write_qinmidu,
+  isNotNull,
+  get_random_talent,
+  shijianc
 } from '../apps/Xiuxian/xiuxian.js';
 import data from '../model/XiuxianData.js';
-import {
-  GetPower,
-  bigNumberTransform
-} from '../apps/ShowImeg/showData.js';
+import { GetPower, bigNumberTransform } from '../apps/ShowImeg/showData.js';
 import config from '../model/Config.js';
 
 const versionData = config.getdefSet('version', 'version');
 
 /**
  * 进度条渲染辅助函数
- * @param {Number} now 当前值
- * @param {Number} max 最大值
- * @returns {object}
  */
 function Strand(now, max) {
+  if (max == 0) return { style: 'style=width:0%', num: 0 }; // 防止除以0
   let num = (now / max * 100).toFixed(0);
   if (num > 100) num = 100;
+  if (num < 0) num = 0;
   return {
     style: `style=width:${num}%`,
     num: num
@@ -28,27 +30,34 @@ function Strand(now, max) {
 }
 
 /**
- * 负责从所有数据源收集渲染面板所需的原始数据
- * @param {string} userId 玩家QQ
- * @returns {Promise<object|null>}
+ * 科学计数法格式化辅助函数
  */
-export async function aggregatePlayerData(userId) {
+function formatToScientific(value) {
+  if (value == 0 || !value) {
+    return { formatted: 0, exponent: '' };
+  }
+  const exponent = Math.floor(Math.log(value) / Math.LN10);
+  const base = value * Math.pow(10, -exponent);
+  return {
+    formatted: `${base.toFixed(2)} x 10`,
+    exponent: exponent
+  };
+}
+
+/**
+ * [聚合层] 负责从所有数据源收集渲染面板所需的原始数据
+ */
+async function aggregatePlayerData(userId) {
   if (!await DAL.existPlayer(userId)) {
     return null;
   }
-
-  // 并发获取所有需要的数据，提高效率
   const [playerAllData, currentAction, qinmiduData, dingjixianshi] = await Promise.all([
     DAL.getAllPlayerData(userId),
     DAL.getPlayerAction(userId),
-    Read_qinmidu().catch(() => []), // 如果读取失败则返回空数组
+    Read_qinmidu().catch(() => []),
     redis.get(`xiuxian:player:${userId}:dingjixianshi`).catch(() => 0)
   ]);
-
-  if (!playerAllData) {
-    return null;
-  }
-
+  if (!playerAllData) return null;
   return {
     player: playerAllData.player,
     equipment: playerAllData.equipment,
@@ -60,21 +69,19 @@ export async function aggregatePlayerData(userId) {
 }
 
 /**
- * 负责将原始数据计算并格式化为最终用于渲染的视图模型
- * @param {object} rawData - 从 aggregatePlayerData 获取的原始数据
- * @param {object} e - 消息事件对象
- * @returns {object} - 最终传递给 puppeteer 的数据对象
+ * [处理层] 负责将原始数据计算并格式化为最终用于渲染的视图模型
  */
 export async function transformPlayerDataForRender(rawData, e) {
-  const { player, equipment, najie, action, qinmidu, dingjixianshi } = rawData;
+  const { player, equipment, qinmidu, dingjixianshi } = rawData;
   const usr_qq = player.id;
 
   // 状态
   let status = '空闲';
-  if (action) {
+  if (rawData.action) {
+    const action = rawData.action;
     let m = Math.floor((action.endTime - Date.now()) / 60000);
     let s = Math.floor(((action.endTime - Date.now()) % 60000) / 1000);
-    status = `${action.action}(剩余时间:${m}分${s}秒)`;
+    status = `${action.action}(剩余时间:${m > 0 ? m : 0}分${s > 0 ? s : 0}秒)`;
   }
 
   // 道法仙术
@@ -99,8 +106,32 @@ export async function transformPlayerDataForRender(rawData, e) {
   }
 
   // 境界信息
-  const levelInfo = data.Level_list.find(item => item.level_id == player.level_id);
-  const levelMaxInfo = data.LevelMax_list.find(item => item.level_id == player.Physique_id);
+  const levelInfo = data.Level_list.find(item => item.level_id == player.level_id) || { level: '未知', exp: 0 };
+  const levelMaxInfo = data.LevelMax_list.find(item => item.level_id == player.Physique_id) || {
+    level: '未知',
+    exp: 0
+  };
+
+  // 职业信息
+  let occupationInfo = {
+    occupation: '无',
+    occupation_level_name: '-',
+    occupation_exp: '-',
+    occupation_need_exp: '-',
+    strand_liandan: Strand(0, 1)
+  };
+  if (player.occupation && player.occupation.length > 0) {
+    const occupationLevelInfo = data.occupation_exp_list.find(item => item.id == player.occupation_level);
+    if (occupationLevelInfo) {
+      occupationInfo = {
+        occupation: player.occupation,
+        occupation_level_name: occupationLevelInfo.name,
+        occupation_exp: player.occupation_exp,
+        occupation_need_exp: occupationLevelInfo.experience,
+        strand_liandan: Strand(player.occupation_exp, occupationLevelInfo.experience)
+      };
+    }
+  }
 
   // 装备评级
   const pinji = ['劣', '普', '优', '精', '极', '绝', '顶'];
@@ -114,64 +145,70 @@ export async function transformPlayerDataForRender(rawData, e) {
   if (marriage) {
     const partnerId = marriage.QQ_A == usr_qq ? marriage.QQ_B : marriage.QQ_A;
     const partnerData = (await DAL.getAllPlayerData(partnerId))?.player;
-    if (partnerData) {
-      hunyin = partnerData.名号;
-    }
+    if (partnerData) hunyin = partnerData.名号;
   }
 
+  // 科学计数法格式化
+  const atkSci = formatToScientific(player.攻击);
+  const defSci = formatToScientific(player.防御);
+  const hpBonusSci = formatToScientific(player.生命加成);
+  const defBonusSci = formatToScientific(player.防御加成);
+  const atkBonusSci = formatToScientific(player.攻击加成);
+
+  // 返回最终的视图模型
   return {
-    // --- 基础信息 ---
-    user_id: usr_qq,
-    player,
-    nickname: player.名号,
-    head_pic: e.member?.getAvatarUrl() || `https://q1.qlogo.cn/g?b=qq&s=0&nk=${usr_qq}`,
-    declaration: player.宣言 || '这个人很懒什么都没写',
-    player_action: status,
+    pluResPath: `../../../../../plugins/xiuxian-emulator-plugin/resources`, // 模板需要这个路径
     pifu: player.练气皮肤,
     touxiang: player.zb_touxiangkuang[0].id,
-
-    // --- 核心数据 ---
+    head_pic: e.member?.getAvatarUrl() || `https://q1.qlogo.cn/g?b=qq&s=0&nk=${usr_qq}`,
+    PowerMini: bigNumberTransform(GetPower(player.攻击, player.防御, player.血量上限, player.暴击率)),
+    player: player, // 原始player对象，模板中多处用到
+    user_id: usr_qq,
+    strand_hp: Strand(player.当前血量, player.血量上限),
     lingshi: bigNumberTransform(player.灵石),
     dingjixianshi: dingjixianshi,
-    player_maxHP: player.血量上限,
-    player_nowHP: player.当前血量,
-
-    // --- 境界与修为 ---
-    rank_lianqi: levelInfo.level,
-    exp: player.修为,
-    expmax_lianqi: levelInfo.exp,
-    rank_llianti: levelMaxInfo.level,
-    exp2: player.血气,
-    expmax_llianti: levelMaxInfo.exp,
-
-    // --- 战斗与属性 ---
-    PowerMini: bigNumberTransform(GetPower(player.攻击, player.防御, player.血量上限, player.暴击率)),
-    player_atk: player.攻击,
-    player_def: player.防御,
-    player_bao: `${(player.暴击率 * 100).toFixed(2)}%`,
-    player_bao2: player.暴击伤害,
-
-    // --- 灵根与功法 ---
-    linggen: displayLinggen,
-    talent: (talentEff * 100).toFixed(2),
-    learned_gongfa: player.学习的功法,
-
-    // --- 装备信息 ---
-    equipment: equipment,
-    arms: equipment.武器,
-    armor: equipment.护具,
-    treasure: equipment.法宝,
-    武器评级, 护具评级, 法宝评级,
-
-    // --- 社交与其他 ---
     this_association: player.宗门 || { 宗门名称: '无', 职位: '无' },
-    婚姻状况: hunyin,
-    daofa,
 
-    // --- 进度条数据 ---
-    strand_hp: Strand(player.当前血量, player.血量上限),
+    player_atk: atkSci.formatted,
+    player_atk2: atkSci.exponent,
+    player_def: defSci.formatted,
+    player_def2: defSci.exponent,
+    bao: `${(player.暴击率 * 100).toFixed(0)}%`,
+
+    攻击加成: atkBonusSci.formatted,
+    攻击加成_t: atkBonusSci.exponent,
+    防御加成: defBonusSci.formatted,
+    防御加成_t: defBonusSci.exponent,
+    生命加成: hpBonusSci.formatted,
+    生命加成_t: hpBonusSci.exponent,
+
+    talent: (talentEff * 100).toFixed(0),
+    occupation: occupationInfo.occupation,
+    婚姻状况: hunyin,
+
+    rank_lianqi: levelInfo.level,
+    expmax_lianqi: levelInfo.exp,
     strand_lianqi: Strand(player.修为, levelInfo.exp),
+
+    rank_llianti: levelMaxInfo.level,
+    expmax_llianti: levelMaxInfo.exp,
     strand_llianti: Strand(player.血气, levelMaxInfo.exp),
+
+    rank_liandan: occupationInfo.occupation_level_name,
+    expmax_liandan: occupationInfo.occupation_need_exp,
+    strand_liandan: occupationInfo.strand_liandan,
+
+    linggen: displayLinggen,
+    player_action: status,
+    daofa: daofa,
+
+    equipment: { // 格式化装备暴击率为百分比
+      ...equipment,
+      武器: { ...equipment.武器, bao: `${(equipment.武器.bao * 100).toFixed(0)}%` },
+      护具: { ...equipment.护具, bao: `${(equipment.护具.bao * 100).toFixed(0)}%` },
+      法宝: { ...equipment.法宝, bao: `${(equipment.法宝.bao * 100).toFixed(0)}%` }
+    },
+    武器评级, 护具评级, 法宝评级,
 
     修仙版本: versionData
   };
