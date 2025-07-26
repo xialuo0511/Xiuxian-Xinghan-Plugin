@@ -1156,47 +1156,49 @@ export async function get_association_img(e) {
     for (item in ass.外门弟子) {
       waimen[item] = '道号：' + (await DAL.getAllPlayerData(ass.外门弟子)).player.名号 + 'QQ：' + ass.外门弟子[item];
     }
+
+    let state = '需要维护';
+    let now = new Date();
+    let nowTime = now.getTime(); //获取当前日期的时间戳
+    if (ass.维护时间 > nowTime - 1000 * 60 * 60 * 24 * 7) {
+      state = '不需要维护';
+    }
+    //计算修炼效率
+    let xiulian;
+    let dongTan = await data.bless_list.find(item => item.name == ass.宗门驻地);
+    if (ass.宗门驻地 == 0) {
+      xiulian = ass.宗门等级 * 0.05 * 100;
+    } else {
+      xiulian = ass.宗门等级 * 0.05 * 100 + dongTan.level * 10;
+    }
+    xiulian = Math.trunc(xiulian);
+    if (ass.宗门神兽 == 0) {
+      ass.宗门神兽 = '无';
+    }
+    let association_data = {
+      user_id: usr_qq,
+      ass: ass,
+      mainname: mainqq.名号,
+      mainqq: ass.宗主,
+      xiulian: xiulian,
+      weizhi: weizhi,
+      level: level,
+      mdz: player.魔道值,
+      zhanglao: zhanglao,
+      fuzong: fuzong,
+      neimen: neimen,
+      waimen: waimen,
+      state: state
+    };
+    const data1 = await new Show(e).get_associationData(association_data);
+    return await puppeteer.screenshot('association', {
+      ...data1
+    });
   } catch (e) {
     console.log(e);
   }
 
-  let state = '需要维护';
-  let now = new Date();
-  let nowTime = now.getTime(); //获取当前日期的时间戳
-  if (ass.维护时间 > nowTime - 1000 * 60 * 60 * 24 * 7) {
-    state = '不需要维护';
-  }
-  //计算修炼效率
-  let xiulian;
-  let dongTan = await data.bless_list.find(item => item.name == ass.宗门驻地);
-  if (ass.宗门驻地 == 0) {
-    xiulian = ass.宗门等级 * 0.05 * 100;
-  } else {
-    xiulian = ass.宗门等级 * 0.05 * 100 + dongTan.level * 10;
-  }
-  xiulian = Math.trunc(xiulian);
-  if (ass.宗门神兽 == 0) {
-    ass.宗门神兽 = '无';
-  }
-  let association_data = {
-    user_id: usr_qq,
-    ass: ass,
-    mainname: mainqq.名号,
-    mainqq: ass.宗主,
-    xiulian: xiulian,
-    weizhi: weizhi,
-    level: level,
-    mdz: player.魔道值,
-    zhanglao: zhanglao,
-    fuzong: fuzong,
-    neimen: neimen,
-    waimen: waimen,
-    state: state
-  };
-  const data1 = await new Show(e).get_associationData(association_data);
-  return await puppeteer.screenshot('association', {
-    ...data1
-  });
+
 }
 
 /**
