@@ -1154,6 +1154,7 @@ export async function get_association_img(e) {
     //外门弟子
     const waimen = [];
     for (item in ass.外门弟子) {
+      console.log(ass.外门弟子[item] + ':' + await DAL.getAllPlayerData(ass.外门弟子[item]) + '【' + await DAL.getAllPlayerData(item));
       waimen[item] = '道号：' + (await DAL.getAllPlayerData(ass.外门弟子[item])).player.名号 + 'QQ：' + ass.外门弟子[item];
     }
 
