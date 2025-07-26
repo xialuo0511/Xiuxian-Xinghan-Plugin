@@ -390,3 +390,49 @@ export class UserHome extends plugin {
     }
   }
 }
+
+/**
+ * Go函数 - 检查玩家状态，返回正在xxx中，还有xx分xx秒，并且截断函数不执行后续
+ * @param {object} e - 事件对象
+ * @returns {Promise<string|null>} - 返回用户ID或null（如果不能执行操作）
+ */
+export async function Go(e) {
+  // 获取用户ID
+  let userId = e.user_id.toString().replace('qg_', '');
+  userId = await Gulid(userId);
+
+  // 检查玩家是否存在
+  if (!await existPlayer(userId)) {
+    e.reply('你还没有踏入仙途，请先发送 #我要修仙 开始修仙之路');
+    return null;
+  }
+
+  // 检查玩家是否正在执行其他操作
+  const action = await DAL.getPlayerAction(userId);
+  if (action) {
+    const remainingTime = action.endTime - Date.now();
+    if (remainingTime > 0) {
+      const m = Math.floor(remainingTime / 60000);
+      const s = Math.floor((remainingTime % 60000) / 1000);
+      e.reply(`正在${action.action}中，剩余时间：${m > 0 ? m : 0}分${s > 0 ? s : 0}秒`);
+      return null;
+    }
+  }
+
+  // 检查玩家血量
+  const playerData = await getAllPlayerData(userId);
+  const player = playerData?.player;
+
+  if (!player) {
+    e.reply('获取玩家数据失败，请稍后再试');
+    return null;
+  }
+
+  if (player.当前血量 < 200) {
+    e.reply('你都伤成这样了，就不要出去浪了');
+    return null;
+  }
+
+  // 所有检查通过，返回用户ID
+  return userId;
+}
