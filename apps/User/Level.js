@@ -7,7 +7,7 @@ import {
   Write_equipment,
   isNotNull,
   player_efficiency,
-  get_random_fromARR
+  get_random_fromARR, sleep
 } from '../Xiuxian/xiuxian.js';
 import { Read_player, Read_equipment } from '../Xiuxian/xiuxian.js';
 import { Add_HP, Add_najie_thing } from '../Xiuxian/xiuxian.js';
@@ -55,11 +55,6 @@ export class Level extends plugin {
       ]
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
-  }
-
-  async levelUpMax(e) {
-    e.reply('敬请期待');
-    //TODO 重构需要
   }
 
   async preCheck(e) {
@@ -285,132 +280,121 @@ export class Level extends plugin {
     await scheduleTask(taskPayload, firstStrikeTime);
   }
 
-  //#羽化登仙
-  //专门为渡劫期设计的指令
-  async Level_up_Max(e) {
-    let usr_qq = e.user_id.toString().replace('qg_', '');
-    usr_qq = await Gulid(usr_qq);
-    //有无账号
-    let ifexistplay = await existplayer(usr_qq);
-    if (!ifexistplay) {
-      return;
-    }
-    //不开放私聊
+  async levelUpMax(e) {
     if (!e.isGroup) {
       e.reply('修仙游戏请在群聊中游玩');
       return;
     }
-    //获取游戏状态
-    let game_action = await redis.get('xiuxian:player:' + usr_qq + ':game_action');
-    //防止继续其他娱乐行为
-    if (game_action == 0) {
-      e.reply('修仙：游戏进行中...');
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await Gulid(usr_qq);
+
+    if (!await DAL.existPlayer(usr_qq)) {
       return;
     }
-    //读取信息
-    let player = await Read_player(usr_qq);
-    //境界
-    let now_level = data.Level_list.find(item => item.level_id == player.level_id).level;
-    if (now_level != '渡劫期') {
+
+    // 使用 DAL 获取玩家状态
+    const currentAction = await DAL.getPlayerAction(usr_qq);
+    if (currentAction) {
+      let m = Math.floor((currentAction.endTime - Date.now()) / 60000);
+      let s = Math.floor(((currentAction.endTime - Date.now()) % 60000) / 1000);
+      e.reply(`你正在${currentAction.action}中，剩余时间: ${m > 0 ? m : 0}分${s > 0 ? s : 0}秒`);
+      return;
+    }
+
+    const playerData = (await DAL.getAllPlayerData(usr_qq))?.player;
+    if (!playerData) {
+      e.reply('无法获取你的信息，请稍后再试。');
+      return;
+    }
+
+    const levelInfo = data.Level_list.find(item => item.level_id == playerData.level_id);
+
+    if (levelInfo.level !== '渡劫期') {
       e.reply(`你非渡劫期修士！`);
       return;
     }
-    //查询redis中的人物动作
-    let action = await redis.get('xiuxian:player:' + usr_qq + ':action');
-    action = JSON.parse(action);
-    //不为空
-    if (action != null) {
-      let action_end_time = action.end_time;
-      let now_time = new Date().getTime();
-      if (now_time <= action_end_time) {
-        let m = parseInt((action_end_time - now_time) / 1000 / 60);
-        let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
-        e.reply('正在' + action.action + '中,剩余时间:' + m + '分' + s + '秒');
-        return;
-      }
-    }
-    if (player.power_place != 0) {
+    if (playerData.power_place !== 0) {
       e.reply('请先渡劫！');
       return;
     }
-    //需要的修为
-    let now_level_id;
-    if (!isNotNull(player.level_id)) {
-      e.reply('请先#刷新信息');
+    if (playerData.修为 < levelInfo.exp) {
+      e.reply(`修为不足,再积累${levelInfo.exp - playerData.修为}修为后方可成仙！`);
       return;
     }
-    now_level_id = data.Level_list.find(item => item.level_id == player.level_id).level_id;
-    let now_exp = player.修为;
-    //修为
-    let need_exp = data.Level_list.find(item => item.level_id == player.level_id).exp;
-    if (now_exp < need_exp) {
-      e.reply(`修为不足,再积累${need_exp - now_exp}修为后方可成仙！`);
-      return;
-    }
-    //零，开仙门
-    if (player.power_place == 0) {
-      e.reply('天空一声巨响，一道虚影从眼中浮现，突然身体微微颤抖，似乎感受到了什么，' + player.名号 + '来不及思索，立即向前飞去！只见万物仰头相望，似乎感觉到了，也似乎没有感觉，殊不知......');
-      now_level_id = now_level_id + 1;
-      player.level_id = now_level_id;
-      player.修为 -= need_exp;
-      await Write_player(usr_qq, player);
-      let equipment = await Read_equipment(usr_qq);
-      await Write_equipment(usr_qq, equipment);
-      await Add_HP(usr_qq, 99999999);
-      //突破成仙人
-      if (now_level_id >= 42) {
-        let player = data.getData('player', usr_qq);
-        if (!isNotNull(player.宗门)) {
-          return;
-        }
-        //有宗门
-        if (player.宗门.职位 != '宗主') {
-          let ass = data.getAssociation(player.宗门.宗门名称);
-          ass[player.宗门.职位] = ass[player.宗门.职位].filter(item => item != usr_qq);
-          ass['所有成员'] = ass['所有成员'].filter(item => item != usr_qq);
-          data.setAssociation(ass.宗门名称, ass);
-          delete player.宗门;
-          data.setData('player', usr_qq, player);
-          await player_efficiency(usr_qq);
-          e.reply('退出宗门成功');
-        } else {
-          let ass = data.getAssociation(player.宗门.宗门名称);
-          if (ass.所有成员.length < 2) {
-            fs.rmSync(`${data.filePathMap.association}/${player.宗门.宗门名称}.json`);
-            delete player.宗门;//删除存档里的宗门信息
-            data.setData('player', usr_qq, player);
-            await player_efficiency(usr_qq);
-            e.reply('一声巨响,原本的宗门轰然倒塌,随着流沙沉没,世间再无半分痕迹');
-          } else {
-            ass['所有成员'] = ass['所有成员'].filter(item => item != usr_qq);//原来的成员表删掉这个B
-            delete player.宗门;//删除这个B存档里的宗门信息
-            data.setData('player', usr_qq, player);
-            await player_efficiency(usr_qq);
-            //随机一个幸运儿的QQ,优先挑选等级高的
-            let randmember_qq;
-            if (ass.副宗主.length > 0) {
-              randmember_qq = await get_random_fromARR(ass.副宗主);
-            } else if (ass.长老.length > 0) {
-              randmember_qq = await get_random_fromARR(ass.长老);
-            } else if (ass.内门弟子.length > 0) {
-              randmember_qq = await get_random_fromARR(ass.内门弟子);
-            } else {
-              randmember_qq = await get_random_fromARR(ass.所有成员);
-            }
-            let randmember = await data.getData('player', randmember_qq);//获取幸运儿的存档
-            ass[randmember.宗门.职位] = ass[randmember.宗门.职位].filter((item) => item != randmember_qq);//原来的职位表删掉这个幸运儿
-            ass['宗主'] = randmember_qq;//新的职位表加入这个幸运儿
-            randmember.宗门.职位 = '宗主';//成员存档里改职位
-            data.setData('player', randmember_qq, randmember);//记录到存档
-            data.setData('player', usr_qq, player);
-            data.setAssociation(ass.宗门名称, ass);//记录到宗门
-            e.reply(`飞升前,遵循你的嘱托,${randmember.名号}将继承你的衣钵,成为新一任的宗主`);
+
+    e.reply('天空一声巨响，一道虚影从眼中浮现，你感应到仙界之门已为你敞开...');
+
+    // 1. 提升境界
+    await DAL.transaction_update(usr_qq, (player) => {
+      player.level_id += 1;
+      player.修为 -= levelInfo.exp;
+      return true;
+    });
+    await Add_HP(usr_qq, 99999999);
+
+    // 2. 处理宗门事务
+    const ascendedPlayer = (await DAL.getAllPlayerData(usr_qq))?.player; // 获取更新后的玩家数据
+    if (ascendedPlayer.宗门 && isNotNull(ascendedPlayer.宗门)) {
+      const sectName = ascendedPlayer.宗门.宗门名称;
+      const sect = await DAL.getAssociation(sectName);
+
+      if (!sect) { // 容错处理：如果宗门不存在，则清理玩家数据
+        await DAL.transaction_update(usr_qq, (p) => {
+          delete p.宗门;
+          return true;
+        });
+        return;
+      }
+
+      if (ascendedPlayer.宗门.职位 !== '宗主') {
+        // 普通成员脱离
+        sect[ascendedPlayer.宗门.职位] = sect[ascendedPlayer.宗门.职位].filter(id => id != usr_qq);
+        sect.所有成员 = sect.所有成员.filter(id => id != usr_qq);
+        await DAL.saveAssociation(sectName, sect);
+        await DAL.transaction_update(usr_qq, (p) => {
+          delete p.宗门;
+          return true;
+        });
+        await sleep(1000);
+        e.reply('你已飞升仙界，自动脱离凡间宗门。');
+      } else {
+        // 宗主飞升
+        sect.所有成员 = sect.所有成员.filter(id => id != usr_qq);
+
+        if (sect.所有成员.length < 1) { // 解散宗门
+          await redis.del(`XinghanXiuxian:Data:Association:${sectName}`);
+          await sleep(1000);
+          e.reply('一声巨响,原本的宗门轰然倒塌,随着流沙沉没,世间再无半分痕迹。');
+        } else { // 传承宗主
+          let nextMasterId;
+          if (sect.副宗主?.length > 0) nextMasterId = await get_random_fromARR(sect.副宗主);
+          else if (sect.长老?.length > 0) nextMasterId = await get_random_fromARR(sect.长老);
+          else if (sect.内门弟子?.length > 0) nextMasterId = await get_random_fromARR(sect.内门弟子);
+          else nextMasterId = await get_random_fromARR(sect.所有成员);
+
+          const nextMasterData = (await DAL.getAllPlayerData(nextMasterId))?.player;
+          if (nextMasterData) {
+            // 更新宗门文件
+            sect[nextMasterData.宗门.职位] = sect[nextMasterData.宗门.职位].filter(id => id != nextMasterId);
+            sect.宗主 = nextMasterId;
+            await DAL.saveAssociation(sectName, sect);
+
+            // 更新新宗主玩家存档
+            await DAL.transaction_update(nextMasterId, (p) => {
+              p.宗门.职位 = '宗主';
+              return true;
+            });
+            await sleep(1000);
+            e.reply(`飞升前,遵循你的嘱托,${nextMasterData.名号}将继承你的衣钵,成为新一任的宗主。`);
           }
         }
+        // 移除飞升宗主的宗门信息
+        await DAL.transaction_update(usr_qq, (p) => {
+          delete p.宗门;
+          return true;
+        });
       }
-      return;
     }
-    return;
   }
 }
 
