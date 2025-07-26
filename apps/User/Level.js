@@ -81,9 +81,10 @@ export class Level extends plugin {
       if (!userId) return;
 
       const result = await handleQiBreakthrough(userId, false);
+      console.log('[DEBUG] 突破结果：', result);
       e.reply(result.message);
 
-      if (result.breakthrough) {
+      if (result.success) {
         await Add_HP(userId, 99999999);
       }
     } catch (error) {
@@ -118,7 +119,7 @@ export class Level extends plugin {
       const result = await handleBodyBreakthrough(userId, false);
       e.reply(result.message);
 
-      if (result.breakthrough) {
+      if (result.success) {
         await Add_HP(userId, 99999999);
       }
     } catch (error) {

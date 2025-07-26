@@ -26,6 +26,7 @@ export async function handleQiBreakthrough(userId, useLuck = false) {
   }
 
   let resultMessage = '突破失败，请稍后再试。';
+  console.log('[DEBUG]', resultMessage);
   const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
     const levelInfo = data.Level_list.find(item => item.level_id == player.level_id);
     const nextLevelInfo = data.Level_list.find(item => item.level_id == (Number(player.level_id) + 1));
@@ -72,7 +73,7 @@ export async function handleQiBreakthrough(userId, useLuck = false) {
       if (lostExp > 0) player.修为 -= lostExp;
       return 'failed_but_updated'; // 指示失败，但数据已更改
     }
-
+    console.log('[DEBUG]', '1');
     // Success
     player.level_id += 1;
     player.修为 -= levelInfo.exp;
