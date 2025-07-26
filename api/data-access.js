@@ -9,9 +9,11 @@ import path from 'path';
 const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
 const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
 const redisClient = createClient({
-  url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`,
+  url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`
 });
 redisClient.connect().catch(err => console.error('[DAL] 独立Redis客户端连接失败:', err));
+
+const ASSOCIATION_KEY_PREFIX = 'XinghanXiuxian:Data:Association:';
 
 // --- 存在性检查 ---
 export async function existPlayer(userId) {
@@ -36,6 +38,7 @@ export async function getAllPlayerData(userId) {
     return null;
   }
 }
+
 export async function savePlayer(userId, playerData) {
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
   await redisClient.hSet(mainKey, 'player', JSON.stringify(playerData));
@@ -104,6 +107,7 @@ export async function transaction_update(userId, updateFunction) {
     await transactionClient.quit();
   }
 }
+
 /**
  * [新] 获取玩家当前正在执行的动作。
  * @param {string} userId 玩家QQ号
@@ -127,4 +131,34 @@ export async function getPlayerAction(userId) {
     await redisClient.del(actionKey);
     return null;
   }
+}
+
+/**
+ * 获取宗门信息
+ * @param {string} sectName - 宗门名称
+ * @returns {Promise<object|null>}
+ */
+export async function getAssociation(sectName) {
+  const key = `${ASSOCIATION_KEY_PREFIX}${sectName}`;
+  const data = await redisClient.get(key);
+  if (!data) {
+    return null;
+  }
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`[DAL] 解析宗门数据失败, Sect: ${sectName}`, error);
+    return null;
+  }
+}
+
+/**
+ * 保存/更新宗门信息
+ * @param {string} sectName - 宗门名称
+ * @param {object} sectData - 完整的宗门数据对象
+ * @returns {Promise<void>}
+ */
+export async function saveAssociation(sectName, sectData) {
+  const key = `${ASSOCIATION_KEY_PREFIX}${sectName}`;
+  await redisClient.set(key, JSON.stringify(sectData));
 }
