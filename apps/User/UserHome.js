@@ -1,6 +1,6 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import config from '../../model/Config.js';
-import { treasureHunt, getTreasureMapList } from '../logic/treasure_hunt_logic.js';
+import { treasureHunt } from '../../logic/treasure_hunt_logic.js';
 // 新的数据访问层
 import * as DAL from '../../api/data-access.js';
 import { Gulid } from '../../api/api.js';
@@ -22,7 +22,6 @@ import {
   exist_najie_thing,
   sleep
 } from '../Xiuxian/xiuxian.js';
-import { __PATH } from '../Xiuxian/xiuxian.js';
 import { Add_仙宠 } from '../Pokemon/Pokemon.js';
 
 /**

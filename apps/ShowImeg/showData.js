@@ -5,6 +5,7 @@ import config from "../../model/Config.js"
 import Config from "../../model/Config.js"
 import data from '../../model/XiuxianData.js'
 import { Gulid } from "../../api/api.js"
+import * as DAL from '../../api/data-access.js';
 import {
     __PATH,
     get_random_talent,
@@ -1065,12 +1066,11 @@ export async function get_association_img(e) {
     let item;
     let usr_qq = e.user_id;
     //无存档
-    let ifexistplay = data.existData("player", usr_qq);
-    if (!ifexistplay) {
+    let allPlayerData = await DAL.getAllPlayerData(usr_qq);
+    let player = allPlayerData.player;
+    if (!player) {
         return;
     }
-    //门派
-    let player = data.getData("player", usr_qq);
     if (!isNotNull(player.宗门)) {
         return;
     }
@@ -1120,9 +1120,9 @@ export async function get_association_img(e) {
     //     return;
     // }
     //有加入宗门
-    let ass = data.getAssociation(player.宗门.宗门名称);
+    let ass = await DAL.getAssociation(player.宗门.宗门名称);
     //寻找
-    let mainqq = await data.getData("player", ass.宗主);
+    let mainqq = (await DAL.getAllPlayerData(ass.宗主)).player;
     //仙宗
     let xian = ass.power;
     let weizhi;

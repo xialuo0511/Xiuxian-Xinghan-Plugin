@@ -50,7 +50,7 @@ export async function treasureHunt(userId, mapName) {
         await Add_najie_thing(userId, mapName, '道具', -1);
 
         // 计算奖励倍率
-        let multiplier = 1;
+        let multiplier = 0.8;
         let bonusMessage = '';
 
         // 天赋加成
@@ -166,12 +166,7 @@ function generateTreasureRewards(mapName, multiplier, bonus) {
 export async function getTreasureMapList() {
     try {
         // 从寻宝列表.json获取地图信息
-        const treasureList = data.xunbao_list || [
-            { name: '深渊', grade: '寻宝中的旧神界', best: ['七星海棠丹', '岩浆'], price: 12000000 },
-            { name: '天衡山', grade: '寻宝挖矿本', best: ['煤炭', '铁矿', '魔山地图'], price: 120000 },
-            { name: '低语森林', grade: '寻宝砍树本', best: ['水天丛林地图', '泥土', '树苗', '苹果'], price: 120000 },
-            { name: '星落湖', grade: '寻宝经验本', best: ['钓鱼掉上来的奇怪盒子'], price: 1200000 }
-        ];
+        const treasureList = data.xunbao_list;
 
         return {
             success: true,
