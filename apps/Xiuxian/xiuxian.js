@@ -5,13 +5,6 @@ import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
 import { common } from '../../api/api.js';
 import * as DAL from '../../api/data-access.js';
-import {
-  processElementalReactions,
-  processWeaponEffects,
-  processEnchantmentEffects,
-  processPetBonus,
-  updateStatusEffects
-} from '../../logic/battle_element_logic.js';
 import { applyElementalEffects } from '../../logic/elemental_logic.js';
 
 /**
