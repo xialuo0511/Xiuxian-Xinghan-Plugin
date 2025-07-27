@@ -146,12 +146,11 @@ export class Battle extends plugin {
     const battleResult = await battleEngine(A_battle_data, B_battle_data);
 
     let log_data = {
-      pluResPath: `...`, // 你的资源路径
       log: battleResult.msg, // 战斗日志数组
       A_player: A_player, // 攻击方数据
       B_player: B_player  // 防御方数据
     };
-    console.log('log_data : ' + log_data);
+    console.log(log_data);
     const data1 = await new Show(e).get_battleData(log_data); // 假设你有这个方法
     let img = await puppeteer.screenshot('log', { ...data1 });
     e.reply(img);
