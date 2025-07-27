@@ -9,14 +9,14 @@ import {
   ForwardMsg,
   isNotNull,
   Getmsg_battle,
-  Gaodenyuansulun,
+  Gaodenyuansulun, ifbaoji, Harm
 } from '../Xiuxian/xiuxian.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
 import {
   Add_najie_thing,
   Add_灵石,
   Add_HP,
-  Add_血气,
+  Add_血气
 } from '../Xiuxian/xiuxian.js';
 import { get_random_talent } from '../Xiuxian/xiuxian.js';
 
@@ -34,9 +34,9 @@ export class WDT extends plugin {
       rule: [
         {
           reg: '^比武$',
-          fnc: 'biwu',
-        },
-      ],
+          fnc: 'biwu'
+        }
+      ]
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
   }
@@ -222,7 +222,9 @@ export class WDT extends plugin {
       e.reply(`你血量未满，对方不想趁人之危`);
       return;
     }
-    let final_msg = [segment.at(A), segment.at(B), '\n'];
+    let final_msg = [segment.at(A),
+      segment.at(B),
+      '\n'];
     //  if (A_player.魔道值>100) {e.reply(`${A_player.名号}你一个大魔头还妄想和人堂堂正正比武？`);return;}
 
     await redis.set('xiuxian:player:' + A + ':last_biwu_time', now_Time);
@@ -289,6 +291,7 @@ export class WDT extends plugin {
     return;
   }
 }
+
 export async function zd_battle(A_player, B_player) {
   let now_A_HP = A_player.当前血量; //保留初始血量方便计算最后扣多少血,避免反复读写文件
   let now_B_HP = B_player.当前血量;
@@ -506,7 +509,7 @@ export async function zd_battle(A_player, B_player) {
       }
       msg.push(`第${Math.trunc(cnt / 2) + 1}回合：
 ${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号
-        }剩余血量${B_player.当前血量}`);
+      }剩余血量${B_player.当前血量}`);
 
       //说明被冻结了
       if (cnt != yuansu.cnt) {
@@ -692,7 +695,7 @@ ${B_player.名号}冻结中`);
       }
       msg.push(`第${Math.trunc(cnt / 2) + 1}回合：
 ${B_player.名号}攻击了${A_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${A_player.名号
-        }剩余血量${A_player.当前血量}`);
+      }剩余血量${A_player.当前血量}`);
       if (cnt != yuansu.cnt) {
         msg.push(`第${Math.trunc(cnt / 2) + 2}回合：
 ${A_player.名号}冻结中`);
@@ -722,10 +725,11 @@ ${A_player.名号}冻结中`);
   let Data_nattle = {
     msg: msg,
     A_xue: A_xue,
-    B_xue: B_xue,
+    B_xue: B_xue
   };
   return Data_nattle;
 }
+
 export function baojishanghai(baojilv) {
   if (baojilv > 1) {
     baojilv = 1;
@@ -738,27 +742,3 @@ export function baojishanghai(baojilv) {
   return bl;
 }
 
-//通过暴击伤害返回输出用的文本
-export function ifbaoji(baoji) {
-  if (baoji == 1) {
-    return '';
-  } else {
-    return '触发暴击，';
-  }
-}
-
-//攻击攻击防御计算伤害
-export function Harm(atk, def) {
-  let x;
-  let s = atk / def;
-  let rand = Math.trunc(Math.random() * 11) / 100 + 0.95; //保留±5%的伤害波动
-  if (s < 1) {
-    x = 0.1;
-  } else if (s > 2.5) {
-    x = 1;
-  } else {
-    x = 0.6 * s - 0.5;
-  }
-  x = Math.trunc(x * atk * rand);
-  return x;
-}

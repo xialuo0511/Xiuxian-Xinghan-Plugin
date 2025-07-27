@@ -9,7 +9,7 @@ import {
   ForwardMsg,
   isNotNull,
   Write_player,
-  Gaodenyuansulun
+  Gaodenyuansulun, ifbaoji, Harm
 } from '../Xiuxian/xiuxian.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
 import {
@@ -25,7 +25,7 @@ import * as DAL from '../../api/data-access.js';
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
-import { baojishanghai, Harm, ifbaoji } from './WDT.js';
+import { baojishanghai } from './WDT.js';
 
 /**
  * 战斗类

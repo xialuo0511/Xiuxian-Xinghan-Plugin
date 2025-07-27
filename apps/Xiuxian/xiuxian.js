@@ -576,7 +576,7 @@ export async function Add_player_学习功法(usr_qq, gongfa_name) {
 
 export async function Reduse_player_学习功法(usr_qq, gongfa_name) {
   let player = await Read_player(usr_qq);
-  Array.prototype.remove = function (v) {
+  Array.prototype.remove = function(v) {
     for (let i = 0, j = 0; i < this.length; i++) {
       if (this[i] != v) {
         this[j++] = this[i];
@@ -952,7 +952,13 @@ export async function Add_najie_thing(usr_qq, thing_name, thing_class, n, pinji 
         }
         let e = await najie.装备.find(item => item.name == name && item.pinji == pinji);
         if (!isNotNull(e)) {
-          let z = [0.8, 1, 1.1, 1.2, 1.3, 1.5, 2.0][pinji];
+          let z = [0.8,
+            1,
+            1.1,
+            1.2,
+            1.3,
+            1.5,
+            2.0][pinji];
           var equipment = data.equipment_list.find(item => item.name == name);
           if (!isNotNull(equipment)) {
             equipment = data.timeequipmen_list.find(item => item.name == name);
@@ -1778,11 +1784,9 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
   // 读取装备数据
   let equipment, B_equipment;
   try {
-    let dir = path.join(`${__PATH.equipment_path}/${usr_qq}.json`);
-    equipment = JSON.parse(fs.readFileSync(dir, 'utf8'));
+    equipment = (await DAL.getAllPlayerData(usr_qq)).equipment;
+    B_equipment = (await DAL.getAllPlayerData(B_qq)).equipment;
 
-    let dir1 = path.join(`${__PATH.equipment_path}/${B_qq}.json`);
-    B_equipment = JSON.parse(fs.readFileSync(dir1, 'utf8'));
   } catch (err) {
     console.log('装备文件读取错误:', err);
     return {
@@ -1930,7 +1934,7 @@ export async function ForwardMsg(e, data) {
 
 //对象数组排序
 export function sortBy(field) {//从大到小,b和a反一下就是从小到大
-  return function (b, a) {
+  return function(b, a) {
     return a[field] - b[field];
   };
 }
