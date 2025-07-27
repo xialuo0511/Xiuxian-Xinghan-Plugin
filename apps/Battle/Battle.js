@@ -110,7 +110,6 @@ async function battleEngine(A_player, B_player) {
     A_win = true;
   } else if (B_player.当前血量 > 0 && A_player.当前血量 <= 0) {
     messages.push(`${B_player.名号}击败了${A_player.名号}`);
-    A_win = false;
   }
 
   return {
