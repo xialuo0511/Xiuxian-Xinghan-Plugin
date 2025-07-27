@@ -30,7 +30,10 @@ async function battleEngine(A_player, B_player) {
     const attacker = turn % 2 === 0 ? A_player : B_player;
     const defender = turn % 2 === 0 ? B_player : A_player;
 
-    messages.push(`\n==第${Math.floor(turn / 2) + 1}回合==`);
+    // 只有在回合开始时才添加回合标题
+    if (turn % 2 === 0) {
+      messages.push(`\n==第${Math.floor(turn / 2) + 1}回合==`);
+    }
 
     // 检查是否被冻结
     if (statusEffects[attacker.id]?.['冻结'] > 0) {
