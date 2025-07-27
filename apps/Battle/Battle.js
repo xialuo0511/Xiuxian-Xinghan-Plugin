@@ -9,14 +9,14 @@ import {
   ForwardMsg,
   isNotNull,
   Write_player,
-  Gaodenyuansulun,
+  Gaodenyuansulun
 } from '../Xiuxian/xiuxian.js';
 import { Read_player } from '../Xiuxian/xiuxian.js';
 import {
   Add_najie_thing,
   Add_灵石,
   Add_HP,
-  Add_血气,
+  Add_血气
 } from '../Xiuxian/xiuxian.js';
 import { get_random_talent } from '../Xiuxian/xiuxian.js';
 import { Gulid } from '../../api/api.js';
@@ -25,7 +25,6 @@ import * as DAL from '../../api/data-access.js';
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
-import { validateRobConditions, executeRobBattle, calculateRobRewards } from '../../logic/battle_element_logic.js';
 
 /**
  * 战斗类
@@ -41,17 +40,17 @@ export class Battle extends plugin {
       rule: [
         {
           reg: '^打劫$',
-          fnc: 'Dajie',
+          fnc: 'Dajie'
         },
         {
           reg: '^(以武会友)$',
-          fnc: 'biwu',
+          fnc: 'biwu'
         },
         {
           reg: '#攻击木桩$',
-          fnc: 'muzhuang',
+          fnc: 'muzhuang'
         }
-      ],
+      ]
     });
     this.set = config.getConfig('xiuxian', 'xiuxian');
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
@@ -408,12 +407,12 @@ export class Battle extends plugin {
 
   // 检查替身人偶
   async checkSubstituteItem(defender, defenderId) {
-    const hasSubstitute = await exist_najie_thing(defenderId, "替身人偶", "道具");
+    const hasSubstitute = await exist_najie_thing(defenderId, '替身人偶', '道具');
     const isEligible = defender.魔道值 < 1 &&
-      (defender.灵根.type === "转生" || defender.level_id > 41);
+      (defender.灵根.type === '转生' || defender.level_id > 41);
 
     if (hasSubstitute && isEligible) {
-      await Add_najie_thing(defenderId, "替身人偶", "道具", -1);
+      await Add_najie_thing(defenderId, '替身人偶', '道具', -1);
       return true;
     }
 
@@ -447,7 +446,9 @@ export class Battle extends plugin {
     ]);
 
     // 构建消息
-    const finalMsg = [segment.at(attackerId), segment.at(defenderId), '\n'];
+    const finalMsg = [segment.at(attackerId),
+      segment.at(defenderId),
+      '\n'];
 
     if (isBusy) {
       finalMsg.push(`${defender.名号}正在忙碌，${attacker.名号}利用隐身水悄然接近，但被发现。`);
@@ -524,6 +525,7 @@ export class Battle extends plugin {
       return `经过一番大战,${attacker.名号}被${defender.名号}击败了,${attacker.名号} 真是偷鸡不成蚀把米,被劫走${lostSpirit}灵石`;
     }
   }
+
   // 参数验证辅助方法
   async validateBattleConditions(e, attackerId, defenderId) {
     // 检查群聊
@@ -672,6 +674,7 @@ export class Battle extends plugin {
         e.reply('战斗过程出错');
         return;
       }
+      console.log('[battle log]' + battleResult);
 
       // 生成战斗日志图片
       const logData = { log: battleResult.msg };
@@ -687,7 +690,6 @@ export class Battle extends plugin {
   }
 
 }
-
 
 
 export async function zd_battle(attackerPlayer, defenderPlayer) {
@@ -878,14 +880,14 @@ function applySpecialEffects(attacker, defender, damage) {
   if (attacker.魔道值 > 999) {
     buff += Math.floor(attacker.魔道值 / 1000) / 100;
     if (buff > 1.3) buff = 1.3;
-    if (attacker.灵根.name === "九重魔功") buff += 0.2;
+    if (attacker.灵根.name === '九重魔功') buff += 0.2;
   }
 
   // 神石减伤
-  if (defender.魔道值 < 1 && (defender.灵根.type === "转生" || defender.level_id > 41)) {
+  if (defender.魔道值 < 1 && (defender.灵根.type === '转生' || defender.level_id > 41)) {
     let buff2 = defender.神石 * 0.0015;
     if (buff2 > 0.3) buff2 = 0.3;
-    if (defender.灵根.name === "九转轮回体") buff2 += 0.2;
+    if (defender.灵根.name === '九转轮回体') buff2 += 0.2;
     buff -= buff2;
   }
 
@@ -929,7 +931,7 @@ function finalizeBattle(battleState) {
 
 // 处理战斗超时
 function handleBattleTimeout(battleState) {
-  battleState.messages.push("回合数超过20，自动通过血量结算");
+  battleState.messages.push('回合数超过20，自动通过血量结算');
   if (battleState.attacker.当前血量 > battleState.defender.当前血量) {
     battleState.messages.push(`${battleState.attacker.名号}击败了${battleState.defender.名号}`);
   } else {
