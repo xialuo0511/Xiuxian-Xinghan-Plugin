@@ -812,7 +812,8 @@ export function processPetBonus(pet, player, damage, random, messages) {
   const result = {
     damage: damage,
     defenseBonus: 0,
-    healthBonus: 0
+    healthBonus: 0,
+    messages: messages
   };
 
   if (!pet || pet.type !== '战斗') return result;
@@ -828,10 +829,8 @@ export function processPetBonus(pet, player, damage, random, messages) {
 
     player.当前血量 *= (1 + pet.加成);
 
-    messages.push(`仙宠【${pet.name}】辅佐了玩家，使其的伤害增加了[${damageBonus}]防御增加了[${defenseBonus}]血量增加了[${healthBonus}]`);
+    result.messages.push(`仙宠【${pet.name}】辅佐了玩家，使其的伤害增加了[${damageBonus}]防御增加了[${defenseBonus}]血量增加了[${healthBonus}]`);
   }
-
-  result.messages = messages;
 
   return result;
 }
