@@ -120,8 +120,8 @@ export class Battle extends plugin {
       return;
     }
 
-    const A_player = await Read_player(A_id);
-    const B_player = await Read_player(B_id);
+    const A_player = (await DAL.getAllPlayerData(A_id)).player;
+    const B_player = (await DAL.getAllPlayerData(B_id)).player;
     if (!A_player || !B_player) {
       e.reply('对方或你尚未踏入仙途。');
       return;
