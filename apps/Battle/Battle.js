@@ -9,33 +9,50 @@ import { puppeteer, Show } from '../../api/api.js';
 import redis from 'redis'; // 【核心】导入新的逻辑处理器
 
 /**
+ * 【新增】暴击判断函数
+ * @param {number} baojilv 暴击率
+ * @returns {{isCrit: boolean, critRate: number, message: string}}
+ */
+function checkCrit(baojilv) {
+  if (baojilv > 1) baojilv = 1;
+  const rand = Math.random();
+  if (rand < baojilv) {
+    return {
+      isCrit: true,
+      critRate: baojilv + 1.5, // 暴击伤害倍率
+      message: '触发暴击, '
+    };
+  }
+  return {
+    isCrit: false,
+    critRate: 1,
+    message: ''
+  };
+}
+
+/**
  * 核心战斗引擎
- * @param {object} A_player 攻击方
- * @param {object} B_player 防御方
+ * @param {object} A_player 攻击方 (会被直接修改)
+ * @param {object} B_player 防御方 (会被直接修改)
  */
 async function battleEngine(A_player, B_player) {
-  const initial_A_HP = A_player.当前血量;
-  const initial_B_HP = B_player.当前血量;
-
   let turn = 0;
   let messages = [];
-  let statusEffects = {}; // 用于追踪战斗中的状态效果
+  let statusEffects = {};
 
   while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
-    if (turn >= 30) { // 防止无限循环
+    if (turn >= 30) {
       messages.push('战斗超过30回合，平局！');
       break;
+    }
+
+    if (turn % 2 === 0) {
+      messages.push(`\n==第${Math.floor(turn / 2) + 1}回合==`);
     }
 
     const attacker = turn % 2 === 0 ? A_player : B_player;
     const defender = turn % 2 === 0 ? B_player : A_player;
 
-    // 只有在回合开始时才添加回合标题
-    if (turn % 2 === 0) {
-      messages.push(`\n==第${Math.floor(turn / 2) + 1}回合==`);
-    }
-
-    // 检查是否被冻结
     if (statusEffects[attacker.id]?.['冻结'] > 0) {
       messages.push(`${attacker.名号} 被冻结了，本回合无法行动！`);
       statusEffects[attacker.id]['冻结']--;
@@ -45,7 +62,25 @@ async function battleEngine(A_player, B_player) {
 
     let damage = Harm(attacker.攻击, defender.防御);
 
-    // 构建战斗上下文
+    // 【新增】暴击和仙宠逻辑
+    const critResult = checkCrit(attacker.暴击率);
+    let critMessage = critResult.message;
+
+    if (attacker.仙宠?.type === '暴伤') {
+      critResult.critRate += attacker.仙宠.加成;
+    }
+
+    if (attacker.仙宠?.type === '战斗' && Math.random() < 0.8) {
+      const petBonus = attacker.仙宠.加成;
+      const petAtk = Math.trunc(damage * petBonus);
+      const petDef = Math.trunc(attacker.防御 * petBonus);
+      const petHP = Math.trunc(attacker.当前血量 * petBonus);
+      damage += petAtk;
+      attacker.防御 += petDef;
+      attacker.当前血量 += petHP;
+      messages.push(`仙宠【${attacker.仙宠.name}】辅佐了【${attacker.名号}】，使其伤害、防御和血量得到了提升！`);
+    }
+
     let battleContext = {
       attacker,
       defender,
@@ -55,36 +90,36 @@ async function battleEngine(A_player, B_player) {
       statusEffects
     };
 
-    // 应用所有元素、武器、功法效果
     const updatedContext = await applyElementalEffects(battleContext);
 
-    // 更新战斗状态
-    let finalDamage = Math.trunc(updatedContext.damage);
-    updatedContext.defender.当前血量 -= finalDamage;
-    if (updatedContext.defender.当前血量 < 0) {
-      updatedContext.defender.当前血量 = 0;
+    let finalDamage = Math.trunc(updatedContext.damage * critResult.critRate);
+    defender.当前血量 -= finalDamage;
+    if (defender.当前血量 < 0) {
+      defender.当前血量 = 0;
     }
 
     messages = updatedContext.messages;
-    messages.push(`${attacker.名号} 对 ${defender.名号} 造成了 ${finalDamage} 点伤害，${defender.名号} 剩余血量 ${defender.当前血量}`);
+    messages.push(`${attacker.名号} 对 ${defender.名号} ${critMessage}造成了 ${finalDamage} 点伤害，${defender.名号} 剩余血量 ${defender.当前血量}`);
 
     turn++;
   }
 
-  // 决出胜负
+  let A_win = false;
   if (A_player.当前血量 > 0 && B_player.当前血量 <= 0) {
     messages.push(`${A_player.名号}击败了${B_player.名号}`);
+    A_win = true;
   } else if (B_player.当前血量 > 0 && A_player.当前血量 <= 0) {
     messages.push(`${B_player.名号}击败了${A_player.名号}`);
+    A_win = false;
   }
 
   return {
     log: messages,
+    A_win: A_win,
     A_player: A_player,
     B_player: B_player
   };
 }
-
 
 export class Battle extends plugin {
   constructor() {
