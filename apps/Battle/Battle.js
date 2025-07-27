@@ -25,6 +25,7 @@ import * as DAL from '../../api/data-access.js';
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import { baojishanghai, Harm, ifbaoji } from './WDT.js';
 
 /**
  * 战斗类
