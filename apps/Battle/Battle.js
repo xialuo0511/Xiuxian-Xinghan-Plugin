@@ -37,9 +37,9 @@ function checkCrit(baojilv) {
  * @returns {number} 基础伤害
  */
 function calculateDamage(attacker, defender) {
-  const ATTACK_THRESHOLD = 100000;
-  const DEFENSE_THRESHOLD = 50000;
-  const DIMINISHING_RATE = 0.1; // 超过阈值后，属性效果衰减为10%
+  const ATTACK_THRESHOLD = 80000;
+  const DEFENSE_THRESHOLD = 40000;
+  const DIMINISHING_RATE = 0.05; // 超过阈值后，属性效果衰减为5%
 
   // 计算有效攻击和防御（应用软上限）
   const effectiveAttack = attacker.攻击 > ATTACK_THRESHOLD
@@ -107,6 +107,7 @@ async function battleEngine(A_player, B_player) {
 
     if (attacker.仙宠?.type === '暴伤') {
       critResult.critRate += attacker.仙宠.加成;
+      messages.push(`仙宠【${attacker.仙宠.name}】辅佐了【${attacker.名号}】，使其爆伤得到了提升！`);
     }
 
     if (attacker.仙宠?.type === '战斗' && Math.random() < 0.8) {
