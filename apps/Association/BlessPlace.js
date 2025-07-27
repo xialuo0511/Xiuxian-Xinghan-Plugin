@@ -10,8 +10,7 @@ import {
   exploreSecretPlace,
   handleSecretPlaceBattle
 } from '../../logic/bless_place_logic.js';
-import { existplayer } from '../../model/player.js';
-import { Read_player } from '../../model/Cache.js';
+import * as DAL from '../../api/data-access.js';
 import { ForwardMsg } from '../../model/ForwardMsg.js';
 
 export class BlessPlace extends plugin {
@@ -64,7 +63,8 @@ export class BlessPlace extends plugin {
     try {
       const result = await getBlessPlaceList();
       if (result.success) {
-        await ForwardMsg(e, result.data);
+        e.reply('test');
+        // await ForwardMsg(e, result.data);
       } else {
         e.reply(result.message);
       }
@@ -83,6 +83,7 @@ export class BlessPlace extends plugin {
     try {
       const result = await getSecretPlaceList();
       if (result.success) {
+        e.reply('test');
         await ForwardMsg(e, result.data);
       } else {
         e.reply(result.message);
@@ -108,7 +109,7 @@ export class BlessPlace extends plugin {
     }
 
     // 基础检查
-    const ifexistplay = await existplayer(usr_qq);
+    const ifexistplay = await DAL.existPlayer(usr_qq);
     if (!ifexistplay) return;
 
     try {
@@ -129,7 +130,7 @@ export class BlessPlace extends plugin {
     const usr_qq = e.user_id;
 
     // 基础检查
-    const ifexistplay = await existplayer(usr_qq);
+    const ifexistplay = await DAL.existPlayer(usr_qq);
     if (!ifexistplay) return;
 
     try {
@@ -156,7 +157,7 @@ export class BlessPlace extends plugin {
     }
 
     // 基础检查
-    const ifexistplay = await existplayer(usr_qq);
+    const ifexistplay = await DAL.existPlayer(usr_qq);
     if (!ifexistplay) return;
 
     try {
@@ -183,7 +184,7 @@ export class BlessPlace extends plugin {
     }
 
     // 基础检查
-    const ifexistplay = await existplayer(usr_qq);
+    const ifexistplay = await DAL.existPlayer(usr_qq);
     if (!ifexistplay) return;
 
     try {
@@ -204,7 +205,7 @@ export class BlessPlace extends plugin {
     const usr_qq = e.user_id;
 
     // 基础检查
-    const ifexistplay = await existplayer(usr_qq);
+    const ifexistplay = await DAL.existPlayer(usr_qq);
     if (!ifexistplay) return;
 
     try {
