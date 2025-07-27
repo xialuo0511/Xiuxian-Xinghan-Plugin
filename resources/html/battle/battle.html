@@ -14,7 +14,7 @@
       }
 
       body {
-          width: 800px;
+          width: 850px;
           margin: 0;
           padding: 20px;
           background-image: url('{{pluResPath}}/img/player_pifu/beijing.jpg');
@@ -42,6 +42,9 @@
           border: 1px solid #d2b48c;
           border-radius: 10px;
           padding: 15px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
       }
 
       .player-avatar {
@@ -73,6 +76,7 @@
           border-radius: 11px;
           padding: 3px;
           box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+          margin-top: auto;
       }
 
       .progress-bar {
@@ -141,39 +145,32 @@
           font-weight: bold;
       }
 
-      /* 滚动条样式 */
-      .log-panel::-webkit-scrollbar {
-          width: 6px;
-      }
-      .log-panel::-webkit-scrollbar-track {
-          background: rgba(210, 180, 140, 0.2);
-          border-radius: 3px;
-      }
-      .log-panel::-webkit-scrollbar-thumb {
-          background: #a88763;
-          border-radius: 3px;
-      }
+      .log-panel::-webkit-scrollbar { width: 6px; }
+      .log-panel::-webkit-scrollbar-track { background: rgba(210, 180, 140, 0.2); border-radius: 3px; }
+      .log-panel::-webkit-scrollbar-thumb { background: #a88763; border-radius: 3px; }
   </style>
 </head>
 <body>
 <div id="capture" class="battle-container">
-  <!-- 攻击方信息面板 -->
+  <!-- Attacker Info Panel -->
   <div class="player-panel">
     <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{A_player.id}}" onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
-    <div class="player-name">{{A_player.名号}}</div>
-    <div class="player-level">{{A_player.level}}</div>
+    <div>
+      <div class="player-name">{{A_player.名号}}</div>
+      <div class="player-level">{{A_player.level_name}}</div>
+    </div>
     <div class="progress-bar-container">
-      <div class="progress-bar" style="width: {{ (A_player.当前血量 / A_player.血量上限 * 100) | toFixed(0) }}%;">
+      <div class="progress-bar" style="width: {{A_player_percent_hp}}%;">
         <div class="progress-text">{{A_player.当前血量}} / {{A_player.血量上限}}</div>
       </div>
     </div>
   </div>
 
-  <!-- 战斗日志面板 -->
+  <!-- Battle Log Panel -->
   <div class="log-panel">
     <div class="log-title">斗法记录</div>
     {{each log item}}
-    {{if item.startsWith('==')}}
+    {{if item.startsWith('\n==')}}
     <div class="log-entry round-header">{{item}}</div>
     {{else if item.includes('击败了')}}
     <div class="log-entry final-result">{{item}}</div>
@@ -183,13 +180,15 @@
     {{/each}}
   </div>
 
-  <!-- 防御方信息面板 -->
+  <!-- Defender Info Panel -->
   <div class="player-panel">
     <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{B_player.id}}" onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
-    <div class="player-name">{{B_player.名号}}</div>
-    <div class="player-level">{{B_player.level}}</div>
+    <div>
+      <div class="player-name">{{B_player.名号}}</div>
+      <div class="player-level">{{B_player.level_name}}</div>
+    </div>
     <div class="progress-bar-container">
-      <div class="progress-bar" style="width: {{ (B_player.当前血量 / B_player.血量上限 * 100) | toFixed(0) }}%;">
+      <div class="progress-bar" style="width: {{B_player_percent_hp}}%;">
         <div class="progress-text">{{B_player.当前血量}} / {{B_player.血量上限}}</div>
       </div>
     </div>
