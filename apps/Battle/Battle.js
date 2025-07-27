@@ -5,13 +5,13 @@ import data from '../../model/XiuxianData.js';
 import { Read_player, isNotNull, Add_HP, ForwardMsg } from '../Xiuxian/xiuxian.js';
 import { applyElementalEffects } from '../../logic/elemental_logic.js';
 import * as DAL from '../../api/data-access.js';
-import { puppeteer, Show } from '../../api/api.js'; // 【核心】导入新的逻辑处理器
+import { puppeteer, Show } from '../../api/api.js';
+import redis from 'redis'; // 【核心】导入新的逻辑处理器
 
 /**
  * 核心战斗引擎
  * @param {object} A_player 攻击方
  * @param {object} B_player 防御方
- * @returns {Promise<{msg: string[], A_xue: number, B_xue: number}>} 战斗结果
  */
 async function battleEngine(A_player, B_player) {
   const initial_A_HP = A_player.当前血量;
@@ -79,9 +79,9 @@ async function battleEngine(A_player, B_player) {
   }
 
   return {
-    msg: messages,
-    A_xue: A_player.当前血量,
-    B_xue: B_player.当前血量
+    log: messages,
+    A_player: A_player,
+    B_player: B_player
   };
 }
 
@@ -150,25 +150,8 @@ export class Battle extends plugin {
     A_player.当前血量 = battleResult.A_xue;
     B_player.当前血量 = battleResult.B_xue;
 
-    const A_player_percent_hp = A_player.血量上限 > 0 ? (A_player.当前血量 / A_player.血量上限 * 100) : 0;
-    const B_player_percent_hp = B_player.血量上限 > 0 ? (B_player.当前血量 / B_player.血量上限 * 100) : 0;
 
-
-    let log_data = {
-      log: battleResult.msg, // 战斗日志数组
-      A_player_percent_hp: Math.max(0, A_player_percent_hp).toFixed(0), // 确保是整数且不小于0
-      B_player_percent_hp: Math.max(0, B_player_percent_hp).toFixed(0),
-      A_player: {
-        ...A_player,
-        level_name: data.Level_list.find(item => item.level_id == A_player.level_id)?.level || '未知境界'
-      },
-      B_player: {
-        ...B_player,
-        level_name: data.Level_list.find(item => item.level_id == B_player.level_id)?.level || '未知境界'
-      }
-    };
-    const data1 = await new Show(e).get_battleData(log_data);
-    let img = await puppeteer.screenshot('log', { ...data1 });
+    let img = await this.renderBattle(e, battleResult);
     e.reply(img);
   }
 
@@ -284,17 +267,9 @@ export class Battle extends plugin {
     const battleResult = await battleEngine({ ...A_data.player, id: userId, equipment: A_data.equipment }, dummy);
 
     // 只显示前10回合的战报
-    const shortLog = battleResult.msg.slice(0, 21);
-    shortLog.push('\n...一顿操作后，木桩依旧屹立不倒...');
-    let log_data = {
-      log: battleResult.msg, // 战斗日志数组
-      A_player: A_data.player, // 攻击方数据
-      B_player: dummy,  // 防御方数据
-      A_xue: battleResult.A_xue,
-      B_xue: battleResult.B_xue
-    };
-    const data1 = await new Show(e).get_battleData(log_data);
-    let img = await puppeteer.screenshot('log', { ...data1 });
+    battleResult.msg = battleResult.msg.slice(0, 21);
+    battleResult.msg.push('\n...一顿操作后，木桩依旧屹立不倒...');
+    let img = await this.renderBattle(e, battleResult);
     e.reply(img);
   }
 
@@ -327,6 +302,36 @@ export class Battle extends plugin {
       e.reply('检查玩家状态时发生错误，请稍后再试。');
       return null;
     }
+  }
+
+  /**
+   * 【核心修正】: 统一的渲染函数
+   */
+  async renderBattle(e, dataForRender) {
+    const A_player = dataForRender.A_player;
+    const B_player = dataForRender.B_player;
+
+    // 在这里预先计算好血量百分比
+    const A_player_percent_hp = A_player.血量上限 > 0 ? (A_player.当前血量 / A_player.血量上限 * 100) : 0;
+    const B_player_percent_hp = B_player.血量上限 > 0 ? (B_player.当前血量 / B_player.血量上限 * 100) : 0;
+
+    const renderData = {
+      ...dataForRender,
+      pluResPath: `../../../../../plugins/xiuxian-emulator-plugin/resources`,
+      A_player_percent_hp: Math.max(0, A_player_percent_hp).toFixed(0),
+      B_player_percent_hp: Math.max(0, B_player_percent_hp).toFixed(0),
+      A_player: {
+        ...A_player,
+        level_name: data.Level_list.find(item => item.level_id == A_player.level_id)?.level || '未知境界'
+      },
+      B_player: {
+        ...B_player,
+        level_name: data.Level_list.find(item => item.level_id == B_player.level_id)?.level || '未知境界'
+      }
+    };
+
+    const dataForPuppeteer = await new Show(e).get_battleData(renderData);
+    return await puppeteer.screenshot('battle', { ...dataForPuppeteer });
   }
 }
 
