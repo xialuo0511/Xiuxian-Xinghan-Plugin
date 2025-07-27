@@ -148,12 +148,14 @@ export class Battle extends plugin {
 
     const battleResult = await battleEngine(A_battle_data, B_battle_data);
 
+
     let log_data = {
       log: battleResult.msg, // 战斗日志数组
       A_player: A_player, // 攻击方数据
-      B_player: B_player  // 防御方数据
+      B_player: B_player,  // 防御方数据
+      A_xue: battleResult.A_xue,
+      B_xue: battleResult.B_xue
     };
-    console.log(log_data);
     const data1 = await new Show(e).get_battleData(log_data); // 假设你有这个方法
     let img = await puppeteer.screenshot('log', { ...data1 });
     e.reply(img);
@@ -274,7 +276,16 @@ export class Battle extends plugin {
     // 只显示前5回合的战报
     const shortLog = battleResult.msg.slice(0, 11);
     shortLog.push('\n...一顿操作后，木桩依旧屹立不倒...');
-    await ForwardMsg(e, shortLog);
+    let log_data = {
+      log: battleResult.msg, // 战斗日志数组
+      A_player: A_data.player, // 攻击方数据
+      B_player: dummy,  // 防御方数据
+      A_xue: battleResult.A_xue,
+      B_xue: battleResult.B_xue
+    };
+    const data1 = await new Show(e).get_battleData(log_data); // 假设你有这个方法
+    let img = await puppeteer.screenshot('log', { ...data1 });
+    e.reply(img);
   }
 }
 
