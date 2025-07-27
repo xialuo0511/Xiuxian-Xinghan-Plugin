@@ -147,17 +147,26 @@ export class Battle extends plugin {
     e.reply(`【${A_player.名号}】向【${B_player.名号}】发起了切磋！`);
 
     const battleResult = await battleEngine(A_battle_data, B_battle_data);
+    A_player.当前血量 = battleResult.A_xue;
+    B_player.当前血量 = battleResult.B_xue;
+
+    const A_player_percent_hp = A_player.血量上限 > 0 ? (A_player.当前血量 / A_player.血量上限 * 100) : 0;
+    const B_player_percent_hp = B_player.血量上限 > 0 ? (B_player.当前血量 / B_player.血量上限 * 100) : 0;
 
 
     let log_data = {
       log: battleResult.msg, // 战斗日志数组
-      A_player: A_player, // 攻击方数据
-      B_player: B_player,  // 防御方数据
-      A_xue: battleResult.A_xue,
-      B_xue: battleResult.B_xue
+      A_player_percent_hp: Math.max(0, A_player_percent_hp).toFixed(0), // 确保是整数且不小于0
+      B_player_percent_hp: Math.max(0, B_player_percent_hp).toFixed(0),
+      A_player: {
+        ...A_player,
+        level_name: data.Level_list.find(item => item.level_id == A_player.level_id)?.level || '未知境界'
+      },
+      B_player: {
+        ...B_player,
+        level_name: data.Level_list.find(item => item.level_id == B_player.level_id)?.level || '未知境界'
+      }
     };
-    log_data.A_player_percent_hp = (log_data.A_xue / A_player.血量上限).toFixed(2);
-    log_data.B_player_percent_hp = (log_data.B_xue / B_player.血量上限).toFixed(2);
     const data1 = await new Show(e).get_battleData(log_data);
     let img = await puppeteer.screenshot('log', { ...data1 });
     e.reply(img);
