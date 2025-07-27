@@ -151,6 +151,7 @@ export class Battle extends plugin {
       A_player: A_player, // 攻击方数据
       B_player: B_player  // 防御方数据
     };
+    console.log('log_data : ' + log_data);
     const data1 = await new Show(e).get_battleData(log_data); // 假设你有这个方法
     let img = await puppeteer.screenshot('log', { ...data1 });
     e.reply(img);
