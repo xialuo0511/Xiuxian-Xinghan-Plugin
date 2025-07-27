@@ -267,7 +267,8 @@ export class Battle extends plugin {
       血量上限: 999999999,
       暴击率: 0,
       灵根: { name: '无', 法球倍率: 0 },
-      equipment: {}
+      equipment: {},
+      学习的功法: []
     };
 
     e.reply(`你对着一个憨憨的木桩发起了攻击...`);
