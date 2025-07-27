@@ -267,8 +267,8 @@ export class Battle extends plugin {
     const battleResult = await battleEngine({ ...A_data.player, id: userId, equipment: A_data.equipment }, dummy);
 
     // 只显示前10回合的战报
-    battleResult.msg = battleResult.msg.length > 21 ? battleResult.msg.filter((_, index) => index < 21) : battleResult.msg;
-    battleResult.msg.push('\n...一顿操作后，木桩依旧屹立不倒...');
+    battleResult.log = battleResult.log.length > 21 ? battleResult.log.filter((_, index) => index < 21) : battleResult.log;
+    battleResult.log.push('\n...一顿操作后，木桩依旧屹立不倒...');
     let img = await this.renderBattle(e, battleResult);
     e.reply(img);
   }
