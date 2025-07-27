@@ -156,7 +156,9 @@ export class Battle extends plugin {
       A_xue: battleResult.A_xue,
       B_xue: battleResult.B_xue
     };
-    const data1 = await new Show(e).get_battleData(log_data); // 假设你有这个方法
+    log_data.A_player_percent_hp = (log_data.A_xue / A_player.血量上限).toFixed(2);
+    log_data.B_player_percent_hp = (log_data.B_xue / B_player.血量上限).toFixed(2);
+    const data1 = await new Show(e).get_battleData(log_data);
     let img = await puppeteer.screenshot('log', { ...data1 });
     e.reply(img);
   }
@@ -266,9 +268,7 @@ export class Battle extends plugin {
       当前血量: 999999999,
       血量上限: 999999999,
       暴击率: 0,
-      灵根: { name: '无', 法球倍率: 0 },
-      equipment: {},
-      学习的功法: []
+      灵根: { name: '无', 法球倍率: 0 }
     };
 
     e.reply(`你对着一个憨憨的木桩发起了攻击...`);
