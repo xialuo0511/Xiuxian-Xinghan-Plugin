@@ -831,7 +831,7 @@ export function processPetBonus(pet, player, damage, random, messages) {
     messages.push(`仙宠【${pet.name}】辅佐了玩家，使其的伤害增加了[${damageBonus}]防御增加了[${defenseBonus}]血量增加了[${healthBonus}]`);
   }
 
-  result.message = messages;
+  result.messages = messages;
 
   return result;
 }
