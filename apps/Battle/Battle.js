@@ -9,7 +9,7 @@ import { puppeteer, Show } from '../../api/api.js';
 import redis from 'redis'; // 【核心】导入新的逻辑处理器
 
 /**
- * 【新增】暴击判断函数
+ * 暴击判断函数
  * @param {number} baojilv 暴击率
  * @returns {{isCrit: boolean, critRate: number, message: string}}
  */
@@ -29,6 +29,46 @@ function checkCrit(baojilv) {
     message: ''
   };
 }
+
+/**
+ * 伤害计算函数 - 引入破防机制、软上限和伤害保底
+ * @param {object} attacker 攻击方
+ * @param {object} defender 防御方
+ * @returns {number} 基础伤害
+ */
+function calculateDamage(attacker, defender) {
+  const ATTACK_THRESHOLD = 100000;
+  const DEFENSE_THRESHOLD = 50000;
+  const DIMINISHING_RATE = 0.1; // 超过阈值后，属性效果衰减为10%
+
+  // 计算有效攻击和防御（应用软上限）
+  const effectiveAttack = attacker.攻击 > ATTACK_THRESHOLD
+    ? ATTACK_THRESHOLD + (attacker.攻击 - ATTACK_THRESHOLD) * DIMINISHING_RATE
+    : attacker.攻击;
+
+  const effectiveDefense = defender.防御 > DEFENSE_THRESHOLD
+    ? DEFENSE_THRESHOLD + (defender.防御 - DEFENSE_THRESHOLD) * DIMINISHING_RATE
+    : defender.防御;
+
+  let baseDamage;
+
+  // 判断是否破防
+  if (effectiveAttack > effectiveDefense) {
+    // 成功破防：造成攻防差伤害
+    baseDamage = effectiveAttack - effectiveDefense;
+  } else {
+    // 未能破防：造成攻击力5%的固定伤害，确保有意义的输出
+    baseDamage = effectiveAttack * 0.05;
+  }
+
+  // 添加小范围随机波动 (95% - 105%)
+  const randomFactor = Math.random() * 0.1 + 0.95;
+  baseDamage *= randomFactor;
+
+  // 确保最低为1点伤害
+  return Math.max(1, Math.trunc(baseDamage));
+}
+
 
 /**
  * 核心战斗引擎
@@ -60,9 +100,8 @@ async function battleEngine(A_player, B_player) {
       continue;
     }
 
-    let damage = Harm(attacker.攻击, defender.防御);
+    let damage = calculateDamage(attacker, defender);
 
-    // 【新增】暴击和仙宠逻辑
     const critResult = checkCrit(attacker.暴击率);
     let critMessage = critResult.message;
 
@@ -119,6 +158,7 @@ async function battleEngine(A_player, B_player) {
     B_player: B_player
   };
 }
+
 
 export class Battle extends plugin {
   constructor() {
