@@ -16,13 +16,18 @@ const 宗门灵石池上限 = [2000000, 5000000, 8000000, 11000000, 15000000, 20
  * 宗门
  */
 
+import * as AssociationAdminLogic from '../../logic/association_admin_logic.js';
+
+/**
+ * 宗门管理
+ */
 export class AssociationAdmin extends plugin {
     constructor() {
         super({
             /** 功能名称 */
             name: 'AssociationAdmin',
             /** 功能描述 */
-            dsc: '宗门模块',
+            dsc: '宗门管理模块',
             event: 'message',
             /** 优先级，数字越小等级越高 */
             priority: 600,
@@ -48,7 +53,7 @@ export class AssociationAdmin extends plugin {
                     fnc: 'huz'
                 },
                 {
-                    reg: '^#维护护宗大阵[1-9]\d*',
+                    reg: '^#维护护宗大阵[1-9]\\d*',
                     fnc: 'weihu'
                 },
                 {
@@ -60,7 +65,7 @@ export class AssociationAdmin extends plugin {
                     fnc: 'Deleteuser'
                 },
                 {
-                    reg: '^#逐出[1-9]\d*',
+                    reg: '^#逐出[1-9]\\d*',
                     fnc: 'Deleteusermax'
                 }
             ]

@@ -5,6 +5,13 @@ import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
 import { common } from '../../api/api.js';
 import * as DAL from '../../api/data-access.js';
+import {
+  processElementalReactions,
+  processWeaponEffects,
+  processEnchantmentEffects,
+  processPetBonus,
+  updateStatusEffects
+} from '../../logic/battle_element_logic.js';
 
 /**
  * 全局
@@ -109,22 +116,14 @@ export async function Check_thing(data) {
 }
 
 export async function Go(e) {
-  let usr_qq = e.user_id.toString().replace('qg_', '');
-  usr_qq = await channel(usr_qq);
+  let usr_qq = e.user_id;
   //不开放私聊
   if (!e.isGroup) {
     return 0;
   }
   //有无存档
-  let ifexistplay = await existplayer(usr_qq);
+  let ifexistplay = await DAL.existPlayer(usr_qq);
   if (!ifexistplay) {
-    return 0;
-  }
-  //获取游戏状态
-  let game_action = await redis.get('xiuxian:player:' + usr_qq + ':game_action');
-  //防止继续其他娱乐行为
-  if (game_action == 0) {
-    e.reply('修仙：游戏进行中...');
     return 0;
   }
   //查询redis中的人物动作
@@ -577,7 +576,7 @@ export async function Add_player_学习功法(usr_qq, gongfa_name) {
 
 export async function Reduse_player_学习功法(usr_qq, gongfa_name) {
   let player = await Read_player(usr_qq);
-  Array.prototype.remove = function(v) {
+  Array.prototype.remove = function (v) {
     for (let i = 0, j = 0; i < this.length; i++) {
       if (this[i] != v) {
         this[j++] = this[i];
@@ -1738,30 +1737,29 @@ ${B_player.名号}攻击了${A_player.名号}，${ifbaoji(baoji)}造成伤害${�
  */
 
 export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Agandianhuihe, chaodaohuihe) {
-  let yuansu = ['仙之心·火', '仙之心·水', '仙之心·雷', '仙之心·岩', '仙之心·冰', '仙之心·风', '仙之心·木'];
-  let att = last_att;//最终伤害,last_att为原伤害
-  let fyjiachen = 0;//防御加成
-  //let player = Read_player(A_player.id);//修仙个人信息
-  //let lunhuijing = player.学习的功法.indexOf('轮回经');
-  let A_lin = A_player.灵根.name;
-  let B_lin = B_player.灵根.name;
-  let chufa = false;//是否触发
-  let huihe = false;//是否触发增加回合
-  //特殊反应
+  // 初始化基础数据
+  let att = last_att;
+  let fyjiachen = 0;
+  let chufa = false;
+  let huihe = false;
+
+  // 特殊反应状态
   let ranshao = false;
   let donjie = false;
   let gandian = false;
   let chaodao = false;
-  //超导回合数
+
+  // 回合数处理
   let chaodaohuihe2 = Number(chaodaohuihe);
-  //燃烧感电回合数
   let gandianhuihe = Number(Agandianhuihe);
-  //回合数
   let cnt6 = Number(cnt);
+
   let usr_qq = A_player.id;
   let B_qq = B_player.id;
+
+  // 参数验证
   if (!isNotNull(usr_qq) || !isNotNull(B_qq)) {
-    let fanyin = {
+    return {
       'A_player': A_player,
       'B_player': B_player,
       'msg': msg,
@@ -1775,1108 +1773,89 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
       'ranshao': ranshao,
       'gandian': gandian
     };
-    return fanyin;
-  }
-  let dir = path.join(`${__PATH.equipment_path}/${usr_qq}.json`);
-  let equipment = fs.readFileSync(dir, 'utf8', (err, data) => {
-    if (err) {
-      console.log(err);
-      return 'error';
-    }
-    return data;
-  });
-  let dir1 = path.join(`${__PATH.equipment_path}/${B_qq}.json`);
-  let B = fs.readFileSync(dir1, 'utf8', (err, data) => {
-    if (err) {
-      console.log(err);
-      return 'error';
-    }
-    return data;
-  });
-  //将字符串数据转变成数组格式
-  equipment = JSON.parse(equipment);
-  B = JSON.parse(B);
-  if (donjie) {//冻结
-    cnt6++;
-  }
-  if (ranshao || gandian) {//感电燃烧
-    gandianhuihe += 3;
-  }
-  if (chaodao) {//超导
-    chaodaohuihe2 += 3;
-  }
-  //燃烧
-  if (A_lin == yuansu[0] && B_lin == yuansu[6]) {
-    ranshao = true;
-  }
-  if (A_lin == yuansu[0] && equipment.武器.fumo == '草') {
-    ranshao = true;
-  }
-  if (A_lin == yuansu[6] && B_lin == yuansu[0]) {
-    ranshao = true;
-  }
-  if (A_lin == yuansu[6] && equipment.武器.fumo == '火') {
-    ranshao = true;
   }
 
-  //感电
-  if (A_lin == yuansu[1] && B_lin == yuansu[2]) {
-    gandian = true;
+  // 读取装备数据
+  let equipment, B_equipment;
+  try {
+    let dir = path.join(`${__PATH.equipment_path}/${usr_qq}.json`);
+    equipment = JSON.parse(fs.readFileSync(dir, 'utf8'));
+
+    let dir1 = path.join(`${__PATH.equipment_path}/${B_qq}.json`);
+    B_equipment = JSON.parse(fs.readFileSync(dir1, 'utf8'));
+  } catch (err) {
+    console.log('装备文件读取错误:', err);
+    return {
+      'A_player': A_player,
+      'B_player': B_player,
+      'msg': msg,
+      'att': att,
+      'fyjiachen': fyjiachen,
+      'chufa': chufa,
+      'cnt': cnt6,
+      'gandianhuihe': gandianhuihe,
+      'chaodaohuihe2': chaodaohuihe2,
+      'chaodao': chaodao,
+      'ranshao': ranshao,
+      'gandian': gandian
+    };
   }
-  if (A_lin == yuansu[1] && equipment.武器.fumo == '雷') {
-    gandian = true;
-  }
-  if (A_lin == yuansu[2] && B_lin == yuansu[1]) {
-    gandian = true;
-  }
-  if (A_lin == yuansu[2] && equipment.武器.fumo == '火') {
-    gandian = true;
-  }
-  //超导
-  if (A_lin == yuansu[2] && B_lin == yuansu[4]) {
-    chaodao = true;
-  }
-  if (A_lin == yuansu[2] && equipment.武器.fumo == '冰') {
-    chaodao = true;
-  }
-  if (A_lin == yuansu[4] && B_lin == yuansu[2]) {
-    chaodao = true;
-  }
-  if (A_lin == yuansu[2] && equipment.武器.fumo == '雷') {
-    chaodao = true;
-  }
-  if (chaodaohuihe > 0 && !chaodao) {
-    chaodao = true;
-  }
+
+  // 构建战斗上下文
+  const battleContext = {
+    attacker: A_player,
+    defender: B_player,
+    attackerEquipment: equipment,
+    defenderEquipment: B_equipment,
+    baseDamage: last_att,
+    currentRound: cnt6,
+    burnRounds: gandianhuihe,
+    superconductRounds: chaodaohuihe2
+  };
+
+  // 处理元素反应
+  const elementResult = processElementalReactions(battleContext);
+  att = elementResult.damage;
+  msg.push(...elementResult.messages);
+  chufa = elementResult.triggered || chufa;
+
+  // 更新状态效果
+  const statusResult = updateStatusEffects(battleContext, elementResult);
+  ranshao = statusResult.burning;
+  gandian = statusResult.electrified;
+  chaodao = statusResult.superconduct;
+  donjie = statusResult.frozen;
+
+  // 处理武器效果
+  const weaponResult = processWeaponEffects(battleContext, elementResult);
+  att = weaponResult.damage;
+  fyjiachen += weaponResult.defenseBonus;
+  msg.push(...weaponResult.messages);
+  chufa = weaponResult.triggered || chufa;
+
+  // 处理附魔效果
+  const enchantResult = processEnchantmentEffects(battleContext, weaponResult);
+  att = enchantResult.damage;
+  fyjiachen += enchantResult.defenseBonus;
+  msg.push(...enchantResult.messages);
+  chufa = enchantResult.triggered || chufa;
+
+  // 处理仙宠加成
+  const petResult = processPetBonus(battleContext, enchantResult);
+  att = petResult.damage;
+  fyjiachen += petResult.defenseBonus;
+  msg.push(...petResult.messages);
+
+  // 更新回合数
+  if (donjie) cnt6++;
+  if (ranshao || gandian) gandianhuihe += 3;
+  if (chaodao) chaodaohuihe2 += 3;
+
+  // 更新攻击者攻击力
   A_player.攻击 = att;
 
-
-  //火元素
-  if (A_lin == yuansu[0]) {
-    //火水
-    if (B_lin == yuansu[1]) {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了火元素战技,触发了蒸发反应,额外造成了50%伤害');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '水') {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了火元素战技,水属性附魔武器与其产生共鸣,触发了蒸发反应,额外造成了100%伤害');
-    }
-    //火雷
-    if (B_lin == yuansu[2]) {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了火元素战技,触发了超载反应,额外造成了20%伤害');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '雷') {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了火元素战技,雷属性附魔武器与其产生共鸣,触发了蒸发反应,额外造成了50%伤害');
-    }
-    //火冰
-    if (B_lin == yuansu[4]) {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了火元素战技,触发了融化反应,额外造成了200%伤害');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '冰') {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了火元素战技,冰属性附魔武器与其产生共鸣,触发了蒸发反应,额外造成了100%伤害');
-    }
-    //火草
-    let random5 = Math.random();
-    if (B_lin == yuansu[6] && random5 > 0.6) {
-      att = last_att * 1.2;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了火元素战技,触发了燃烧反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      ranshao = true;
-    }
-    if (equipment.武器.fumo == '草' && random5 > 0.6) {
-      att = last_att * 1.2;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了火元素战技,草属性附魔武器与其产生共鸣,触发了燃烧反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      ranshao = true;
-    }
-  }
-  //水元素
-  if (A_lin == yuansu[1]) {
-    //火水
-    if (B_lin == yuansu[0]) {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了水元素战技,触发了蒸发反应,额外造成了100%伤害');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '火') {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了火元素战技,火属性附魔武器与其产生共鸣,触发了蒸发反应,额外造成了100%伤害');
-    }
-    //水雷
-    if (B_lin == yuansu[2]) {
-      att = last_att * 1.5;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了水元素战技,触发了感电反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      gandian = true;
-    }
-    if (equipment.武器.fumo == '雷') {
-      att = last_att * 1.5;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了水元素战技,雷属性附魔武器与其产生共鸣,触发了感电反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      gandian = true;
-    }
-    //水冰(5%冻结)
-    let random2 = Math.random();
-    if (B_lin == yuansu[4] && random2 > 0.95) {
-      msg.push(A_player.名号 + '使用了水元素战技,触发了冻结反应' + B_player.名号 + '被冻结了,下一回合无法出手');
-      donjie = true;
-    }
-    if (equipment.武器.fumo == '冰' && random2 > 0.5) {
-      msg.push(A_player.名号 + '使用了水元素战技,冰属性附魔武器与其产生共鸣,触发了冻结反应' + B_player.名号 + '被冻结了,下一回合无法出手');
-      donjie = true;
-    }
-
-    //水草
-    if (B_lin == yuansu[6]) {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了水元素战技,触发了绽放反应,草原核爆炸了！' + B_player.名号 + '被炸了' + att * 0.3 + '伤害' + A_player.名号 + '也被炸了' + att * 0.1 + '的伤害');
-      B_player.当前血量 -= att * 0.3;
-      A_player.当前血量 -= att * 0.1;
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '草') {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了水元素战技,草属性附魔武器与其产生共鸣,触发了绽放反应,草原核爆炸了！' + B_player.名号 + '被炸了' + att * 0.3 + '伤害' + A_player.名号 + '也被炸了' + att * 0.1 + '的伤害');
-      B_player.当前血量 -= att * 0.3;
-      A_player.当前血量 -= att * 0.1;
-      chufa = true;
-    }
-  }
-  //雷元素
-  if (A_lin == yuansu[2]) {
-    //雷火
-    if (B_lin == yuansu[0]) {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了火元素战技,触发了超载反应,额外造成了20%伤害');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '火') {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了火元素战技,火属性附魔武器与其产生共鸣,触发了超载反应,额外造成了20%伤害');
-      chufa = true;
-    }
-    //水雷
-    if (B_lin == yuansu[1]) {
-      att = last_att * 1.5;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了雷元素战技,触发了感电反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      gandian = true;
-    }
-    if (equipment.武器.fumo == '水') {
-      att = last_att * 1.5;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了雷元素战技,水属性附魔武器与其产生共鸣,触发了感电反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      gandian = true;
-    }
-    //雷冰(50%)
-    let random2 = Math.random();
-    if (B_lin == yuansu[4] && random2 > 0.5) {
-      att = last_att * 1.5;
-      chaodaohuihe2 += 3;
-      msg.push(A_player.名号 + '使用了雷元素战技,触发了超导反应' + B_player.名号 + '的抗性被削弱' + chaodaohuihe2 + '回合');
-      chaodaohuihe2 -= 3;
-      chufa = true;
-      chaodao = true;
-    }
-    if (equipment.武器.fumo == '冰') {
-      att = last_att * 1.5;
-      chaodaohuihe2 += 3;
-      msg.push(A_player.名号 + '使用了雷元素战技,冰属性附魔武器与其产生共鸣,触发了超导反应' + B_player.名号 + '的抗性被削弱' + chaodaohuihe2 + '回合');
-      chaodaohuihe2 -= 3;
-      chufa = true;
-      chaodao = true;
-    }
-    //雷草
-    if (B_lin == yuansu[6]) {
-      msg.push(A_player.名号 + '使用了雷元素战技,触发了激化反应,伤害提升100%');
-      att *= 2;
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '草') {
-      msg.push(A_player.名号 + '使用了雷元素战技,草属性附魔武器与其产生共鸣,触发了激化反应,伤害提升100%');
-      att *= 2;
-      chufa = true;
-    }
-  }
-  //冰元素
-  if (A_lin == yuansu[4]) {
-    //火冰
-    if (B_lin == yuansu[0]) {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了冰元素战技,触发了融化反应,额外造成了200%伤害');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '火') {
-      att = last_att * 2;
-      msg.push(A_player.名号 + '使用了冰元素战技,火属性附魔武器与其产生共鸣,触发了融化反应,额外造成了200%伤害');
-      chufa = true;
-    }
-    //水冰(45%冻结)
-    let random3 = Math.random();
-    if (B_lin == yuansu[1] && random3 > 0.5) {
-      msg.push(A_player.名号 + '使用了冰元素战技,触发了冻结反应' + B_player.名号 + '被冻结了,下一回合无法出手');
-      donjie = true;
-      huihe = true;
-    }
-    if (equipment.武器.fumo == '水' && random3 > 0.5) {
-      msg.push(A_player.名号 + '使用了冰元素战技,水属性附魔武器与其产生共鸣,触发了冻结反应' + B_player.名号 + '被冻结了,下一回合无法出手');
-      donjie = true;
-      huihe = true;
-    }
-    //雷冰(50%)
-    let random4 = Math.random();
-    if (B_lin == yuansu[2] && random4 > 0.5) {
-      att = last_att * 2;
-      chaodaohuihe2 += 3;
-      msg.push(A_player.名号 + '使用了元素战技,触发了超导反应' + B_player.名号 + '的抗性被削弱' + chaodaohuihe2 + '回合');
-      chaodaohuihe2 -= 3;
-      chufa = true;
-      chaodao = true;
-    }
-    if (equipment.武器.fumo == '冰' && random4 > 0.5) {
-      chaodaohuihe2 += 3;
-      msg.push(A_player.名号 + '使用了元素战技,冰属性附魔武器与其产生共鸣,触发了超导反应' + B_player.名号 + '的抗性被削弱' + chaodaohuihe2 + '回合');
-      chaodaohuihe2 -= 3;
-      chufa = true;
-      chaodao = true;
-    }
-  }
-  //草元素
-  if (A_lin == yuansu[6]) {
-    //火草
-    let random6 = Math.random();
-    if (B_lin == yuansu[0] && random6 > 0.6) {
-      att = last_att * 1.2;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了木元素战技,触发了燃烧反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      ranshao = true;
-    }
-    if (equipment.武器.fumo == '火' && random6 > 0.6) {
-      att = last_att * 1.2;
-      gandianhuihe += 3;
-      msg.push(A_player.名号 + '使用了木元素战技,火属性附魔武器与其产生共鸣,触发了燃烧反应' + B_player.名号 + '将收到持续伤害' + gandianhuihe + '回合');
-      gandianhuihe -= 3;
-      chufa = true;
-      ranshao = true;
-    }
-    //水草
-    if (B_lin == yuansu[1]) {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了木元素战技,触发了绽放反应,草原核爆炸了！' + B_player.名号 + '被炸了' + att * 0.3 + '伤害' + A_player.名号 + '也被炸了' + att * 0.1 + '的伤害');
-      B_player.当前血量 -= att * 0.3;
-      A_player.当前血量 -= att * 0.1;
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '水') {
-      att = last_att * 1.2;
-      msg.push(A_player.名号 + '使用了木元素战技,水属性附魔武器与其产生共鸣,触发了绽放反应,草原核爆炸了！' + B_player.名号 + '被炸了' + att * 0.3 + '伤害' + A_player.名号 + '也被炸了' + att * 0.1 + '的伤害');
-      B_player.当前血量 -= att * 0.3;
-      A_player.当前血量 -= att * 0.1;
-      chufa = true;
-    }
-    //雷草
-    if (B_lin == yuansu[2]) {
-      msg.push(A_player.名号 + '使用了木元素战技,触发了激化反应,伤害提升30%');
-      att *= 2;
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '雷') {
-      msg.push(A_player.名号 + '使用了木元素战技,雷属性附魔武器与其产生共鸣,触发了激化反应,伤害提升30%');
-      att *= 2;
-      chufa = true;
-    }
-  }
-  //岩元素
-  if (A_lin == yuansu[3]) {
-    fyjiachen = A_player.防御 * 0.5;
-    msg.push(A_player.名号 + '使用了岩元素战技,触发了结晶反应,自身抗性得到了大幅提高');
-    chufa = true;
-    if (equipment.武器.fumo == '岩') {
-      fyjiachen = A_player.防御 * 0.5;
-      msg.push(A_player.名号 + '使用了岩元素战技,岩属性附魔武器与其产生共鸣,触发了结晶反应,自身抗性得到了大幅提高');
-      chufa = true;
-    }
-  }
-
-  //风元素
-  if (A_lin == yuansu[5]) {
-    if (equipment.武器.fumo == '水') {
-      att *= 1.2;
-      msg.push(A_player.名号 + '使用了风元素战技,触发了扩散反应,伤害得到了提高');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '雷') {
-      att *= 1.2;
-      msg.push(A_player.名号 + '使用了风元素战技,触发了扩散反应,伤害得到了提高');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '火') {
-      att *= 1.2;
-      msg.push(A_player.名号 + '使用了风元素战技,触发了扩散反应,伤害得到了提高');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '冰') {
-      att *= 1.2;
-      msg.push(A_player.名号 + '使用了风元素战技,触发了扩散反应,伤害得到了提高');
-      chufa = true;
-    }
-    if (equipment.武器.fumo == '草') {
-      att *= 1.2;
-      msg.push(A_player.名号 + '使用了风元素战技,触发了扩散反应,伤害得到了提高');
-      chufa = true;
-    }
-  }
-  //固定加成
-  let yes = false;
-  for (var i = 0; yuansu.length > i; i++) {
-    if (A_lin == yuansu[i]) {
-      yes = true;
-    }
-  }
-  if (yes) {
-    if (chufa == false) {
-      att = last_att * 1.1;
-      msg.push(A_player.名号 + '使用了元素战技,额外造成了10%伤害');
-    }
-  }
-  //===============================================================================这里是武器======================================================================================================
-
-
-  //将字符串数据转变成数组格式
-
-  let random = Math.random();//是否触发
-  // let random=1
-
-  //项链加成
-  let element = A_lin;
-  element = element.replace('仙之心·', '');
-  if (equipment.项链.属性 == element) {
-    let ran = Math.random();
-    let panduan = A_player.幸运 > ran;
-    if (true) {
-      att *= 1 + equipment.项链.加成;
-      msg.push('你的元素与你佩戴的项链产生共鸣,下一击伤害增加' + equipment.项链.加成 * 100 + '%');
-    }
-  }
-
-
-  if (equipment.武器.name == '赤角石溃杵') {
-    if (A_lin == yuansu[3] && random > 0.5) {
-      if (equipment.武器.fumo == '岩') {
-        msg.push('触发元素爆发:[鬼域狂欢],百分之0.2的防御转化成攻击');
-        A_player.防御 *= 0.6;
-        att = last_att + (A_player.防御 * 0.2);
-        att = last_att * 1.5;
-      } else {
-        msg.push('触发元素爆发:[鬼王游行通通闪开],百分之0.1的防御转化成攻击');
-        A_player.防御 *= 0.8;
-        att = last_att + (A_player.防御 * 0.1);
-      }
-    } else {
-      msg.push('触发赤角石溃杵被动技能:[御嘉大王],防御增强50%,攻击增强120%');
-      fyjiachen += A_player.防御 * 0.5;
-      att = last_att * 1.2;
-    }
-  }
-  //玄冰之枪
-  if (equipment.武器.name == '玄冰之枪') {
-    if (A_lin == yuansu[4] && equipment.武器.fumo == '水' && random > 0.5) {
-      msg.push('寒冰之枪，出鞘！\n成功冻结对方一回合');
-      donjie = true;
-      huihe = true;
-    } else if (A_lin == yuansu[4] && B_lin == yuansu[1] && random > 0.5) {
-      msg.push('寒冰之枪，出鞘！\n成功冻结对方一回合');
-      donjie = true;
-      huihe = true;
-    } else if (A_lin == yuansu[4] && equipment.武器.fumo == '火') {
-      att = last_att * 1.8;
-      msg.push('寒冰之枪，出鞘！\n使用了冰元素技能,由于武器自带火属性附魔,造成了融化反应,伤害爆炸了');
-    } else if (A_lin == yuansu[4] && B_lin == yuansu[0]) {
-      att = last_att * 1.4;
-      msg.push('寒冰之枪，出鞘！\n使用了冰元素技能,由于对方是火灵根,造成了融化反应,伤害提高了');
-    } else if (A_lin == yuansu[4] && equipment.武器.fumo == '雷') {
-      att = last_att * 1.8;
-      msg.push('寒冰之枪，出鞘！\n使用了冰元素技能,由于武器自带雷属性附魔,造成了超导反应,伤害爆炸了');
-    } else if (A_lin == yuansu[4] && B_lin == yuansu[2]) {
-      att = last_att * 1.4;
-      msg.push('寒冰之枪，出鞘！\n使用了冰元素技能,由于对方是雷灵根,造成了超导反应,伤害提高了');
-    } else if (A_lin == yuansu[4]) {
-      att = last_att * 1.5;
-      msg.push('寒冰之枪，出鞘！\n使用了冰元素技能,伤害提高了');
-    } else {
-      att = last_att * 1.2;
-      msg.push('寒冰之枪，出鞘！\n使用了冰元素技能,伤害提高了');
-    }
-  }
-  //冰封巨锤
-  if (equipment.武器.name == '冰封巨锤') {
-    if (random > 0.82) {
-      msg.push('哈！' + A_player.名号 + '用力拿起了冰封巨锤,向' + B_player.名号 + '冲了过来');
-      if (A_lin == yuansu[4]) {
-        msg.push('触发冰封巨锤被动技能:[冰墙巨障],防御提升100%,伤害提升30%\n手中的冰元素异常贴切[冰封巨锤],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害获得一定提升');
-        att *= 1.3;
-        fyjiachen += A_player.防御;
-      } else if (A_lin == yuansu[4] && equipment.武器.fumo == '水') {
-        msg.push('触发冰封巨锤被动技能:[冰墙巨障],防御提升100%,伤害提升30%\n手中的冰元素异常贴切[冰封巨锤],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害获得一定提升,触发了冻结反应');
-        att *= 1.3;
-        fyjiachen += A_player.防御;
-        donjie = true;
-        huihe = true;
-      } else {
-        msg.push('触发冰封巨锤被动技能:[冰墙巨障],防御提升100%,伤害提升15%');
-        fyjiachen += A_player.防御;
-        att *= 1.15;
-      }
-    }
-  }
-  //护摩之杖
-  if (equipment.武器.name == '护摩之杖') {
-    if (A_player.当前血量 < A_player.血量上限 / 2 && random > 0.8) {
-      msg.push('起！' + A_player.名号 + '拿起护摩之杖使用[碟来引生]向' + B_player.名号 + '冲了过来');
-      if (A_lin == yuansu[0]) {
-        msg.push('触发护摩之杖被动技能:[无羁的朱赤之蝶],伤害大幅度提升\n手中的火元素异常贴切[护摩之杖],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害大幅提升');
-        att *= 2.5;
-      } else if (A_lin == yuansu[0] && equipment.武器.fumo == '水') {
-        msg.push('触发护摩之杖被动技能:[无羁的朱赤之蝶],伤害大幅度提升\n手中的火元素异常贴切[护摩之杖],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害大幅提升,触发了蒸发反应');
-        att *= 3;
-        chufa = true;
-      } else {
-        msg.push('触发护摩之杖被动技能:[无羁的朱赤之蝶],伤害大幅度提升');
-        att *= 2;
-      }
-    }
-  }
-  //雾切
-  if (equipment.武器.name == '雾切之回光') {
-    if (random > 0.8) {
-      msg.push('迅影如剑！' + A_player.名号 + '向' + B_player.名号 + '使用[星斗归位]闪现了过来');
-      if (A_lin == yuansu[2]) {
-        msg.push('触发雾切之回光被动技能:[雾切御腰物],元素伤害提升120%\n手中的雷元素异常贴切[雾切之回光],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升180%');
-        att *= 1.7;
-      } else if (A_lin == yuansu[2] && equipment.武器.fumo == '水') {
-        msg.push('触发雾切之回光被动技能:[雾切御腰物],元素伤害提升120%\n手中的雷元素异常贴切[雾切之回光],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升250%,触发了感电反应');
-        att *= 2.5;
-        gandian = true;
-        chufa = true;
-      } else if (A_lin == yuansu[2] && equipment.武器.fumo == '草') {
-        msg.push('触发雾切之回光被动技能:[雾切御腰物],元素伤害提升120%\n手中的雷元素异常贴切[雾切之回光],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升270%,触发了激化反应');
-        att *= 2.7;
-        chufa = true;
-      } else if (A_lin == yuansu[2] && equipment.武器.fumo == '冰') {
-        msg.push('触发雾切之回光被动技能:[雾切御腰物],元素伤害提升120%\n手中的雷元素异常贴切[雾切之回光],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升230%,触发了超导反应');
-        att *= 2.3;
-        chufa = true;
-      } else if (A_lin == yuansu[2] && equipment.武器.fumo == '火') {
-        msg.push('触发雾切之回光被动技能:[雾切御腰物],元素伤害提升120%\n手中的雷元素异常贴切[雾切之回光],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升200%,触发了超载反应');
-        att *= 2;
-        chufa = true;
-      } else {
-        msg.push('触发雾切之回光被动技能:[雾切御腰物],元素伤害提升120%');
-        att *= 1.2;
-      }
-    }
-  }
-  //贯虹之槊
-  if (equipment.武器.name == '贯虹之槊') {
-    if (random > 0.7) {
-      msg.push('安如磐石' + A_player.名号 + '使用了元素战技[地心]');
-      if (A_lin == yuansu[3]) {
-        msg.push('触发贯虹之槊被动技能:[金璋皇极],防御强效增强150%\n手中的岩元素异常贴切[贯虹之槊],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升150%');
-        fyjiachen += A_player.防御 * 0.5;
-        att *= 1.5;
-      } else if (A_lin == yuansu[3] && equipment.武器.fumo == '岩') {
-        msg.push('触发贯虹之槊被动技能:[金璋皇极],防御强效增强200%\n手中的岩元素异常贴切[贯虹之槊],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益,岩属性附魔与武器产生了共鸣,元素伤害提升150%');
-        fyjiachen += A_player.防御 * 1;
-        att *= 1.5;
-        if (random > 0.8) {
-          msg.push('你开启了元素爆发鬼王游行通通闪开,防御转化成了攻击,元素伤害增加了300%');
-          att *= 3;
-          A_player.防御 = -fyjiachen;
-        }
-      } else {
-        msg.push('触发贯虹之槊被动技能:[金璋皇极],防御强效增强120%');
-        fyjiachen += A_player.防御 * 0.5;
-      }
-    }
-  }
-  //磐岩结绿
-  if (equipment.武器.name == '磐岩结绿') {
-    if (random > 0.8) {
-      msg.push(A_player.名号 + '拿起[磐岩结绿]使用了古华剑派独门剑技[雨画笼山]向' + B_player.名号 + '挥舞了过来');
-      if (A_lin == yuansu[1]) {
-        msg.push('触发磐岩结绿被动技能:[护国的无垢之心],血量恢复30%\n手中的水元素异常贴切[磐岩结绿],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升130%');
-        if (A_player.当前血量 + A_player.血量上限 * 0.3 >= A_player.血量上限 * 1.3) {
-          A_player.当前血量 = A_player.血量上限;
-        } else {
-          A_player.当前血量 += A_player.血量上限 * 0.3;
-        }
-        att *= 1.3;
-      } else if (A_lin == yuansu[1] && equipment.武器.fumo == '水') {
-        msg.push('触发磐岩结绿被动技能:[护国的无垢之心],血量恢复30%\n手中的水元素异常贴切[磐岩结绿],' + A_player.名号 + '感到筋脉中的元素之力得到了异常增益，元素伤害提升150%');
-        if (A_player.当前血量 + A_player.血量上限 * 0.3 >= A_player.血量上限 * 1.3) {
-          A_player.当前血量 = A_player.血量上限;
-        } else {
-          A_player.当前血量 += A_player.血量上限 * 0.3;
-        }
-        att *= 1.5;
-
-      } else {
-        msg.push('触发磐岩结绿被动技能:[护国的无垢之心],血量恢复30%');
-        if (A_player.血量上限 - A_player.当前血量 >= A_player.血量上限 * 0.3) {
-          A_player.当前血量 = A_player.血量上限;
-        } else {
-          A_player.当前血量 += A_player.血量上限 * 0.3;
-        }
-      }
-
-
-    }
-
-  }
-  //苍古自由之誓
-  if (equipment.武器.name == '苍古自由之誓') {
-    if (random > 0.8) {
-      msg.push('\'可叹落叶飘零\'' + A_player.名号 + '的周围吹起风墙,无数枫叶飞舞在双方周围');
-      if (A_lin == yuansu[5]) {
-        if (equipment.武器.fumo == '风') {
-          msg.push('风之眼元素力催动武器,风元素附魔与其产生共鸣,触发苍古被动[抗争的践行之歌],' + B_player.名号 + '的防御力减少了40%同时自身攻击力增加了40%');
-          att *= 1.4;
-          B_player.防御 *= 0.6;
-        } else if (equipment.武器.fumo == '火') {
-          att *= 1.6;
-          B_player.防御 *= 0.8;
-          msg.push('风之眼元素力催动武器,扩散火元素附魔,下次攻击转化成火元素伤害,伤害提高60%,触发苍古被动[抗争的践行之歌],' + B_player.名号 + '的防御力减少了20%');
-        } else if (equipment.武器.fumo == '冰') {
-          att *= 1.5;
-          B_player.防御 *= 0.8;
-          msg.push('风之眼元素力催动武器,扩散冰元素附魔,下次攻击转化成冰元素伤害,伤害提高50%,触发苍古被动[抗争的践行之歌],' + B_player.名号 + '的防御力减少了20%');
-        } else if (equipment.武器.fumo == '雷') {
-          att *= 1.8;
-          B_player.防御 *= 0.8;
-          msg.push('风之眼元素力催动武器,扩散冰元素附魔,下次攻击转化成冰元素伤害,伤害提高80%,触发苍古被动[抗争的践行之歌],' + B_player.名号 + '的防御力减少了20%');
-        } else if (equipment.武器.fumo == '水') {
-          att *= 1.4;
-          B_player.防御 *= 0.8;
-          msg.push('风之眼元素力催动武器,扩散水元素附魔,下次攻击转化成水元素伤害,伤害提高40%,触发苍古被动[抗争的践行之歌],' + B_player.名号 + '的防御力减少了20%');
-        } else if (equipment.武器.fumo == '草') {
-          att *= 1.5;
-          B_player.防御 *= 0.8;
-          msg.push('风之眼元素力催动武器,扩散草元素附魔,生成了草种子,下次攻击转化成草元素伤害,伤害提高50%,触发苍古被动[抗争的践行之歌],' + B_player.名号 + '的防御力减少了20%');
-        } else {
-          att *= 1.3;
-          B_player.防御 *= 0.8;
-          msg.push('风之眼元素力催动武器,伤害提高30%,触发苍古被动[抗争的践行之歌],' + B_player.名号 + '的防御力减少了20%');
-        }
-      } else {
-        att *= 1.3;
-        msg.push('异界的仙力催动武器,触发苍古被动[抗争的践行之歌],伤害提升了30%');
-      }
-    }
-  }
-  if (equipment.武器.name == '湛卢') {
-    msg.push('触发特殊技能，获得50%生命加成，150%攻击加成');
-    att *= 2.5;
-    A_player.当前血量 *= 1.5;
-  }
-  if (B.武器.name == '湛卢') {
-    msg.push('触发特殊技能，获得50%生命加成，150%攻击加成');
-    B.攻击 *= 2.5;
-    B.当前血量 *= 1.5;
-  }
-
-  //终末嗟叹之诗
-  if (equipment.武器.name == '终末嗟叹之诗') {
-    if (random > 0.8) {
-      msg.push(A_player.名号 + '催动终末嗟叹之诗,释放风神之诗,恐怖的风龙卷慢慢的逼近' + B_player.名号);
-      if (A_lin == yuansu[5]) {
-        if (equipment.武器.fumo == '风') {
-          msg.push('风之眼元素力催动武器,风元素附魔与其产生共鸣,终末被动[别离的思念之歌],' + B_player.名号 + '的防御力减少了60%同时自身攻击力增加了40%');
-          att *= 1.4;
-          B_player.防御 *= 0.4;
-        } else if (equipment.武器.fumo == '火') {
-          att *= 1.6;
-          B_player.防御 *= 0.7;
-          msg.push('风之眼元素力催动武器,扩散火元素附魔,下次攻击转化成火元素伤害,伤害提高60%,终末被动[别离的思念之歌],' + B_player.名号 + '的防御力减少了30%');
-        } else if (equipment.武器.fumo == '冰') {
-          att *= 1.5;
-          B_player.防御 *= 0.7;
-          msg.push('风之眼元素力催动武器,扩散冰元素附魔,下次攻击转化成冰元素伤害,伤害提高50%,终末被动[别离的思念之歌],' + B_player.名号 + '的防御力减少了30%');
-        } else if (equipment.武器.fumo == '雷') {
-          att *= 1.8;
-          B_player.防御 *= 0.7;
-          msg.push('风之眼元素力催动武器,扩散冰元素附魔,下次攻击转化成雷元素伤害,伤害提高80%,终末被动[别离的思念之歌],' + B_player.名号 + '的防御力减少了30%');
-        } else if (equipment.武器.fumo == '水') {
-          att *= 1.4;
-          B_player.防御 *= 0.7;
-          msg.push('风之眼元素力催动武器,扩散水元素附魔,下次攻击转化成水元素伤害,伤害提高40%,终末被动[别离的思念之歌],' + B_player.名号 + '的防御力减少了30%');
-        } else if (equipment.武器.fumo == '草') {
-          att *= 1.5;
-          B_player.防御 *= 0.7;
-          msg.push('风之眼元素力催动武器,扩散草元素附魔,生成了草种子,下次攻击转化成草元素伤害,伤害提高50%,终末被动[别离的思念之歌],' + B_player.名号 + '的防御力减少了30%');
-        } else {
-          att *= 1.3;
-          B_player.防御 *= 0.7;
-          msg.push('风之眼元素力催动武器,伤害提高30%,终末被动[别离的思念之歌],' + B_player.名号 + '的防御力减少了30%');
-        }
-      } else {
-        att *= 1.3;
-        msg.push('异界的仙力催动武器,终末被动[别离的思念之歌],伤害提升了30%');
-      }
-    }
-  }
-  if (equipment.武器.fumo == '夏侯兄弟') {
-    if (random > 0.8) {
-      msg.push(A_player.名号 + '使用了箭震山河');
-      att *= 1.5;
-    } else {
-      msg.push(A_player.名号 + '使用了侵略如火');
-      att *= 1.2;
-    }
-  }
-  if (equipment.护具.fumo == '乱世枭雄') {
-    if (A_lin == yuansu[0] || A_lin == yuansu[1] || A_lin == yuansu[2] || A_lin == yuansu[3] || A_lin == yuansu[4] || A_lin == yuansu[5] || A_lin == yuansu[6]) {
-      if (random > 0.8) {
-        msg.push(A_player.名号 + '使用了火卦-星火燎原,下次伤害将转化成燃烧反应,下次伤害提升了100%');
-        att * 2;
-        gandianhuihe += 3;
-        gandianhuihe -= 3;
-        ranshao = true;
-      } else if (random > 0.3 && random <= 0.8) {
-        msg.push(A_player.名号 + '使用了水卦-背水一战,双方血量同时减少20%');
-        A_player.当前血量 -= A_player.当前血量 * 0.2;
-        B_player.当前血量 -= B_player.当前血量 * 0.2;
-      } else {
-        msg.push(A_player.名号 + '使用了凤卦-变幻莫测,下次防御提升了30%');
-        A_player.防御 *= 1.3;
-      }
-    }
-  }
-  if (equipment.武器.fumo == '江东霸王') {
-    if (random > 0.6 && random <= 0.8) {
-      msg.push(A_player.名号 + '使用了决机');
-      att *= 1.5;
-
-    } else if (random > 0.8) {
-      msg.push(A_player.名号 + '使用了火船摄阵,下次伤害提升了50%');
-      att *= 1.5;
-    } else {
-      msg.push(A_player.名号 + '使用了余音绕梁');
-      att *= 1.2;
-    }
-  }
-  if (equipment.法宝.fumo == '天变之龙') {
-    if (random > 0.8) {
-      msg.push(A_player.名号 + '使用了八卦奇袭');
-      att *= 2;
-    } else if (random > 0.6 && random <= 0.8) {
-      msg.push(A_player.名号 + '使用了十面之围');
-      att *= 1.5;
-    } else {
-      msg.push(A_player.名号 + '使用了虎守,下次防御增加20%,血量增加20%');
-      A_player.防御 *= 1.2;
-      A_player.当前血量 += A_player.血量上限 * 0.2;
-    }
-  }
-  if (equipment.护具.fumo == '长板之龙') {
-    if (random > 0.8) {
-      msg.push(A_player.名号 + '使用了长板之龙主动技能百鸟朝凤,下次伤害提升了100%');
-      att = last_att * 2;
-    } else {
-      if (B_player.魔道值 > 1000) {
-        msg.push('因为' + B_player.名号 + '是大魔王,触发了长板之龙被动技能惩奸除恶,下次伤害提升了50%');
-        att = last_att * 1.5;
-      } else {
-        msg.push(A_player.名号 + '使用了虎守,下次防御增加20%,血量增加20%');
-        A_player.防御 *= 1.2;
-        A_player.当前血量 += A_player.血量上限 * 0.2;
-      }
-    }
-  }
-  if (equipment.法宝.fumo == '赤壁奇谋') {
-    if (A_lin == yuansu[0] || A_lin == yuansu[1] || A_lin == yuansu[2] || A_lin == yuansu[3] || A_lin == yuansu[4] || A_lin == yuansu[5] || A_lin == yuansu[6]) {
-      if (random > 0.7) {
-        msg.push(A_player.名号 + '使用了赤壁奇谋主动技能炎龙冲阵,下次伤害转化成燃烧反应,伤害提升了50%');
-        att = last_att * 2;
-        gandianhuihe += 3;
-        gandianhuihe -= 3;
-        ranshao = true;
-      } else {
-        msg.push(A_player.名号 + '使用了赤壁奇谋被动技能疾风烈火,下次伤害转化成燃烧扩散反应,伤害提升了20%');
-        att = last_att * 1.5;
-        gandianhuihe += 3;
-        gandianhuihe -= 3;
-        ranshao = true;
-        chufa = true;
-      }
-    }
-  }
-  if (equipment.武器.fumo == '锋利1') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是锋利1,${A_player.名号}下次伤害提升10%`);
-      att = last_att * 1.1;
-    }
-  }
-  if (equipment.武器.fumo == '锋利2') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是锋利2,${A_player.名号}下次伤害提升20%`);
-      att = last_att * 1.2;
-    }
-  }
-  if (equipment.武器.fumo == '锋利3') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是锋利3,${A_player.名号}下次伤害提升30%`);
-      att = last_att * 1.3;
-    }
-  }
-  if (equipment.武器.fumo == '锋利4') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是锋利4,${A_player.名号}下次伤害提升40%`);
-      att = last_att * 1.4;
-    }
-  }
-  if (equipment.武器.fumo == '锋利5') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是锋利5,${A_player.名号}下次伤害提升50%`);
-      att = last_att * 1.5;
-    }
-  }
-  if (equipment.武器.fumo == '横扫之刃1') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是横扫之刃1,${A_player.名号}下次伤害提升10%`);
-      att = last_att * 1.1;
-    }
-  }
-  if (equipment.武器.fumo == '横扫之刃2') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是横扫之刃2,${A_player.名号}下次伤害提升20%`);
-      att = last_att * 1.2;
-    }
-  }
-  if (equipment.武器.fumo == '横扫之刃3') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是横扫之刃3,${A_player.名号}下次伤害提升30%`);
-      att = last_att * 1.3;
-    }
-  }
-  if (equipment.武器.fumo == '横扫之刃4') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是横扫之刃4,${A_player.名号}下次伤害提升40%`);
-      att = last_att * 1.3;
-    }
-  }
-  if (equipment.武器.fumo == '横扫之刃5') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是横扫之刃3,${A_player.名号}下次伤害提升50%`);
-      att = last_att * 1.3;
-    }
-  }
-  if (equipment.法宝.fumo == '生命吸收1') {
-    if (random > 0.8) {
-      msg.push(`${A_player.名号}使用了生命吸收,${B_player.名号}10%血量被${A_player.名号}吸取了`);
-      B_player.当前血量 -= B_player.当前血量 * 0.1;
-      A_player.当前血量 += B_player.当前血量 * 0.1;
-    }
-  }
-  if (equipment.法宝.fumo == '生命吸收2') {
-    if (random > 0.8) {
-      msg.push(`${A_player.名号}使用了生命吸收,${B_player.名号}20%血量被${A_player.名号}吸取了`);
-      B_player.当前血量 -= B_player.当前血量 * 0.2;
-      A_player.当前血量 += B_player.当前血量 * 0.2;
-    }
-  }
-  if (equipment.项链.name == '强石之链') {
-    if (random > 0.5) {
-      msg.push('触发特殊技能，对方晕眩一回合');
-      donjie = true;
-      huihe = true;
-    } else {
-      msg.push('触发特殊技能,对方防御力降低50%');
-      B_player.防御 *= 0.5;
-    }
-  }
-  if (equipment.项链.name == '七七的项链') {
-    A_player.防御 *= 2;
-    if (random > 0.33) {
-      msg.push('【星神之域】从体内爆发出星神之域,77%概率免疫77%攻击伤害');
-      A_player.防御 *= 1.77;
-      B_player.攻击 *= 0.33;
-    }
-  }
-  if (B.项链.name == '七七的项链') {
-    B_player.防御 *= 2;
-    if (random > 0.33) {
-      msg.push('【星神之域】从体内爆发出星神之域,77%概率免疫77%攻击伤害');
-      B_player.防御 *= 1.77;
-      A_player.攻击 *= 0.33;
-    }
-  }
-  if (equipment.武器.fumo == '斩首') {
-    msg.push(`${A_player.名号}使用了斩首,冲向了${B_player.名号},下次伤害提升50%`);
-    att = last_att * 1.5;
-  }
-  if (equipment.武器.fumo == '力量1') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是力量1,${A_player.名号}下次伤害提升10%`);
-      att = last_att * 1.1;
-    }
-  }
-  if (equipment.武器.fumo == '力量2') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是力量2,${A_player.名号}下次伤害提升20%`);
-      att = last_att * 1.2;
-    }
-  }
-  if (equipment.武器.fumo == '力量3') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是力量3,${A_player.名号}下次伤害提升30%`);
-      att = last_att * 1.3;
-    }
-  }
-  if (equipment.武器.fumo == '力量4') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是力量4,${A_player.名号}下次伤害提升40%`);
-      att = last_att * 1.4;
-    }
-  }
-  if (equipment.武器.fumo == '力量5') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是力量5,${A_player.名号}下次伤害提升50%`);
-      att = last_att * 1.5;
-    }
-  }
-  if (equipment.护具.fumo == '保护1') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是保护1,${A_player.名号}下次防御提升10%`);
-      A_player.防御 += A_player.防御 * 0.1;
-    }
-  }
-  if (equipment.护具.fumo == '保护2') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是保护2,${A_player.名号}下次防御提升20%`);
-      A_player.防御 += A_player.防御 * 0.2;
-    }
-  }
-  if (equipment.护具.fumo == '保护3') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是保护1,${A_player.名号}下次防御提升30%`);
-      A_player.防御 += A_player.防御 * 0.3;
-    }
-  }
-  if (equipment.护具.fumo == '保护4') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是保护1,${A_player.名号}下次防御提升40%`);
-      A_player.防御 += A_player.防御 * 0.4;
-    }
-  }
-  if (equipment.护具.fumo == '保护5') {
-    if (random > 0.8) {
-      msg.push(`由于武器的附魔书属性是保护5,${A_player.名号}下次防御提升50%`);
-      A_player.防御 += A_player.防御 * 0.5;
-    }
-  }
-  if (A_lin == yuansu[0] || A_lin == yuansu[1] || A_lin == yuansu[2] || A_lin == yuansu[3] || A_lin == yuansu[4] || A_lin == yuansu[5] || A_lin == yuansu[6]) {
-    if (equipment.法宝.fumo == '制衡天下1') {
-      if (B.法宝.fumo == '制衡天下2' || B.法宝.fumo == '制衡天下3' || B.法宝.fumo == '制衡天下4' || B.法宝.fumo == '制衡天下5') {
-        msg.push(`由于${B_player.名号}制衡天下等级比${A_player.名号}高,${A_player.名号}被${B_player.名号}制衡了`);
-      } else if (B.法宝.fumo == '制衡天下1') {
-        msg.push('由于双方制衡天下等级相同，双方血量都增加10%');
-        A_player.当前血量 += A_player.血量上限 * 0.1;
-        B_player.当前血量 += B_player.血量上限 * 0.1;
-      } else {
-        msg.push(`${A_player.名号}使用了制衡天下,血量回复为满血,${B_player.名号}血量增加了5%`);
-        A_player.当前血量 = A_player.血量上限;
-        B_player.当前血量 += B_player.血量上限 * 0.05;
-      }
-
-    }
-    if (equipment.法宝.fumo == '制衡天下2') {
-      if (B.法宝.fumo == '制衡天下3' || B.法宝.fumo == '制衡天下4' || B.法宝.fumo == '制衡天下5') {
-        msg.push(`由于${B_player.名号}制衡天下等级比${A_player.名号}高,${A_player.名号}被${B_player.名号}制衡了`);
-      } else if (B.法宝.fumo == '制衡天下2') {
-        msg.push('由于双方制衡天下等级相同，双方血量都增加20%');
-        A_player.当前血量 += A_player.血量上限 * 0.2;
-        B_player.当前血量 += B_player.血量上限 * 0.2;
-      } else {
-        msg.push(`${A_player.名号}使用了制衡天下,血量回复为满血,${B_player.名号}血量增加了4%`);
-        A_player.当前血量 = A_player.血量上限;
-        B_player.当前血量 += B_player.血量上限 * 0.04;
-      }
-
-    }
-    if (equipment.法宝.fumo == '制衡天下3') {
-      if (B.法宝.fumo == '制衡天下4' || B.法宝.fumo == '制衡天下5') {
-        msg.push(`由于${B_player.名号}制衡天下等级比${A_player.名号}高,${A_player.名号}被${B_player.名号}制衡了`);
-      } else if (B.法宝.fumo == '制衡天下3') {
-        msg.push('由于双方制衡天下等级相同，双方血量都增加30%');
-        A_player.当前血量 += A_player.血量上限 * 0.3;
-        B_player.当前血量 += B_player.血量上限 * 0.3;
-      } else {
-        msg.push(`${A_player.名号}使用了制衡天下,血量回复为满血,${B_player.名号}血量增加了3%`);
-        A_player.当前血量 = A_player.血量上限;
-        B_player.当前血量 += B_player.血量上限 * 0.03;
-      }
-
-    }
-    if (equipment.法宝.fumo == '制衡天下4') {
-      if (B.法宝.fumo == '制衡天下5') {
-        msg.push(`由于${B_player.名号}制衡天下等级比${A_player.名号}高,${A_player.名号}被${B_player.名号}制衡了`);
-      } else if (B.法宝.fumo == '制衡天下4') {
-        msg.push('由于双方制衡天下等级相同，双方血量都增加40%');
-        A_player.当前血量 += A_player.血量上限 * 0.4;
-        B_player.当前血量 += B_player.血量上限 * 0.4;
-      } else {
-        msg.push(`${A_player.名号}使用了制衡天下,血量回复为满血,${B_player.名号}血量增加了2%`);
-        A_player.当前血量 = A_player.血量上限;
-        B_player.当前血量 += B_player.血量上限 * 0.02;
-      }
-
-    }
-    if (equipment.法宝.fumo == '制衡天下5') {
-      if (B.法宝.fumo == '制衡天下5') {
-        msg.push('由于双方制衡天下等级相同，双方血量都增加50%');
-        A_player.当前血量 += A_player.血量上限 * 0.5;
-        B_player.当前血量 += B_player.血量上限 * 0.5;
-      } else {
-        msg.push(`${A_player.名号}使用了制衡天下,血量回复为满血,${B_player.名号}血量增加了1%`);
-        A_player.当前血量 = A_player.血量上限;
-        B_player.当前血量 += B_player.血量上限 * 0.01;
-      }
-
-    }
-  }
-  if (B.武器.fumo == '击退1') {
-    if (random > 0.8) {
-      msg.push(`${B_player.名号}使用了击退,${A_player.名号}下次攻击将无效`);
-      att = last_att * 0;
-    }
-  }
-  if (B.武器.fumo == '击退2') {
-    if (random > 0.8) {
-      msg.push(`${B_player.名号}使用了击退,${A_player.名号}下次攻击被打断,受到了反噬,血量减少10%`);
-      att = last_att * 0;
-      A_player.当前血量 -= A_player.当前血量 * 0.1;
-    }
-  }
-  if (B.护具.fumo == '荆棘1') {
-    if (random > 0.7) {
-      msg.push(`${B_player.名号}触发护具附魔属性荆棘1,${A_player.名号}下次伤害被反弹了10%,${A_player.名号}剩余血量${A_player.当前血量 - att * 0.1}`);
-    }
-  }
-  if (B.护具.fumo == '荆棘2') {
-    if (random > 0.7) {
-      msg.push(`${B_player.名号}触发护具附魔属性荆棘2,${A_player.名号}下次伤害被反弹了20%,${A_player.名号}剩余血量${A_player.当前血量 - att * 0.2}`);
-
-    }
-  }
-  if (B.护具.fumo == '荆棘3') {
-    if (random > 0.7) {
-      msg.push(`${B_player.名号}触发护具附魔属性荆棘3,${A_player.名号}下次伤害被反弹了30%,${A_player.名号}剩余血量${A_player.当前血量 - att * 0.3}`);
-
-    }
-  }
-  if (B.护具.fumo == '荆棘4') {
-    if (random > 0.7) {
-      msg.push(`${B_player.名号}触发护具附魔属性荆棘4,${A_player.名号}下次伤害被反弹了40%,${A_player.名号}剩余血量${A_player.当前血量 - att * 0.4}`);
-
-    }
-  }
-  if (B.护具.fumo == '荆棘5') {
-    if (random > 0.7) {
-      msg.push(`${B_player.名号}触发护具附魔属性荆棘5,${A_player.名号}下次伤害被反弹了50%,${A_player.名号}剩余血量${A_player.当前血量 - att * 0.5}`);
-
-    }
-  }
-
-
-  //===============================================================================这里是仙宠======================================================================================================
-  if (A_player.仙宠.type == '战斗') {
-    let ran = Math.random();
-    if (ran < 0.8) {
-      let lastatt_msg = att * A_player.仙宠.加成;
-      att = att + att * A_player.仙宠.加成;//最终伤害=最终伤害+最终伤害*加成
-      fyjiachen += A_player.防御 * A_player.仙宠.加成;//防御加成=加成后防御-原防御
-      let lastHP_msg = A_player.当前血量 * A_player.仙宠.加成;
-      A_player.当前血量 *= 1 + A_player.仙宠.加成;//血量上限乘仙宠血量
-      msg.push('仙宠【' + A_player.仙宠.name + '】辅佐了[' + A_player.名号 + ']，使其的伤害增加了[' + lastatt_msg + ']防御增加了[' + A_player.防御 * A_player.仙宠.加成 + ']血量增加了[' + lastHP_msg + ']');
-    }
-  }
-
-  if (donjie) {//冻结
-    cnt6++;
-  }
-  if (ranshao || gandian) {//感电燃烧
-    gandianhuihe += 3;
-  }
-  if (chaodao) {//超导
-    chaodaohuihe2 += 3;
-  }
-  //燃烧
-  if (A_lin == yuansu[0] && B_lin == yuansu[6]) {
-    ranshao = true;
-  }
-  if (A_lin == yuansu[0] && equipment.武器.fumo == '草') {
-    ranshao = true;
-  }
-  if (A_lin == yuansu[6] && B_lin == yuansu[0]) {
-    ranshao = true;
-  }
-  if (A_lin == yuansu[6] && equipment.武器.fumo == '火') {
-    ranshao = true;
-  }
-
-  //感电
-  if (A_lin == yuansu[1] && B_lin == yuansu[2]) {
-    gandian = true;
-  }
-  if (A_lin == yuansu[1] && equipment.武器.fumo == '雷') {
-    gandian = true;
-  }
-  if (A_lin == yuansu[2] && B_lin == yuansu[1]) {
-    gandian = true;
-  }
-  if (A_lin == yuansu[2] && equipment.武器.fumo == '火') {
-    gandian = true;
-  }
-  //超导
-  if (A_lin == yuansu[2] && B_lin == yuansu[4]) {
-    chaodao = true;
-  }
-  if (A_lin == yuansu[2] && equipment.武器.fumo == '冰') {
-    chaodao = true;
-  }
-  if (A_lin == yuansu[4] && B_lin == yuansu[2]) {
-    chaodao = true;
-  }
-  if (A_lin == yuansu[2] && equipment.武器.fumo == '雷') {
-    chaodao = true;
-  }
-  if (chaodaohuihe > 0 && !chaodao) {
-    chaodao = true;
-  }
-  A_player.攻击 = att;
-  let fanyin = {
+  // 返回结果
+  return {
     'A_player': A_player,
     'B_player': B_player,
     'msg': msg,
@@ -2890,7 +1869,6 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     'ranshao': ranshao,
     'gandian': gandian
   };
-  return fanyin;
 }
 
 //通过输入暴击率,返回暴击伤害,不暴击返回1
@@ -2952,7 +1930,7 @@ export async function ForwardMsg(e, data) {
 
 //对象数组排序
 export function sortBy(field) {//从大到小,b和a反一下就是从小到大
-  return function(b, a) {
+  return function (b, a) {
     return a[field] - b[field];
   };
 }

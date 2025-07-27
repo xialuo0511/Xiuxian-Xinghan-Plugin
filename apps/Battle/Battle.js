@@ -20,10 +20,12 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { get_random_talent } from '../Xiuxian/xiuxian.js';
 import { Gulid } from '../../api/api.js';
+import * as DAL from '../../api/data-access.js';
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import { validateRobConditions, executeRobBattle, calculateRobRewards } from '../../logic/battle_element_logic.js';
 
 /**
  * 战斗类
@@ -57,930 +59,885 @@ export class Battle extends plugin {
 
   //打劫
   async Dajie(e) {
-    //不开放私聊功能
-    if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
-    // 判断是否在开启时间
+    try {
+      // 基础验证
+      const basicValidation = await this.validateBasicRobConditions(e);
+      if (!basicValidation.success) {
+        e.reply(basicValidation.message);
+        return;
+      }
 
-    const nowDate = new Date();
-    const todayDate = new Date(nowDate);
+      const { attackerId, defenderId } = basicValidation.data;
+
+      // 时间窗口验证
+      const timeValidation = this.validateRobTimeWindow();
+      if (!timeValidation.success) {
+        e.reply(timeValidation.message);
+        return;
+      }
+
+      // 玩家状态验证
+      const playerValidation = await this.validateRobPlayerStates(attackerId, defenderId);
+      if (!playerValidation.success) {
+        e.reply(playerValidation.message);
+        return;
+      }
+
+      // CD检查
+      const cdValidation = await this.validateRobCooldown(attackerId);
+      if (!cdValidation.success) {
+        e.reply(cdValidation.message);
+        return;
+      }
+
+      // 执行打劫战斗
+      const battleResult = await this.executeRobBattle(attackerId, defenderId, playerValidation.data);
+
+      // 处理战斗结果
+      await this.handleRobResult(e, battleResult);
+
+    } catch (error) {
+      console.error('打劫功能执行错误:', error);
+      e.reply('打劫过程中发生错误，请稍后再试');
+    }
+  }
+
+  // 基础条件验证
+  async validateBasicRobConditions(e) {
+    // 群聊检查
+    if (!e.isGroup) {
+      return { success: false, message: '修仙游戏请在群聊中游玩' };
+    }
+
+    const attackerId = e.user_id;
+
+    // 检查攻击者存档
+    const attackerExists = await existplayer(attackerId);
+    if (!attackerExists) {
+      return { success: false, message: '你还未踏入修仙之路，请先开始修仙！' };
+    }
+
+    // 检查是否@了用户
+    const atItem = e.message.find(item => item.type === 'at');
+    if (!atItem) {
+      return { success: false, message: '请@要打劫的目标' };
+    }
+
+    const defenderId = atItem.qq;
+
+    // 检查被攻击者存档
+    const defenderExists = await existplayer(defenderId);
+    if (!defenderExists) {
+      return { success: false, message: '不可对凡人出手!' };
+    }
+
+    // 检查是否自己攻击自己
+    if (attackerId === defenderId) {
+      return { success: false, message: '咋的，自己弄自己啊？' };
+    }
+
+    return {
+      success: true,
+      data: { attackerId, defenderId }
+    };
+  }
+
+  // 时间窗口验证
+  validateRobTimeWindow() {
+    const now = new Date();
     const { openHour, closeHour } = this.set.Auction;
-    const todayTime = todayDate.setHours(0, 0, 0, 0);
-    const openTime = todayTime + openHour * 60 * 60 * 1000;
-    const nowTime1 = nowDate.getTime();
-    const closeTime = todayTime + closeHour * 60 * 60 * 1000;
-    if (!(nowTime1 < openTime || nowTime1 > closeTime)) {
-      e.reply(`这个时间由星阁阁主看管,还是不要张扬较好`);
-      return;
+    const todayStart = new Date(now).setHours(0, 0, 0, 0);
+    const openTime = todayStart + openHour * 3600000;
+    const closeTime = todayStart + closeHour * 3600000;
+    const currentTime = now.getTime();
+
+    if (currentTime >= openTime && currentTime <= closeTime) {
+      return {
+        success: false,
+        message: '这个时间由星阁阁主看管,还是不要张扬较好'
+      };
     }
 
-    //得到主动方qq
-    let A = e.user_id;
-
-    //先判断
-    let ifexistplay_A = await existplayer(A);
-    if (!ifexistplay_A || e.isPrivate) {
-      return;
-    }
-
-    //看看状态
-
-    //得到redis游戏状态
-    let last_game_timeA = await redis.get(
-      'xiuxian:player:' + A + ':last_game_time'
-    );
-    //设置游戏状态
-    if (last_game_timeA == 0) {
-      e.reply(`猜大小正在进行哦!`);
-      return true;
-    }
-
-    //判断对方
-    let isat = e.message.some(item => item.type === 'at');
-    if (!isat) {
-      return;
-    }
-    //获取对方qq
-    let atItem = e.message.filter(item => item.type === 'at');
-    let B = atItem[0].qq; //被打劫者
-
-    //先判断存档！
-    let ifexistplay_B = await existplayer(B);
-    if (!ifexistplay_B) {
-      e.reply('不可对凡人出手!');
-      return;
-    }
-
-    //出手的
-    //读取信息
-    let playerAA = await Read_player(A);
-    //境界
-    let now_level_idAA;
-    now_level_idAA = data.Level_list.find(
-      item => item.level_id == playerAA.level_id
-    ).level_id;
-
-    //对方
-    //读取信息
-    let playerBB = await Read_player(B);
-    //境界
-    //根据名字取找境界id
-
-    let now_level_idBB;
-
-    if (!isNotNull(playerBB.level_id)) {
-      e.reply('对方为错误存档！');
-      return;
-    }
-
-    now_level_idBB = data.Level_list.find(
-      item => item.level_id == playerBB.level_id
-    ).level_id;
-
-    //A是仙人，B不是仙人
-    if (now_level_idAA > 41 && now_level_idBB <= 41) {
-      e.reply(`仙人不可对凡人出手！`);
-      return;
-    }
-
-    //A是修仙者，B不是
-    if (now_level_idAA >= 12 && now_level_idBB < 12) {
-      e.reply(`不可欺负弱小！`);
-      return;
-    }
-
-    if (A == B) {
-      e.reply('咋的，自己弄自己啊？');
-      return;
-    }
-    let playerA = data.getData('player', A);
-    let playerB = data.getData('player', B);
-    if (isNotNull(playerA.宗门) && isNotNull(playerB.宗门)) {
-      var assA = data.getAssociation(playerA.宗门.宗门名称);
-      var assB = data.getAssociation(playerB.宗门.宗门名称);
-      if (assA.宗门名称 == assB.宗门名称) {
-        e.reply('门派禁止内讧');
-        return;
-      }
-    }
-
-    let A_action = await redis.get('xiuxian:player:' + A + ':action');
-    A_action = JSON.parse(A_action);
-    if (A_action != null) {
-      let now_time = new Date().getTime();
-      //人物任务的动作是否结束
-      let A_action_end_time = A_action.end_time;
-      if (now_time <= A_action_end_time) {
-        let m = parseInt((A_action_end_time - now_time) / 1000 / 60);
-        let s = parseInt((A_action_end_time - now_time - m * 60 * 1000) / 1000);
-        e.reply(
-          '正在' + A_action.action + '中,剩余时间:' + m + '分' + s + '秒'
-        );
-        return;
-      }
-    }
-
-    let last_game_timeB = await redis.get(
-      'xiuxian:player:' + B + ':last_game_time'
-    );
-    if (last_game_timeB == 0) {
-      e.reply(`对方猜大小正在进行哦，等他赚够了再打劫也不迟!`);
-      return true;
-    }
-
-    let isBbusy = false; //给B是否忙碌加个标志位，用来判断要不要扣隐身水
-
-    let B_action = await redis.get('xiuxian:player:' + B + ':action');
-    B_action = JSON.parse(B_action);
-    if (B_action != null) {
-      let now_time = new Date().getTime();
-      //人物任务的动作是否结束
-      let B_action_end_time = B_action.end_time;
-      if (now_time <= B_action_end_time) {
-        isBbusy = true;
-        let ishaveyss = await exist_najie_thing(A, '隐身水', '道具');
-        if (!ishaveyss) {
-          //如果A没有隐身水，直接返回不执行
-          let m = parseInt((B_action_end_time - now_time) / 1000 / 60);
-          let s = parseInt(
-            (B_action_end_time - now_time - m * 60 * 1000) / 1000
-          );
-          e.reply(
-            '对方正在' + B_action.action + '中,剩余时间:' + m + '分' + s + '秒'
-          );
-          return;
-        }
-      }
-    }
-
-    let now = new Date();
-    let nowTime = now.getTime(); //获取当前时间戳
-    let last_dajie_time = await redis.get(
-      'xiuxian:player:' + A + ':last_dajie_time'
-    ); //获得上次打劫的时间戳,
-    last_dajie_time = parseInt(last_dajie_time);
-    let robTimeout = parseInt(60000 * this.xiuxianConfigData.CD.rob);
-    if (nowTime < last_dajie_time + robTimeout) {
-      let waittime_m = Math.trunc(
-        (last_dajie_time + robTimeout - nowTime) / 60 / 1000
-      );
-      let waittime_s = Math.trunc(
-        ((last_dajie_time + robTimeout - nowTime) % 60000) / 1000
-      );
-      e.reply('打劫正在CD中，' + `剩余cd:  ${waittime_m}分 ${waittime_s}秒`);
-      return;
-    }
-    let A_player = await Read_player(A);
-    let B_player = await Read_player(B);
-    if (A_player.修为 < 0) {
-      e.reply(`还是闭会关再打劫吧`);
-      return;
-    }
-    if (B_player.当前血量 < 20000) {
-      e.reply(`${B_player.名号} 重伤未愈,就不要再打他了`);
-      return;
-    }
-    if (B_player.灵石 < 30002) {
-      e.reply(`${B_player.名号} 穷得快赶上水脚脚了,就不要再打他了`);
-      return;
-    }
-    let final_msg = [segment.at(A), segment.at(B), '\n'];
-
-    //这里前戏做完,确定要开打了
-
-    //获取之前攻击力，防止结束时写入过多攻击力
-    let now_A_atk = A_player.攻击;
-    let now_B_atk = B_player.攻击;
-    let now_A_def = A_player.防御;
-    let now_B_def = B_player.防御;
-
-    if (isBbusy) {
-      //如果B忙碌,自动扣一瓶隐身水强行打架,奔着人道主义关怀,提前判断了不是重伤
-      final_msg.push(
-        `${B_player.名号}正在${B_action.action}，${A_player.名号}利用隐身水悄然接近，但被发现。`
-      );
-      await Add_najie_thing(A, '隐身水', '道具', -1);
-    } else {
-      final_msg.push(`${A_player.名号}向${B_player.名号}发起了打劫。`);
-    }
-    //本次打劫时间存入缓存
-    await redis.set('xiuxian:player:' + A + ':last_dajie_time', nowTime); //存入缓存
-    if (await exist_najie_thing(B, "替身人偶", "道具") && B_player.魔道值 < 1 && (B_player.灵根.type == "转生" || B_player.level_id > 41)) {
-      e.reply(B_player.名号 + "使用了道具替身人偶,躲过了此次打劫");
-      await Add_najie_thing(B, "替身人偶", "道具", -1);
-      return;
-    }
-    //校验有没有灵根,没有的,随机一个写进存档,之后可以删掉 ()
-    if (A_player.灵根 == null || A_player.灵根 == undefined) {
-      A_player.灵根 = await get_random_talent();
-      A_player.修炼效率提升 += A_player.灵根.eff;
-    }
-    data.setData('player', A, A_player);
-    if (B_player.灵根 == null || B_player.灵根 == undefined) {
-      B_player.灵根 = await get_random_talent();
-      B_player.修炼效率提升 += B_player.灵根.eff;
-    }
-    data.setData('player', B, B_player);
-
-    A_player.法球倍率 = A_player.灵根.法球倍率;
-    B_player.法球倍率 = B_player.灵根.法球倍率;
-
-    let Data_battle = await zd_battle(A_player, B_player);
-    let msg = Data_battle.msg;
-    await Add_HP(A, Data_battle.A_xue);
-    await Add_HP(B, Data_battle.B_xue);
-    let A_win = `${A_player.名号}击败了${B_player.名号}`;
-    let B_win = `${B_player.名号}击败了${A_player.名号}`;
-    if (msg.find(item => item == A_win)) {
-      let mdzJL = A_player.魔道值;
-      let lingshi = Math.trunc(B_player.灵石 / 5);
-      let mdz = Math.trunc(lingshi / 10000);
-      if (lingshi >= B_player.灵石) {
-        lingshi = B_player.灵石 / 2;
-      }
-      A_player.攻击 = now_A_atk;
-      B_player.攻击 = now_B_atk;
-      A_player.防御 = now_A_def;
-      B_player.防御 = now_B_def;
-      A_player.灵石 += lingshi;
-      B_player.灵石 -= lingshi;
-      A_player.魔道值 += mdz;
-      A_player.灵石 += mdzJL;
-      await Write_player(A, A_player);
-      await Write_player(B, B_player);
-      final_msg.push(
-        ` 经过一番大战,${A_win},成功抢走${lingshi}灵石，`
-      );
-    } else if (msg.find(item => item == B_win)) {
-      if (A_player.灵石 < 30002) {
-        A_player.攻击 = now_A_atk;
-        B_player.攻击 = now_B_atk;
-        A_player.防御 = now_A_def;
-        B_player.防御 = now_B_def;
-        await Write_player(B, B_player);
-        var time2 = 60; //时间（分钟）
-        var action_time2 = 60000 * time2; //持续时间，单位毫秒
-        var action2 = await redis.get('xiuxian:player:' + A + ':action');
-        action2 = await JSON.parse(action2);
-        action2.action = '禁闭';
-        action2.end_time = new Date().getTime() + action_time2;
-        await redis.set(
-          'xiuxian:player:' + A + ':action',
-          JSON.stringify(action2)
-        );
-        final_msg.push(
-          `经过一番大战,${A_player.名号}被${B_player.名号}击败了,${A_player.名号} 真是偷鸡不成蚀把米,被关禁闭60分钟`
-        );
-      } else {
-        let lingshi = Math.trunc(A_player.灵石 / 4);
-        if (lingshi <= 0) {
-          lingshi = 0;
-        }
-        A_player.攻击 = now_A_atk;
-        B_player.攻击 = now_B_atk;
-        A_player.防御 = now_A_def;
-        B_player.防御 = now_B_def;
-        A_player.灵石 -= lingshi;
-        B_player.灵石 += lingshi;
-        await Write_player(A, A_player);
-        await Write_player(B, B_player);
-        final_msg.push(
-          `经过一番大战,${A_player.名号}被${B_player.名号}击败了,${A_player.名号} 真是偷鸡不成蚀把米,被劫走${lingshi}灵石`
-        );
-      }
-    } else {
-      e.reply(`战斗过程出错`);
-      return;
-    }
-    e.reply(final_msg);
-    return;
+    return { success: true };
   }
 
-  //比武
+  // 玩家状态验证
+  async validateRobPlayerStates(attackerId, defenderId) {
+    try {
+      // 并行读取玩家数据
+      const [attackerData, defenderData] = await Promise.all([
+        Read_player(attackerId),
+        Read_player(defenderId)
+      ]);
+
+      // 验证攻击者状态
+      const attackerValidation = await this.validateAttackerState(attackerId, attackerData);
+      if (!attackerValidation.success) {
+        return attackerValidation;
+      }
+
+      // 验证被攻击者状态
+      const defenderValidation = await this.validateDefenderState(defenderId, defenderData);
+      if (!defenderValidation.success) {
+        return defenderValidation;
+      }
+
+      // 验证境界差距
+      const levelValidation = this.validateLevelDifference(attackerData, defenderData);
+      if (!levelValidation.success) {
+        return levelValidation;
+      }
+
+      // 验证宗门关系
+      const guildValidation = this.validateGuildRelation(attackerId, defenderId);
+      if (!guildValidation.success) {
+        return guildValidation;
+      }
+
+      return {
+        success: true,
+        data: {
+          attacker: attackerData,
+          defender: defenderData,
+          isBusy: defenderValidation.isBusy
+        }
+      };
+    } catch (error) {
+      console.error('玩家状态验证错误:', error);
+      return { success: false, message: '玩家状态验证失败' };
+    }
+  }
+
+  // 攻击者状态验证
+  async validateAttackerState(attackerId, attackerData) {
+    // 检查修为
+    if (attackerData.修为 < 0) {
+      return { success: false, message: '还是闭会关再打劫吧' };
+    }
+
+    // 检查游戏状态
+    const gameState = await redis.get(`xiuxian:player:${attackerId}:last_game_time`);
+    if (gameState == 0) {
+      return { success: false, message: '猜大小正在进行哦!' };
+    }
+
+    // 检查行动状态
+    const actionState = await this.getPlayerAction(attackerId);
+    if (actionState) {
+      const remainingTime = actionState.end_time - Date.now();
+      const minutes = Math.floor(remainingTime / 60000);
+      const seconds = Math.floor((remainingTime % 60000) / 1000);
+      return {
+        success: false,
+        message: `正在${actionState.action}中,剩余时间:${minutes}分${seconds}秒`
+      };
+    }
+
+    return { success: true };
+  }
+
+  // 被攻击者状态验证
+  async validateDefenderState(defenderId, defenderData) {
+    // 检查血量
+    if (defenderData.当前血量 < 20000) {
+      return {
+        success: false,
+        message: `${defenderData.名号} 重伤未愈,就不要再打他了`
+      };
+    }
+
+    // 检查灵石
+    if (defenderData.灵石 < 30002) {
+      return {
+        success: false,
+        message: `${defenderData.名号} 穷得快赶上水脚脚了,就不要再打他了`
+      };
+    }
+
+    // 检查游戏状态
+    const gameState = await redis.get(`xiuxian:player:${defenderId}:last_game_time`);
+    if (gameState == 0) {
+      return {
+        success: false,
+        message: '对方猜大小正在进行哦，等他赚够了再打劫也不迟!'
+      };
+    }
+
+    // 检查行动状态
+    const actionState = await this.getPlayerAction(defenderId);
+    let isBusy = false;
+
+    if (actionState) {
+      isBusy = true;
+      // 检查攻击者是否有隐身水
+      const hasInvisibilityPotion = await exist_najie_thing(attackerId, '隐身水', '道具');
+      if (!hasInvisibilityPotion) {
+        const remainingTime = actionState.end_time - Date.now();
+        const minutes = Math.floor(remainingTime / 60000);
+        const seconds = Math.floor((remainingTime % 60000) / 1000);
+        return {
+          success: false,
+          message: `对方正在${actionState.action}中,剩余时间:${minutes}分${seconds}秒`
+        };
+      }
+    }
+
+    return { success: true, isBusy };
+  }
+
+  // 境界差距验证
+  validateLevelDifference(attackerData, defenderData) {
+    const attackerLevel = data.Level_list.find(item => item.level_id == attackerData.level_id)?.level_id;
+    const defenderLevel = data.Level_list.find(item => item.level_id == defenderData.level_id)?.level_id;
+
+    if (!defenderLevel) {
+      return { success: false, message: '对方为错误存档！' };
+    }
+
+    // 仙人不可对凡人出手
+    if (attackerLevel > 41 && defenderLevel <= 41) {
+      return { success: false, message: '仙人不可对凡人出手！' };
+    }
+
+    // 修仙者不可欺负弱小
+    if (attackerLevel >= 12 && defenderLevel < 12) {
+      return { success: false, message: '不可欺负弱小！' };
+    }
+
+    return { success: true };
+  }
+
+  // 宗门关系验证
+  validateGuildRelation(attackerId, defenderId) {
+    const attackerData = data.getData('player', attackerId);
+    const defenderData = data.getData('player', defenderId);
+
+    if (isNotNull(attackerData.宗门) && isNotNull(defenderData.宗门)) {
+      const attackerGuild = data.getAssociation(attackerData.宗门.宗门名称);
+      const defenderGuild = data.getAssociation(defenderData.宗门.宗门名称);
+
+      if (attackerGuild.宗门名称 === defenderGuild.宗门名称) {
+        return { success: false, message: '门派禁止内讧' };
+      }
+    }
+
+    return { success: true };
+  }
+
+  // CD验证
+  async validateRobCooldown(attackerId) {
+    const now = Date.now();
+    const lastRobTime = parseInt(await redis.get(`xiuxian:player:${attackerId}:last_dajie_time`) || 0);
+    const robCooldown = this.xiuxianConfigData.CD.rob * 60000;
+
+    if (now < lastRobTime + robCooldown) {
+      const remainingTime = lastRobTime + robCooldown - now;
+      const minutes = Math.floor(remainingTime / 60000);
+      const seconds = Math.floor((remainingTime % 60000) / 1000);
+
+      return {
+        success: false,
+        message: `打劫正在CD中，剩余cd: ${minutes}分${seconds}秒`
+      };
+    }
+
+    return { success: true };
+  }
+
+  // 获取玩家行动状态
+  async getPlayerAction(playerId) {
+    try {
+      const actionData = await redis.get(`xiuxian:player:${playerId}:action`);
+      if (!actionData) return null;
+
+      const action = JSON.parse(actionData);
+      if (Date.now() > action.end_time) return null;
+
+      return action;
+    } catch (error) {
+      console.error('获取玩家行动状态错误:', error);
+      return null;
+    }
+  }
+
+  // 执行打劫战斗
+  async executeRobBattle(attackerId, defenderId, playerData) {
+    try {
+      const { attacker, defender, isBusy } = playerData;
+
+      // 记录打劫时间
+      await redis.set(`xiuxian:player:${attackerId}:last_dajie_time`, Date.now());
+
+      // 检查替身人偶
+      if (await this.checkSubstituteItem(defender, defenderId)) {
+        return {
+          type: 'substitute',
+          message: `${defender.名号}使用了道具替身人偶,躲过了此次打劫`
+        };
+      }
+
+      // 处理隐身水消耗
+      if (isBusy) {
+        await Add_najie_thing(attackerId, '隐身水', '道具', -1);
+      }
+
+      // 确保灵根存在
+      await this.ensurePlayerTalent(attackerId, attacker);
+      await this.ensurePlayerTalent(defenderId, defender);
+
+      // 设置法球倍率
+      attacker.法球倍率 = attacker.灵根.法球倍率;
+      defender.法球倍率 = defender.灵根.法球倍率;
+
+      // 执行战斗
+      const battleResult = await zd_battle(attacker, defender);
+
+      return {
+        type: 'battle',
+        result: battleResult,
+        attacker,
+        defender,
+        isBusy
+      };
+
+    } catch (error) {
+      console.error('执行打劫战斗错误:', error);
+      throw error;
+    }
+  }
+
+  // 检查替身人偶
+  async checkSubstituteItem(defender, defenderId) {
+    const hasSubstitute = await exist_najie_thing(defenderId, "替身人偶", "道具");
+    const isEligible = defender.魔道值 < 1 &&
+      (defender.灵根.type === "转生" || defender.level_id > 41);
+
+    if (hasSubstitute && isEligible) {
+      await Add_najie_thing(defenderId, "替身人偶", "道具", -1);
+      return true;
+    }
+
+    return false;
+  }
+
+  // 确保玩家有灵根
+  async ensurePlayerTalent(playerId, playerData) {
+    if (!playerData.灵根) {
+      playerData.灵根 = await get_random_talent();
+      playerData.修炼效率提升 += playerData.灵根.eff;
+      data.setData('player', playerId, playerData);
+    }
+  }
+
+  // 处理打劫结果
+  async handleRobResult(e, battleResult) {
+    if (battleResult.type === 'substitute') {
+      e.reply(battleResult.message);
+      return;
+    }
+
+    const { result, attacker, defender, isBusy } = battleResult;
+    const attackerId = e.user_id;
+    const defenderId = e.message.find(item => item.type === 'at').qq;
+
+    // 恢复血量
+    await Promise.all([
+      Add_HP(attackerId, result.A_xue),
+      Add_HP(defenderId, result.B_xue)
+    ]);
+
+    // 构建消息
+    const finalMsg = [segment.at(attackerId), segment.at(defenderId), '\n'];
+
+    if (isBusy) {
+      finalMsg.push(`${defender.名号}正在忙碌，${attacker.名号}利用隐身水悄然接近，但被发现。`);
+    } else {
+      finalMsg.push(`${attacker.名号}向${defender.名号}发起了打劫。`);
+    }
+
+    // 处理战斗结果
+    const winMessage = this.processBattleOutcome(result.msg, attacker, defender, attackerId, defenderId);
+    finalMsg.push(winMessage);
+
+    e.reply(finalMsg);
+  }
+
+  // 处理战斗结果
+  async processBattleOutcome(battleMsg, attacker, defender, attackerId, defenderId) {
+    const attackerWin = `${attacker.名号}击败了${defender.名号}`;
+    const defenderWin = `${defender.名号}击败了${attacker.名号}`;
+
+    if (battleMsg.includes(attackerWin)) {
+      return await this.handleAttackerVictory(attacker, defender, attackerId, defenderId);
+    } else if (battleMsg.includes(defenderWin)) {
+      return await this.handleDefenderVictory(attacker, defender, attackerId, defenderId);
+    } else {
+      throw new Error('战斗结果异常');
+    }
+  }
+
+  // 处理攻击者胜利
+  async handleAttackerVictory(attacker, defender, attackerId, defenderId) {
+    const stolenSpirit = Math.trunc(defender.灵石 / 5);
+    const evilPoints = Math.trunc(stolenSpirit / 10000);
+    const evilBonus = attacker.魔道值;
+
+    // 更新玩家数据
+    attacker.灵石 += stolenSpirit + evilBonus;
+    attacker.魔道值 += evilPoints;
+    defender.灵石 -= stolenSpirit;
+
+    await Promise.all([
+      Write_player(attackerId, attacker),
+      Write_player(defenderId, defender)
+    ]);
+
+    return `经过一番大战,${attackerWin},成功抢走${stolenSpirit}灵石，`;
+  }
+
+  // 处理被攻击者胜利
+  async handleDefenderVictory(attacker, defender, attackerId, defenderId) {
+    if (attacker.灵石 < 30002) {
+      // 禁闭处理
+      const confinementTime = 60 * 60000; // 60分钟
+      const action = {
+        action: '禁闭',
+        end_time: Date.now() + confinementTime
+      };
+
+      await redis.set(`xiuxian:player:${attackerId}:action`, JSON.stringify(action));
+      await Write_player(defenderId, defender);
+
+      return `经过一番大战,${attacker.名号}被${defender.名号}击败了,${attacker.名号} 真是偷鸡不成蚀把米,被关禁闭60分钟`;
+    } else {
+      // 灵石损失
+      const lostSpirit = Math.trunc(attacker.灵石 / 4);
+
+      attacker.灵石 -= lostSpirit;
+      defender.灵石 += lostSpirit;
+
+      await Promise.all([
+        Write_player(attackerId, attacker),
+        Write_player(defenderId, defender)
+      ]);
+
+      return `经过一番大战,${attacker.名号}被${defender.名号}击败了,${attacker.名号} 真是偷鸡不成蚀把米,被劫走${lostSpirit}灵石`;
+    }
+  }
+  // 参数验证辅助方法
+  async validateBattleConditions(e, attackerId, defenderId) {
+    // 检查群聊
+    if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return false;
+    }
+
+    // 检查攻击者存档
+    const attackerExists = await DAL.existPlayer(attackerId);
+    if (!attackerExists) {
+      e.reply('你还未踏入修仙之路，请先开始修仙！');
+      return false;
+    }
+
+    // 检查被攻击者存档
+    const defenderExists = await DAL.existPlayer(defenderId);
+    if (!defenderExists) {
+      e.reply('修仙者不可对凡人出手!');
+      return false;
+    }
+
+    // 检查是否自己攻击自己
+    if (attackerId === defenderId) {
+      e.reply('你还跟自己修炼上了是不是?');
+      return false;
+    }
+
+    // 检查玩家状态
+    const attackerAction = await DAL.getPlayerAction(attackerId);
+    if (attackerAction) {
+      const remainingTime = attackerAction.end_time - Date.now();
+      const minutes = Math.floor(remainingTime / 60000);
+      const seconds = Math.floor((remainingTime % 60000) / 1000);
+      e.reply(`你正在${attackerAction.action}中，剩余时间: ${minutes}分${seconds}秒`);
+      return false;
+    }
+
+    return true;
+  }
+
+  // 优化后的以武会友方法
   async biwu(e) {
-    //不开放私聊功能
-    if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
-    let A = e.user_id;
+    try {
+      const attackerId = e.user_id;
 
-    //先判断
-    let ifexistplay_A = await existplayer(A);
-    if (!ifexistplay_A || e.isPrivate) {
-      return;
-    }
-    //看看状态
-    //得到redis游戏状态
-    let last_game_timeA = await redis.get(
-      'xiuxian:player:' + A + ':last_game_time'
-    );
-    //设置游戏状态
-    if (last_game_timeA == 0) {
-      e.reply(`猜大小正在进行哦!`);
-      return true;
-    }
+      // 检查是否@了人
+      const atItem = e.message.find(item => item.type === 'at');
+      if (!atItem) {
+        e.reply('请@一位道友进行切磋！');
+        return;
+      }
 
-    let isat = e.message.some(item => item.type === 'at');
-    if (!isat) {
-      return;
-    }
-    let atItem = e.message.filter(item => item.type === 'at');
-    let B = atItem[0].qq; //后手
-    B = await Gulid(B);
+      const defenderId = await Gulid(atItem.qq);
 
-    if (A == B) {
-      e.reply('你还跟自己修炼上了是不是?');
-      return;
-    }
-    let ifexistplay_B = await existplayer(B);
-    if (!ifexistplay_B) {
-      e.reply('修仙者不可对凡人出手!');
-      return;
-    }
-    //这里前戏做完,确定要开打了
-    let final_msg = [segment.at(A), segment.at(B), '\n'];
-    let A_player = await Read_player(A);
-    let B_player = await Read_player(B);
-    final_msg.push(`${A_player.名号}向${B_player.名号}发起了切磋。`);
-    A_player.法球倍率 = A_player.灵根.法球倍率;
-    B_player.法球倍率 = B_player.灵根.法球倍率;
-    A_player.当前血量 = A_player.血量上限;
-    B_player.当前血量 = B_player.血量上限;
-    let Data_battle = await zd_battle(A_player, B_player);
-    let msg = Data_battle.msg;
-    let A_win = `${A_player.名号}击败了${B_player.名号}`;
-    let B_win = `${B_player.名号}击败了${A_player.名号}`;
-    if (msg.find(item => item == A_win)) {
-    } else if (msg.find(item => item == B_win)) {
-    } else {
-      e.reply(`战斗过程出错`);
-      return;
-    }
+      // 验证战斗条件
+      if (!await this.validateBattleConditions(e, attackerId, defenderId)) {
+        return;
+      }
 
-    let log_data = {
-      log: msg,
-    };
-    const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshot('log', {
-      ...data1,
-    });
-    e.reply(img);
-    return;
+      // 读取玩家数据
+      const [attackerData, defenderData] = await Promise.all([
+        (await DAL.getAllPlayerData(attackerId)).player,
+        (await DAL.getAllPlayerData(defenderId)).player
+      ]);
+
+      if (!attackerData || !defenderData) {
+        e.reply('读取玩家数据失败，请稍后再试');
+        return;
+      }
+
+      // 执行战斗
+      await this.executeBattle(e, attackerData, defenderData, 'friendly');
+
+    } catch (error) {
+      console.error('以武会友执行错误:', error);
+      e.reply('切磋过程中发生错误，请稍后再试');
+    }
   }
 
-  //比武
+  // 优化后的木桩攻击方法
   async muzhuang(e) {
-    //不开放私聊功能
-    if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
-    let A = e.user_id;
+    try {
+      const attackerId = e.user_id;
 
-    //先判断
-    let ifexistplay_A = await existplayer(A);
-    if (!ifexistplay_A || e.isPrivate) {
-      return;
-    }
-    //看看状态
-    //得到redis游戏状态
-    let last_game_timeA = await redis.get(
-      'xiuxian:player:' + A + ':last_game_time'
-    );
-    //设置游戏状态
-    if (last_game_timeA == 0) {
-      e.reply(`猜大小正在进行哦!`);
-      return true;
-    }
+      // 检查是否@了人
+      const atItem = e.message.find(item => item.type === 'at');
+      if (!atItem) {
+        e.reply('请@一位道友进行木桩测试！');
+        return;
+      }
 
-    let isat = e.message.some(item => item.type === 'at');
-    if (!isat) {
-      return;
-    }
-    let atItem = e.message.filter(item => item.type === 'at');
-    let B = atItem[0].qq; //后手
+      const defenderId = atItem.qq;
 
-    if (A == B) {
-      e.reply('你还跟自己修炼上了是不是?');
-      return;
+      // 验证战斗条件
+      if (!await this.validateBattleConditions(e, attackerId, defenderId)) {
+        return;
+      }
+
+      // 读取玩家数据
+      const [attackerData, defenderData] = await Promise.all([
+        (await DAL.getAllPlayerData(attackerId)).player,
+        (await DAL.getAllPlayerData(defenderId)).player
+      ]);
+
+      if (!attackerData || !defenderData) {
+        e.reply('读取玩家数据失败，请稍后再试');
+        return;
+      }
+
+      // 执行战斗
+      await this.executeBattle(e, attackerData, defenderData, 'training');
+
+    } catch (error) {
+      console.error('木桩攻击执行错误:', error);
+      e.reply('木桩测试过程中发生错误，请稍后再试');
     }
-    let ifexistplay_B = await existplayer(B);
-    if (!ifexistplay_B) {
-      e.reply('修仙者不可对凡人出手!');
-      return;
+  }
+
+  // 统一的战斗执行方法
+  async executeBattle(e, attackerData, defenderData, battleType = 'friendly') {
+    try {
+      // 初始化战斗数据
+      const attacker = { ...attackerData };
+      const defender = { ...defenderData };
+
+      attacker.法球倍率 = attacker.灵根.法球倍率;
+      defender.法球倍率 = defender.灵根.法球倍率;
+      attacker.当前血量 = attacker.血量上限;
+      defender.当前血量 = defender.血量上限;
+
+      // 构建战斗消息
+      const battleMsg = [
+        segment.at(attacker.id),
+        segment.at(defender.id),
+        '\n'
+      ];
+
+      const battleTypeText = battleType === 'friendly' ? '切磋' : '木桩测试';
+      battleMsg.push(`${attacker.名号}向${defender.名号}发起了${battleTypeText}。`);
+
+      // 执行战斗
+      const battleResult = await zd_battle(attacker, defender);
+
+      if (!battleResult || !battleResult.msg) {
+        e.reply('战斗过程出错');
+        return;
+      }
+
+      // 生成战斗日志图片
+      const logData = { log: battleResult.msg };
+      const data1 = await new Show(e).get_logData(logData);
+      const img = await puppeteer.screenshot('log', { ...data1 });
+
+      e.reply(img);
+
+    } catch (error) {
+      console.error('战斗执行错误:', error);
+      e.reply('战斗过程中发生错误，请稍后再试');
     }
-    //这里前戏做完,确定要开打了
-    let final_msg = [segment.at(A), segment.at(B), '\n'];
-    let A_player = await Read_player(A);
-    let B_player = await Read_player(B);
-    final_msg.push(`${A_player.名号}向${B_player.名号}发起了切磋。`);
-    A_player.法球倍率 = A_player.灵根.法球倍率;
-    B_player.法球倍率 = B_player.灵根.法球倍率;
-    A_player.当前血量 = A_player.血量上限;
-    B_player.当前血量 = B_player.血量上限;
-    let Data_battle = await zd_battle(A_player, B_player);
-    let msg = Data_battle.msg;
-    let log_data = {
-      log: msg,
+  }
+
+}
+
+
+
+export async function zd_battle(attackerPlayer, defenderPlayer) {
+  try {
+    // 初始化战斗状态
+    const battleState = {
+      attacker: { ...attackerPlayer },
+      defender: { ...defenderPlayer },
+      round: 0,
+      maxRounds: 20,
+      messages: [],
+      isFinished: false
     };
-    const data1 = await new Show(e).get_logData(log_data);
-    let img = await puppeteer.screenshot('log', {
-      ...data1,
-    });
-    e.reply(img);
+
+    // 初始化玩家战斗属性
+    initializeBattleStats(battleState.attacker, attackerPlayer);
+    initializeBattleStats(battleState.defender, defenderPlayer);
+
+    // 战斗主循环
+    while (!battleState.isFinished && battleState.round < battleState.maxRounds * 2) {
+      const currentAttacker = battleState.round % 2 === 0 ? battleState.attacker : battleState.defender;
+      const currentDefender = battleState.round % 2 === 0 ? battleState.defender : battleState.attacker;
+
+      // 执行单回合战斗
+      await executeBattleRound(battleState, currentAttacker, currentDefender);
+
+      // 检查战斗是否结束
+      if (battleState.attacker.当前血量 <= 0 || battleState.defender.当前血量 <= 0) {
+        battleState.isFinished = true;
+        finalizeBattle(battleState);
+      }
+
+      battleState.round++;
+    }
+
+    // 处理超时情况
+    if (!battleState.isFinished) {
+      handleBattleTimeout(battleState);
+    }
+
+    return {
+      msg: battleState.messages,
+      A_xue: calculateHealthChange(attackerPlayer, battleState.attacker),
+      B_xue: calculateHealthChange(defenderPlayer, battleState.defender)
+    };
+
+  } catch (error) {
+    console.error('战斗执行错误:', error);
+    return {
+      msg: ['战斗过程中发生错误'],
+      A_xue: 0,
+      B_xue: 0
+    };
+  }
+}
+
+// 初始化战斗属性
+function initializeBattleStats(player, originalPlayer) {
+  player.atk = originalPlayer.攻击;
+  player.gandianhuihe = 0;
+  player.chaodaohuihe = 0;
+}
+
+// 执行单回合战斗
+async function executeBattleRound(battleState, attacker, defender) {
+  const roundNumber = Math.floor(battleState.round / 2) + 1;
+
+  // 处理元素反应
+  const elementResult = await Gaodenyuansulun(
+    attacker,
+    defender,
+    attacker.atk,
+    battleState.messages,
+    battleState.round,
+    attacker.gandianhuihe,
+    attacker.chaodaohuihe
+  );
+
+  // 更新战斗状态
+  updateBattleStateFromElement(battleState, elementResult, attacker, defender);
+
+  // 如果被冻结，跳过回合
+  if (battleState.round !== elementResult.cnt) {
+    battleState.messages.push(`第${roundNumber}回合：\n${defender.名号}无法造成伤害`);
+    battleState.round++;
     return;
   }
+
+  // 计算伤害
+  const damage = calculateDamage(attacker, defender, battleState.round);
+
+  // 应用伤害
+  defender.当前血量 = Math.max(0, defender.当前血量 - damage.total);
+
+  // 添加战斗消息
+  battleState.messages.push(
+    `第${roundNumber}回合：\n${attacker.名号}攻击了${defender.名号}，${damage.critText}造成伤害${damage.total}，${defender.名号}剩余血量${defender.当前血量}`
+  );
 }
 
+// 计算伤害
+function calculateDamage(attacker, defender, round) {
+  const baseDamage = Harm(attacker.攻击 * 0.85, defender.防御);
+  const critMultiplier = baojishanghai(attacker.暴击率);
+  const spellDamage = Math.floor(attacker.攻击 * attacker.法球倍率);
+  const defenseBonus = attacker.防御 * 0.1;
 
+  let totalDamage = Math.floor(critMultiplier * baseDamage + spellDamage + defenseBonus);
 
+  // 应用技能效果
+  const skillResult = applySkillEffects(attacker, defender, round, totalDamage);
+  totalDamage = skillResult.damage;
 
-export async function zd_battle(AA_player, BB_player) {
-  let A_player = BB_player;
-  let B_player = AA_player;
-  let cnt = 0; //回合数
-  let cnt2;
-  let A_xue = 0; //最后要扣多少血
-  let B_xue = 0;
-  A_player.atk = BB_player.攻击;
-  A_player.gandianhuihe = 0;
-  A_player.chaodaohuihe = 0;
-  B_player.atk = AA_player.攻击;
-  B_player.gandianhuihe = 0;
-  B_player.chaodaohuihe = 0;
-  let t;
-  let msg = [];
-  let jineng1 = data.jineng1;
-  let jineng2 = data.jineng2;
-  while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
-    if (cnt2 > 18) {
-      msg.push("回合数超过20，自动通过血量结算");
-      if (A_player.当前血量 > B_player.当前血量 > 0) {
-        msg.push(`${A_player.名号}击败了${B_player.名号}`);
-      } else {
-        msg.push(`${B_player.名号}击败了${A_player.名号}`);
-      }
-      break;
-    }
-    cnt2 = Math.trunc(cnt / 2);
-    let Random = Math.random();
-    let random = Math.random();
-    let buff = 1;
-    t = A_player;
-    A_player = B_player;
-    B_player = t;
-    let 持续伤害 = 0;
-    let yuansu = await Gaodenyuansulun(A_player, B_player, A_player.atk, msg, cnt, A_player.gandianhuihe, A_player.chaodaohuihe);
-    A_player.gandianhuihe = yuansu.gandianhuihe;
-    A_player.chaodaohuihe = yuansu.chaodaohuihe2;
-    A_player = yuansu.A_player;
-    B_player = yuansu.B_player;
-    if (yuansu.chaodao && A_player.chaodaohuihe > 0) {
-      A_player.chaodaohuihe -= 1;
-      msg.push(B_player.名号 + '的抗性大大下降,虚弱状态剩余' + A_player.chaodaohuihe + '回合');
-      B_player.防御 *= 0.5;
-    }
-    if (yuansu.fyjiachen != 0) {
-      A_player.防御 += yuansu.fyjiachen;
-    }
-    msg = yuansu.msg;
-    let baoji = baojishanghai(A_player.暴击率);
-    if (isNotNull(A_player.仙宠)) {
-      if (A_player.仙宠.type == '暴伤')
-        baoji += A_player.仙宠.加成;
-    }
-    let 伤害 = Harm(A_player.攻击 * 0.85, B_player.防御);
-    let 法球伤害 = Math.trunc(A_player.攻击 * A_player.法球倍率);
-    伤害 = Math.trunc(baoji * 伤害 + 法球伤害 + A_player.防御 * 0.1);
-    for (var i = 0; i < jineng1.length; i++) {
-      if ((jineng1[i].class == "常驻" && (cnt2 == jineng1[i].cnt || jineng1[i].cnt == -1) && Random < jineng1[i].pr) ||
-        ((A_player.学习的功法 && jineng1[i].class == "功法" && A_player.学习的功法.indexOf(jineng1[i].name) > -1) && (cnt2 == jineng1[i].cnt || jineng1[i].cnt == -1) && Random < jineng1[i].pr) ||
-        (jineng1[i].class == "灵根" && A_player.灵根.name == jineng1[i].name && (cnt2 == jineng1[i].cnt || jineng1[i].cnt == -1) && Random < jineng1[i].pr)) {
-        if (jineng1[i].msg2 == "") {
-          msg.push(A_player.名号 + jineng1[i].msg1);
-        }
-        else {
-          msg.push(A_player.名号 + jineng1[i].msg1 + B_player.名号 + jineng1[i].msg2);
-        }
-        伤害 = 伤害 * jineng1[i].beilv + jineng1[i].other;
-      }
-    }
-    for (var i = 0; i < jineng2.length; i++) {
-      if ((jineng2[i].class == "常驻" && (cnt2 == jineng2[i].cnt || jineng2[i].cnt == -1) && random < jineng2[i].pr) ||
-        ((B_player.学习的功法 && jineng2[i].class == "功法" && B_player.学习的功法.indexOf(jineng2[i].name) > -1) && (cnt2 == jineng2[i].cnt || jineng2[i].cnt == -1) && random < jineng2[i].pr) ||
-        (jineng2[i].class == "灵根" && B_player.灵根.name == jineng2[i].name && (cnt2 == jineng2[i].cnt || jineng2[i].cnt == -1) && random < jineng2[i].pr)) {
-        if (jineng2[i].msg2 == "") {
-          msg.push(B_player.名号 + jineng2[i].msg1);
-        }
-        else {
-          msg.push(B_player.名号 + jineng2[i].msg1 + A_player.名号 + jineng2[i].msg2);
-        }
-        伤害 = 伤害 * jineng2[i].beilv + jineng2[i].other;
-      }
-    }
-    if (cnt != yuansu.cnt) {
-      msg.push(`第${cnt2 + 1}回合：\n${B_player.名号}无法造成伤害`);
-      cnt += 2;
-      continue;
-    }
-    if (A_player.user_id == '2053739615' || A_player.user_id == '2531606029') {
-      if (random > 0.2) {
-        msg.push(`${A_player.名号}触发轮回经效果，无敌一回合,${B_player.名号}无法造成伤害`)
-        cnt += 2;
-        continue;
-      }
-      // else if (random > 0.1) {
-      //   msg.push(`${A_player.名号}触发轮回经效果，获得攻击加成`)
-      //   att = last_att * 2
-      // }
-    }
-    if (B_player.id == '2053739615' || B_player.id == '2531606029') {
-      if (random > 0.2) {
-        msg.push(`${B_player.名号}触发轮回经效果，无敌一回合,${A_player.名号}无法造成伤害`)
-        cnt += 2;
-        continue;
-      }
-      // else if (random > 0.1) {
-      //   msg.push(`${B_player.名号}触发轮回经效果，获得攻击加成`)
-      //   att = last_att * 2
-      // }
-    }
-    if (A_player.魔道值 > 999) {
-      buff += Math.trunc(A_player.魔道值 / 1000) / 100;
-      if (buff > 1.3) buff = 1.3;
-      if (A_player.灵根.name == "九重魔功") buff += 0.2;
-      msg.push("魔道值为" + A_player.名号 + "提供了" + Math.trunc((buff - 1) * 100) + "%的增伤");
-    }
-    if (B_player.魔道值 < 1 && (B_player.灵根.type == "转生" || B_player.level_id > 41)) {
-      var buff2 = B_player.神石 * 0.0015;
-      if (buff2 > 0.3) buff2 = 0.3;
-      if (B_player.灵根.name == "九转轮回体") buff2 += 0.2;
-      buff -= buff2
-      msg.push("神石为" + B_player.名号 + "提供了" + Math.trunc(buff2 * 100) + "%的减伤");
-    }
-    if (A_player.gandianhuihe > 0) {
-      持续伤害 = Math.trunc(伤害 * 0.15);
-      A_player.gandianhuihe -= 1;
-      B_player.当前血量 -= 持续伤害;
-      if (yuansu.ranshao) msg.push(B_player.名号 + '烧了起来,受到了' + 持续伤害 + '的燃烧伤害');
-      else if (yuansu.gandian) msg.push(B_player.名号 + '触电了,受到了' + 持续伤害 + '的感电伤害');
-    }
-    伤害 = Math.trunc(伤害 * buff);
-    B_player.当前血量 -= 伤害;
-    if (B_player.当前血量 < 0) {
-      B_player.当前血量 = 0;
-    }
-    if (cnt % 2 == 0) A_player.防御 = AA_player.防御;
-    else A_player.防御 = BB_player.防御;
-    msg.push(`第${cnt2 + 1}回合：\n${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号}剩余血量${B_player.当前血量}`);
-    cnt++;
-  }
-  if (cnt % 2 == 0) {
-    t = A_player;
-    A_player = B_player;
-    B_player = t;
-  }
-  if (A_player.当前血量 <= 0) {
-    AA_player.当前血量 = 0;
-    msg.push(`${B_player.名号}击败了${A_player.名号}`);
-    B_xue = B_player.当前血量 - BB_player.当前血量;
-    A_xue = -AA_player.当前血量;
-  }
-  else if (B_player.当前血量 <= 0) {
-    BB_player.当前血量 = 0;
-    msg.push(`${A_player.名号}击败了${B_player.名号}`);
-    B_xue = -BB_player.当前血量;
-    A_xue = A_player.当前血量 - AA_player.当前血量;
-  }
-  let Data_nattle = { msg: msg, A_xue: A_xue, B_xue: B_xue, };
-  return Data_nattle;
-}
+  // 应用魔道值和神石效果
+  totalDamage = applySpecialEffects(attacker, defender, totalDamage);
 
-
-
-export function baojishanghai(baojilv) {
-  if (baojilv > 1) {
-    baojilv = 1;
-  } //暴击率最高为100%,即1
-  let rand = Math.random();
-  let bl = 1;
-  if (rand < baojilv) {
-    bl = baojilv + 1.5; //这个是暴击伤害倍率//满暴击时暴伤2为50%
-  }
-  return bl;
-}
-
-//通过暴击伤害返回输出用的文本
-export function ifbaoji(baoji) {
-  if (baoji == 1) {
-    return '';
-  } else {
-    return '触发暴击，';
-  }
-}
-
-//攻击攻击防御计算伤害
-export function Harm(atk, def) {
-  let x;
-  let s = atk / def;
-  let rand = Math.trunc(Math.random() * 11) / 100 + 0.95; //保留±5%的伤害波动
-  if (s < 1) {
-    x = 0.1;
-  } else if (s > 2.5) {
-    x = 1;
-  } else {
-    x = 0.6 * s - 0.5;
-  }
-  x = Math.trunc(x * atk * rand);
-  return x;
-}
-
-export async function mjzd_battle(A_player, B_player) {
-  let now_A_HP = A_player.当前血量; //保留初始血量方便计算最后扣多少血,避免反复读写文件
-  let now_B_HP = B_player.当前血量;
-  let A_xue = 0; //最后要扣多少血
-  let B_xue = 0;
-  let cnt = 0; //回合数
-
-  let msg = [];
-  while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
-    if (cnt % 2 == 0) {
-      let baoji = baojishanghai(A_player.暴击率);
-      if (!isNotNull(A_player.仙宠)) {
-        //判断有无仙宠
-      } else if (A_player.仙宠.type == '暴伤') {
-        baoji = baojishanghai(A_player.暴击率) + A_player.仙宠.加成;
-      }
-      let 伤害 = Harm(A_player.攻击 * 0.85, B_player.防御);
-      let 法球伤害 = Math.trunc(A_player.攻击 * A_player.法球倍率);
-      伤害 = Math.trunc(baoji * 伤害 + 法球伤害 + A_player.防御 * 0.1);
-      let Random = Math.random();
-      if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·鬼帝功') > -1 &&
-        Random > 0.2 &&
-        cnt == 0
-      ) {
-        msg.push(
-          `${A_player.名号} 使用【鬼剑】然暴起冲向 ${B_player.名号}`
-        );
-        伤害 = Math.trunc(伤害 * 1.1 + 100000);
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('伪八品·影杀') > -1 &&
-        Random > 0.2 &&
-        cnt == 0
-      ) {
-        msg.push(
-          `${A_player.名号} 使用影杀！突然暴起冲向 ${B_player.名号}`
-        );
-        伤害 = Math.trunc(伤害 * 1 + 100000);
-      } else if (Random > 0.5 && cnt == 0) {
-        msg.push(
-          `你找准时机！突然暴起冲向 ${B_player.名号}，但是被对方反应过来了`
-        );
-        伤害 = 0;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·八荒剑法') > -1 &&
-        cnt == 2
-      ) {
-        msg.push(`${A_player.名号} 使用八荒剑法【斩八荒！】`);
-        伤害 *= 1.2;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·天星') > -1 &&
-        cnt == 4
-      ) {
-        msg.push(`${A_player.名号} 使用天星【天动万象！】`);
-        伤害 = Math.trunc(伤害 * 1.2 + 200000);
-      } else if (
-        A_player.学习的功法 &&
-        B_player.学习的功法.indexOf('八品·太素') > -1 &&
-        cnt == 4
-      ) {
-        msg.push(`${B_player.名号} 使用太素【太素】`);
-        伤害 = Math.trunc(伤害 * 1.2 + 200000);
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·心禅不灭诀') > -1 &&
-        cnt == 4
-      ) {
-        msg.push(`${A_player.名号} 使用八品·心禅不灭诀【万剑归宗】`);
-        伤害 *= 1.25;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·太皇经') > -1 &&
-        cnt == 2
-      ) {
-        msg.push(`${A_player.名号} 使用八品·太皇经【无量仙功】开始聚集仙气`);
-        伤害 *= 0.9;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·太皇经') > -1 &&
-        cnt == 2
-      ) {
-        msg.push(`${A_player.名号} 使用八品·太皇经 聚集完成！【皇极斩！】`);
-        伤害 = Math.trunc(伤害 * 1.25 + 500000);
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('伪八品·二重梦之㱬') > -1 &&
-        cnt == 6
-      ) {
-        msg.push(`${A_player.名号} 使用二重梦之㱬【梦轮】`);
-        伤害 *= 1.25;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('伪九品·第一魔功') > -1 &&
-        cnt == 2
-      ) {
-        msg.push(`${A_player.名号} 使用第一魔功【噬天！】`);
-        伤害 = Math.trunc(伤害 * 1.1 + 300000);
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('伪九品·第一魔功') > -1 &&
-        Random < 0.02
-      ) {
-        msg.push(
-          `${B_player.名号} 使用了第一魔功【魔转！】你的伤害被转走了大部分`
-        );
-        伤害 *= 0.5;
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('伪九品·魔帝功') > -1 &&
-        Random < 0.3 &&
-        cnt == 2
-      ) {
-        msg.push(`${B_player.名号} 使用了魔帝功【吞噬】你的伤害被吸收了`);
-        伤害 *= -0.1;
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('八品·避空') > -1 &&
-        cnt == 4
-      ) {
-        msg.push(`${B_player.名号} 使用了避空【遁空！】`);
-        伤害 *= 0.5;
-      } else if (Random < 0.06) {
-        msg.push(`你找到了 ${B_player.名号} 的破绽！这一下无处可逃！`);
-        伤害 *= 1.3;
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('八品·桃花神功') > -1 &&
-        cnt == 4 &&
-        Random > 0.66
-      ) {
-        msg.push(
-          `${A_player.名号} 使用了【三生桃花！】你的攻击慢慢变成了漫天桃花飞舞。`
-        );
-        伤害 *= -0.2;
-      } else if (Random > 0.94) {
-        msg.push(`你的攻击被 ${B_player.名号} 破解了`);
-        伤害 *= 0.6;
-      } else if (Random > 0.9) {
-        msg.push(`你的攻击被 ${B_player.名号} 接下来了`);
-        伤害 *= 0.8;
-      }
-      伤害 = Math.trunc(伤害);
-      B_player.当前血量 -= 伤害;
-      if (B_player.当前血量 < 0) {
-        B_player.当前血量 = 0;
-      }
-      msg.push(`第${Math.trunc(cnt / 2) + 1}回合：
-${A_player.名号}攻击了${B_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${B_player.名号
-        }剩余血量${B_player.当前血量}`);
-    }
-    if (cnt % 2 == 1) {
-      let baoji = baojishanghai(B_player.暴击率);
-      if (!isNotNull(B_player.仙宠)) {
-        //判断有无仙宠
-      } else if (B_player.仙宠.type == '暴伤') {
-        baoji = baojishanghai(B_player.暴击率) + B_player.仙宠.加成;
-      }
-      let 伤害 = Harm(B_player.攻击 * 0.85, A_player.防御);
-      let 法球伤害 = Math.trunc(B_player.攻击 * B_player.法球倍率);
-      伤害 = Math.trunc(baoji * 伤害 + 法球伤害 + B_player.防御 * 0.1);
-      let Random = Math.random();
-      if (Random < 0.06) {
-        msg.push(`你找到了 ${A_player.名号} 的破绽！这一下无处可逃！`);
-        伤害 *= 1.3;
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('八品·八荒剑法') > -1 &&
-        cnt == 3
-      ) {
-        msg.push(`${B_player.名号} 使用八荒剑法【斩八荒！】`);
-        伤害 *= 1.2;
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('八品·太皇经') > -1 &&
-        cnt == 3
-      ) {
-        msg.push(`${B_player.名号} 使用八品·太皇经【无量仙功】开始聚集仙气`);
-        伤害 *= 0.9;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·太皇经') > -1 &&
-        cnt == 9
-      ) {
-        msg.push(`${A_player.名号} 使用八品·太皇经 聚集完成！【皇极斩！】`);
-        伤害 = Math.trunc(伤害 * 1.25 + 500000);
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('八品·天星') > -1 &&
-        cnt == 5
-      ) {
-        msg.push(`${B_player.名号} 使用天星【天动万象！】`);
-        伤害 = Math.trunc(伤害 * 1.2 + 200000);
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('八品·心禅不灭诀') > -1 &&
-        cnt == 5
-      ) {
-        msg.push(`${B_player.名号} 使用八品·心禅不灭诀【万剑归宗】`);
-        伤害 *= 1.25;
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('伪八品·二重梦之㱬') > -1 &&
-        cnt == 7
-      ) {
-        msg.push(`${B_player.名号} 使用二重梦之㱬【梦轮】`);
-        伤害 *= 1.25;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·避空') > -1 &&
-        cnt == 5
-      ) {
-        msg.push(`${A_player.名号} 使用了避空【遁空！】`);
-        伤害 *= 0.5;
-      } else if (
-        B_player.学习的功法 &&
-        B_player.学习的功法.indexOf('伪九品·第一魔功') > -1 &&
-        cnt == 3
-      ) {
-        msg.push(`${B_player.名号} 使用第一魔功【噬天！】`);
-        伤害 = Math.trunc(伤害 * 1.1 + 300000);
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('伪九品·第一魔功') > -1 &&
-        Random < 0.02
-      ) {
-        msg.push(
-          `${A_player.名号} 使用了第一魔功【魔转！】你的伤害被转走了大部分`
-        );
-        伤害 *= 0.5;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('伪九品·魔帝功') > -1 &&
-        Random < 0.3 &&
-        cnt == 3
-      ) {
-        msg.push(`${A_player.名号} 使用了魔帝功【吞噬】你的伤害被吸收了`);
-        伤害 *= -0.1;
-      } else if (
-        A_player.学习的功法 &&
-        A_player.学习的功法.indexOf('八品·桃花神功') > -1 &&
-        cnt == 5 &&
-        Random > 0.66
-      ) {
-        msg.push(
-          `${A_player.名号} 使用了【三生桃花！】你的攻击慢慢变成了漫天桃花飞舞。`
-        );
-        伤害 *= -0.2;
-      } else if (Random > 0.94) {
-        msg.push(`你的攻击被 ${A_player.名号} 破解了`);
-        伤害 *= 0.6;
-      } else if (Random > 0.9) {
-        msg.push(`你的攻击被 ${A_player.名号} 接下来了`);
-        伤害 *= 0.8;
-      }
-      伤害 = Math.trunc(伤害);
-      A_player.当前血量 -= 伤害;
-      if (A_player.当前血量 < 0) {
-        A_player.当前血量 = 0;
-      }
-      msg.push(`第${Math.trunc(cnt / 2) + 1}回合：
-${B_player.名号}攻击了${A_player.名号}，${ifbaoji(baoji)}造成伤害${伤害}，${A_player.名号
-        }剩余血量${A_player.当前血量}`);
-    }
-    cnt++;
-  }
-  if (A_player.当前血量 <= 0) {
-    msg.push(`${B_player.名号}击败了${A_player.名号}`);
-    B_xue = B_player.当前血量 - now_B_HP;
-    A_xue = -now_A_HP;
-  }
-  if (B_player.当前血量 <= 0) {
-    msg.push(`${A_player.名号}击败了${B_player.名号}`);
-    B_xue = -now_B_HP;
-    A_xue = A_player.当前血量 - now_A_HP;
-  }
-  let Data_nattle = {
-    msg: msg,
-    A_xue: A_xue,
-    B_xue: B_xue,
+  return {
+    total: Math.floor(totalDamage),
+    critText: ifbaoji(critMultiplier)
   };
-  return Data_nattle;
+}
+
+// 应用技能效果
+function applySkillEffects(attacker, defender, round, damage) {
+  const jineng1 = data.jineng1 || [];
+  const jineng2 = data.jineng2 || [];
+  const random1 = Math.random();
+  const random2 = Math.random();
+  const roundNumber = Math.floor(round / 2);
+
+  let finalDamage = damage;
+  const messages = [];
+
+  // 攻击方技能
+  for (const skill of jineng1) {
+    if (shouldTriggerSkill(skill, attacker, roundNumber, random1)) {
+      const message = buildSkillMessage(skill, attacker, defender);
+      if (message) messages.push(message);
+      finalDamage = finalDamage * skill.beilv + skill.other;
+    }
+  }
+
+  // 防御方技能
+  for (const skill of jineng2) {
+    if (shouldTriggerSkill(skill, defender, roundNumber, random2)) {
+      const message = buildSkillMessage(skill, defender, attacker);
+      if (message) messages.push(message);
+      finalDamage = finalDamage * skill.beilv + skill.other;
+    }
+  }
+
+  return { damage: finalDamage, messages };
+}
+
+// 判断是否触发技能
+function shouldTriggerSkill(skill, player, round, random) {
+  const roundMatch = skill.cnt === -1 || skill.cnt === round;
+  const randomMatch = random < skill.pr;
+
+  if (skill.class === '常驻') {
+    return roundMatch && randomMatch;
+  } else if (skill.class === '功法' && player.学习的功法) {
+    return player.学习的功法.includes(skill.name) && roundMatch && randomMatch;
+  } else if (skill.class === '灵根') {
+    return player.灵根.name === skill.name && roundMatch && randomMatch;
+  }
+
+  return false;
+}
+
+// 构建技能消息
+function buildSkillMessage(skill, caster, target) {
+  if (!skill.msg1) return null;
+
+  if (skill.msg2) {
+    return `${caster.名号}${skill.msg1}${target.名号}${skill.msg2}`;
+  } else {
+    return `${caster.名号}${skill.msg1}`;
+  }
+}
+
+// 应用特殊效果（魔道值、神石等）
+function applySpecialEffects(attacker, defender, damage) {
+  let finalDamage = damage;
+  let buff = 1;
+
+  // 魔道值加成
+  if (attacker.魔道值 > 999) {
+    buff += Math.floor(attacker.魔道值 / 1000) / 100;
+    if (buff > 1.3) buff = 1.3;
+    if (attacker.灵根.name === "九重魔功") buff += 0.2;
+  }
+
+  // 神石减伤
+  if (defender.魔道值 < 1 && (defender.灵根.type === "转生" || defender.level_id > 41)) {
+    let buff2 = defender.神石 * 0.0015;
+    if (buff2 > 0.3) buff2 = 0.3;
+    if (defender.灵根.name === "九转轮回体") buff2 += 0.2;
+    buff -= buff2;
+  }
+
+  return Math.floor(finalDamage * buff);
+}
+
+// 更新元素反应状态
+function updateBattleStateFromElement(battleState, elementResult, attacker, defender) {
+  attacker.gandianhuihe = elementResult.gandianhuihe;
+  attacker.chaodaohuihe = elementResult.chaodaohuihe2;
+
+  // 处理持续伤害
+  if (attacker.gandianhuihe > 0) {
+    const continuousDamage = Math.floor(attacker.atk * 0.15);
+    attacker.gandianhuihe--;
+    defender.当前血量 -= continuousDamage;
+
+    if (elementResult.ranshao) {
+      battleState.messages.push(`${defender.名号}烧了起来,受到了${continuousDamage}的燃烧伤害`);
+    } else if (elementResult.gandian) {
+      battleState.messages.push(`${defender.名号}触电了,受到了${continuousDamage}的感电伤害`);
+    }
+  }
+
+  // 处理超导效果
+  if (elementResult.chaodao && attacker.chaodaohuihe > 0) {
+    attacker.chaodaohuihe--;
+    battleState.messages.push(`${defender.名号}的抗性大大下降,虚弱状态剩余${attacker.chaodaohuihe}回合`);
+    defender.防御 *= 0.5;
+  }
+}
+
+// 结束战斗
+function finalizeBattle(battleState) {
+  if (battleState.attacker.当前血量 <= 0) {
+    battleState.messages.push(`${battleState.defender.名号}击败了${battleState.attacker.名号}`);
+  } else if (battleState.defender.当前血量 <= 0) {
+    battleState.messages.push(`${battleState.attacker.名号}击败了${battleState.defender.名号}`);
+  }
+}
+
+// 处理战斗超时
+function handleBattleTimeout(battleState) {
+  battleState.messages.push("回合数超过20，自动通过血量结算");
+  if (battleState.attacker.当前血量 > battleState.defender.当前血量) {
+    battleState.messages.push(`${battleState.attacker.名号}击败了${battleState.defender.名号}`);
+  } else {
+    battleState.messages.push(`${battleState.defender.名号}击败了${battleState.attacker.名号}`);
+  }
+}
+
+// 计算血量变化
+function calculateHealthChange(originalPlayer, currentPlayer) {
+  return currentPlayer.当前血量 - originalPlayer.当前血量;
 }
