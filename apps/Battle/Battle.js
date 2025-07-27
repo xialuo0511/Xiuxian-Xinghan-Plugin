@@ -80,8 +80,8 @@ async function battleEngine(A_player, B_player) {
 
   return {
     msg: messages,
-    A_xue: A_player.当前血量 - initial_A_HP,
-    B_xue: B_player.当前血量 - initial_B_HP
+    A_xue: A_player.当前血量,
+    B_xue: B_player.当前血量
   };
 }
 
@@ -273,8 +273,8 @@ export class Battle extends plugin {
     e.reply(`你对着一个憨憨的木桩发起了攻击...`);
     const battleResult = await battleEngine({ ...A_data.player, id: userId, equipment: A_data.equipment }, dummy);
 
-    // 只显示前5回合的战报
-    const shortLog = battleResult.msg.slice(0, 11);
+    // 只显示前10回合的战报
+    const shortLog = battleResult.msg.slice(0, 21);
     shortLog.push('\n...一顿操作后，木桩依旧屹立不倒...');
     let log_data = {
       log: battleResult.msg, // 战斗日志数组
@@ -283,9 +283,40 @@ export class Battle extends plugin {
       A_xue: battleResult.A_xue,
       B_xue: battleResult.B_xue
     };
-    const data1 = await new Show(e).get_battleData(log_data); // 假设你有这个方法
+    const data1 = await new Show(e).get_battleData(log_data);
     let img = await puppeteer.screenshot('log', { ...data1 });
     e.reply(img);
+  }
+
+  async preCheck(e) {
+    try {
+      if (!e.isGroup) {
+        e.reply('修仙游戏请在群聊中游玩');
+        return null;
+      }
+
+      let userId = e.user_id;
+
+      const playerExists = await DAL.existPlayer(userId);
+
+      if (!playerExists) {
+        e.reply('你还没有修仙账号，请先#踏入仙途');
+        return null;
+      }
+
+      const currentAction = await DAL.getPlayerAction(userId);
+
+      if (currentAction) {
+        e.reply(`你正在${currentAction.action}中，无法分心。`);
+        return null;
+      }
+
+      return userId;
+    } catch (error) {
+      console.error('[ERROR] preCheck 发生错误:', error);
+      e.reply('检查玩家状态时发生错误，请稍后再试。');
+      return null;
+    }
   }
 }
 
