@@ -1843,7 +1843,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     battleContext.attacker,
     battleContext.baseDamage,
     Math.random(),
-    elementResult);
+    elementResult.messages);
   att = weaponResult.damage;
   fyjiachen += weaponResult.defenseBonus;
   msg.push(...weaponResult.messages);
@@ -1855,7 +1855,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     battleContext.baseDamage,
     battleContext.attacker,
     Math.random(),
-    weaponResult);
+    weaponResult.messages);
   att = enchantResult.damage;
   fyjiachen += enchantResult.defenseBonus;
   msg.push(...enchantResult.messages);
@@ -1867,7 +1867,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     battleContext.attacker,
     battleContext.baseDamage,
     Math.random(),
-    enchantResult);
+    enchantResult.messages);
   att = petResult.damage;
   fyjiachen += petResult.defenseBonus;
   msg.push(...petResult.messages);
