@@ -1870,6 +1870,7 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
     enchantResult.messages);
   att = petResult.damage;
   fyjiachen += petResult.defenseBonus;
+  console.log('petResult', petResult);
   msg.push(...petResult.messages);
 
   // 更新回合数
