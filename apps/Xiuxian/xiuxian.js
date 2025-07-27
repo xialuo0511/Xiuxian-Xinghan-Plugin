@@ -12,6 +12,7 @@ import {
   processPetBonus,
   updateStatusEffects
 } from '../../logic/battle_element_logic.js';
+import { applyElementalEffects } from '../../logic/elemental_logic.js';
 
 /**
  * 全局
@@ -1743,160 +1744,46 @@ ${B_player.名号}攻击了${A_player.名号}，${ifbaoji(baoji)}造成伤害${�
  */
 
 export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Agandianhuihe, chaodaohuihe) {
-  // 初始化基础数据
-  let att = last_att;
-  let fyjiachen = 0;
-  let chufa = false;
-  let huihe = false;
-
-  // 特殊反应状态
-  let ranshao = false;
-  let donjie = false;
-  let gandian = false;
-  let chaodao = false;
-
-  // 回合数处理
-  let chaodaohuihe2 = Number(chaodaohuihe);
-  let gandianhuihe = Number(Agandianhuihe);
-  let cnt6 = Number(cnt);
-
-  let usr_qq = A_player.id;
-  let B_qq = B_player.id;
-
-  // 参数验证
-  if (!isNotNull(usr_qq) || !isNotNull(B_qq)) {
-    return {
-      'A_player': A_player,
-      'B_player': B_player,
-      'msg': msg,
-      'att': att,
-      'fyjiachen': fyjiachen,
-      'chufa': chufa,
-      'cnt': cnt6,
-      'gandianhuihe': gandianhuihe,
-      'chaodaohuihe2': chaodaohuihe2,
-      'chaodao': chaodao,
-      'ranshao': ranshao,
-      'gandian': gandian
-    };
-  }
-
-  // 读取装备数据
-  let equipment, B_equipment;
-  try {
-    equipment = (await DAL.getAllPlayerData(usr_qq)).equipment;
-    B_equipment = (await DAL.getAllPlayerData(B_qq)).equipment;
-
-  } catch (err) {
-    console.log('装备文件读取错误:', err);
-    return {
-      'A_player': A_player,
-      'B_player': B_player,
-      'msg': msg,
-      'att': att,
-      'fyjiachen': fyjiachen,
-      'chufa': chufa,
-      'cnt': cnt6,
-      'gandianhuihe': gandianhuihe,
-      'chaodaohuihe2': chaodaohuihe2,
-      'chaodao': chaodao,
-      'ranshao': ranshao,
-      'gandian': gandian
-    };
-  }
-
   // 构建战斗上下文
-  const battleContext = {
+  let context = {
     attacker: A_player,
     defender: B_player,
-    attackerEquipment: equipment,
-    defenderEquipment: B_equipment,
-    baseDamage: last_att,
-    currentRound: cnt6,
-    burnRounds: gandianhuihe,
-    superconductRounds: chaodaohuihe2
+    damage: last_att,
+    messages: msg,
+    turn: Math.trunc(cnt / 2),
+    statusEffects: { // 传递当前的状态效果
+      [A_player.id]: {
+        '燃烧': Agandianhuihe,
+        '感电': Agandianhuihe,
+        '超导': chaodaohuihe
+      },
+      [B_player.id]: B_player.statusEffects || {}
+    },
+    chufa: false // 用于记录是否触发了主要反应
   };
 
-  // 处理元素反应
-  const elementResult = processElementalReactions(
-    battleContext.attacker.灵根?.type,
-    battleContext.defender.灵根?.type,
-    battleContext.attackerEquipment?.enchant,
-    battleContext.baseDamage,
-    msg
-  );
-  att = elementResult.damage;
-  msg.push(...elementResult.messages);
-  chufa = elementResult.triggered || chufa;
+  // 调用核心逻辑处理器
+  const updatedContext = await applyElementalEffects(context);
 
-  // 更新状态效果
-  const statusResult = updateStatusEffects(battleContext, elementResult);
-  ranshao = statusResult.burning;
-  gandian = statusResult.electrified;
-  chaodao = statusResult.superconduct;
-  donjie = statusResult.frozen;
-
-  // 处理武器效果
-  const weaponResult = processWeaponEffects(
-    battleContext.attackerEquipment.武器,
-    battleContext.attacker.灵根?.type,
-    battleContext.attacker,
-    battleContext.baseDamage,
-    Math.random(),
-    elementResult.messages);
-  att = weaponResult.damage;
-  fyjiachen += weaponResult.defenseBonus;
-  msg.push(...weaponResult.messages);
-  chufa = weaponResult.triggered || chufa;
-
-  // 处理附魔效果
-  const enchantResult = processEnchantmentEffects(
-    battleContext.attackerEquipment,
-    battleContext.baseDamage,
-    battleContext.attacker,
-    Math.random(),
-    weaponResult.messages);
-  att = enchantResult.damage;
-  fyjiachen += enchantResult.defenseBonus;
-  msg.push(...enchantResult.messages);
-  chufa = enchantResult.triggered || chufa;
-
-  // 处理仙宠加成
-  const petResult = processPetBonus(
-    battleContext.attacker.仙宠,
-    battleContext.attacker,
-    battleContext.baseDamage,
-    Math.random(),
-    enchantResult.messages);
-  att = petResult.damage;
-  fyjiachen += petResult.defenseBonus;
-  console.log('petResult', petResult);
-  msg.push(...petResult.messages);
-
-  // 更新回合数
-  if (donjie) cnt6++;
-  if (ranshao || gandian) gandianhuihe += 3;
-  if (chaodao) chaodaohuihe2 += 3;
-
-  // 更新攻击者攻击力
-  A_player.攻击 = att;
-
-  // 返回结果
-  return {
-    'A_player': A_player,
-    'B_player': B_player,
-    'msg': msg,
-    'att': att,
-    'fyjiachen': fyjiachen,
-    'chufa': chufa,
-    'cnt': cnt6,
-    'gandianhuihe': gandianhuihe,
-    'chaodaohuihe2': chaodaohuihe2,
-    'chaodao': chaodao,
-    'ranshao': ranshao,
-    'gandian': gandian
+  // 将处理结果同步回原变量
+  let fanyin = {
+    'A_player': updatedContext.attacker,
+    'B_player': updatedContext.defender,
+    'msg': updatedContext.messages,
+    'att': updatedContext.damage,
+    'fyjiachen': updatedContext.fyjiachen || 0,
+    'chufa': updatedContext.chufa,
+    'cnt': updatedContext.turn * 2 + (updatedContext.statusEffects[B_player.id]?.['冻结'] > 0 ? 1 : 0),
+    'gandianhuihe': updatedContext.statusEffects[A_player.id]?.['燃烧'] || updatedContext.statusEffects[A_player.id]?.['感电'] || 0,
+    'chaodaohuihe2': updatedContext.statusEffects[A_player.id]?.['超导'] || 0,
+    'chaodao': updatedContext.statusEffects[B_player.id]?.['超导'] > 0,
+    'ranshao': updatedContext.statusEffects[B_player.id]?.['燃烧'] > 0,
+    'gandian': updatedContext.statusEffects[B_player.id]?.['感电'] > 0
   };
+
+  return fanyin;
 }
+
 
 //通过输入暴击率,返回暴击伤害,不暴击返回1
 export function baojishanghai(baojilv) {

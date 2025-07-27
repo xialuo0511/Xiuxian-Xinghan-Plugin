@@ -310,6 +310,16 @@ export default class Game extends base {
   }
 
   //log
+  async get_battleData(myData) {
+    this.model = 'battle';
+    return {
+      ...this.screenData,
+      saveId: 'battle',
+      ...myData
+    };
+  }
+
+  //log
   async get_secret_placeData(myData) {
     this.model = 'secret_place copy';
     return {

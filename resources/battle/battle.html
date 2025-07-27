@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <link rel="shortcut icon" href="#" />
+  <style type="text/css">
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+      @font-face {
+          font-family: "NZBZ";
+          src: url("{{pluResPath}}/font/NZBZ.TTF");
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background-image: url('{{pluResPath}}/img/player_pifu/beijing.jpg');
+          background-size: cover;
+          background-position: center;
+          font-family: "tttgbnumber", sans-serif;
+          color: #4a2c1a;
+      }
+
+      .battle-container {
+          background: rgba(253, 250, 245, 0.92);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+          display: flex;
+          gap: 20px;
+      }
+
+      .player-panel {
+          width: 180px;
+          flex-shrink: 0;
+          text-align: center;
+          background: rgba(255, 255, 255, 0.3);
+          border: 1px solid #d2b48c;
+          border-radius: 10px;
+          padding: 15px;
+      }
+
+      .player-avatar {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          border: 3px solid #c8a87e;
+          margin: 0 auto 10px auto;
+      }
+
+      .player-name {
+          font-family: "NZBZ", sans-serif;
+          font-size: 22px;
+          color: #6a3906;
+          font-weight: bold;
+          margin-bottom: 5px;
+      }
+
+      .player-level {
+          font-size: 14px;
+          color: #7a5533;
+          margin-bottom: 10px;
+      }
+
+      .progress-bar-container {
+          width: 100%;
+          height: 22px;
+          background-color: rgba(0, 0, 0, 0.15);
+          border-radius: 11px;
+          padding: 3px;
+          box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+      }
+
+      .progress-bar {
+          height: 100%;
+          background: linear-gradient(to right, #e57373, #d32f2f);
+          border-radius: 8px;
+          position: relative;
+          transition: width 0.5s ease-in-out;
+      }
+
+      .progress-text {
+          position: absolute;
+          width: 100%;
+          text-align: center;
+          color: white;
+          font-size: 12px;
+          font-weight: bold;
+          text-shadow: 1px 1px 1px #000;
+          line-height: 16px;
+      }
+
+      .log-panel {
+          flex-grow: 1;
+          background: rgba(255, 255, 255, 0.2);
+          border: 1px solid #d2b48c;
+          border-radius: 10px;
+          padding: 15px;
+          height: 500px;
+          overflow-y: auto;
+      }
+
+      .log-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 28px;
+          text-align: center;
+          color: #6a3906;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 2px dashed #d2b48c;
+      }
+
+      .log-entry {
+          font-size: 15px;
+          line-height: 1.8;
+          padding: 8px 5px;
+          border-bottom: 1px solid rgba(210, 180, 140, 0.3);
+      }
+
+      .log-entry:last-child {
+          border-bottom: none;
+      }
+
+      .round-header {
+          font-weight: bold;
+          color: #8B4513;
+          text-align: center;
+          margin-top: 10px;
+      }
+
+      .final-result {
+          font-family: "NZBZ", sans-serif;
+          font-size: 18px;
+          color: #c0392b;
+          text-align: center;
+          margin-top: 10px;
+          font-weight: bold;
+      }
+
+      /* 滚动条样式 */
+      .log-panel::-webkit-scrollbar {
+          width: 6px;
+      }
+      .log-panel::-webkit-scrollbar-track {
+          background: rgba(210, 180, 140, 0.2);
+          border-radius: 3px;
+      }
+      .log-panel::-webkit-scrollbar-thumb {
+          background: #a88763;
+          border-radius: 3px;
+      }
+  </style>
+</head>
+<body>
+<div id="capture" class="battle-container">
+  <!-- 攻击方信息面板 -->
+  <div class="player-panel">
+    <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{A_player.id}}" onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
+    <div class="player-name">{{A_player.名号}}</div>
+    <div class="player-level">{{A_player.level}}</div>
+    <div class="progress-bar-container">
+      <div class="progress-bar" style="width: {{ (A_player.当前血量 / A_player.血量上限 * 100) | toFixed(0) }}%;">
+        <div class="progress-text">{{A_player.当前血量}} / {{A_player.血量上限}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 战斗日志面板 -->
+  <div class="log-panel">
+    <div class="log-title">斗法记录</div>
+    {{each log item}}
+    {{if item.startsWith('==')}}
+    <div class="log-entry round-header">{{item}}</div>
+    {{else if item.includes('击败了')}}
+    <div class="log-entry final-result">{{item}}</div>
+    {{else}}
+    <div class="log-entry">{{item}}</div>
+    {{/if}}
+    {{/each}}
+  </div>
+
+  <!-- 防御方信息面板 -->
+  <div class="player-panel">
+    <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{B_player.id}}" onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
+    <div class="player-name">{{B_player.名号}}</div>
+    <div class="player-level">{{B_player.level}}</div>
+    <div class="progress-bar-container">
+      <div class="progress-bar" style="width: {{ (B_player.当前血量 / B_player.血量上限 * 100) | toFixed(0) }}%;">
+        <div class="progress-text">{{B_player.当前血量}} / {{B_player.血量上限}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
