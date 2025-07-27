@@ -1818,7 +1818,13 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
   };
 
   // 处理元素反应
-  const elementResult = processElementalReactions(battleContext);
+  const elementResult = processElementalReactions(
+    battleContext.attacker.灵根?.type,
+    battleContext.defender.灵根?.type,
+    battleContext.attackerEquipment?.enchant,
+    battleContext.baseDamage,
+    msg
+  );
   att = elementResult.damage;
   msg.push(...elementResult.messages);
   chufa = elementResult.triggered || chufa;
@@ -1831,21 +1837,37 @@ export async function Gaodenyuansulun(A_player, B_player, last_att, msg, cnt, Ag
   donjie = statusResult.frozen;
 
   // 处理武器效果
-  const weaponResult = processWeaponEffects(battleContext, elementResult);
+  const weaponResult = processWeaponEffects(
+    battleContext.attackerEquipment.武器,
+    battleContext.attacker.灵根?.type,
+    battleContext.attacker,
+    battleContext.baseDamage,
+    Math.random(),
+    elementResult);
   att = weaponResult.damage;
   fyjiachen += weaponResult.defenseBonus;
   msg.push(...weaponResult.messages);
   chufa = weaponResult.triggered || chufa;
 
   // 处理附魔效果
-  const enchantResult = processEnchantmentEffects(battleContext, weaponResult);
+  const enchantResult = processEnchantmentEffects(
+    battleContext.attackerEquipment,
+    battleContext.baseDamage,
+    battleContext.attacker,
+    Math.random(),
+    weaponResult);
   att = enchantResult.damage;
   fyjiachen += enchantResult.defenseBonus;
   msg.push(...enchantResult.messages);
   chufa = enchantResult.triggered || chufa;
 
   // 处理仙宠加成
-  const petResult = processPetBonus(battleContext, enchantResult);
+  const petResult = processPetBonus(
+    battleContext.attacker.仙宠,
+    battleContext.attacker,
+    battleContext.baseDamage,
+    Math.random(),
+    enchantResult);
   att = petResult.damage;
   fyjiachen += petResult.defenseBonus;
   msg.push(...petResult.messages);
