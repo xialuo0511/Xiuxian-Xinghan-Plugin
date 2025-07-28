@@ -4,7 +4,8 @@ import { createClient } from 'redis';
 import fs from 'fs';
 import YAML from 'yaml';
 import path from 'path';
-import { data } from './api.js';
+import data from '../model/XiuxianData.js';
+
 
 // --- 创建独立的 Redis 客户端 ---
 const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
