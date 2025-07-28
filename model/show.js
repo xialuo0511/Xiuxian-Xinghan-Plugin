@@ -6,8 +6,23 @@ export default class Game extends base {
     this.model = 'show';
   }
 
+
   /**
-   * 【新增】为签到日历准备数据
+   *
+   * @param {object} myData
+   * @returns
+   */
+  async get_secret_place_log(myData) {
+    this.model = 'secret_place_log';
+    return {
+      ...this.screenData,
+      saveId: 'secret_place_log',
+      ...myData
+    };
+  }
+
+  /**
+   * 为签到日历准备数据
    * @param {object} myData
    * @returns
    */
