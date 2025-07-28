@@ -67,6 +67,10 @@ export async function aggregatePlayerData(userId) {
   };
 }
 
+function needMax(num) {
+  return num > 1 ? 1 : num;
+}
+
 /**
  * [处理层] 负责将原始数据计算并格式化为最终用于渲染的视图模型
  */
@@ -132,7 +136,7 @@ export async function transformPlayerDataForRender(rawData, e) {
         occupation_exp: player.occupation_exp,
         occupation_need_exp: occupationLevelInfo.experience,
         strand_liandan: {
-          num: (player.occupation_exp / occupationLevelInfo.experience * 100).toFixed(0),
+          num: (needMax(player.occupation_exp / occupationLevelInfo.experience) * 100).toFixed(0),
           leftColor: '#BA55D3',
           rightColor: '#8A2BE2'
         }
@@ -190,21 +194,21 @@ export async function transformPlayerDataForRender(rawData, e) {
 
     // 四个进度条
     strand_hp: {
-      num: (player.当前血量 / player.血量上限 * 100).toFixed(0),
+      num: (needMax(player.当前血量 / player.血量上限) * 100).toFixed(0),
       leftColor: '#e57373',
       rightColor: '#d32f2f'
     },
     rank_lianqi: levelInfo.level,
     expmax_lianqi: levelInfo.exp,
     strand_lianqi: {
-      num: (player.修为 / levelInfo.exp * 100).toFixed(0),
+      num: (needMax(player.修为 / levelInfo.exp) * 100).toFixed(0),
       leftColor: '#02e4f8',
       rightColor: '#0077ff'
     },
     rank_llianti: levelMaxInfo.level,
     expmax_llianti: levelMaxInfo.exp,
     strand_llianti: {
-      num: (player.血气 / levelMaxInfo.exp * 100).toFixed(0),
+      num: (needMax(player.血气 / levelMaxInfo.exp) * 100).toFixed(0),
       leftColor: '#FFD700',
       rightColor: '#FFA500'
     },

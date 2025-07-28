@@ -122,7 +122,6 @@ export class UserStart extends plugin {
 
     // 将原始数据转换为用于渲染的视图模型
     const renderData = await transformPlayerDataForRender(rawData, e);
-    console.log(renderData.head_pic);
     // 生成图片并回复
     const dataForPuppeteer = await new Show(e).get_playerData(renderData);
     const img = await puppeteer.screenshot('player', { ...dataForPuppeteer });
