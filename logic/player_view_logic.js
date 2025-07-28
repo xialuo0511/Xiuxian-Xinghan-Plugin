@@ -123,8 +123,8 @@ export async function transformPlayerDataForRender(rawData, e) {
     occupation_need_exp: '-',
     strand_liandan: {
       num: 0,
-      leftColor: '#BA55D3',
-      rightColor: '#8A2BE2'
+      leftColor: '#e69efb',
+      rightColor: '#8b11fb'
     }
   };
   if (player.occupation && player.occupation.length > 0) {
@@ -195,8 +195,8 @@ export async function transformPlayerDataForRender(rawData, e) {
     // 四个进度条
     strand_hp: {
       num: (needMax(player.当前血量 / player.血量上限) * 100).toFixed(4),
-      leftColor: '#e57373',
-      rightColor: '#d32f2f'
+      leftColor: '#ff8383',
+      rightColor: '#f81e1e'
     },
     rank_lianqi: levelInfo.level,
     expmax_lianqi: levelInfo.exp,
@@ -209,8 +209,8 @@ export async function transformPlayerDataForRender(rawData, e) {
     expmax_llianti: levelMaxInfo.exp,
     strand_llianti: {
       num: (needMax(player.血气 / levelMaxInfo.exp) * 100).toFixed(4),
-      leftColor: '#FFD700',
-      rightColor: '#FFA500'
+      leftColor: '#fae99b',
+      rightColor: '#e89b24'
     },
     rank_liandan: occupationInfo.occupation_level_name,
     expmax_liandan: occupationInfo.occupation_need_exp,
