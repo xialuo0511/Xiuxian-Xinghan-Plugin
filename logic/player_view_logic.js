@@ -19,8 +19,9 @@ function Strand(now, max, leftColor, rightColor) {
   let num = (now / max * 100);
   if (num > 100) num = 100;
   if (num < 0) num = 0;
+  num = num.toFixed(0);
   return {
-    style: `style="background: linear-gradient(to right, ${leftColor}, ${rightColor}); width: ${num.toFixed(0)}%"`
+    style: `style="background: linear-gradient(to right, ${leftColor}, ${rightColor}); width: ${num}%"`
   };
 }
 
