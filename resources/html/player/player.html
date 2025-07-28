@@ -3,46 +3,36 @@
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <link href="#" rel="shortcut icon" />
-  <style type="text/css">
-      /* --- 字体定义 --- */
+  <style>
       @font-face {
           font-family: "tttgbnumber";
           src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
-          font-weight: normal;
-          font-style: normal;
       }
 
       @font-face {
           font-family: "NZBZ";
           src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
-          font-weight: normal;
-          font-style: normal;
       }
 
-      /* --- 基础样式 --- */
       body {
-          /* 【核心改动】: 调整为竖向布局的宽度 */
           width: 600px;
           margin: 0;
           padding: 20px;
-          text-align: center;
           background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
           background-size: cover;
           background-position: center center;
-          background-repeat: no-repeat;
           font-family: "tttgbnumber", sans-serif;
           color: #4a2c1a;
       }
 
-      /* --- 容器样式 --- */
       .panel-container {
           display: flex;
           flex-direction: column;
-          gap: 15px; /* 模块间距 */
+          gap: 15px;
       }
 
       .card-base {
-          background: rgba(253, 250, 245, 0.85);
+          background: rgba(253, 250, 245, 0.88);
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
           border: 2px solid #a88763;
@@ -51,7 +41,6 @@
           padding: 15px;
       }
 
-      /* --- 顶部核心区 --- */
       .main-header {
           display: flex;
           flex-direction: column;
@@ -62,7 +51,7 @@
       .avatar-frame {
           width: 180px;
           height: 180px;
-          background-image: url("file:///{{pluResPath}}/img/player/{{touxiang}}.png");
+          background-image: url("file:///{{pluResPath}}/img/touxiang/{{touxiang}}.png");
           background-size: 100% 100%;
           display: flex;
           align-items: center;
@@ -98,13 +87,13 @@
 
       .realm-progress-section {
           width: 100%;
-          display: flex;
-          gap: 15px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
           margin-top: 10px;
       }
 
       .progress-card {
-          flex: 1;
           text-align: left;
       }
 
@@ -119,34 +108,35 @@
           height: 20px;
           background-color: rgba(0, 0, 0, 0.1);
           border-radius: 10px;
-          padding: 2px;
           margin-top: 4px;
+          position: relative;
       }
 
       .progress-bar {
           height: 100%;
-          border-radius: 8px;
-          background: linear-gradient(to right, #87CEEB, #4682B4);
-          position: relative;
+          border-radius: 10px;
           transition: width 0.5s ease-in-out;
       }
 
       .progress-text {
           position: absolute;
+          top: 0;
+          left: 0;
           width: 100%;
+          height: 100%;
+          line-height: 20px;
           text-align: center;
           color: white;
           font-size: 12px;
           font-weight: bold;
           text-shadow: 1px 1px 1px #000;
-          line-height: 16px;
+          z-index: 2;
       }
 
-      /* --- 中部信息区 --- */
       .info-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 10px 20px; /* 行间距和列间距 */
+          gap: 10px 20px;
           text-align: left;
           font-size: 16px;
           padding: 0 10px;
@@ -167,7 +157,6 @@
           color: #4a2c1a;
       }
 
-      /* --- 属性与装备区 --- */
       .details-section {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -176,8 +165,6 @@
 
       .details-card {
           background: rgba(253, 250, 245, 0.85);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
           border-radius: 8px;
           padding: 15px;
           border: 1px solid rgba(168, 135, 99, 0.5);
@@ -239,7 +226,6 @@
           line-height: 1.5;
       }
 
-      /* --- 页脚 --- */
       .footer {
           text-align: center;
           font-size: 12px;
@@ -250,7 +236,6 @@
 </head>
 <body>
 <div class="panel-container" id="capture">
-  <!-- 顶部核心信息 -->
   <div class="card-base main-header">
     <div class="avatar-frame">
       <img class="avatar-image" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'"
@@ -260,26 +245,39 @@
     <div class="power-display">战力 {{PowerMini}}</div>
     <div class="realm-progress-section">
       <div class="progress-card">
+        <div class="progress-title">生命</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="background: linear-gradient(to right, #e57373, #d32f2f);"
+               {{strand_hp.style}}></div>
+          <div class="progress-text">{{player.当前血量}} / {{player.血量上限}}</div>
+        </div>
+      </div>
+      <div class="progress-card">
         <div class="progress-title">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
         <div class="progress-bar-container">
-          <div class="progress-bar" {{strand_lianqi.style}}>
-            <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
-          </div>
+          <div class="progress-bar" {{strand_lianqi.style}}></div>
+          <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
         </div>
       </div>
       <div class="progress-card">
         <div class="progress-title">{{rank_llianti}}{{if player.血气 >= expmax_llianti}} [可破体] {{/if}}</div>
         <div class="progress-bar-container">
           <div class="progress-bar" style="background: linear-gradient(to right, #FFD700, #FFA500);"
-               {{strand_llianti.style}}>
-            <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
-          </div>
+               {{strand_llianti.style}}></div>
+          <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
+        </div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-title">{{rank_liandan}}</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="background: linear-gradient(to right, #BA55D3, #8A2BE2);"
+               {{strand_liandan.style}}></div>
+          <div class="progress-text">{{occupation.occupation_exp}} / {{occupation.occupation_need_exp}}</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 个人信息 -->
   <div class="card-base">
     <div class="info-grid">
       <div class="info-item"><span class="info-label">QQ：</span><span class="info-value">{{user_id}}</span></div>
@@ -299,31 +297,30 @@
     </div>
   </div>
 
-  <!-- 详细属性与装备 -->
   <div class="details-section">
     <div class="details-card">
       <div class="details-card-title">斗法属性</div>
       <div class="stat-line">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24">
           <path
             d="M19.7,3.3C17.5,1,14.5,0,11.5,0S5.5,1,3.3,3.3C1,5.5,0,8.5,0,11.5S1,17.5,3.3,19.7c2.2,2.2,5.2,3.3,8.2,3.3s6-1,8.2-3.3c2.2-2.2,3.3-5.2,3.3-8.2S22,5.5,19.7,3.3z M17.4,17.4c-1.8,1.8-4.2,2.8-6.9,2.8s-5.1-1-6.9-2.8C1.8,15.6,0.8,13.2,0.8,10.5S1.8,5.4,3.6,3.6c1.8-1.8,4.2-2.8,6.9-2.8s5.1,1,6.9,2.8c1.8,1.8,2.8,4.2,2.8,6.9S19.2,15.6,17.4,17.4z M10.4,14.2h3.2v-3H16L11.5,6L7,11.2h3.4V14.2z" />
         </svg>
         攻击：{{player_atk}}<sup>{{player_atk2}}</sup></div>
       <div class="stat-line">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24">
           <path
             d="M12,1L3,5v6c0,5.55,3.84,10.74,9,12c5.16-1.26,9-6.45,9-12V5L12,1z M12,11.99h7c-0.53,4.12-3.28,7.79-7,8.94V12H5V6.3l7-3.11V11.99z" />
         </svg>
         防御：{{player_def}}<sup>{{player_def2}}</sup></div>
       <div class="stat-line">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24">
           <path
             d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
         暴击：{{bao}}
       </div>
       <div class="stat-line">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24">
           <path
             d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8s3.59-8,8-8s8,3.59,8,8S16.41,20,12,20z M12.5,7H11v6l5.25,3.15L17,14.92l-4.5-2.67V7z" />
         </svg>
@@ -345,39 +342,41 @@
       <div class="equipment-item">
         <div class="equipment-name">{{equipment.武器.name}}</div>
         <div class="equipment-stats">
-          <div>攻击: {{(equipment.武器.atk).toFixed(0)}} | 防御: {{(equipment.武器.def).toFixed(0)}}</div>
-          <div>血量: {{(equipment.武器.HP).toFixed(0)}} | 暴击: {{equipment.武器.bao}}</div>
+          <div>攻击: {{(equipment.武器.atk)}} | 防御: {{(equipment.武器.def)}}</div>
+          <div>血量: {{(equipment.武器.HP)}} | 暴击: {{equipment.武器.bao}}</div>
           <div>评级：【{{武器评级}}】</div>
         </div>
       </div>
       <div class="equipment-item">
         <div class="equipment-name">{{equipment.护具.name}}</div>
         <div class="equipment-stats">
-          <div>攻击: {{(equipment.护具.atk).toFixed(0)}} | 防御: {{(equipment.护具.def).toFixed(0)}}</div>
-          <div>血量: {{(equipment.护具.HP).toFixed(0)}} | 暴击: {{equipment.护具.bao}}</div>
+          <div>攻击: {{(equipment.护具.atk)}} | 防御: {{(equipment.护具.def)}}</div>
+          <div>血量: {{(equipment.护具.HP)}} | 暴击: {{equipment.护具.bao}}</div>
           <div>评级：【{{护具评级}}】</div>
         </div>
       </div>
       <div class="equipment-item">
         <div class="equipment-name">{{equipment.法宝.name}}</div>
         <div class="equipment-stats">
-          <div>攻击: {{(equipment.法宝.atk).toFixed(0)}} | 防御: {{(equipment.法宝.def).toFixed(0)}}</div>
-          <div>血量: {{(equipment.法宝.HP).toFixed(0)}} | 暴击: {{equipment.法宝.bao}}</div>
+          <div>攻击: {{(equipment.法宝.atk)}} | 防御: {{(equipment.法宝.def)}}</div>
+          <div>血量: {{(equipment.法宝.HP)}} | 暴击: {{equipment.法宝.bao}}</div>
           <div>评级：【{{法宝评级}}】</div>
         </div>
       </div>
       <div class="equipment-item">
-        {{if player.仙宠.length == 0}}
+        <div class="equipment-name">{{equipment.项链.name}}</div>
+        <div class="equipment-stats">
+          <div>{{equipment.项链.属性}}属性加成: {{(equipment.项链.加成*100).toFixed(1)}}%</div>
+        </div>
+      </div>
+      <div class="equipment-item" style="grid-column: 1 / -1;">
+        {{if !仙宠.name || 仙宠.name == "暂无"}}
         <div class="equipment-name" style="line-height: 70px;">【仙宠暂无】</div>
         {{else}}
-        <div class="equipment-name">【{{player.仙宠.品级}}】{{player.仙宠.name}}</div>
-        <div class="equipment-stats">
-          <div>等级：{{player.仙宠.等级}}</div>
-          {{if player.仙宠.type=="战斗"}}
-          <div>三维加成{{player.仙宠.atk}}</div>
-          {{else}}
-          <div>{{player.仙宠.type}}加成:{{(player.仙宠.加成*100).toFixed(1)}}%</div>
-          {{/if}}
+        <div class="equipment-name">【{{仙宠.品级}}】{{仙宠.name}}</div>
+        <div class="equipment-stats" style="text-align:center;">
+          <span>等级：{{仙宠.等级}} | </span>
+          <span>{{仙宠.type}}加成: {{(仙宠.加成*100).toFixed(1)}}%</span>
         </div>
         {{/if}}
       </div>

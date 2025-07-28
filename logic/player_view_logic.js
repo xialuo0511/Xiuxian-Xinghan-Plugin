@@ -2,12 +2,8 @@
 
 import * as DAL from '../api/data-access.js';
 import {
-  Read_player,
   Read_qinmidu,
-  Write_qinmidu,
-  isNotNull,
-  get_random_talent,
-  shijianc
+  isNotNull
 } from '../apps/Xiuxian/xiuxian.js';
 import data from '../model/XiuxianData.js';
 import { GetPower, bigNumberTransform } from '../apps/ShowImeg/showData.js';
@@ -19,13 +15,13 @@ const versionData = config.getdefSet('version', 'version');
  * 进度条渲染辅助函数
  */
 function Strand(now, max) {
-  if (max == 0) return { style: 'style=width:0%', num: 0 }; // 防止除以0
-  let num = (now / max * 100).toFixed(0);
+  if (max == 0 || !max) return { style: 'style=width:0%', num: 0 }; // 防止除以0
+  let num = (now / max * 100);
   if (num > 100) num = 100;
   if (num < 0) num = 0;
   return {
-    style: `style=width:${num}%`,
-    num: num
+    style: `style=width:${num.toFixed(0)}%`,
+    num: num.toFixed(0)
   };
 }
 
@@ -36,8 +32,11 @@ function formatToScientific(value) {
   if (value == 0 || !value) {
     return { formatted: 0, exponent: '' };
   }
-  const exponent = Math.floor(Math.log(value) / Math.LN10);
-  const base = value * Math.pow(10, -exponent);
+  if (value < 100000) {
+    return { formatted: value, exponent: '' };
+  }
+  const exponent = Math.floor(Math.log10(value));
+  const base = value / Math.pow(10, exponent);
   return {
     formatted: `${base.toFixed(2)} x 10`,
     exponent: exponent
@@ -81,7 +80,7 @@ export async function transformPlayerDataForRender(rawData, e) {
     const action = rawData.action;
     let m = Math.floor((action.endTime - Date.now()) / 60000);
     let s = Math.floor(((action.endTime - Date.now()) % 60000) / 1000);
-    status = `${action.action}(剩余时间:${m > 0 ? m : 0}分${s > 0 ? s : 0}秒)`;
+    status = `${action.action}(剩余:${m > 0 ? m : 0}分${s > 0 ? s : 0}秒)`;
   }
 
   // 道法仙术
@@ -134,13 +133,19 @@ export async function transformPlayerDataForRender(rawData, e) {
   }
 
   // 装备评级
-  const pinji = ['劣', '普', '优', '精', '极', '绝', '顶'];
-  const 武器评级 = isNotNull(equipment.武器.pinji) ? pinji[equipment.武器.pinji] : '无';
-  const 护具评级 = isNotNull(equipment.护具.pinji) ? pinji[equipment.护具.pinji] : '无';
-  const 法宝评级 = isNotNull(equipment.法宝.pinji) ? pinji[equipment.法宝.pinji] : '无';
+  const pinji = ['劣',
+    '普',
+    '优',
+    '精',
+    '极',
+    '绝',
+    '顶'];
+  const 武器评级 = isNotNull(equipment.武器?.pinji) ? pinji[equipment.武器.pinji] : '无';
+  const 护具评级 = isNotNull(equipment.护具?.pinji) ? pinji[equipment.护具.pinji] : '无';
+  const 法宝评级 = isNotNull(equipment.法宝?.pinji) ? pinji[equipment.法宝.pinji] : '无';
 
   // 婚姻状况
-  let hunyin = '未知';
+  let hunyin = '无';
   const marriage = qinmidu.find(item => (item.QQ_A == usr_qq || item.QQ_B == usr_qq) && item.婚姻 > 0);
   if (marriage) {
     const partnerId = marriage.QQ_A == usr_qq ? marriage.QQ_B : marriage.QQ_A;
@@ -151,20 +156,15 @@ export async function transformPlayerDataForRender(rawData, e) {
   // 科学计数法格式化
   const atkSci = formatToScientific(player.攻击);
   const defSci = formatToScientific(player.防御);
-  const hpBonusSci = formatToScientific(player.生命加成);
-  const defBonusSci = formatToScientific(player.防御加成);
-  const atkBonusSci = formatToScientific(player.攻击加成);
 
   // 返回最终的视图模型
   return {
-    // pluResPath: `../../../../../plugins/xiuxian-emulator-plugin/resources`, // 模板需要这个路径
     pifu: player.练气皮肤,
-    touxiang: player.zb_touxiangkuang[0].id,
+    touxiang: player.zb_touxiangkuang?.[0]?.id || 0,
     head_pic: e.member.getAvatarUrl() || `https://q1.qlogo.cn/g?b=qq&s=0&nk=${usr_qq}`,
     PowerMini: bigNumberTransform(GetPower(player.攻击, player.防御, player.血量上限, player.暴击率)),
-    player: player, // 原始player对象，模板中多处用到
+    player: player,
     user_id: usr_qq,
-    strand_hp: Strand(player.当前血量, player.血量上限),
     lingshi: bigNumberTransform(player.灵石),
     dingjixianshi: dingjixianshi,
     this_association: player.宗门 || { 宗门名称: '无', 职位: '无' },
@@ -175,25 +175,18 @@ export async function transformPlayerDataForRender(rawData, e) {
     player_def2: defSci.exponent,
     bao: `${(player.暴击率 * 100).toFixed(0)}%`,
 
-    攻击加成: atkBonusSci.formatted,
-    攻击加成_t: atkBonusSci.exponent,
-    防御加成: defBonusSci.formatted,
-    防御加成_t: defBonusSci.exponent,
-    生命加成: hpBonusSci.formatted,
-    生命加成_t: hpBonusSci.exponent,
-
     talent: (talentEff * 100).toFixed(0),
     occupation: occupationInfo.occupation,
     婚姻状况: hunyin,
 
+    // 四个进度条
+    strand_hp: Strand(player.当前血量, player.血量上限),
     rank_lianqi: levelInfo.level,
     expmax_lianqi: levelInfo.exp,
     strand_lianqi: Strand(player.修为, levelInfo.exp),
-
     rank_llianti: levelMaxInfo.level,
     expmax_llianti: levelMaxInfo.exp,
     strand_llianti: Strand(player.血气, levelMaxInfo.exp),
-
     rank_liandan: occupationInfo.occupation_level_name,
     expmax_liandan: occupationInfo.occupation_need_exp,
     strand_liandan: occupationInfo.strand_liandan,
@@ -202,14 +195,15 @@ export async function transformPlayerDataForRender(rawData, e) {
     player_action: status,
     daofa: daofa,
 
-    equipment: { // 格式化装备暴击率为百分比
-      ...equipment,
-      武器: { ...equipment.武器, bao: `${(equipment.武器.bao * 100).toFixed(0)}%` },
-      护具: { ...equipment.护具, bao: `${(equipment.护具.bao * 100).toFixed(0)}%` },
-      法宝: { ...equipment.法宝, bao: `${(equipment.法宝.bao * 100).toFixed(0)}%` }
+    equipment: {
+      武器: equipment.武器 || { name: '暂无', atk: 0, def: 0, HP: 0, bao: 0 },
+      护具: equipment.护具 || { name: '暂无', atk: 0, def: 0, HP: 0, bao: 0 },
+      法宝: equipment.法宝 || { name: '暂无', atk: 0, def: 0, HP: 0, bao: 0 },
+      项链: equipment.项链 || { name: '暂无', 属性: '无', 加成: 0 }
     },
-    武器评级, 护具评级, 法宝评级,
+    仙宠: player.仙宠 && player.仙宠.name ? player.仙宠 : { name: '暂无', 品级: '', 等级: 0, type: '无', 加成: 0 },
 
+    武器评级, 护具评级, 法宝评级,
     修仙版本: versionData
   };
 }
