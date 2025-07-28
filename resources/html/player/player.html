@@ -255,7 +255,8 @@
       <div class="progress-card">
         <div class="progress-title">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
         <div class="progress-bar-container">
-          <div class="progress-bar" {{strand_lianqi.style}}></div>
+          <div class="progress-bar" style="background: linear-gradient(to right, #02e4f8, #0077ff);"
+               {{strand_lianqi.style}}></div>
           <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
         </div>
       </div>
