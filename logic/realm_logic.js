@@ -56,7 +56,8 @@ export async function enterRealm(userId, realmName, realmType, e) {
     return checkResult;
   }
 
-  const duration = xiuxianConfigData.CD.secretplace * 60 * 1000;
+  // const duration = xiuxianConfigData.CD.secretplace * 60 * 1000;
+  const duration = 60 * 1000;
   const startTime = Date.now();
   const endTime = startTime + duration;
 

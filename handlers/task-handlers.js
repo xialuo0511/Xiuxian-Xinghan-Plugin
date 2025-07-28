@@ -1,9 +1,11 @@
 import { handleTribulationStrike } from '../logic/tribulation.js';
 import { settleBiguan } from '../logic/retreat.js';
 import { work } from '../logic/work.js';
+import { settleRealm } from '../logic/realm_logic.js';
 
 export {
   handleTribulationStrike, // 渡劫
   settleBiguan, // 闭关
-  work
+  work, //降妖
+  settleRealm //降临秘境
 };
