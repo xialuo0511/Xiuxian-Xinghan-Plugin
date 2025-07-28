@@ -1,11 +1,8 @@
 // /apps/Explore/SecretPlace.js (优化版)
 
-import plugin from '../../../../lib/plugins/plugin.js';
 import data from '../../model/XiuxianData.js';
-import { Gulid } from '../../api/api.js';
 import * as DAL from '../../api/data-access.js';
-import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import { Gulid, puppeteer, Show, plugin } from '../../api/api.js';
 
 // 【新增】: 导入新的逻辑函数
 import { enterRealm } from '../../logic/realm_logic.js';
@@ -23,7 +20,6 @@ export class SecretPlace extends plugin {
         { reg: '^#禁地$', fnc: 'forbiddenAreaList' },
         { reg: '^#前往禁地.*$', fnc: 'goForbiddenArea' },
         { reg: '^#逃离', fnc: 'giveUp' }
-        // ... 其他探索地点的规则
       ]
     });
   }
