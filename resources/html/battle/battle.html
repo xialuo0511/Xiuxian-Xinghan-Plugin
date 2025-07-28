@@ -93,7 +93,7 @@
           position: absolute;
           width: 100%;
           text-align: center;
-          color: white;
+          color: #6a3906;
           font-size: 12px;
           font-weight: bold;
           text-shadow: 1px 1px 1px #000;
@@ -146,8 +146,8 @@
       <div class="player-name">{{A_player.名号}}</div>
       <div class="player-level">{{A_player.level_name}}</div>
       <div class="progress-bar-container">
+        <div class="progress-text">{{A_player.当前血量}} / {{A_player.血量上限}}</div>
         <div class="progress-bar" style="width: {{A_player_percent_hp}}%;">
-          <div class="progress-text">{{A_player.当前血量}} / {{A_player.血量上限}}</div>
         </div>
       </div>
     </div>
