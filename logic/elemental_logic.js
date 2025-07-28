@@ -305,7 +305,7 @@ export async function applyElementalEffects(context) {
     if (isDefenderSkill) {
       return (skill.type === 'weapon' && defender.equipment?.武器.name === skill.name ||
         skill.type === 'gongfa' && defender.学习的功法?.includes(skill.name) ||
-        skill.type === 'linggen' && defender.灵根.name === skill.name ||
+        skill.type === 'linggen' && defender.灵根?.name === skill.name ||
         skill.type === 'general') && skill.condition(context);
     }
     return false;
