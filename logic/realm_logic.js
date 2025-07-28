@@ -2,9 +2,7 @@ import * as DAL from '../api/data-access.js';
 import * as Notifier from '../handlers/notifier.js';
 import { scheduleTask } from '../api/task-scheduler.js';
 import data from '../model/XiuxianData.js';
-import config from '../model/Config.js';//
-import puppeteer from '../../../lib/puppeteer/puppeteer.js';
-import Show from '../model/show.js';
+import config from '../model/Config.js';
 import { battleEngine } from './battle_logic.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
