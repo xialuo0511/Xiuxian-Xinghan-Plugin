@@ -157,8 +157,8 @@ export async function transformPlayerDataForRender(rawData, e) {
   const atkSci = formatToScientific(player.攻击);
   const defSci = formatToScientific(player.防御);
 
-  console.log(player.当前血量 / player.血量上限);
-  console.log((player.当前血量 / player.血量上限).toFixed(0));
+  console.log(player.当前血量 / player.血量上限 * 100);
+  console.log((player.当前血量 / player.血量上限 * 100).toFixed(0));
 
 
   // 返回最终的视图模型
@@ -184,7 +184,11 @@ export async function transformPlayerDataForRender(rawData, e) {
     婚姻状况: hunyin,
 
     // 四个进度条
-    strand_hp: { num: (player.当前血量 / player.血量上限).toFixed(0), leftColor: '#e57373', rightColor: '#d32f2f' },
+    strand_hp: {
+      num: (player.当前血量 / player.血量上限 * 100).toFixed(0),
+      leftColor: '#e57373',
+      rightColor: '#d32f2f'
+    },
     rank_lianqi: levelInfo.level,
     expmax_lianqi: levelInfo.exp,
     strand_lianqi: Strand(player.修为, levelInfo.exp, '#02e4f8', '#0077ff'),
