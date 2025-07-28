@@ -1,193 +1,137 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <link rel="shortcut icon" href="#" />
   <style type="text/css">
-    @font-face {
-      font-family: "tttgbnumber";
-      src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
-    }
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background-image: url('file:///{{pluResPath}}/img/player_pifu/beijing.jpg');
+          background-size: cover;
+          background-position: center;
+          font-family: "tttgbnumber", sans-serif;
+          color: #4a2c1a;
+      }
+      .panel-container {
+          background: rgba(253, 250, 245, 0.92);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+      }
+      .players-header {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          padding-bottom: 15px;
+          border-bottom: 2px dashed #d2b48c;
+      }
+      .player-card { width: 300px; text-align: center; }
+      .vs-separator { font-family: "NZBZ", sans-serif; font-size: 50px; color: #8B4513; }
+      .player-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #c8a87e; margin: 0 auto 10px auto; }
+      .player-name { font-family: "NZBZ", sans-serif; font-size: 24px; color: #6a3906; font-weight: bold; }
+      .player-level { font-size: 16px; color: #7a5533; margin-bottom: 10px; }
 
-    @font-face {
-      font-family: "NZBZ";
-      src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
-    }
+      /* 【核心修改】进度条容器 */
+      .progress-bar-container {
+          width: 100%;
+          height: 22px;
+          background-color: rgba(0, 0, 0, 0.15);
+          border-radius: 11px;
+          padding: 3px;
+          box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+          position: relative; /* 成为绝对定位的父级 */
+      }
+      /* 【核心修改】进度条文本的通用样式 */
+      .progress-text {
+          position: absolute;
+          top: 3px;
+          left: 0;
+          width: 100%;
+          height: 16px;
+          line-height: 16px;
+          text-align: center;
+          font-size: 12px;
+          font-weight: bold;
+          text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+      }
+      /* 【核心修改】背景文字 (深色) */
+      .progress-text-bg {
+          color: #4a2c1a;
+          z-index: 1;
+      }
+      /* 【核心修改】前景进度条 (带颜色) */
+      .progress-bar {
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          height: 16px;
+          border-radius: 8px;
+          background: linear-gradient(to right, #e57373, #d32f2f);
+          overflow: hidden; /* 关键：裁剪内部的文字 */
+          z-index: 2;
+      }
+      /* 【核心修改】前景文字 (白色，会被父级裁剪) */
+      .progress-text-fg {
+          color: white;
+          width: calc(100% - 6px);
+      }
 
-    body {
-      width: 800px;
-      margin: 0;
-      padding: 20px;
-      background-image: url('file:///{{pluResPath}}/img/player_pifu/beijing.jpg');
-      background-size: cover;
-      background-position: center;
-      font-family: "tttgbnumber", sans-serif;
-      color: #4a2c1a;
-    }
-
-    .panel-container {
-      background: rgba(253, 250, 245, 0.92);
-      border: 2px solid #a88763;
-      border-radius: 15px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-      padding: 20px;
-    }
-
-    .players-header {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding-bottom: 15px;
-      border-bottom: 2px dashed #d2b48c;
-    }
-
-    .player-card {
-      width: 300px;
-      text-align: center;
-    }
-
-    .vs-separator {
-      font-family: "NZBZ", sans-serif;
-      font-size: 50px;
-      color: #8B4513;
-    }
-
-    .player-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 3px solid #c8a87e;
-      margin: 0 auto 10px auto;
-    }
-
-    .player-name {
-      font-family: "NZBZ", sans-serif;
-      font-size: 24px;
-      color: #6a3906;
-      font-weight: bold;
-    }
-
-    .player-level {
-      font-size: 16px;
-      color: #7a5533;
-      margin-bottom: 10px;
-    }
-
-    .progress-bar-container {
-      width: 100%;
-      height: 22px;
-      background-color: rgba(0, 0, 0, 0.15);
-      border-radius: 11px;
-      padding: 3px;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(to right, #e57373, #d32f2f);
-      border-radius: 8px;
-      position: relative;
-      transition: width 0.5s ease-in-out;
-    }
-
-    .progress-text {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      color: #6a3906;
-      font-size: 12px;
-      font-weight: bold;
-      text-shadow: 1px 1px 1px #000;
-      line-height: 16px;
-    }
-
-    /* 【核心修正】: 移除固定高度，允许自由伸展 */
-    .log-panel {
-      margin-top: 15px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid #d2b48c;
-      border-radius: 10px;
-      padding: 15px;
-    }
-
-    .log-entry {
-      font-size: 16px;
-      line-height: 1.8;
-      padding: 8px 5px;
-      border-bottom: 1px solid rgba(210, 180, 140, 0.4);
-    }
-
-    .log-entry:last-child {
-      border-bottom: none;
-    }
-
-    .round-header {
-      font-weight: bold;
-      font-size: 18px;
-      color: #8B4513;
-      text-align: center;
-      margin-top: 10px;
-      background: rgba(210, 180, 140, 0.2);
-      border-radius: 5px;
-    }
-
-    .final-result {
-      font-family: "NZBZ", sans-serif;
-      font-size: 20px;
-      color: #c0392b;
-      text-align: center;
-      margin-top: 10px;
-      font-weight: bold;
-    }
+      .log-panel { margin-top: 15px; background: rgba(255, 255, 255, 0.2); border: 1px solid #d2b48c; border-radius: 10px; padding: 15px; }
+      .log-entry { font-size: 16px; line-height: 1.8; padding: 8px 5px; border-bottom: 1px solid rgba(210, 180, 140, 0.4); }
+      .log-entry:last-child { border-bottom: none; }
+      .round-header { font-weight: bold; font-size: 18px; color: #8B4513; text-align: center; margin-top: 10px; background: rgba(210, 180, 140, 0.2); border-radius: 5px; }
+      .final-result { font-family: "NZBZ", sans-serif; font-size: 20px; color: #c0392b; text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
 </head>
-
 <body>
-  <div id="capture" class="panel-container">
-    <div class="players-header">
-      <div class="player-card">
-        <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{A_player.id}}"
-          onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
-        <div class="player-name">{{A_player.名号}}</div>
-        <div class="player-level">{{A_player.level_name}}</div>
-        <div class="progress-bar-container" style="position:relative;">
-          <div class="progress-text"
-            style="position:absolute; left:0; top:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none;">
-            {{A_player.当前血量}} / {{A_player.血量上限}}
-          </div>
-          <div class="progress-bar" style="width: {{A_player_percent_hp}}%; position:relative; z-index:1;">
-          </div>
-        </div>
-      </div>
-
-      <div class="vs-separator">VS</div>
-
-      <div class="player-card">
-        <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{B_player.id}}"
-          onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
-        <div class="player-name">{{B_player.名号}}</div>
-        <div class="player-level">{{B_player.level_name}}</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar" style="width: {{B_player_percent_hp}}%;">
-            <div class="progress-text">{{B_player.当前血量}} / {{B_player.血量上限}}</div>
-          </div>
+<div id="capture" class="panel-container">
+  <div class="players-header">
+    <div class="player-card">
+      <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{A_player.id}}" onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
+      <div class="player-name">{{A_player.名号}}</div>
+      <div class="player-level">{{A_player.level_name}}</div>
+      <div class="progress-bar-container">
+        <div class="progress-text progress-text-bg">{{A_player.当前血量}} / {{A_player.血量上限}}</div>
+        <div class="progress-bar" style="width: {{A_player_percent_hp}}%;">
+          <div class="progress-text progress-text-fg">{{A_player.当前血量}} / {{A_player.血量上限}}</div>
         </div>
       </div>
     </div>
-
-    <div class="log-panel">
-      {{each log item}}
-      {{if item.startsWith('\n==')}}
-      <div class="log-entry round-header">{{item}}</div>
-      {{else if item.includes('击败了')}}
-      <div class="log-entry final-result">{{item}}</div>
-      {{else}}
-      <div class="log-entry">{{item}}</div>
-      {{/if}}
-      {{/each}}
+    <div class="vs-separator">VS</div>
+    <div class="player-card">
+      <img class="player-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{B_player.id}}" onerror="this.src='{{pluResPath}}/img/player/touxiang.png'" />
+      <div class="player-name">{{B_player.名号}}</div>
+      <div class="player-level">{{B_player.level_name}}</div>
+      <div class="progress-bar-container">
+        <div class="progress-text progress-text-bg">{{B_player.当前血量}} / {{B_player.血量上限}}</div>
+        <div class="progress-bar" style="width: {{B_player_percent_hp}}%;">
+          <div class="progress-text progress-text-fg">{{B_player.当前血量}} / {{B_player.血量上限}}</div>
+        </div>
+      </div>
     </div>
   </div>
+  <div class="log-panel">
+    {{each log item}}
+    {{if item.startsWith('\n==')}}
+    <div class="log-entry round-header">{{item}}</div>
+    {{else if item.includes('击败了')}}
+    <div class="log-entry final-result">{{item}}</div>
+    {{else}}
+    <div class="log-entry">{{item}}</div>
+    {{/if}}
+    {{/each}}
+  </div>
+</div>
 </body>
-
 </html>
