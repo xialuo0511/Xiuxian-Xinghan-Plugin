@@ -3,7 +3,8 @@ import { scheduleTask } from '../api/task-scheduler.js';
 import * as Notifier from '../handlers/notifier.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
-import { puppeteer, Show } from '../api/api.js';
+import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import Show from '../model/show.js';
 import { battleEngine } from './battle_logic.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');

@@ -1,13 +1,13 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import Show from '../model/show.js';
 
 import fs from 'fs';
 import path from 'path';
 
 import config from '../model/Config.js';
 import data from '../model/XiuxianData.js';
-import Show from '../model/show.js';
 import { __PATH } from '../apps/Xiuxian/xiuxian.js';
 
 export const verc = ({ e }) => {
@@ -16,16 +16,17 @@ export const verc = ({ e }) => {
 export { plugin, common, puppeteer, data, config, Show };
 
 //创建连接
-import { createRequire } from "module"
-const require = createRequire(import.meta.url)
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 var mysql = require('mysql');
-let databaseConfigData = config.getConfig("database", "database");
+let databaseConfigData = config.getConfig('database', 'database');
 const db = mysql.createPool({
   host: 'localhost',
   user: databaseConfigData.Database.username,
   password: databaseConfigData.Database.password,
   database: 'xiuxiandatabase'
-})
+});
 
 //检查存档是否存在，存在返回true;
 export async function existplayer(usr_qq) {
@@ -48,7 +49,7 @@ export async function Gulid(usr_qq) {
     for (let record of allRecords) {
       if (record.频道_ID == usr_qq) {
         usr_qq = record.QQ_ID; // 使用存档的 usr_qq
-        let ifexistplay = data.existData("player", usr_qq);
+        let ifexistplay = data.existData('player', usr_qq);
         if (!ifexistplay) {
           usr_qq = record.频道_ID; // 使用存档的 usr_qq
         }
@@ -59,7 +60,7 @@ export async function Gulid(usr_qq) {
     for (let record of allRecords) {
       if (record.频道_ID == usr_qq) {
         usr_qq = record.QQ_ID; // 使用存档的 usr_qq
-        let ifexistplay = data.existData("player", usr_qq);
+        let ifexistplay = data.existData('player', usr_qq);
         if (!ifexistplay) {
           usr_qq = record.频道_ID; // 使用存档的 usr_qq
         }
@@ -78,7 +79,7 @@ export async function Gulid2(usr_qq) {
     for (let record of allRecords) {
       if (record.QQ_ID == usr_qq) {
         usr_qq = record.频道_ID; // 使用存档的 usr_qq
-        let ifexistplay = data.existData("player", usr_qq);
+        let ifexistplay = data.existData('player', usr_qq);
         if (!ifexistplay) {
           usr_qq = record.QQ_ID; // 使用存档的 usr_qq
         }
@@ -116,9 +117,9 @@ export async function sql_run(query) {
   return new Promise((resolve, reject) => {
     db.query(query, (err, result) => {
       if (err) {
-        reject(err)
+        reject(err);
       }
-      resolve(result)
+      resolve(result);
     });
   });
 }
@@ -132,7 +133,7 @@ export async function fstadd_Gulid(A, B, key) {
     await Write_Gulid([]);
     Gulid = await Read_Gulid();
   }
-  let pd = false
+  let pd = false;
   var i = A;
   var l = 0;
   while (i >= 1) {
@@ -140,25 +141,25 @@ export async function fstadd_Gulid(A, B, key) {
     l++;
   }
   if (l > 10) {//判断是否为频道19位id
-    pd = true
+    pd = true;
   }
-  let player = ''
+  let player = '';
   if (pd) {
     player = {
       QQ_ID: B,
       频道_ID: A,
-      密钥: key,
+      密钥: key
     };
   } else {
     player = {
       QQ_ID: A,
       频道_ID: B,
-      密钥: key,
+      密钥: key
     };
   }
   if (player == '') {
-    console.log("出现错误!!!!:设置绑定请求出现错误")
-    return
+    console.log('出现错误!!!!:设置绑定请求出现错误');
+    return;
   }
   Gulid.push(player);
   await Write_Gulid(Gulid);
