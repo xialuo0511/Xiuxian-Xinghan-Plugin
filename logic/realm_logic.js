@@ -2,12 +2,11 @@ import * as DAL from '../api/data-access.js';
 import { redisClient as redis } from '../api/redis.js';
 import { scheduleTask } from '../api/task-scheduler.js';
 import * as Notifier from '../handlers/notifier.js';
-import { battleEngine } from '../apps/Battle/Battle.js'; // 确保 battle.js 导出了 battleEngine
-import { Add_najie_thing, Add_修为, Add_血气, Add_HP } from '../apps/Xiuxian/xiuxian.js';
+import { battleEngine } from '../apps/Battle/Battle.js';
+import { Add_najie_thing } from '../apps/Xiuxian/xiuxian.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
-import Show from '../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import { puppeteer, Show } from '../../api/api.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 

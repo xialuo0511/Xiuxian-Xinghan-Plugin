@@ -75,7 +75,7 @@ function calculateDamage(attacker, defender) {
  * @param {object} A_player 攻击方 (会被直接修改)
  * @param {object} B_player 防御方 (会被直接修改)
  */
-async function battleEngine(A_player, B_player) {
+export async function battleEngine(A_player, B_player) {
   let turn = 0;
   let messages = [];
   let statusEffects = {};
