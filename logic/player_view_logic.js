@@ -14,14 +14,13 @@ const versionData = config.getdefSet('version', 'version');
 /**
  * 进度条渲染辅助函数
  */
-function Strand(now, max) {
+function Strand(now, max, leftColor, rightColor) {
   if (max == 0 || !max) return { style: 'style=width:0%', num: 0 }; // 防止除以0
   let num = (now / max * 100);
   if (num > 100) num = 100;
   if (num < 0) num = 0;
   return {
-    style: `style=width:${num.toFixed(0)}%`,
-    num: num.toFixed(0)
+    style: `style="background: linear-gradient(to right, ${leftColor}, ${rightColor}); width: ${num.toFixed(0)}%"`
   };
 }
 
@@ -127,7 +126,7 @@ export async function transformPlayerDataForRender(rawData, e) {
         occupation_level_name: occupationLevelInfo.name,
         occupation_exp: player.occupation_exp,
         occupation_need_exp: occupationLevelInfo.experience,
-        strand_liandan: Strand(player.occupation_exp, occupationLevelInfo.experience)
+        strand_liandan: Strand(player.occupation_exp, occupationLevelInfo.experience, '#BA55D3', '#8A2BE2')
       };
     }
   }
@@ -180,13 +179,13 @@ export async function transformPlayerDataForRender(rawData, e) {
     婚姻状况: hunyin,
 
     // 四个进度条
-    strand_hp: Strand(player.当前血量, player.血量上限),
+    strand_hp: Strand(player.当前血量, player.血量上限, '#e57373', '#d32f2f'),
     rank_lianqi: levelInfo.level,
     expmax_lianqi: levelInfo.exp,
-    strand_lianqi: Strand(player.修为, levelInfo.exp),
+    strand_lianqi: Strand(player.修为, levelInfo.exp, '#02e4f8', '#0077ff'),
     rank_llianti: levelMaxInfo.level,
     expmax_llianti: levelMaxInfo.exp,
-    strand_llianti: Strand(player.血气, levelMaxInfo.exp),
+    strand_llianti: Strand(player.血气, levelMaxInfo.exp, '#FFD700', '#FFA500'),
     rank_liandan: occupationInfo.occupation_level_name,
     expmax_liandan: occupationInfo.occupation_need_exp,
     strand_liandan: occupationInfo.strand_liandan,
