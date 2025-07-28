@@ -256,8 +256,8 @@ const skillEffects = [
 export async function applyElementalEffects(context) {
   let { attacker, defender, damage, messages, turn, statusEffects } = context;
 
-  const attackerElement = attacker.灵根.name.replace('仙之心·', '');
-  const defenderElement = defender.灵根.name.replace('仙之心·', '');
+  const attackerElement = attacker.灵根?.name.replace('仙之心·', '');
+  const defenderElement = defender.灵根?.name.replace('仙之心·', '');
   const weaponEnchant = attacker.equipment?.武器.fumo;
 
   // 1. 处理元素反应
