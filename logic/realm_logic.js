@@ -6,7 +6,7 @@ import { battleEngine } from '../apps/Battle/Battle.js';
 import { Add_najie_thing } from '../apps/Xiuxian/xiuxian.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
-import { puppeteer, Show } from '../../api/api.js';
+import { puppeteer, Show } from '../api/api.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
