@@ -2,7 +2,6 @@ import * as DAL from '../api/data-access.js';
 import { scheduleTask } from '../api/task-scheduler.js';
 import * as Notifier from '../handlers/notifier.js';
 import { battleEngine } from '../apps/Battle/Battle.js';
-import { Add_najie_thing } from '../apps/Xiuxian/xiuxian.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
 import { puppeteer, Show } from '../api/api.js';
@@ -133,7 +132,7 @@ export async function settleRealm(task) {
     return true;
   });
   for (const item of rewards.items) {
-    await Add_najie_thing(userId, item.name, item.class, item.amount, item.pinji);
+    await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
   }
 
   // 4. 生成并发送战报图片

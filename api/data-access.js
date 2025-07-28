@@ -4,6 +4,8 @@ import { createClient } from 'redis';
 import fs from 'fs';
 import YAML from 'yaml';
 import path from 'path';
+import { isNotNull } from '../apps/Xiuxian/xiuxian.js';
+import { data } from './api.js';
 
 // --- 创建独立的 Redis 客户端 ---
 const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
@@ -161,4 +163,99 @@ export async function getAssociation(sectName) {
 export async function saveAssociation(sectName, sectData) {
   const key = `${ASSOCIATION_KEY_PREFIX}${sectName}`;
   await redisClient.set(key, JSON.stringify(sectData));
+}
+
+/**
+ * 【全新】更新纳戒物品（增加/减少），这是一个可以在任何地方安全调用的函数
+ * @param {string} userId 玩家ID
+ * @param {string} itemName 物品名称
+ * @param {string} itemClass 物品类别
+ * @param {number} quantity 数量 (正数增加, 负数减少)
+ * @param {number|null} pinji 品级 (数字0-6), 仅对装备有效
+ * @returns {Promise<boolean>} 操作是否成功
+ */
+export async function updateNajieItem(userId, itemName, itemClass, quantity, pinji = null) {
+  if (quantity === 0) return true;
+
+  const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
+
+    if (itemClass === '装备') {
+      let targetPinji = pinji;
+      if (quantity > 0) { // 增加装备
+        if (targetPinji === null) { // 未指定品级则随机
+          const random = Math.random();
+          if (random > 0.99) targetPinji = 6;
+          else if (random > 0.95) targetPinji = 5;
+          else if (random > 0.60) targetPinji = 4;
+          else if (random > 0.20) targetPinji = 3;
+          else targetPinji = Math.floor(Math.random() * 3);
+        }
+        const existingItem = najie.装备.find(item => item.name === itemName && item.pinji === targetPinji);
+        if (existingItem) {
+          existingItem.数量 = (existingItem.数量 || 1) + quantity;
+        } else {
+          const baseItem = data.equipment_list.find(item => item.name === itemName) || data.timeequipmen_list.find(item => item.name === itemName);
+          if (!baseItem) return false;
+          const newItem = JSON.parse(JSON.stringify(baseItem));
+          newItem.pinji = targetPinji;
+          const z = [0.8,
+            1,
+            1.1,
+            1.2,
+            1.3,
+            1.5,
+            2.0][targetPinji];
+          if (isNotNull(newItem.加成)) {
+            newItem.加成 = Number((baseItem.加成 * z).toFixed(2));
+          } else {
+            newItem.atk = Math.floor(baseItem.atk * z);
+            newItem.def = Math.floor(baseItem.def * z);
+            newItem.HP = Math.floor(baseItem.HP * z);
+          }
+          newItem.数量 = quantity;
+          newItem.islockd = 0;
+          najie.装备.push(newItem);
+        }
+      } else { // 减少装备
+        if (targetPinji === null) return false; // 减少装备必须指定品级
+        const itemIndex = najie.装备.findIndex(item => item.name === itemName && item.pinji === targetPinji);
+        if (itemIndex !== -1) {
+          najie.装备[itemIndex].数量 += quantity;
+          if (najie.装备[itemIndex].数量 <= 0) {
+            najie.装备.splice(itemIndex, 1);
+          }
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // --- 所有其他可堆叠物品的通用逻辑 ---
+    const categoryMap = { '仙米': '仙宠口粮' }; // 类别名和纳戒键名的映射
+    const najieKey = categoryMap[itemClass] || itemClass;
+    if (!najie[najieKey]) return false;
+
+    const itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
+    if (itemIndex !== -1) { // 物品已存在
+      najie[najieKey][itemIndex].数量 += quantity;
+      if (najie[najieKey][itemIndex].数量 <= 0) {
+        najie[najieKey].splice(itemIndex, 1);
+      }
+    } else if (quantity > 0) { // 物品不存在，且是增加操作
+      const itemTemplate = data[`${itemClass}_list`]?.find(item => item.name === itemName);
+      if (!itemTemplate) return false; // 物品模板不存在
+      const newItem = { ...itemTemplate, 数量: quantity, islockd: 0 };
+      najie[najieKey].push(newItem);
+    } else {
+      return false; // 物品不存在，无法减少
+    }
+    return true;
+  });
+
+  if (!transactionSuccess) {
+    console.error(`[DAL] 存档 ${userId} 操作物品 [${itemName}]*${quantity} 失败`);
+    return false;
+  }
+  return true;
 }
