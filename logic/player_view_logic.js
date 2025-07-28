@@ -165,9 +165,6 @@ export async function transformPlayerDataForRender(rawData, e) {
   const atkSci = formatToScientific(player.攻击);
   const defSci = formatToScientific(player.防御);
 
-  console.log(player.当前血量 / player.血量上限 * 100);
-  console.log((player.当前血量 / player.血量上限 * 100).toFixed(0));
-
 
   // 返回最终的视图模型
   return {
