@@ -1,5 +1,4 @@
 import * as DAL from '../api/data-access.js';
-import { redisClient as redis } from '../api/redis.js';
 import { scheduleTask } from '../api/task-scheduler.js';
 import * as Notifier from '../handlers/notifier.js';
 import { battleEngine } from '../apps/Battle/Battle.js';
