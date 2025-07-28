@@ -125,15 +125,17 @@ export async function settleRealm(task) {
   }
 
   // 3. 更新玩家数据
-  await DAL.transaction_update(userId, (p) => {
+  await DAL.transaction_update(userId, async (p) => {
     p.修为 += rewards.xiuwei;
     p.血气 += rewards.xueqi;
-    p.当前血量 = Math.max(0, battleResult.A_player.当前血量);
+    p.当前血量 = battleResult.A_player_final.当前血量;
+
+    // 在事务内部处理物品添加，确保数据一致性
+    for (const item of rewards.items) {
+      await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+    }
     return true;
   });
-  for (const item of rewards.items) {
-    await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
-  }
 
   // 4. 生成并发送战报图片
   const renderData = {
