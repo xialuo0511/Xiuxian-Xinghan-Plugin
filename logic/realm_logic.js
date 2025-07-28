@@ -3,8 +3,8 @@ import * as Notifier from '../handlers/notifier.js';
 import { scheduleTask } from '../api/task-scheduler.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';//
-// import puppeteer from '../../../lib/puppeteer/puppeteer.js';
-// import Show from '../model/show.js';
+import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import Show from '../model/show.js';
 import { battleEngine } from './battle_logic.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
@@ -98,59 +98,60 @@ export async function enterRealm(userId, realmName, realmType, e) {
  */
 export async function settleRealm(task) {
   const { userId, realmInfo, groupId } = task;
-  const playerAllData = await DAL.getAllPlayerData(userId);
-  if (!playerAllData) return;
-
-  let player = playerAllData.player;
+  const player = (await DAL.getAllPlayerData(userId))?.player;
+  if (!player) return;
 
   const realmDataList = {
-    '秘境': data.didian_list, '禁地': data.forbiddenarea_list,
-    '仙府': data.timeplace_list, '仙境': data.Fairyrealm_list, '遗迹': data.yiji_list
+    '秘境': data.didian_list,
+    '禁地': data.forbiddenarea_list,
+    '仙府': data.timeplace_list,
+    '仙境': data.Fairyrealm_list,
+    '遗迹': data.yiji_list
   };
-  const realm = realmDataList[realmInfo.type]?.find(item => item.name === realmInfo.name);
+  const realm = realmDataList[realmInfo.type].find(item => item.name === realmInfo.name);
   if (!realm) return;
 
-  const monster = findEncounterMonster(realm, player);
-  const A_battle_data = { ...player, id: userId, equipment: playerAllData.equipment, 仙宠: player.仙宠 };
-  const B_battle_data = { ...monster, id: 'monster', 学习的功法: [], 仙宠: null };
+  // 1. 遭遇怪物并战斗
+  const monster = findEncounterMonster(realm, player); // 查找遭遇的怪物
+  const A_battle_data = { ...player, id: userId, equipment: (await DAL.getAllPlayerData(userId)).equipment };
+  const B_battle_data = { ...monster, id: 'monster' };
   const battleResult = await battleEngine(A_battle_data, B_battle_data);
 
-  let rewards = { items: [], xiuwei: 0, xueqi: 0, messages: [] };
+  // 2. 计算掉落和奖励
+  let rewards = { items: [], xiuwei: 0, xueqi: 0 };
   if (battleResult.A_win) {
     rewards = calculateLoot(realm, player);
-    rewards.messages.push(`不巧撞见【${monster.名号}】, 经过一番战斗, 你成功击败了对手!`);
   } else {
-    rewards.xiuwei = 800;
-    rewards.messages.push(`不巧撞见【${monster.名号}】, 经过一番战斗, 你败下阵来, 还好跑得快...`);
+    rewards.xiuwei = 800; // 失败保底奖励
   }
 
-  // 【核心修正】: 将所有数据更新都放入一个事务中，并且回调是同步的
-  await DAL.transaction_update(userId, (p, eq, najie) => {
+  // 3. 更新玩家数据
+  await DAL.transaction_update(userId, async (p) => {
     p.修为 += rewards.xiuwei;
     p.血气 += rewards.xueqi;
     p.当前血量 = battleResult.A_player_final.当前血量;
 
-    // 在事务内部直接修改 najie 对象来添加物品
+    // 在事务内部处理物品添加，确保数据一致性
     for (const item of rewards.items) {
-      const itemTemplate = data[item.class + '_list']?.find(i => i.name === item.name);
-      if (itemTemplate) {
-        const existingItem = najie[item.class]?.find(i => i.name === item.name);
-        if (existingItem) {
-          existingItem.数量 += item.amount;
-        } else {
-          najie[item.class].push({ ...itemTemplate, 数量: item.amount, islockd: 0 });
-        }
-      }
+      await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
     }
     return true;
   });
 
-  // 【修正】: 移除图片生成，改为发送安全的文本通知
-  let rewardMsg = rewards.messages.join('\n');
-  rewardMsg += `\n获得修为: ${rewards.xiuwei}, 获得血气: ${rewards.xueqi}`;
-  rewards.items.forEach(i => rewardMsg += `, 获得 [${i.name}]*${i.amount}`);
-  await Notifier.notify(groupId, userId, `在【${realm.name}】的探索结束！\n${rewardMsg}`);
+  const renderData = {
+    A_win: battleResult.A_win,
+    battleLog: battleResult.msg.slice(-1)[0], // 只取最后一句总结
+    rewards: rewards,
+    realmName: realm.name
+  };
+
+  // 4. 将“渲染请求”通过 Notifier 发送出去
+  await Notifier.notify(groupId, userId, {
+    render: 'secret_place_log', // 告诉接收方要使用哪个模板
+    data: renderData // 绘图所需的数据
+  });
 }
+
 
 function findEncounterMonster(realm, player) {
   return data.monster_list[0];
