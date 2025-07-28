@@ -4,7 +4,6 @@ import { createClient } from 'redis';
 import fs from 'fs';
 import YAML from 'yaml';
 import path from 'path';
-import { isNotNull } from '../apps/Xiuxian/xiuxian.js';
 import { data } from './api.js';
 
 // --- 创建独立的 Redis 客户端 ---
@@ -205,7 +204,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
             1.3,
             1.5,
             2.0][targetPinji];
-          if (isNotNull(newItem.加成)) {
+          if (newItem.加成) {
             newItem.加成 = Number((baseItem.加成 * z).toFixed(2));
           } else {
             newItem.atk = Math.floor(baseItem.atk * z);
