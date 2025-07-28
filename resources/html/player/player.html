@@ -247,7 +247,8 @@
       <div class="progress-card">
         <div class="progress-title">生命</div>
         <div class="progress-bar-container">
-          <div class="progress-bar" {{strand_hp.style}}></div>
+          <div class="progress-bar"
+               style="background: linear-gradient(to right, {{leftColor}}, {{rightColor}}); width: ${num.toFixed(0)}%></div>
           <div class="progress-text">{{player.当前血量}} / {{player.血量上限}}</div>
         </div>
       </div>
