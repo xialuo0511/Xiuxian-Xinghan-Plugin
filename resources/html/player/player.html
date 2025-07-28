@@ -255,22 +255,25 @@
       <div class="progress-card">
         <div class="progress-title">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
         <div class="progress-bar-container">
-          <div class="progress-bar" {{strand_lianqi.style}}></div>
+          <div class="progress-bar"
+               style="background: linear-gradient(to right, {{strand_lianqi.leftColor}}, {{strand_lianqi.rightColor}}); width: {{strand_lianqi.num}}%"></div>
           <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
         </div>
       </div>
       <div class="progress-card">
         <div class="progress-title">{{rank_llianti}}{{if player.血气 >= expmax_llianti}} [可破体] {{/if}}</div>
         <div class="progress-bar-container">
-          <div class="progress-bar" {{strand_llianti.style}}></div>
+          <div class="progress-bar"
+               style="background: linear-gradient(to right, {{strand_llianti.leftColor}}, {{strand_llianti.rightColor}}); width: {{strand_llianti.num}}%"></div>
           <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
         </div>
       </div>
       <div class="progress-card">
         <div class="progress-title">{{rank_liandan}}</div>
         <div class="progress-bar-container">
-          <div class="progress-bar" {{strand_liandan.style}}></div>
-          <div class="progress-text">{{occupation.occupation_exp}} / {{occupation.occupation_need_exp}}</div>
+          <div class="progress-bar"
+               style="background: linear-gradient(to right, {{strand_liandan.leftColor}}, {{strand_liandan.rightColor}}); width: {{strand_liandan.num}}%"></div>
+          <div class="progress-text">{{player.occupation_exp}} / {{expmax_liandan}}</div>
         </div>
       </div>
     </div>
