@@ -117,7 +117,11 @@ export async function transformPlayerDataForRender(rawData, e) {
     occupation_level_name: '-',
     occupation_exp: '-',
     occupation_need_exp: '-',
-    strand_liandan: Strand(0, 1)
+    strand_liandan: {
+      num: 0,
+      leftColor: '#BA55D3',
+      rightColor: '#8A2BE2'
+    }
   };
   if (player.occupation && player.occupation.length > 0) {
     const occupationLevelInfo = data.occupation_exp_list.find(item => item.id == player.occupation_level);
@@ -127,7 +131,11 @@ export async function transformPlayerDataForRender(rawData, e) {
         occupation_level_name: occupationLevelInfo.name,
         occupation_exp: player.occupation_exp,
         occupation_need_exp: occupationLevelInfo.experience,
-        strand_liandan: Strand(player.occupation_exp, occupationLevelInfo.experience, '#BA55D3', '#8A2BE2')
+        strand_liandan: {
+          num: (player.occupation_exp / occupationLevelInfo.experience * 100).toFixed(0),
+          leftColor: '#BA55D3',
+          rightColor: '#8A2BE2'
+        }
       };
     }
   }
@@ -191,10 +199,18 @@ export async function transformPlayerDataForRender(rawData, e) {
     },
     rank_lianqi: levelInfo.level,
     expmax_lianqi: levelInfo.exp,
-    strand_lianqi: Strand(player.修为, levelInfo.exp, '#02e4f8', '#0077ff'),
+    strand_lianqi: {
+      num: (player.修为 / levelInfo.exp * 100).toFixed(0),
+      leftColor: '#02e4f8',
+      rightColor: '#0077ff'
+    },
     rank_llianti: levelMaxInfo.level,
     expmax_llianti: levelMaxInfo.exp,
-    strand_llianti: Strand(player.血气, levelMaxInfo.exp, '#FFD700', '#FFA500'),
+    strand_llianti: {
+      num: (player.血气 / levelMaxInfo.exp * 100).toFixed(0),
+      leftColor: '#FFD700',
+      rightColor: '#FFA500'
+    },
     rank_liandan: occupationInfo.occupation_level_name,
     expmax_liandan: occupationInfo.occupation_need_exp,
     strand_liandan: occupationInfo.strand_liandan,
