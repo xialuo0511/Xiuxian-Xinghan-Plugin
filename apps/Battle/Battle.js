@@ -6,7 +6,8 @@ import { Read_player, isNotNull, Add_HP, ForwardMsg } from '../Xiuxian/xiuxian.j
 import { applyElementalEffects } from '../../logic/elemental_logic.js';
 import * as DAL from '../../api/data-access.js';
 import { puppeteer, Show } from '../../api/api.js';
-import redis from 'redis'; // 【核心】导入新的逻辑处理器
+import redis from 'redis';
+import { battleEngine } from '../../logic/battle_logic.js'; // 【核心】导入新的逻辑处理器
 
 /**
  * 暴击判断函数
@@ -67,97 +68,6 @@ function calculateDamage(attacker, defender) {
 
   // 确保最低为1点伤害
   return Math.max(1, Math.trunc(baseDamage));
-}
-
-
-/**
- * 核心战斗引擎
- * @param {object} A_player 攻击方 (会被直接修改)
- * @param {object} B_player 防御方 (会被直接修改)
- */
-export async function battleEngine(A_player, B_player) {
-  let turn = 0;
-  let messages = [];
-  let statusEffects = {};
-
-  while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
-    if (turn >= 40) {
-      messages.push('战斗超过20回合，平局！');
-      break;
-    }
-
-    if (turn % 2 === 0) {
-      messages.push(`\n==第${Math.floor(turn / 2) + 1}回合==`);
-    }
-
-    const attacker = turn % 2 === 0 ? A_player : B_player;
-    const defender = turn % 2 === 0 ? B_player : A_player;
-
-    if (statusEffects[attacker.id]?.['冻结'] > 0) {
-      messages.push(`${attacker.名号} 被冻结了，本回合无法行动！`);
-      statusEffects[attacker.id]['冻结']--;
-      turn++;
-      continue;
-    }
-
-    let damage = calculateDamage(attacker, defender);
-
-    const critResult = checkCrit(attacker.暴击率);
-    let critMessage = critResult.message;
-
-    if (attacker.仙宠?.type === '暴伤') {
-      critResult.critRate += attacker.仙宠.加成;
-      messages.push(`仙宠【${attacker.仙宠.name}】辅佐了【${attacker.名号}】，使其爆伤得到了提升！`);
-    }
-
-    if (attacker.仙宠?.type === '战斗' && Math.random() < 0.8) {
-      const petBonus = attacker.仙宠.加成;
-      const petAtk = Math.trunc(damage * petBonus);
-      const petDef = Math.trunc(attacker.防御 * petBonus);
-      const petHP = Math.trunc(attacker.当前血量 * petBonus);
-      damage += petAtk;
-      attacker.防御 += petDef;
-      attacker.当前血量 += petHP;
-      messages.push(`仙宠【${attacker.仙宠.name}】辅佐了【${attacker.名号}】，使其伤害、防御和血量得到了提升！`);
-    }
-
-    let battleContext = {
-      attacker,
-      defender,
-      damage,
-      messages,
-      turn: Math.floor(turn / 2),
-      statusEffects
-    };
-
-    const updatedContext = await applyElementalEffects(battleContext);
-
-    let finalDamage = Math.trunc(updatedContext.damage * critResult.critRate);
-    defender.当前血量 -= finalDamage;
-    if (defender.当前血量 < 0) {
-      defender.当前血量 = 0;
-    }
-
-    messages = updatedContext.messages;
-    messages.push(`${attacker.名号} 对 ${defender.名号} ${critMessage}造成了 ${finalDamage} 点伤害，${defender.名号} 剩余血量 ${defender.当前血量}`);
-
-    turn++;
-  }
-
-  let A_win = false;
-  if (A_player.当前血量 > 0 && B_player.当前血量 <= 0) {
-    messages.push(`${A_player.名号}击败了${B_player.名号}`);
-    A_win = true;
-  } else if (B_player.当前血量 > 0 && A_player.当前血量 <= 0) {
-    messages.push(`${B_player.名号}击败了${A_player.名号}`);
-  }
-
-  return {
-    log: messages,
-    A_win: A_win,
-    A_player: A_player,
-    B_player: B_player
-  };
 }
 
 

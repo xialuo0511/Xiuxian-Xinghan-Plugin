@@ -1,10 +1,10 @@
 import * as DAL from '../api/data-access.js';
 import { scheduleTask } from '../api/task-scheduler.js';
 import * as Notifier from '../handlers/notifier.js';
-import { battleEngine } from '../apps/Battle/Battle.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
 import { puppeteer, Show } from '../api/api.js';
+import { battleEngine } from './battle_logic.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 

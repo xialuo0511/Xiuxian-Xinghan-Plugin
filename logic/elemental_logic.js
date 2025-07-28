@@ -1,8 +1,3 @@
-// /logic/elemental_logic.js
-
-import * as DAL from '../api/data-access.js';
-import { isNotNull } from '../apps/Xiuxian/xiuxian.js';
-
 // --- 元素反应规则定义 ---
 // 定义了所有元素之间的基础反应规则
 const elementalReactions = [
