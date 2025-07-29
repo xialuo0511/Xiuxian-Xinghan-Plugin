@@ -89,6 +89,6 @@ async function pushInfo(groupId, message) {
   await Bot.pickGroup(groupId)
     .sendMsg(message)
     .catch((err) => {
-      console.mark(err);
+      logger.log(err);
     });
 }

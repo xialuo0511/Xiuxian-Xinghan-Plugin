@@ -241,8 +241,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
     return null;
   };
 
-  const transactionSuccess = await transaction_update(userId, (dataPackage) => {
-    const { najie } = dataPackage;
+  const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
 
     if (itemClass === '装备') {
       let targetPinji = pinji;
