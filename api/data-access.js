@@ -287,13 +287,13 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
         }
       } else { // 减少装备
         if (pinji === null) {
-          log('warn', `减少装备 [${itemName}] 时必须指定品级`);
+          console.warn(`减少装备 [${itemName}] 时必须指定品级`);
           return false;
         }
         const itemIndex = najie.装备.findIndex(item => item.name === itemName && item.pinji === pinji);
         if (itemIndex !== -1) {
           if (najie.装备[itemIndex].数量 < -quantity) {
-            log('warn', `玩家没有足够的 [${itemName}] 进行扣除`);
+            console.warn(`玩家没有足够的 [${itemName}] 进行扣除`);
             return false;
           }
           najie.装备[itemIndex].数量 += quantity;
@@ -301,7 +301,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
             najie.装备.splice(itemIndex, 1);
           }
         } else {
-          log('warn', `玩家没有 [${itemName}] (品级: ${pinji}) 无法扣除`);
+          console.warn(`玩家没有 [${itemName}] (品级: ${pinji}) 无法扣除`);
           return false;
         }
       }
@@ -312,14 +312,14 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
     const categoryMap = { '仙米': '仙宠口粮' };
     const najieKey = categoryMap[itemClass] || itemClass;
     if (!najie[najieKey]) {
-      log('warn', `纳戒中不存在类别: ${najieKey}`);
+      console.warn(`纳戒中不存在类别: ${najieKey}`);
       return false;
     }
 
     const itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
     if (itemIndex !== -1) { // 物品已存在
       if (quantity < 0 && najie[najieKey][itemIndex].数量 < -quantity) {
-        log('warn', `玩家没有足够的 [${itemName}] 进行扣除`);
+        console.warn(`玩家没有足够的 [${itemName}] 进行扣除`);
         return false;
       }
       najie[najieKey][itemIndex].数量 += quantity;
@@ -329,20 +329,20 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
     } else if (quantity > 0) { // 物品不存在，且是增加操作
       const itemTemplate = findItemTemplate(itemName, itemClass);
       if (!itemTemplate) {
-        log('warn', `找不到物品模板: [${itemName}] 在类别 [${itemClass}] 中`);
+        console.warn(`找不到物品模板: [${itemName}] 在类别 [${itemClass}] 中`);
         return false;
       }
       const newItem = { ...itemTemplate, 数量: quantity, islockd: 0 };
       najie[najieKey].push(newItem);
     } else {
-      log('warn', `玩家没有 [${itemName}] 无法扣除`);
+      console.warn(`玩家没有 [${itemName}] 无法扣除`);
       return false; // 物品不存在，无法减少
     }
     return true;
   });
 
   if (!transactionSuccess) {
-    log('error', `存档 ${userId} 操作物品 [${itemName}]*${quantity} 失败`);
+    console.warn(`存档 ${userId} 操作物品 [${itemName}]*${quantity} 失败`);
     return false;
   }
   return true;
