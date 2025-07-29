@@ -54,8 +54,8 @@ export async function enterRealm(userId, realmName, realmType, e) {
     return checkResult;
   }
 
-  // const duration = xiuxianConfigData.CD.secretplace * 60 * 1000;
-  const duration = 30 * 1000;
+  const duration = xiuxianConfigData.CD.secretplace * 60 * 1000;
+  // const duration = 30 * 1000;
   const startTime = Date.now();
   const endTime = startTime + duration;
 
@@ -149,6 +149,10 @@ export async function settleRealm(task) {
     render: 'secret_place_log', // 告诉接收方要使用哪个模板
     data: renderData // 绘图所需的数据
   });
+
+  // 删除对应的动作
+  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+  await redis.del(actionKey);
 }
 
 
