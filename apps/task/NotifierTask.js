@@ -64,10 +64,10 @@ export class NotifierTask extends plugin {
           const img = await puppeteer.screenshot(messageContent.render, { ...dataForPuppeteer });
 
           // 发送图片
-          await pushInfo(notification.group_id, true, img);
+          await pushInfo(notification.group_id, img);
 
         } else {
-          await pushInfo(notification.group_id, true, messageContent);
+          await pushInfo(notification.group_id, messageContent);
         }
 
         await pushInfo(notification.user_id, notification.message);
@@ -86,6 +86,6 @@ async function pushInfo(groupId, message) {
   await Bot.pickGroup(groupId)
     .sendMsg(message)
     .catch((err) => {
-      logger.mark(err);
+      Bot.logger.mark(err);
     });
 }
