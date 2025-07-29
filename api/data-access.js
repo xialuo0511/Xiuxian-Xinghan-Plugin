@@ -68,42 +68,77 @@ export async function saveEquipment(userId, equipmentData) {
 
 
 /**
- * 使用事务安全地更新玩家数据
+ * 使用事务安全地更新玩家数据包
  * @param {string} userId 玩家QQ号
- * @param {(playerData: object) => void} updateFunction
+ * @param {(player: object, equipment: object, najie: object) => boolean | void} updateFunction
  * @returns {Promise<boolean>}
  */
 export async function transaction_update(userId, updateFunction) {
   // 事务需要一个独立的连接来执行 WATCH
   const transactionClient = redisClient.duplicate();
   await transactionClient.connect();
-
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const fieldName = 'player';
 
   try {
     await transactionClient.watch(mainKey);
 
-    const playerJson = await transactionClient.hGet(mainKey, fieldName);
-    if (!playerJson) {
+    const allData = await transactionClient.hGetAll(mainKey);
+    if (!allData || Object.keys(allData).length === 0) {
+      log('warn', `[TX] 尝试更新不存在的玩家: ${userId}`);
+      return false; // 玩家不存在
+    }
+
+    // 完整地解析出所有数据
+    const playerData = JSON.parse(allData.player || '{}');
+    const equipmentData = JSON.parse(allData.equipment || '{}');
+    const najieData = JSON.parse(allData.najie || '{}');
+
+    // 创建一个原始数据的深拷贝，用于对比变更
+    const originalNajie = JSON.stringify(najieData);
+    const originalPlayer = JSON.stringify(playerData);
+    const originalEquipment = JSON.stringify(equipmentData);
+
+    // 将所有数据作为独立参数传递给回调函数
+    const result = updateFunction(playerData, equipmentData, najieData);
+
+    // 如果更新函数明确返回 false，则中止事务
+    if (result === false) {
+      await transactionClient.unwatch();
       return false;
     }
 
-    const playerData = JSON.parse(playerJson);
-    updateFunction(playerData);
-
     const multi = transactionClient.multi();
-    multi.hSet(mainKey, fieldName, JSON.stringify(playerData));
+    let hasChanges = false;
 
-    const result = await multi.exec();
+    // 检查所有数据部分是否有变动，并保存
+    if (originalPlayer !== JSON.stringify(playerData)) {
+      multi.hSet(mainKey, 'player', JSON.stringify(playerData));
+      hasChanges = true;
+    }
+    if (originalEquipment !== JSON.stringify(equipmentData)) {
+      multi.hSet(mainKey, 'equipment', JSON.stringify(equipmentData));
+      hasChanges = true;
+    }
+    if (originalNajie !== JSON.stringify(najieData)) {
+      multi.hSet(mainKey, 'najie', JSON.stringify(najieData));
+      hasChanges = true;
+    }
 
-    if (result === null) {
-      return await transaction_update(userId, updateFunction);
+    if (!hasChanges) {
+      await transactionClient.unwatch();
+      return true; // 没有变化，直接成功返回
+    }
+
+    const execResult = await multi.exec();
+
+    if (execResult === null) {
+      console.info(`[TX] 用户 ${userId} 数据发生写入冲突，正在重试...`);
+      return await transaction_update(userId, updateFunction); // 自动重试
     }
     return true;
 
   } catch (error) {
-    logger.error(`[DAL-TX] 更新用户 ${userId} 数据时发生错误:`, error);
+    console.error(`[TX] 更新用户 ${userId} 数据时发生错误:`, error);
     return false;
   } finally {
     await transactionClient.quit();
@@ -129,7 +164,7 @@ export async function getPlayerAction(userId) {
     }
     return actionDetails;
   } catch (e) {
-    logger.error(`[DAL] 解析玩家 ${userId} 的 action 数据失败:`, actionJson, e);
+    console.error(`[DAL] 解析玩家 ${userId} 的 action 数据失败:`, actionJson, e);
     await redisClient.del(actionKey);
     return null;
   }
@@ -166,7 +201,7 @@ export async function saveAssociation(sectName, sectData) {
 }
 
 /**
- * 【全新】更新纳戒物品（增加/减少），这是一个可以在任何地方安全调用的函数
+ * 更新纳戒物品（增加/减少），这是一个可以在任何地方安全调用的函数
  * @param {string} userId 玩家ID
  * @param {string} itemName 物品名称
  * @param {string} itemClass 物品类别
@@ -177,12 +212,42 @@ export async function saveAssociation(sectName, sectData) {
 export async function updateNajieItem(userId, itemName, itemClass, quantity, pinji = null) {
   if (quantity === 0) return true;
 
-  const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
+  // 辅助函数，用于查找物品模板，使代码更清晰
+  const findItemTemplate = (name, className) => {
+    // 这是一个映射，将 itemClass 映射到 data 对象中的具体列表名
+    const listMap = {
+      '装备': ['equipment_list',
+        'fabao_list',
+        'wuqi_list',
+        'huju_list'],
+      '丹药': ['danyao_list',
+        'newdanyao_list',
+        'timedanyao_list'],
+      '功法': ['gongfa_list',
+        'homegongfa_list',
+        'timegongfa_list'],
+      '道具': ['daoju_list'],
+      '草药': ['caoyao_list'],
+      '材料': ['cailiao_list'],
+      '盒子': ['hezi_list'],
+      '食材': ['shicai_list'],
+      '仙米': ['xianchonkouliang'] // 假设 data.js 中是这个名字
+    };
+    const listsToSearch = listMap[className] || listMap['默认'];
+    for (const listName of listsToSearch) {
+      const item = data[listName]?.find(i => i.name === name);
+      if (item) return item;
+    }
+    return null;
+  };
+
+  const transactionSuccess = await transaction_update(userId, (dataPackage) => {
+    const { najie } = dataPackage;
 
     if (itemClass === '装备') {
       let targetPinji = pinji;
       if (quantity > 0) { // 增加装备
-        if (targetPinji === null) { // 未指定品级则随机
+        if (targetPinji === null) {
           const random = Math.random();
           if (random > 0.99) targetPinji = 6;
           else if (random > 0.95) targetPinji = 5;
@@ -190,12 +255,16 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
           else if (random > 0.20) targetPinji = 3;
           else targetPinji = Math.floor(Math.random() * 3);
         }
+
         const existingItem = najie.装备.find(item => item.name === itemName && item.pinji === targetPinji);
         if (existingItem) {
           existingItem.数量 = (existingItem.数量 || 1) + quantity;
         } else {
-          const baseItem = data.equipment_list.find(item => item.name === itemName) || data.timeequipmen_list.find(item => item.name === itemName);
-          if (!baseItem) return false;
+          const baseItem = findItemTemplate(itemName, '装备');
+          if (!baseItem) {
+            log('warn', `找不到装备模板: ${itemName}`);
+            return false;
+          }
           const newItem = JSON.parse(JSON.stringify(baseItem));
           newItem.pinji = targetPinji;
           const z = [0.8,
@@ -217,14 +286,22 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
           najie.装备.push(newItem);
         }
       } else { // 减少装备
-        if (targetPinji === null) return false; // 减少装备必须指定品级
-        const itemIndex = najie.装备.findIndex(item => item.name === itemName && item.pinji === targetPinji);
+        if (pinji === null) {
+          log('warn', `减少装备 [${itemName}] 时必须指定品级`);
+          return false;
+        }
+        const itemIndex = najie.装备.findIndex(item => item.name === itemName && item.pinji === pinji);
         if (itemIndex !== -1) {
+          if (najie.装备[itemIndex].数量 < -quantity) {
+            log('warn', `玩家没有足够的 [${itemName}] 进行扣除`);
+            return false;
+          }
           najie.装备[itemIndex].数量 += quantity;
           if (najie.装备[itemIndex].数量 <= 0) {
             najie.装备.splice(itemIndex, 1);
           }
         } else {
+          log('warn', `玩家没有 [${itemName}] (品级: ${pinji}) 无法扣除`);
           return false;
         }
       }
@@ -232,29 +309,40 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
     }
 
     // --- 所有其他可堆叠物品的通用逻辑 ---
-    const categoryMap = { '仙米': '仙宠口粮' }; // 类别名和纳戒键名的映射
+    const categoryMap = { '仙米': '仙宠口粮' };
     const najieKey = categoryMap[itemClass] || itemClass;
-    if (!najie[najieKey]) return false;
+    if (!najie[najieKey]) {
+      log('warn', `纳戒中不存在类别: ${najieKey}`);
+      return false;
+    }
 
     const itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
     if (itemIndex !== -1) { // 物品已存在
+      if (quantity < 0 && najie[najieKey][itemIndex].数量 < -quantity) {
+        log('warn', `玩家没有足够的 [${itemName}] 进行扣除`);
+        return false;
+      }
       najie[najieKey][itemIndex].数量 += quantity;
       if (najie[najieKey][itemIndex].数量 <= 0) {
         najie[najieKey].splice(itemIndex, 1);
       }
     } else if (quantity > 0) { // 物品不存在，且是增加操作
-      const itemTemplate = data[`${itemClass}_list`]?.find(item => item.name === itemName);
-      if (!itemTemplate) return false; // 物品模板不存在
+      const itemTemplate = findItemTemplate(itemName, itemClass);
+      if (!itemTemplate) {
+        log('warn', `找不到物品模板: [${itemName}] 在类别 [${itemClass}] 中`);
+        return false;
+      }
       const newItem = { ...itemTemplate, 数量: quantity, islockd: 0 };
       najie[najieKey].push(newItem);
     } else {
+      log('warn', `玩家没有 [${itemName}] 无法扣除`);
       return false; // 物品不存在，无法减少
     }
     return true;
   });
 
   if (!transactionSuccess) {
-    console.error(`[DAL] 存档 ${userId} 操作物品 [${itemName}]*${quantity} 失败`);
+    log('error', `存档 ${userId} 操作物品 [${itemName}]*${quantity} 失败`);
     return false;
   }
   return true;

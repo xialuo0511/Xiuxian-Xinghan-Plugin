@@ -64,13 +64,16 @@ export class NotifierTask extends plugin {
           const img = await puppeteer.screenshot(messageContent.render, { ...dataForPuppeteer });
 
           // 发送图片
-          await pushInfo(notification.group_id, img);
+          await pushInfo(notification.group_id, [segment.at(notification.user_id),
+            img]);
 
         } else {
-          await pushInfo(notification.group_id, messageContent);
+          await pushInfo(notification.group_id, [segment.at(notification.user_id),
+            messageContent]);
         }
 
-        await pushInfo(notification.user_id, notification.message);
+        await pushInfo(notification.user_id, [segment.at(notification.user_id),
+          notification.message]);
 
       } catch (error) {
         // 如果 brPop 被中断或 JSON 解析失败
@@ -86,6 +89,6 @@ async function pushInfo(groupId, message) {
   await Bot.pickGroup(groupId)
     .sendMsg(message)
     .catch((err) => {
-      Bot.logger.mark(err);
+      console.mark(err);
     });
 }

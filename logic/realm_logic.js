@@ -136,6 +136,7 @@ export async function settleRealm(task) {
     return true;
   });
 
+
   const renderData = {
     A_win: battleResult.A_win,
     battleLog: battleResult.msg.slice(-1)[0], // 只取最后一句总结
