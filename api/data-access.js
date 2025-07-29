@@ -231,7 +231,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
       '材料': ['cailiao_list'],
       '盒子': ['hezi_list'],
       '食材': ['shicai_list'],
-      '仙米': ['xianchonkouliang'] // 假设 data.js 中是这个名字
+      '仙米': ['xianchonkouliang']
     };
     const listsToSearch = listMap[className] || listMap['默认'];
     for (const listName of listsToSearch) {
