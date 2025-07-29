@@ -34,6 +34,17 @@ export class SecretPlace extends plugin {
     if (!await DAL.existPlayer(userId)) {
       return null;
     }
+    // 检查玩家是否正在执行其他操作
+    const action = await DAL.getPlayerAction(userId);
+    if (action) {
+      const remainingTime = action.endTime - Date.now();
+      if (remainingTime > 0) {
+        const m = Math.floor(remainingTime / 60000);
+        const s = Math.floor((remainingTime % 60000) / 1000);
+        e.reply(`正在${action.action}中，剩余时间：${m > 0 ? m : 0}分${s > 0 ? s : 0}秒`);
+        return null;
+      }
+    }
     return userId;
   }
 
