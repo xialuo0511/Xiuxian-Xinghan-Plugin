@@ -72,9 +72,6 @@ export class NotifierTask extends plugin {
             messageContent]);
         }
 
-        await pushInfo(notification.user_id, [segment.at(notification.user_id),
-          notification.message]);
-
       } catch (error) {
         // 如果 brPop 被中断或 JSON 解析失败
         logger.error('[星瀚修仙-通知器] 处理通知时发生错误:', error);
