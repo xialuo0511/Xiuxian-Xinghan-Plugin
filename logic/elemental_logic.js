@@ -292,14 +292,14 @@ export async function applyElementalEffects(context) {
   }
 
   // 2. 处理武器/功法/灵根/通用特效
-  const applicableSkills = skillEffects.filter(skill => {
+  const applicableSkills = skillEffects?.filter(skill => {
     const isAttackerSkill = !skill.side || skill.side === 'attacker';
     const isDefenderSkill = skill.side === 'defender';
 
     if (isAttackerSkill) {
       return (skill.type === 'weapon' && attacker.equipment?.武器.name === skill.name ||
         skill.type === 'gongfa' && attacker.学习的功法?.includes(skill.name) ||
-        skill.type === 'linggen' && attacker.灵根.name === skill.name ||
+        skill.type === 'linggen' && attacker.灵根?.name === skill.name ||
         skill.type === 'general') && skill.condition(context);
     }
     if (isDefenderSkill) {
