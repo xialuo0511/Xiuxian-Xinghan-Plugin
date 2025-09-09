@@ -19,6 +19,11 @@ export class SecretPlace extends plugin {
         { reg: '^#降临秘境.*$', fnc: 'goSecretPlace' },
         { reg: '^#禁地$', fnc: 'forbiddenAreaList' },
         { reg: '^#前往禁地.*$', fnc: 'goForbiddenArea' },
+
+        { reg: '^#沉迷秘境.*$', fnc: 'goSecretPlaceAddiction' },
+        { reg: '^#沉迷禁地.*$', fnc: 'goForbiddenAreaAddiction' },
+        { reg: '^#沉迷仙境.*$', fnc: 'goFairyRealmAddiction' },
+
         { reg: '^#逃离', fnc: 'giveUp' }
       ]
     });
@@ -91,6 +96,48 @@ export class SecretPlace extends plugin {
     if (!userId) return;
     const realmName = e.msg.replace('#前往禁地', '').trim();
     const result = await enterRealm(userId, realmName, '禁地', e);
+    e.reply(result.message);
+  }
+
+  async goSecretPlaceAddiction(e) {
+    const userId = await this.preCheck(e);
+    if (!userId) return;
+    const input = e.msg.replace('#沉迷秘境', '').trim();
+    const [realmName, countStr] = input.split('*');
+    const runCount = parseInt(countStr) || 1;
+    if (runCount > 12) {
+      e.reply('单次沉迷最多进行12轮探索。');
+      return;
+    }
+    const result = await enterRealmAddiction(userId, realmName, '秘境', runCount, e);
+    e.reply(result.message);
+  }
+
+  async goForbiddenAreaAddiction(e) {
+    const userId = await this.preCheck(e);
+    if (!userId) return;
+    const input = e.msg.replace('#沉迷禁地', '').trim();
+    const [realmName, countStr] = input.split('*');
+    const runCount = parseInt(countStr) || 1;
+    if (runCount > 12) {
+      e.reply('单次沉迷最多进行12轮探索。');
+      return;
+    }
+    const result = await enterRealmAddiction(userId, realmName, '禁地', runCount, e);
+    e.reply(result.message);
+  }
+
+  async goFairyRealmAddiction(e) {
+    const userId = await this.preCheck(e);
+    if (!userId) return;
+    const input = e.msg.replace('#沉迷仙境', '').trim();
+    const [realmName, countStr] = input.split('*');
+    const runCount = parseInt(countStr) || 1;
+    if (runCount > 12) {
+      e.reply('单次沉迷最多进行12轮探索。');
+      return;
+    }
+    const result = await enterRealmAddiction(userId, realmName, '仙境', runCount, e);
     e.reply(result.message);
   }
 

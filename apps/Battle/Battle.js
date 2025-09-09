@@ -39,8 +39,8 @@ function checkCrit(baojilv) {
  */
 function calculateDamage(attacker, defender) {
   const ATTACK_THRESHOLD = 80000;
-  const DEFENSE_THRESHOLD = 40000;
-  const DIMINISHING_RATE = 0.05; // 超过阈值后，属性效果衰减为5%
+  const DEFENSE_THRESHOLD = 50000;
+  const DIMINISHING_RATE = 0.005; // 超过阈值后，属性效果衰减为0.5%
 
   // 计算有效攻击和防御（应用软上限）
   const effectiveAttack = attacker.攻击 > ATTACK_THRESHOLD
