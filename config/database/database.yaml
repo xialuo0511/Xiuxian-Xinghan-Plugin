@@ -1,3 +1,14 @@
-Database: #mysql数据库配置
-  username: 'root' #数据库用户名,一般是root
-  password: #数据库密码
+# MySQL 数据库配置
+Database:
+  host: 127.0.0.1
+  port: 3306
+  username: your_mysql_user
+  password: your_mysql_password
+  database: ''
+
+# Redis 数据库配置 此配置仅影响本地json迁移至redis数据库
+Redis:
+  host: '127.0.0.1'       # 修改成您的 Redis 服务器 IP 地址
+  port: 6379             # 修改成您的 Redis 端口，默认是 6379
+  password: ''           # 如果您的 Redis 有密码，请填写在这里，否则留空
+  database: 0            # 要连接的 Redis 数据库编号，默认为 0
