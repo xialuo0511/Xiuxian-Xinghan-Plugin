@@ -34,7 +34,16 @@ async function migrate() {
     });
     const query = util.promisify(db.query).bind(db);
 
-    redisClient = redis.createClient();
+    const redisConfig = dbConfig.Redis || {};
+    const redisUrl = `redis://${redisConfig.password ? `${redisConfig.password}@` : ''}${redisConfig.host || '127.0.0.1'}:${redisConfig.port || 6379}/${redisConfig.database || 0}`;
+
+    console.log(`正在尝试连接到 Redis: ${redisConfig.host || '127.0.0.1'}:${redisConfig.port || 6379}`);
+
+    // 使用配置创建 Redis 客户端
+    redisClient = redis.createClient({
+      url: redisUrl
+    });
+
     redisClient.on('error', err => console.log('Redis Client Error', err));
     await redisClient.connect();
 
