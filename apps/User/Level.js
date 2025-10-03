@@ -63,7 +63,7 @@ export class Level extends plugin {
   }
 
   async testModules(e) {
-    e.reply('1');
+    e.reply('2');
   }
 
   /**
