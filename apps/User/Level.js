@@ -54,7 +54,7 @@ export class Level extends plugin {
           fnc: 'levelUpMax'
         },
         {
-          reg: '^#测试模块$',
+          reg: '^#测试$',
           fnc: 'testModules'
         }
       ]
@@ -63,63 +63,7 @@ export class Level extends plugin {
   }
 
   async testModules(e) {
-    console.log('===== 开始模块测试 =====');
-    const userId = e.user_id;
-
-    // 测试1: 检查导入的模块
-    console.log('[测试1] 检查导入的模块');
-    console.log('- DAL:', typeof DAL);
-    console.log('- DAL.existPlayer:', typeof DAL.existPlayer);
-    console.log('- DAL.getAllPlayerData:', typeof DAL.getAllPlayerData);
-    console.log('- DAL.transaction_update:', typeof DAL.transaction_update);
-    console.log('- data:', typeof data);
-    console.log('- data.Level_list:', Array.isArray(data.Level_list));
-    console.log('- config:', typeof config);
-
-    // 测试2: Redis连接
-    console.log('\n[测试2] Redis连接测试');
-    try {
-      const redis = (await import('../api/redis.js')).redisClient;
-      console.log('- Redis客户端:', typeof redis);
-      await redis.set('test_key', 'test_value');
-      const value = await redis.get('test_key');
-      console.log('- Redis读写测试:', value === 'test_value' ? '成功' : '失败');
-      await redis.del('test_key');
-    } catch (err) {
-      console.error('- Redis测试失败:', err.message);
-    }
-
-    // 测试3: 玩家数据
-    console.log('\n[测试3] 玩家数据测试');
-    try {
-      const exists = await DAL.existPlayer(userId);
-      console.log('- 玩家存在:', exists);
-
-      if (exists) {
-        const playerData = await DAL.getAllPlayerData(userId);
-        console.log('- 玩家数据结构:', Object.keys(playerData || {}));
-        console.log('- player:', !!playerData?.player);
-        console.log('- level_id:', playerData?.player?.level_id);
-        console.log('- 修为:', playerData?.player?.修为);
-      }
-    } catch (err) {
-      console.error('- 玩家数据测试失败:', err.message);
-    }
-
-    // 测试4: 配置数据
-    console.log('\n[测试4] 配置数据测试');
-    console.log('- xiuxianConfigData:', !!this.xiuxianConfigData);
-    console.log('- CD配置:', this.xiuxianConfigData?.CD);
-    console.log('- level_up CD:', this.xiuxianConfigData?.CD?.level_up);
-
-    // 测试5: Level_list数据
-    console.log('\n[测试5] Level_list数据测试');
-    console.log('- Level_list长度:', data.Level_list?.length);
-    console.log('- 第一个等级:', data.Level_list?.[0]);
-    console.log('- level_id为1的数据:', data.Level_list?.find(item => item.level_id == 1));
-
-    console.log('===== 模块测试完成 =====');
-    e.reply('模块测试完成，请查看控制台日志');
+    e.reply('1');
   }
 
   /**

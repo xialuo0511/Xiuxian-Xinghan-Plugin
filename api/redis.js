@@ -3,17 +3,15 @@ import fs from 'fs';
 import YAML from 'yaml';
 import path from 'path';
 
-// This function will only run once, creating a single client instance
 function initializeClient() {
   const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
   const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
 
   const client = createClient({
-    url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`,
+    url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`
   });
 
   client.on('error', (err) => {
-    // Use the global logger because this part runs in the main process
     if (typeof logger !== 'undefined') {
       logger.error('[星瀚修仙-Redis] 专属客户端发生错误:', err);
     } else {
