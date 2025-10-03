@@ -70,20 +70,41 @@
           border-radius: 5px;
           transition: width 0.8s ease-in-out;
       }
-      .reward-icon {
-          position: absolute;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 24px; /* 调整图标大小 */
-          cursor: pointer;
-          filter: drop-shadow(0 0 3px rgba(255, 223, 105, 0.8));
-          transition: all 0.2s ease;
-      }
       .reward-icon:hover {
           transform: translate(-50%, -50%) scale(1.2);
       }
-      .reward-icon.claimed {
-          filter: grayscale(1) opacity(0.6);
+
+      .reward-node {
+          position: absolute;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 2;
+          display: flex; /* 使用flex布局 */
+          flex-direction: column; /* 垂直排列 */
+          align-items: center; /* 水平居中 */
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+      .reward-node.claimed {
+          filter: grayscale(1) opacity(0.7);
+      }
+      .reward-node:hover {
+          /* 悬浮时稍微放大，并取消置灰效果，看得更清楚 */
+          transform: translate(-50%, -50%) scale(1.1);
+          filter: none;
+          opacity: 1;
+      }
+      .reward-icon {
+          font-size: 24px;
+          line-height: 1; /* 确保图标紧凑 */
+          filter: drop-shadow(0 0 3px rgba(255, 223, 105, 0.8));
+      }
+      .reward-day-text {
+          font-size: 12px;
+          color: #8B4513; /* 使用主题棕色 */
+          font-weight: bold;
+          margin-top: 2px; /* 与图标的间距 */
+          line-height: 1;
       }
       .reward-tooltip {
           visibility: hidden;
@@ -95,13 +116,13 @@
           padding: 5px 0;
           position: absolute;
           z-index: 1;
-          bottom: 150%; /* Position the tooltip above the icon */
+          bottom: 150%;
           left: 50%;
-          margin-left: -60px; /* Use half of the width to center */
+          margin-left: -60px;
           opacity: 0;
           transition: opacity 0.3s;
       }
-      .reward-icon:hover .reward-tooltip {
+      .reward-node:hover .reward-tooltip { /* 注意选择器变化 */
           visibility: visible;
           opacity: 1;
       }
