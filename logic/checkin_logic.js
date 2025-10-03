@@ -15,32 +15,32 @@ monthlyRewardsConfig = Object.values(monthlyRewardsConfig);
  */
 export async function processDailyCheckIn(userId) {
   const now = new Date();
-  const nowTime = now.getTime();
-  const today = await shijianc(nowTime);
-  const yesterday = await shijianc(nowTime - 24 * 60 * 60 * 1000);
+  const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`; // 使用唯一的日期字符串作为凭证
 
-  // 检查今天是否已经签到
-  const lastSignTime = parseInt(await redis.get(`xiuxian:player:${userId}:lastsign_time`)) || 0;
-  const lastSignDay = await shijianc(lastSignTime);
-  if (today.Y === lastSignDay.Y && today.M === lastSignDay.M && today.D === lastSignDay.D) {
-    return { success: false, message: '今日已经签到过了' };
-  }
-
-  // 用于在事务内外传递数据的变量
   let transactionResult = null;
+  let signinError = null; // 用于从事务中传递错误信息
 
-  // 使用事务来更新所有与玩家状态相关的数据
   const transactionSuccess = await DAL.transaction_update(userId, (player) => {
-    // --- 处理每日连续签到 (逻辑不变) ---
-    const wasYesterday = yesterday.Y === lastSignDay.Y && yesterday.M === lastSignDay.M && yesterday.D === lastSignDay.D;
+    // --- 【核心修复】将签到检查移入事务内部 ---
+    // 使用 player 对象中的 last_sign_in_date 作为唯一凭证
+    if (player.last_sign_in_date === todayStr) {
+      signinError = '今日已经签到过了';
+      return false; // 返回 false 来中断事务并向外传递失败信号
+    }
+    // --- 修复结束 ---
+
+    // 如果检查通过，则立即更新签到日期，锁定签到状态
+    player.last_sign_in_date = todayStr;
+
+    // ... 后续逻辑与之前相同 ...
+    const wasYesterday = player.last_sign_in_date_yesterday === `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate() - 1}`;
     if (player.连续签到天数 >= 14 || !wasYesterday) {
       player.连续签到天数 = 0;
     }
     player.连续签到天数 += 1;
+    player.last_sign_in_date_yesterday = todayStr; // 记录本次签到日期，供下次判断
 
-    // --- 处理月度累计签到 ---
-    const currentMonth = `${today.Y}-${today.M}`;
-    // 初始化或重置月度数据
+    const currentMonth = `${now.getFullYear()}-${now.getMonth() + 1}`;
     if (!player.sign_in_info || player.sign_in_info.last_sign_in_month !== currentMonth) {
       player.sign_in_info = {
         last_sign_in_month: currentMonth,
@@ -50,93 +50,73 @@ export async function processDailyCheckIn(userId) {
     }
     player.sign_in_info.monthly_cumulative_days += 1;
 
-    // --- 计算每日奖励 ---
-    let daily_gift_xiuwei = player.连续签到天数 * 15000;
+    let daily_gift_xiuxwei = player.连续签到天数 * 15000;
     let daily_gift_key = xiuxianConfigData.Sign.ticket;
     let dailyRewardsMessages = [];
-
-    // 检查是否有翻倍buff
-    if (player.daofaxianshu_endtime > nowTime) {
-      daily_gift_xiuwei *= 2;
+    if (player.daofaxianshu_endtime > now.getTime()) {
+      daily_gift_xiuxwei *= 2;
       daily_gift_key *= 2;
       dailyRewardsMessages.push('【道法仙术】给予你赐福，签到奖励翻倍！');
     }
+    player.修为 += daily_gift_xiuxwei;
 
-    player.修为 += daily_gift_xiuwei;
-
-    // --- 检查并“预定”累计奖励 ---
-    let cumulativeRewardsToGrant = []; // 待发放的累计奖励物品
-    let cumulativeRewardsMsgs = [];   // 累计奖励的提示消息
-
-    // 调试
-    logger.mark('【签到奖励配置诊断】加载到的原始值:', monthlyRewardsConfig);
-    logger.mark('【签到奖励配置诊断】值的类型是:', typeof monthlyRewardsConfig);
-    logger.mark('【签到奖励配置诊断】是否为数组:', Array.isArray(monthlyRewardsConfig));
-
+    let cumulativeRewardsToGrant = [];
+    let cumulativeRewardsMsgs = [];
     for (const rewardTier of monthlyRewardsConfig) {
-      // 条件：达到天数 且 尚未在本事务中被标记为领取
       if (player.sign_in_info.monthly_cumulative_days >= rewardTier.days && !player.sign_in_info.claimed_monthly_rewards.includes(rewardTier.days)) {
-        // 核心：在事务内标记为“已领取”，防止重复发放
         player.sign_in_info.claimed_monthly_rewards.push(rewardTier.days);
-
-        // 将奖励物品和消息暂存，待事务成功后发放
         cumulativeRewardsToGrant.push(...rewardTier.rewards);
         cumulativeRewardsMsgs.push(`达成[${rewardTier.days}天]累计签到，获得额外奖励！`);
       }
     }
 
-    // --- 将所有结果暂存到事务外 ---
     transactionResult = {
-      player, // 更新后的player对象
-      dailyRewards: {
-        修为: daily_gift_xiuwei,
-        秘境之匙: daily_gift_key,
-        message: dailyRewardsMessages
-      },
+      player,
+      dailyRewards: { 修为: daily_gift_xiuxwei, 秘境之匙: daily_gift_key, message: dailyRewardsMessages },
       cumulativeRewards: cumulativeRewardsToGrant,
       cumulativeMessages: cumulativeRewardsMsgs
     };
-
-    return true; // 表示事务修改成功
+    return true;
   });
 
+  // 根据事务执行结果进行响应
   if (!transactionSuccess) {
-    return { success: false, message: '签到失败，数据更新时发生冲突，请重试。' };
+    // 如果是我们自己设置的签到错误，就返回对应的消息，否则返回通用冲突消息
+    return { success: false, message: signinError || '签到失败，数据更新时发生冲突，请重试。' };
   }
 
-  // 3. 事务成功后，执行所有外部操作（Redis、物品发放）
-  await redis.set(`xiuxian:player:${userId}:lastsign_time`, nowTime);
+  // 【重要】不再需要单独的 redis.set 来记录签到时间，因为 player 数据已是最新
 
-  // 发放每日奖励物品
+  // 发放奖励物品 (事务成功后执行)
   await DAL.updateNajieItem(userId, '秘境之匙', '道具', transactionResult.dailyRewards.秘境之匙);
-
-  // 发放所有累计奖励物品
   for (const item of transactionResult.cumulativeRewards) {
-    await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+    if (item.name === '修为') {
+      logger.info(`[签到] 发放累计奖励：${item.name} x ${item.amount}`);
+      await DAL.transaction_update(userId, (p) => {
+        p.修为 += item.amount;
+      });
+    } else {
+      await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+    }
   }
 
-  // 记录本月签到日期
-  const checkinKey = `XinghanXiuxian:Player:${userId}:Checkin:${today.Y}-${today.M}`;
-  await redis.sAdd(checkinKey, String(today.D));
+  const checkinKey = `XinghanXiuxian:Player:${userId}:Checkin:${now.getFullYear()}-${now.getMonth() + 1}`;
+  await redis.sAdd(checkinKey, String(now.getDate()));
   const checkedInDaysRaw = await redis.sMembers(checkinKey);
 
-  // 组装并返回给前端的最终数据
   const finalMessage = '签到成功！' + (transactionResult.cumulativeMessages.length > 0 ? `\n${transactionResult.cumulativeMessages.join('\n')}` : '');
-
   return {
     success: true,
     message: finalMessage,
-    // 每日签到部分的数据
     checkInData: {
       consecutiveDays: transactionResult.player.连续签到天数,
-      checkedInDays: checkedInDaysRaw.map(Number) // 已签到的日期数组 [1, 2, 5]
+      checkedInDays: checkedInDaysRaw.map(Number)
     },
-    dailyRewards: transactionResult.dailyRewards, // 每日奖励的详情
-    // 累计签到部分的数据
+    dailyRewards: transactionResult.dailyRewards,
     cumulativeData: {
       monthly_cumulative_days: transactionResult.player.sign_in_info.monthly_cumulative_days,
       claimed_monthly_rewards: transactionResult.player.sign_in_info.claimed_monthly_rewards
     },
-    cumulativeRewards: transactionResult.cumulativeRewards // 本次签到实际获得的累计奖励物品
+    cumulativeRewards: transactionResult.cumulativeRewards
   };
 }
