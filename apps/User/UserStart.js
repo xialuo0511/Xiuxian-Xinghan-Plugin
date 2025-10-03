@@ -23,8 +23,6 @@ import {
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 
-const monthlyRewardsConfig = config.getdefSet('sign_in_rewards', 'xiuxian');
-
 export class UserStart extends plugin {
   constructor() {
     super({
