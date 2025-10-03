@@ -1,18 +1,12 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import { createRequire } from 'module';
 import lodash from 'lodash';
-import loader from '../../../../lib/plugins/loader.js';
 
-/**
- * 全局
- */
 const require = createRequire(import.meta.url);
 const { exec, execSync } = require('child_process');
 const _path = process.cwd();
+let timer;
 
-/**
- * 管理员
- */
 export class admin extends plugin {
   constructor() {
     super({
@@ -22,47 +16,42 @@ export class admin extends plugin {
       priority: 400,
       rule: [
         {
-          reg: '^(#)修仙(插件)?(强制)?更新',
+          reg: '^#修仙(插件)?(强制)?更新',
           fnc: 'checkout'
         }
       ]
     });
+    this.key = 'xiuxian:restart';
   }
 
-  async log() {
-    if (!this.e.isMaster) return;
-    let log_data = await redis.get('xiuxian:log');
-    if (!log_data) {
-      log_data = 0;
-    }
-    if (log_data == '0') {
-      this.e.reply('已为您开启了日志输出，便于监测玩家数据是否异常');
-      await redis.set('xiuxian:log', 1);
-    } else {
-      this.e.reply('已为您关闭了日志输出，减少机器压力:)');
-      await redis.set('xiuxian:log', 0);
-    }
-  }
-
-  async getcommitId(plugin = '') {
-    let cm = 'git rev-parse --short HEAD';
-    if (plugin) {
-      cm = `git -C ./plugins/xiuxian-emulator-plugin/ rev-parse --short HEAD`;
-    }
+  async getcommitId(pluginPath) {
+    const cm = `git -C ${pluginPath} rev-parse --short HEAD`;
     let commitId = execSync(cm, { encoding: 'utf-8' });
-    commitId = lodash.trim(commitId);
-    return commitId;
+    return lodash.trim(commitId);
+  }
+
+  // 【新增】获取当前分支名称的函数
+  async getCurrentBranch(pluginPath) {
+    const cm = `git -C ${pluginPath} rev-parse --abbrev-ref HEAD`;
+    let branch = execSync(cm, { encoding: 'utf-8' });
+    return lodash.trim(branch);
   }
 
   async checkout() {
-    if (!this.e.isMaster) return;
+    if (!this.e.isMaster) {
+      return;
+    }
 
-    let oldCommitId = await this.getcommitId('xiuxian-emulator-plugin'); // 明确指定插件
+    const pluginPath = `${_path}/plugins/xiuxian-emulator-plugin/`;
+    let oldCommitId = await this.getcommitId(pluginPath);
     const isForce = this.e.msg.includes('强制');
     let command = 'git pull';
+
     if (isForce) {
-      command = 'git fetch --all && git reset --hard origin/main && git pull';
-      this.e.reply('修仙插件强制更新中，请稍等...');
+      // 【核心修改】先获取当前分支，再拼接指令
+      const branch = await this.getCurrentBranch(pluginPath);
+      this.e.reply(`检测到当前分支为 [${branch}]，正在进行强制更新，请稍等...`);
+      command = `git fetch --all && git reset --hard origin/${branch} && git pull`;
     } else {
       this.e.reply('修仙插件更新中，请稍等...');
     }
@@ -70,8 +59,9 @@ export class admin extends plugin {
     const that = this;
     exec(
       command,
-      { cwd: `${_path}/plugins/xiuxian-emulator-plugin/` },
-      async function(error, stdout, stderr) {
+      { cwd: pluginPath },
+      function(error, stdout, stderr) {
+        // ... 后续的重启逻辑保持不变 ...
         if (/(Already up[ -]to[ -]date|已经是最新的)/.test(stdout)) {
           that.e.reply('目前已经是最新版修仙插件了~');
           return;
@@ -81,37 +71,48 @@ export class admin extends plugin {
           return;
         }
 
-        let log = '获取日志失败';
-        try {
-          const cm = `cd ./plugins/xiuxian-emulator-plugin/ && git log -20 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"`;
-          const logAll = execSync(cm, { encoding: 'utf-8' }).split('\n');
-          const logArr = [];
-          for (let str of logAll) {
-            const parts = str.split('||');
-            if (parts[0] === oldCommitId) break;
-            if (parts[1] && parts[1].includes('Merge branch')) continue;
-            logArr.push(parts[1]);
-          }
-          if (logArr.length > 0) {
-            log = `共${logArr.length}条日志：\n\n${logArr.join('\n')}`;
-          } else {
-            log = '无新的变更日志。';
-          }
-        } catch (logError) {
-          logger.error('获取更新日志失败:', logError);
+        const cm = `git log -20 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"`;
+        const logAll = execSync(cm, { cwd: pluginPath, encoding: 'utf-8' }).split('\n');
+        let log = [];
+        for (let str of logAll) {
+          const parts = str.split('||');
+          if (parts[0] === oldCommitId) break;
+          if (parts[1] && parts[1].includes('Merge branch')) continue;
+          log.push(parts[1]);
         }
 
-        let replyMsg = `修仙插件代码更新成功！\n${log}\n\n`;
+        const logMsg = log.length > 0 ? `共${log.length}条更新日志：\n\n${log.join('\n')}` : '无新的变更日志。';
+        that.e.reply(`修仙插件更新成功!\n${logMsg}\n\n正在尝试重新启动Yunzai以应用更新...`);
 
-        try {
-          await that.e.reply(replyMsg + '正在刷新所有插件以应用更新，请稍候...');
-          // 调用加载器的 load(true) 方法，true代表刷新
-          await loader.load(true);
-          await that.e.reply('所有插件刷新完毕，新版修仙插件已成功应用！');
-        } catch (reloadError) {
-          logger.error('刷新插件失败:', reloadError);
-          await that.e.reply('插件刷新失败，Bot可能处于不稳定状态，建议手动重启。');
-        }
+        timer && clearTimeout(timer);
+        timer = setTimeout(async () => {
+          try {
+            let data = JSON.stringify({
+              isGroup: !!that.e.isGroup,
+              id: that.e.isGroup ? that.e.group_id : that.e.user_id
+            });
+            await redis.set(that.key, data, { EX: 120 });
+            let cm = 'npm run start';
+            if (process.argv[1].includes('pm2')) {
+              cm = 'npm run restart';
+            } else {
+              await that.e.reply('当前为前台运行，重启将转为后台...');
+            }
+            exec(cm, (err, stdout, stderr) => {
+              if (err) {
+                redis.del(that.key);
+                that.e.reply(`自动重启失败，请手动重启。\nError code: ${err.code}\n${err.stack}`);
+                logger.error(`重启失败\n${err.stack}`);
+              } else if (stdout) {
+                logger.mark('重启成功，运行已转为后台');
+                process.exit();
+              }
+            });
+          } catch (err) {
+            redis.del(that.key);
+            that.e.reply(`重启云崽操作失败！\n${err.stack ?? err}`);
+          }
+        }, 1000);
       }
     );
     return true;
