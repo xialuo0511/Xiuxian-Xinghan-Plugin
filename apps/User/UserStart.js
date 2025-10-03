@@ -124,7 +124,12 @@ export class UserStart extends plugin {
     const renderData = await transformPlayerDataForRender(rawData, e);
     // 生成图片并回复
     const dataForPuppeteer = await new Show(e).get_playerData(renderData);
-    const img = await puppeteer.screenshot('player', { ...dataForPuppeteer });
+    const img = await puppeteer.screenshot('player', {
+      ...dataForPuppeteer,
+      _page: {
+        deviceScaleFactor: 2 // 开启2倍超清渲染
+      }
+    });
     e.reply(img);
   }
 
