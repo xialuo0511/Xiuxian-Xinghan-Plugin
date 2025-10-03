@@ -47,6 +47,64 @@
           height: 20px;
           opacity: 0.9;
       }
+      .cumulative-rewards-section {
+          /* 与“本次签到收获”部分保持风格一致 */
+          margin-top: 1.5rem; /* mt-6 */
+          padding-top: 1rem; /* pt-4 */
+          border-top: 2px dashed #D2B48C;
+      }
+      .progress-bar-wrapper {
+          position: relative;
+          padding: 0.5rem 0; /* 给图标留出上下空间 */
+      }
+      .progress-bar {
+          height: 10px;
+          background-color: rgba(139, 69, 19, 0.3); /* #8B4513 with opacity */
+          border-radius: 5px;
+          overflow: hidden;
+      }
+      .progress-bar-filler {
+          height: 100%;
+          background: linear-gradient(90deg, #fceabb, #f8b500);
+          box-shadow: 0 0 5px rgba(248, 181, 0, 0.7);
+          border-radius: 5px;
+          transition: width 0.8s ease-in-out;
+      }
+      .reward-icon {
+          position: absolute;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 24px; /* 调整图标大小 */
+          cursor: pointer;
+          filter: drop-shadow(0 0 3px rgba(255, 223, 105, 0.8));
+          transition: all 0.2s ease;
+      }
+      .reward-icon:hover {
+          transform: translate(-50%, -50%) scale(1.2);
+      }
+      .reward-icon.claimed {
+          filter: grayscale(1) opacity(0.6);
+      }
+      .reward-tooltip {
+          visibility: hidden;
+          width: 120px;
+          background-color: rgba(0, 0, 0, 0.7);
+          color: #fff;
+          text-align: center;
+          border-radius: 6px;
+          padding: 5px 0;
+          position: absolute;
+          z-index: 1;
+          bottom: 150%; /* Position the tooltip above the icon */
+          left: 50%;
+          margin-left: -60px; /* Use half of the width to center */
+          opacity: 0;
+          transition: opacity 0.3s;
+      }
+      .reward-icon:hover .reward-tooltip {
+          visibility: visible;
+          opacity: 1;
+      }
   </style>
 </head>
 <body class="p-4 bg-gray-100 flex items-center justify-center min-h-screen">
@@ -57,20 +115,35 @@
   </div>
 
   <div id="calendar-grid" class="grid grid-cols-7 gap-1">
-    <!-- Headers will be injected here -->
   </div>
 
+  <div class="cumulative-rewards-section">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-semibold text-[#6a3906]">本月修行路</h2>
+      <span class="text-base text-[#8B4513]">累计: <span class="font-bold text-amber-600">{{monthly_cumulative_days}}</span> / {{total_days_in_month}} 天</span>
+    </div>
+
+    <div class="progress-bar-wrapper">
+      <div class="progress-bar">
+        <div class="progress-bar-filler" style="width: {{(monthly_cumulative_days / total_days_in_month) * 100}}%;"></div>
+      </div>
+
+      {{each monthly_rewards_config tier}}
+      <div class="reward-icon {{if claimed_monthly_rewards.includes(tier.days)}}claimed{{/if}}" style="left: {{(tier.days / total_days_in_month) * 100}}%;">
+        🎁
+        <span class="reward-tooltip text-sm">{{tier.days}}天 | {{tier.name}}</span>
+      </div>
+      {{/each}}
+    </div>
+  </div>
   <div class="rewards-section mt-6 p-4 border-t-2 border-dashed border-[#D2B48C]">
     <h2 class="text-xl font-semibold text-[#6a3906] mb-2">本次签到收获:</h2>
     <div class="text-base text-[#8B4513] space-y-1">
       <p>连续签到: <span class="font-bold text-green-700">{{consecutiveDays}}</span> 天</p>
-      <p>获得修为: <span class="font-bold text-green-700">{{rewards.修为}}</span></p>
-      <p>获得秘境之匙: <span class="font-bold text-green-700">{{rewards.秘境之匙}}</span> 个</p>
-      {{if rewards.仙鼎历练券 > 0}}
-      <p>获得仙鼎历练券: <span class="font-bold text-green-700">{{rewards.仙鼎历练券}}</span> 张</p>
-      {{/if}}
-      {{if rewards.message.length > 0}}
-      <p class="text-sm italic text-yellow-700 mt-2">{{rewards.message[0]}}</p>
+      <p>获得修为: <span class="font-bold text-green-700">{{dailyRewards.修为}}</span></p>
+      <p>获得秘境之匙: <span class="font-bold text-green-700">{{dailyRewards.秘境之匙}}</span> 个</p>
+      {{if dailyRewards.message.length > 0}}
+      <p class="text-sm italic text-yellow-700 mt-2">{{dailyRewards.message[0]}}</p>
       {{/if}}
     </div>
   </div>
@@ -80,18 +153,15 @@
   const year = {{year}};
   const month = {{month}}; // 1-12
   const today = {{today}};
-  const checkedInDays = {{checkedInDays}};
+  const checkedInDays = {{JSON.stringify(checkedInDays)}};
 
   const calendarTitle = document.getElementById('calendar-title');
   const calendarGrid = document.getElementById('calendar-grid');
 
   function renderCalendar() {
     calendarTitle.textContent = `${year}年 ${month}月`;
-
-    // 清空日历网格
     calendarGrid.innerHTML = '';
 
-    // 添加星期标题
     const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
     daysOfWeek.forEach(day => {
       const dayHeader = document.createElement('div');
@@ -100,19 +170,15 @@
       calendarGrid.appendChild(dayHeader);
     });
 
-    // 获取月份第一天是星期几
     const firstDay = new Date(year, month - 1, 1).getDay();
-    // 获取这个月有多少天
     const daysInMonth = new Date(year, month, 0).getDate();
 
-    // 添加空白单元格（月初）
     for (let i = 0; i < firstDay; i++) {
       const emptyCell = document.createElement('div');
       emptyCell.className = 'day-cell p-2 h-20';
       calendarGrid.appendChild(emptyCell);
     }
 
-    // 添加日期单元格
     for (let day = 1; day <= daysInMonth; day++) {
       const dayCell = document.createElement('div');
       dayCell.className = 'day-cell p-2 h-20 flex flex-col items-center justify-center relative';
@@ -122,7 +188,6 @@
       dayNumber.className = 'text-lg font-semibold text-[#6a3906]';
       dayCell.appendChild(dayNumber);
 
-      // 检查是否已签到
       if (checkedInDays.includes(day)) {
         dayCell.classList.add('checked-in');
         const checkMark = document.createElement('img');
@@ -131,7 +196,6 @@
         dayCell.appendChild(checkMark);
       }
 
-      // 标记今天
       if (day === today) {
         dayCell.classList.add('today-check-in');
       }
@@ -139,8 +203,6 @@
       calendarGrid.appendChild(dayCell);
     }
   }
-
-  // 渲染日历
   renderCalendar();
 </script>
 </body>

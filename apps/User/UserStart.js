@@ -23,6 +23,8 @@ import {
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 
+const monthlyRewardsConfig = config.getdefSet('sign_in_rewards', 'xiuxian');
+
 export class UserStart extends plugin {
   constructor() {
     super({
@@ -220,7 +222,6 @@ export class UserStart extends plugin {
       return;
     }
 
-    // 调用核心逻辑处理签到
     const result = await processDailyCheckIn(usr_qq);
 
     // 根据结果响应
@@ -229,20 +230,33 @@ export class UserStart extends plugin {
       return;
     }
 
-    // 准备渲染所需的数据
     const now = new Date();
+    const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
     const calendarData = {
+      // 基础日历数据
       year: now.getFullYear(),
       month: now.getMonth() + 1,
       today: now.getDate(),
+
+      // 每日签到数据
       checkedInDays: result.checkInData.checkedInDays,
       consecutiveDays: result.checkInData.consecutiveDays,
-      rewards: result.rewards
+      dailyRewards: result.dailyRewards,
+
+      // 累计签到数据，传递给HTML
+      monthly_cumulative_days: result.cumulativeData.monthly_cumulative_days,
+      claimed_monthly_rewards: result.cumulativeData.claimed_monthly_rewards,
+      total_days_in_month: totalDaysInMonth,
+      monthly_rewards_config: config.getdefSet('sign_in_rewards', 'xiuxian')
     };
 
     // 生成并发送图片
     const dataForPuppeteer = await new Show(e).get_checkin_calendarData(calendarData);
     const img = await puppeteer.screenshot('checkin_calendar', { ...dataForPuppeteer });
-    e.reply(img);
+
+    // 发送签到成功图片，并@用户
+    await e.reply([segment.at(e.user_id),
+      img]);
   }
 }
