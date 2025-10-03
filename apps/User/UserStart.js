@@ -220,7 +220,25 @@ export class UserStart extends plugin {
       return;
     }
 
-    const result = await processDailyCheckIn(usr_qq);
+    let result = null;
+    const maxRetries = 3; // 最多重试3次
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      // 调用核心逻辑处理签到
+      result = await processDailyCheckIn(usr_qq);
+
+      if (result.success) {
+        // 如果成功，则跳出循环
+        break;
+      }
+
+      // 如果失败是因为冲突，并且还有重试机会
+      if (!result.success && result.message.includes('冲突') && attempt < maxRetries) {
+        logger.warn(`[签到冲突] 用户 ${usr_qq} 签到失败，正在进行第 ${attempt} 次重试...`);
+        // 等待一个短暂的随机时间，避免连续冲突
+        await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+        continue; // 继续下一次循环尝试
+      }
+    }
 
     // 根据结果响应
     if (!result.success) {
