@@ -25,11 +25,11 @@ import {
 import { Read_Exchange, Write_Exchange } from '../Exchange/Exchange.js';
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
 import { Read_Forum, Write_Forum } from '../Help/Forum.js';
-import { createRequire } from "module"
-import { get_yijie_player_img } from '../ShowImeg/showData.js'
+import { createRequire } from 'module';
+import { get_yijie_player_img } from '../ShowImeg/showData.js';
 
-const require = createRequire(import.meta.url)
-const { execSync } = require("child_process")
+const require = createRequire(import.meta.url);
+const { execSync } = require('child_process');
 
 //如需截图必须引入以下两库
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
@@ -49,131 +49,127 @@ export class AdminSuper extends plugin {
       rule: [
         {
           reg: '^#解封.*$',
-          fnc: 'relieve',
+          fnc: 'relieve'
         },
         {
           reg: '^#解除所有$',
-          fnc: 'Allrelieve',
+          fnc: 'Allrelieve'
         },
         {
           reg: '^#打落凡间.*$',
-          fnc: 'Knockdown',
+          fnc: 'Knockdown'
         },
         {
           reg: '^#清除冲水堂$',
-          fnc: 'Deleteexchange',
+          fnc: 'Deleteexchange'
         },
         {
           reg: '^#清除.*$',
-          fnc: 'Deletepurchase',
+          fnc: 'Deletepurchase'
         },
         {
           reg: '^#放出怪物$',
-          fnc: 'OpenBoss',
+          fnc: 'OpenBoss'
         },
         {
           reg: '^#关上怪物$',
-          fnc: 'DeleteBoss',
+          fnc: 'DeleteBoss'
         },
         {
           reg: '^#清空委托$',
-          fnc: 'DeleteForum',
+          fnc: 'DeleteForum'
         },
         {
           reg: '^#修仙世界$',
-          fnc: 'Worldstatistics',
+          fnc: 'Worldstatistics'
         },
         {
           reg: '^#发修为补偿.*$',
-          fnc: 'xiuweiFuli',
+          fnc: 'xiuweiFuli'
         },
         {
           reg: '^#扣修为(.*)$',
-          fnc: 'xiuweiDeduction',
+          fnc: 'xiuweiDeduction'
         },
         {
           reg: '^#发血气补偿(.*)$',
-          fnc: 'xueqiFuli',
+          fnc: 'xueqiFuli'
         },
         {
           reg: '^#发顶级仙石(.*)$',
-          fnc: 'faxianshi',
+          fnc: 'faxianshi'
         },
         {
           reg: '^#扣血气(.*)$',
-          fnc: 'xueqiDeduction',
-        },
-        {
-          reg: '^#测试$',
-          fnc: 'cesi',
+          fnc: 'xueqiDeduction'
         },
         {
           reg: '^#查看日志$',
-          fnc: 'show_log',
+          fnc: 'show_log'
         },
         {
           reg: '^#炼丹师更新$',
-          fnc: 'liandanshi',
+          fnc: 'liandanshi'
         },
         {
           reg: '^#自降修为.*$',
-          fnc: 'off_xiuwei',
+          fnc: 'off_xiuwei'
         },
         {
           reg: '^#自降境界至(.*)$',
-          fnc: 'off_level',
+          fnc: 'off_level'
         },
         {
           reg: '#全体清除(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材)(抹除|替换为.*的的(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材))$',
-          fnc: 'replaceThing',
+          fnc: 'replaceThing'
         },
         {
           reg: '#查看玩家面板.*$',
-          fnc: 'mianban',
+          fnc: 'mianban'
         },
         {
           reg: '#开通初级道法仙术.*$',
-          fnc: 'ktdfxt',
+          fnc: 'ktdfxt'
         },
         {
           reg: '#取消开通初级道法仙术.*$',
-          fnc: 'qx_ktdfxt',
+          fnc: 'qx_ktdfxt'
         },
         {
           reg: '#开通高级道法仙术.*$',
-          fnc: 'ktgjdfxt',
+          fnc: 'ktgjdfxt'
         },
         {
           reg: '#领取本月头像框$',
-          fnc: 'lqtxk',
+          fnc: 'lqtxk'
         }
-      ],
+      ]
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
   }
 
   async lqtxk(e) {
-    let usr_qq = e.user_id
+    let usr_qq = e.user_id;
     //有无存档
     let ifexistplay = await existplayer(usr_qq);
     if (!ifexistplay) {
       e.reply(`请先踏入仙途`);
       return;
     }
-    let player = await Read_player(usr_qq)
+    let player = await Read_player(usr_qq);
     let nowtime = new Date().getTime();
     if (player.daofaxianshu_endtime < nowtime) {
       e.reply(`请先开通【道法仙术】！`);
       return;
     }
-    if (!player.all_touxiangkuang.find(item => item.name == "春花清明")) {
-      let Touxiang = data.Touxiang_list.find(item => item.name == "春花清明")
-      player.all_touxiangkuang.push(Touxiang)
-      await Write_player(usr_qq, player)
-      e.reply("领取成功！恭喜获得本月限定头像框【春花清明】")
+    if (!player.all_touxiangkuang.find(item => item.name == '春花清明')) {
+      let Touxiang = data.Touxiang_list.find(item => item.name == '春花清明');
+      player.all_touxiangkuang.push(Touxiang);
+      await Write_player(usr_qq, player);
+      e.reply('领取成功！恭喜获得本月限定头像框【春花清明】');
       return;
     } else {
-      e.reply("您已经领取过啦！")
+      e.reply('您已经领取过啦！');
       return;
     }
   }
@@ -183,27 +179,27 @@ export class AdminSuper extends plugin {
       return;
     }
     let nowtime = new Date().getTime();
-    let usr_qq
+    let usr_qq;
     try {
       let atItem = e.message.filter(item => item.type === 'at');
       usr_qq = atItem[0].qq;
     } catch (error) {
-      usr_qq = e.msg.replace("#开通初级道法仙术", "");
+      usr_qq = e.msg.replace('#开通初级道法仙术', '');
     }
-    let ifexistplay = data.existData("player", usr_qq);
+    let ifexistplay = data.existData('player', usr_qq);
     if (!ifexistplay) {
       return;
     }
     let player = await Read_player(usr_qq);
-    let daofaxianshu_endtime = 2678400000
+    let daofaxianshu_endtime = 2678400000;
     if (player.daofaxianshu_endtime < nowtime) {
-      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
+      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime;
     } else {
-      player.daofaxianshu_endtime += daofaxianshu_endtime
+      player.daofaxianshu_endtime += daofaxianshu_endtime;
     }
-    player.daofaxianshu = 1
-    await Write_player(usr_qq, player)
-    e.reply("开通成功！【初级道法仙术】的有效时长增加31天")
+    player.daofaxianshu = 1;
+    await Write_player(usr_qq, player);
+    e.reply('开通成功！【初级道法仙术】的有效时长增加31天');
     return;
   }
 
@@ -211,7 +207,7 @@ export class AdminSuper extends plugin {
     if (!e.isMaster) {
       return;
     }
-    let nowtime = Date.now()
+    let nowtime = Date.now();
     //没有at信息直接返回,不执行
     let isat = e.message.some(item => item.type === 'at');
     if (!isat) {
@@ -221,20 +217,20 @@ export class AdminSuper extends plugin {
     let atItem = e.message.filter(item => item.type === 'at');
     //对方qq
     let usr_qq = atItem[0].qq;
-    let ifexistplay = data.existData("player", usr_qq);
+    let ifexistplay = data.existData('player', usr_qq);
     if (!ifexistplay) {
       return;
     }
     let player = await Read_player(usr_qq);
-    let daofaxianshu_endtime = 2592000000
+    let daofaxianshu_endtime = 2592000000;
     if (Number(player.daofaxianshu_endtime) < nowtime) {
-      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime
+      player.daofaxianshu_endtime = daofaxianshu_endtime + nowtime;
     } else {
-      player.daofaxianshu_endtime += daofaxianshu_endtime
+      player.daofaxianshu_endtime += daofaxianshu_endtime;
     }
-    player.daofaxianshu = 2
-    await Write_player(usr_qq, player)
-    e.reply("开通成功！【高级道法仙术】的有效时长增加30天")
+    player.daofaxianshu = 2;
+    await Write_player(usr_qq, player);
+    e.reply('开通成功！【高级道法仙术】的有效时长增加30天');
     return;
   }
 
@@ -244,13 +240,13 @@ export class AdminSuper extends plugin {
     }
     //获取发送修为数量
     let usr_qq = e.msg.replace('#查看玩家面板', '');
-    let ifexistplay = data.existData("yijie_player", usr_qq);
+    let ifexistplay = data.existData('yijie_player', usr_qq);
     if (!ifexistplay) {
       return;
     }
-    let a = {}
-    a.user_id = usr_qq
-    let img = await get_yijie_player_img(a)
+    let a = {};
+    a.user_id = usr_qq;
+    let img = await get_yijie_player_img(a);
     e.reply(img);
     return;
   }
@@ -295,6 +291,7 @@ export class AdminSuper extends plugin {
     await Add_修为(usr_qq, -number2);
     e.reply('扣除成功');
   }
+
   async off_level(e) {
     //不开放私聊功能
     if (!e.isGroup) {
@@ -350,6 +347,7 @@ export class AdminSuper extends plugin {
     await Add_HP(usr_qq, 99999999);
     e.reply('扣除成功');
   }
+
   async liandanshi(e) {
     if (!e.isMaster) {
       e.reply('你凑什么热闹');
@@ -375,7 +373,7 @@ export class AdminSuper extends plugin {
         beiyong3: 0,
         beiyong4: 0,
         beiyong5: 0,
-        qq: this_qq,
+        qq: this_qq
       };
       i++;
     }
@@ -389,17 +387,23 @@ export class AdminSuper extends plugin {
   }
 
   async show_log(e) {
-    let cm = 'git log -100 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
-    if (plugin) { cm = `cd ./plugins/xiuxian-emulator-plugin/ && ${cm}` }
-    let logAll
-    try { logAll = execSync(cm, { encoding: 'utf-8' }) } catch (error) { that.e.reply(error.toString(), true) }
-    if (!logAll) return false
-    logAll = logAll.split('\n')
-    let log = []
+    let cm = 'git log -100 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"';
+    if (plugin) {
+      cm = `cd ./plugins/xiuxian-emulator-plugin/ && ${cm}`;
+    }
+    let logAll;
+    try {
+      logAll = execSync(cm, { encoding: 'utf-8' });
+    } catch (error) {
+      that.e.reply(error.toString(), true);
+    }
+    if (!logAll) return false;
+    logAll = logAll.split('\n');
+    let log = [];
     for (let str of logAll) {
-      str = str.split('||')
-      if (str[1].includes('Merge branch')) continue
-      log.push(str[1])
+      str = str.split('||');
+      if (str[1].includes('Merge branch')) continue;
+      log.push(str[1]);
     }
     log.forEach((item, index) => {
       // 删除空项
@@ -408,11 +412,11 @@ export class AdminSuper extends plugin {
       }
     });
     let log_data = {
-      log,
+      log
     };
     const data1 = await new Show(e).get_logData(log_data);
     let img = await puppeteer.screenshot('log', {
-      ...data1,
+      ...data1
     });
     e.reply(img);
     return;
@@ -433,16 +437,6 @@ export class AdminSuper extends plugin {
     //   ...data1,
     // });
     // e.reply(img);
-    return;
-  }
-
-  async cesi(e) {
-    if (!e.isMaster) {
-      e.reply('你凑什么热闹');
-      return;
-    }
-    let a = await sql_run('select * from acton')
-    console.log(a)
     return;
   }
 
@@ -733,7 +727,7 @@ export class AdminSuper extends plugin {
         '\n财富：' +
         Worldmoney +
         '\n人均：' +
-        (Worldmoney / acount).toFixed(3),
+        (Worldmoney / acount).toFixed(3)
       ];
     } else if (Worldmoney > 10000 && Worldmoney < 1000000) {
       Worldmoney = Worldmoney / 10000;
@@ -751,7 +745,7 @@ export class AdminSuper extends plugin {
         '万' +
         '\n人均：' +
         (Worldmoney / acount).toFixed(3) +
-        '万',
+        '万'
       ];
     } else if (Worldmoney > 1000000 && Worldmoney < 100000000) {
       Worldmoney = Worldmoney / 1000000;
@@ -769,7 +763,7 @@ export class AdminSuper extends plugin {
         '百万' +
         '\n人均：' +
         (Worldmoney / acount).toFixed(3) +
-        '百万',
+        '百万'
       ];
     } else if (Worldmoney > 100000000) {
       Worldmoney = Worldmoney / 100000000;
@@ -787,7 +781,7 @@ export class AdminSuper extends plugin {
         '亿' +
         '\n人均：' +
         (Worldmoney / acount).toFixed(3) +
-        '亿',
+        '亿'
       ];
     }
     await ForwardMsg(e, msg);
@@ -930,7 +924,7 @@ export class AdminSuper extends plugin {
         blood: blood * User_maxplus * 3,
         probability: '0.7',
         money: money * User_maxplus * 3,
-        linggen: '仙之心·水',
+        linggen: '仙之心·水'
       };
       //redis初始化
       await redis.set('xiuxian:BossMaxplus', JSON.stringify(BossMaxplus));
@@ -949,7 +943,7 @@ export class AdminSuper extends plugin {
         blood: blood * User_max * 2,
         probability: '0.5',
         money: money * User_max * 2,
-        linggen: '仙之心·火',
+        linggen: '仙之心·火'
       };
       //redis初始化
       await redis.set('xiuxian:BossMax', JSON.stringify(BossMax));
@@ -969,7 +963,7 @@ export class AdminSuper extends plugin {
         blood: blood * User_mini,
         probability: '0.3',
         money: money * User_mini,
-        linggen: '仙之心·风',
+        linggen: '仙之心·风'
       };
       //redis初始化
       await redis.set('xiuxian:BossMini', JSON.stringify(BossMini));
@@ -1243,7 +1237,12 @@ async function clearNajieThing(thingType, thingName) {
       Add_najie_thing(usrId, thingName, thingType, -thingNumber);
 
       if (thingType == '装备') {
-        ['劣', '普', '优', '精', '绝', '顶'].map(async pinji => {
+        ['劣',
+          '普',
+          '优',
+          '精',
+          '绝',
+          '顶'].map(async pinji => {
           const thingNum = await exist_najie_thing(
             usrId,
             thingName,
@@ -1298,13 +1297,13 @@ export async function synchronization(e) {
     }
     if (!player.all_touxiangkuang) {
       player.all_touxiangkuang = [];
-      let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
-      player.all_touxiangkuang.push(Touxiang)
+      let Touxiang = data.Touxiang_list.find(item => item.name == '默认头像框');
+      player.all_touxiangkuang.push(Touxiang);
     }
     if (!player.zb_touxiangkuang) {
       player.zb_touxiangkuang = [];
-      let Touxiang = data.Touxiang_list.find(item => item.name == "默认头像框")
-      player.zb_touxiangkuang.push(Touxiang)
+      let Touxiang = data.Touxiang_list.find(item => item.name == '默认头像框');
+      player.zb_touxiangkuang.push(Touxiang);
     }
     // if (!isNotNull(player.辟谷丹)) {
     //     player.辟谷丹 = 0;
@@ -1333,7 +1332,7 @@ export async function yijie_tongbu(e) {
   for (let player_id of playerList) {
     let usr_qq = player_id;
     let player = await data.getData('yijie_player', usr_qq);
-    let beibao = await data.getData("yijie_beibao", usr_qq)
+    let beibao = await data.getData('yijie_beibao', usr_qq);
     //删
     // if (isNotNull(player.境界)) {
     //   player.境界 = undefined;
@@ -1344,10 +1343,10 @@ export async function yijie_tongbu(e) {
       player.tianfu_exp = 0;
     }
     for (let i = 0; i < beibao.箱子.length; i++) {
-      let shuliang = beibao.箱子[i].数量
+      let shuliang = beibao.箱子[i].数量;
       beibao.箱子[i] = data.yijie_box.find(item => item.id == beibao.箱子[i].id);
       delete beibao.箱子[i].contents;
-      beibao.箱子[i].数量 = shuliang
+      beibao.箱子[i].数量 = shuliang;
       if (!beibao.箱子[i].islockd) {
         beibao.箱子[i].islockd = 0;
       }
