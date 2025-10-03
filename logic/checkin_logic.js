@@ -66,6 +66,11 @@ export async function processDailyCheckIn(userId) {
     let cumulativeRewardsToGrant = []; // 待发放的累计奖励物品
     let cumulativeRewardsMsgs = [];   // 累计奖励的提示消息
 
+    // 调试
+    logger.mark('【签到奖励配置诊断】加载到的原始值:', monthlyRewardsConfig);
+    logger.mark('【签到奖励配置诊断】值的类型是:', typeof monthlyRewardsConfig);
+    logger.mark('【签到奖励配置诊断】是否为数组:', Array.isArray(monthlyRewardsConfig));
+
     for (const rewardTier of monthlyRewardsConfig) {
       // 条件：达到天数 且 尚未在本事务中被标记为领取
       if (player.sign_in_info.monthly_cumulative_days >= rewardTier.days && !player.sign_in_info.claimed_monthly_rewards.includes(rewardTier.days)) {
