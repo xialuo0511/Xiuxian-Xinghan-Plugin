@@ -264,7 +264,7 @@ export class UserStart extends plugin {
       monthly_cumulative_days: result.cumulativeData.monthly_cumulative_days,
       claimed_monthly_rewards: result.cumulativeData.claimed_monthly_rewards,
       total_days_in_month: totalDaysInMonth,
-      monthly_rewards_config: config.getdefSet('sign_in_rewards', 'xiuxian')
+      monthly_rewards_config: Object.values(config.getConfig('xiuxian', 'sign_in_rewards'))
     };
 
     // 生成并发送图片
