@@ -3,8 +3,10 @@ import { shijianc } from '../apps/Xiuxian/xiuxian.js';
 import config from '../model/Config.js';
 
 // 加载月度累计签到奖励配置
-const monthlyRewardsConfig = config.getConfig('xiuxian', 'sign_in_rewards');
+let monthlyRewardsConfig = config.getConfig('xiuxian', 'sign_in_rewards');
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+
+monthlyRewardsConfig = Object.values(monthlyRewardsConfig);
 
 /**
  * 处理玩家的每日签到逻辑
