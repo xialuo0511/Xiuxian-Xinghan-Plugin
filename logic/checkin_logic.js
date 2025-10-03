@@ -21,24 +21,22 @@ export async function processDailyCheckIn(userId) {
   let signinError = null; // 用于从事务中传递错误信息
 
   const transactionSuccess = await DAL.transaction_update(userId, (player) => {
-    // --- 【核心修复】将签到检查移入事务内部 ---
     // 使用 player 对象中的 last_sign_in_date 作为唯一凭证
     if (player.last_sign_in_date === todayStr) {
       signinError = '今日已经签到过了';
       return false; // 返回 false 来中断事务并向外传递失败信号
     }
-    // --- 修复结束 ---
 
     // 如果检查通过，则立即更新签到日期，锁定签到状态
     player.last_sign_in_date = todayStr;
 
-    // ... 后续逻辑与之前相同 ...
     const wasYesterday = player.last_sign_in_date_yesterday === `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate() - 1}`;
     if (player.连续签到天数 >= 14 || !wasYesterday) {
       player.连续签到天数 = 0;
     }
     player.连续签到天数 += 1;
     player.last_sign_in_date_yesterday = todayStr; // 记录本次签到日期，供下次判断
+    player.total_sign_in_days = (player.total_sign_in_days || 0) + 1;
 
     const currentMonth = `${now.getFullYear()}-${now.getMonth() + 1}`;
     if (!player.sign_in_info || player.sign_in_info.last_sign_in_month !== currentMonth) {
@@ -49,6 +47,7 @@ export async function processDailyCheckIn(userId) {
       };
     }
     player.sign_in_info.monthly_cumulative_days += 1;
+
 
     let daily_gift_xiuxwei = player.连续签到天数 * 15000;
     let daily_gift_key = xiuxianConfigData.Sign.ticket;
