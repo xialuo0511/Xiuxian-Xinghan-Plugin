@@ -249,6 +249,16 @@ export class UserStart extends plugin {
     const now = new Date();
     const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
+    const monthlyRewardsConfig = Object.values(config.getConfig('xiuxian', 'sign_in_rewards'));
+    const claimedMonthlyRewards = result.cumulativeData.claimed_monthly_rewards || [];
+
+    // 遍历奖励配置，为每一项添加一个新的 isClaimed 属性（true 或 false）
+    if (Array.isArray(monthlyRewardsConfig)) {
+      monthlyRewardsConfig.forEach(tier => {
+        tier.isClaimed = claimedMonthlyRewards.includes(tier.days);
+      });
+    }
+
     const calendarData = {
       // 基础日历数据
       year: now.getFullYear(),
@@ -264,7 +274,7 @@ export class UserStart extends plugin {
       monthly_cumulative_days: result.cumulativeData.monthly_cumulative_days,
       claimed_monthly_rewards: result.cumulativeData.claimed_monthly_rewards,
       total_days_in_month: totalDaysInMonth,
-      monthly_rewards_config: Object.values(config.getConfig('xiuxian', 'sign_in_rewards'))
+      monthly_rewards_config: monthlyRewardsConfig
     };
 
     // 生成并发送图片

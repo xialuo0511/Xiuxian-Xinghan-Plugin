@@ -129,7 +129,7 @@
       </div>
 
       {{each monthly_rewards_config tier}}
-      <div class="reward-icon {{if claimed_monthly_rewards.includes(tier.days)}}claimed{{/if}}" style="left: {{(tier.days / total_days_in_month) * 100}}%;">
+      <div class="reward-icon {{if tier.isClaimed}}claimed{{/if}}" style="left: {{(tier.days / total_days_in_month) * 100}}%;">
         🎁
         <span class="reward-tooltip text-sm">{{tier.days}}天 | {{tier.name}}</span>
       </div>
