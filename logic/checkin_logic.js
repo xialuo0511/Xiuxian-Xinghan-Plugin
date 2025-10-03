@@ -3,7 +3,7 @@ import { shijianc } from '../apps/Xiuxian/xiuxian.js';
 import config from '../model/Config.js';
 
 // 加载月度累计签到奖励配置
-const monthlyRewardsConfig = config.getdefSet('sign_in_rewards', 'xiuxian');
+const monthlyRewardsConfig = config.getConfig('xiuxian', 'sign_in_rewards');
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
 /**
