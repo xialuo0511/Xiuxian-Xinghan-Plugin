@@ -1,4 +1,4 @@
-import plugin from '../../../../lib/plugins/plugin.js';
+import plugin from '../../../lib/plugins/plugin.js';
 import * as partnerLogic from '../logic/partner_logic.js';
 
 export class partner extends plugin {
