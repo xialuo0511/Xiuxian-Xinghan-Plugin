@@ -24,15 +24,21 @@ export class partner extends plugin {
 
     const at = e.message.find(item => item.type === 'at');
     if (!at) {
-      // 如果消息中没有 at 任何人，则提示并中断
       await e.reply('请@一位你要赠予礼物的道友。', true);
       return true;
     }
     const receiverId = at.qq;
     const giverId = e.user_id;
 
-    // 从正则匹配的结果中获取物品信息文本
-    let inputStr = e.reg.exec(e.msg)[1].trim();
+    const regex = /^#赠予礼物\s*(.*)/;
+    const match = regex.exec(e.msg);
+
+    if (!match) {
+      logger.warn('[仙侣系统] giveGift函数被触发，但正则匹配失败, e.msg:', e.msg);
+      return;
+    }
+
+    const inputStr = match[1].trim();
     if (!inputStr) {
       await e.reply('请指定要赠予的礼物名称，例如：#赠予礼物 花篮 @张三', true);
       return true;
