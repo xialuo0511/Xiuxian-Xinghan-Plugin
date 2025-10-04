@@ -29,7 +29,7 @@ function paginateItems(najie, page = 1, pageSize = 20) {
     '装备': najie.装备, '丹药': najie.丹药, '道具': najie.道具,
     '功法': najie.功法, '草药': najie.草药, '材料': najie.材料,
     '食材': najie.食材, '盒子': najie.盒子, '仙宠': najie.仙宠,
-    '仙宠口粮': najie.仙宠口粮
+    '仙宠口粮': najie.仙宠口粮, '礼物': najie.礼物
   };
 
   let allItems = [];
