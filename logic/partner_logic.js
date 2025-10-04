@@ -1,5 +1,4 @@
 import * as DAL from '../api/data-access.js';
-import config from '../model/Config.js';
 import XiuxianData from '../model/XiuxianData.js';
 
 // 加载礼物配置
@@ -36,8 +35,16 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
     return { success: false, message: `似乎没有名为 [${itemName}] 的礼物呢。` };
   }
 
-  // 2. 检查赠送者是否有足够的礼物
-  const userItem = await DAL.getNajieItem(giverId, itemName, '礼物');
+  // 2. 获取赠送者完整数据，并从纳戒中检查礼物数量
+  const giverData = await DAL.getAllPlayerData(giverId);
+  if (!giverData || !giverData.najie) {
+    return { success: false, message: '无法获取你的纳戒信息。' };
+  }
+
+  const najie = giverData.najie;
+  const itemCategory = najie['礼物'];
+  const userItem = itemCategory ? itemCategory[itemName] : undefined;
+
   if (!userItem || userItem.amount < amount) {
     return { success: false, message: `你的纳戒中没有足够的 [${itemName}]。` };
   }
@@ -52,10 +59,9 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
   const relationshipKey = getRelationshipKey(giverId, receiverId);
   const currentFavorability = await redis.hIncrBy(relationshipKey, 'favorability', favorabilityChange);
 
-  // TODO: 后续在这里加入对亲密度的判断和更新
-
-  const receiverData = await DAL.getPlayerData(receiverId);
-  const receiverName = receiverData?.name || receiverId;
+  // 获取接收者昵称用于回复
+  const receiverPlayerData = (await DAL.getAllPlayerData(receiverId)).player;
+  const receiverName = receiverPlayerData?.name || receiverId;
 
   return {
     success: true,
