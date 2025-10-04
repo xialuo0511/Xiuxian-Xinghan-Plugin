@@ -207,6 +207,15 @@
           margin-top: 10px;
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
       }
+
+      .item-desc {
+          font-size: 12px; /* 字体可以小一些 */
+          color: #888; /* 使用灰色以区分其他属性 */
+          padding-top: 6px;
+          margin-top: 6px;
+          border-top: 1px solid #eee; /* 在上方增加一条细分隔线 */
+          line-height: 1.5; /* 增加行高，方便阅读长文本 */
+      }
   </style>
 </head>
 <body>
@@ -283,6 +292,9 @@
           <div>&nbsp;</div> <!-- 其他类型占位 -->
           {{/if}}
         </div>
+        {{if item.desc}}
+        <div class="item-desc">详情: {{item.desc}}</div>
+        {{/if}}
         <div class="item-footer">
           <span>数量: {{item.数量}}</span>
           {{if item.islockd == 1}}
