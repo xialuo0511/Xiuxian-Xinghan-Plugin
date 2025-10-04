@@ -40,11 +40,11 @@ export class MoneyOperation extends plugin {
           fnc: 'Fuli'
         },
         {
-          reg: '^#发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材).*',
+          reg: '^#发\s*.*',
           fnc: 'wup'
         },
         {
-          reg: '^#全体发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材).*',
+          reg: '^#全体发\s*.*',
           fnc: 'wup_all'
         },
         {
@@ -134,62 +134,93 @@ export class MoneyOperation extends plugin {
   }
 
 
+  /**
+   * 解析物品字符串并使用 foundthing 查找物品
+   * @param {string} itemStr - 格式为 "物品名*数量*品级" 的字符串
+   * @returns {Promise<{success: boolean, item?: object, amount?: number, pinji?: string, message?: string}>}
+   */
+  async parseItemStrAndFind(itemStr) {
+    if (!itemStr) {
+      return { success: false, message: '请提供物品信息。' };
+    }
+
+    const args = itemStr.trim().split('*');
+    const itemName = args[0];
+    const amount = args.length > 1 ? await convert2integer(args[1]) : 1;
+    const pinji = args.length > 2 ? args[2] : null;
+
+    if (!itemName) {
+      return { success: false, message: '请输入要发放的物品名称。' };
+    }
+
+    const item = await foundthing(itemName);
+    if (!item) {
+      return { success: false, message: `这方世界似乎没有名为 [${itemName}] 的物品。` };
+    }
+
+    return { success: true, item, amount, pinji };
+  }
+
+
+// 优化后的 wup 函数
   async wup(e) {
     if (!e.isMaster) return;
+
     const atItem = e.message.find(item => item.type === 'at');
-    if (!atItem) return;
+    if (!atItem) {
+      return e.reply('请@你要发放物品的玩家。', true);
+    }
     const B_qq = atItem.qq;
 
     if (!(await DAL.existPlayer(B_qq))) {
       return e.reply('对方无存档');
     }
 
-    const match = e.msg.match(/#发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材)(.*)/);
-    if (!match) return;
+    const itemStr = e.msg.replace(/#发\s*/, '');
+    const result = await this.parseItemStrAndFind(itemStr);
 
-    let thingClass = match[1] === '口粮' ? '仙宠口粮' : match[1];
-    let args = match[2].trim().split('*');
-    let thing_name = args[0];
-    let amount = args.length > 1 ? await convert2integer(args[1]) : 1;
-    let pinji = args.length > 2 ? args[2] : null;
-
-    const thing_exist = await foundthing(thing_name);
-    if (!thing_exist || thing_exist.class !== thingClass) {
-      return e.reply(`这方世界没有[${thing_name}]这种${thingClass}`);
+    if (!result.success) {
+      return e.reply(result.message, true);
     }
 
-    await addNajieThing(B_qq, thing_name, thingClass, amount, pinji);
-    e.reply('发放成功');
+    await addNajieThing(B_qq, result.item.name, result.item.class, result.amount, result.pinji);
+    e.reply(`已成功向玩家 [${B_qq}] 发放 [${result.item.name}] x ${result.amount}。`);
   }
 
+
+// 优化后的 wup_all 函数
   async wup_all(e) {
     if (!e.isMaster) return;
 
-    const match = e.msg.match(/#全体发(装备|道具|丹药|功法|草药|材料|盒子|仙宠|口粮|项链|食材)(.*)/);
-    if (!match) return;
+    const itemStr = e.msg.replace(/#全体发\s*/, '');
+    const result = await this.parseItemStrAndFind(itemStr);
 
-    let thingClass = match[1] === '口粮' ? '仙宠口粮' : match[1];
-    let args = match[2].trim().split('*');
-    let thing_name = args[0];
-    let amount = args.length > 1 ? await convert2integer(args[1]) : 1;
-    let pinji = args.length > 2 ? args[2] : null;
-
-    const thing_exist = await foundthing(thing_name);
-    if (!thing_exist || thing_exist.class !== thingClass) {
-      return e.reply(`这方世界没有[${thing_name}]这种${thingClass}`);
+    if (!result.success) {
+      return e.reply(result.message, true);
     }
 
-    const playerKeys = await redis.keys('XinghanXiuxian:Data:Player:*');
-    if (!playerKeys || playerKeys.length === 0) {
+    // 使用 SCAN 代替 KEYS，避免阻塞Redis
+    let cursor = '0';
+    const userIds = [];
+    do {
+      const scanResult = await redis.scan(cursor, 'MATCH', 'XinghanXiuxian:Data:Player:*', 'COUNT', '100');
+      cursor = scanResult.cursor;
+      for (const key of scanResult.keys) {
+        userIds.push(key.split(':').pop());
+      }
+    } while (cursor !== '0');
+
+    if (userIds.length === 0) {
       return e.reply('当前无人修仙。');
     }
 
-    for (const key of playerKeys) {
-      const userId = key.split(':').pop();
-      await addNajieThing(userId, thing_name, thingClass, amount, pinji);
+    // 批量发放
+    for (const userId of userIds) {
+      // 为防止消息风暴，此处不在循环内单独回复
+      await addNajieThing(userId, result.item.name, result.item.class, result.amount, result.pinji);
     }
 
-    e.reply(`发放成功,目前共有${playerKeys.length}个玩家,每人增加${amount}个${thing_name}`);
+    e.reply(`操作成功！\n已为全部 ${userIds.length} 位玩家发放 [${result.item.name}] x ${result.amount}。`);
   }
 
   async Deduction(e) {
