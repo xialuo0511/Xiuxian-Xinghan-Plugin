@@ -40,9 +40,9 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
   if (!giverData || !giverData.najie) {
     return { success: false, message: '无法获取你的纳戒信息。' };
   }
-
+  console.log(`玩家:${giverData}`);
   const najie = giverData.najie;
-  const itemCategory = najie.礼物;
+  const itemCategory = najie['礼物'];
   const userItem = itemCategory ? itemCategory[itemName] : undefined;
   console.log(`花篮:${userItem}`);
   console.log(`amount: ${amount}`);
