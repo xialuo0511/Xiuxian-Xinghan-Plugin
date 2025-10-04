@@ -2177,83 +2177,88 @@ export async function anti_cheating(e) {
 //遍历物品
 export async function foundthing(thing_name) {
   for (var i = 0; i < data.daoju_list.length; i++) {
-    if (thing_name == data.daoju_list[i].name) {
+    if (thing_name === data.daoju_list[i].name) {
       return data.daoju_list[i];
     }
   }
   for (var i = 0; i < data.danyao_list.length; i++) {
-    if (thing_name == data.danyao_list[i].name) {
+    if (thing_name === data.danyao_list[i].name) {
       return data.danyao_list[i];
     }
   }
   for (var i = 0; i < data.newdanyao_list.length; i++) {
-    if (thing_name == data.newdanyao_list[i].name) {
+    if (thing_name === data.newdanyao_list[i].name) {
       return data.newdanyao_list[i];
     }
   }
   for (var i = 0; i < data.equipment_list.length; i++) {
-    if (thing_name == data.equipment_list[i].name) {
+    if (thing_name === data.equipment_list[i].name) {
       return data.equipment_list[i];
     }
   }
   for (var i = 0; i < data.gongfa_list.length; i++) {
-    if (thing_name == data.gongfa_list[i].name) {
+    if (thing_name === data.gongfa_list[i].name) {
       return data.gongfa_list[i];
     }
   }
   for (var i = 0; i < data.homegongfa_list.length; i++) {
-    if (thing_name == data.homegongfa_list[i].name) {
+    if (thing_name === data.homegongfa_list[i].name) {
       return data.homegongfa_list[i];
     }
   }
   for (var i = 0; i < data.timegongfa_list.length; i++) {
-    if (thing_name == data.timegongfa_list[i].name) {
+    if (thing_name === data.timegongfa_list[i].name) {
       return data.timegongfa_list[i];
     }
   }
   for (var i = 0; i < data.timeequipmen_list.length; i++) {
-    if (thing_name == data.timeequipmen_list[i].name) {
+    if (thing_name === data.timeequipmen_list[i].name) {
       return data.timeequipmen_list[i];
     }
   }
   for (var i = 0; i < data.timedanyao_list.length; i++) {
-    if (thing_name == data.timedanyao_list[i].name) {
+    if (thing_name === data.timedanyao_list[i].name) {
       return data.timedanyao_list[i];
     }
   }
   for (var i = 0; i < data.caoyao_list.length; i++) {
-    if (thing_name == data.caoyao_list[i].name) {
+    if (thing_name === data.caoyao_list[i].name) {
       return data.caoyao_list[i];
     }
   }
   for (var i = 0; i < data.cailiao_list.length; i++) {
-    if (thing_name == data.cailiao_list[i].name) {
+    if (thing_name === data.cailiao_list[i].name) {
       return data.cailiao_list[i];
     }
   }
   for (var i = 0; i < data.hezi_list.length; i++) {
-    if (thing_name == data.hezi_list[i].name) {
+    if (thing_name === data.hezi_list[i].name) {
       return data.hezi_list[i];
     }
   }
   for (var i = 0; i < data.xianchon.length; i++) {
-    if (thing_name == data.xianchon[i].name) {
+    if (thing_name === data.xianchon[i].name) {
       return data.xianchon[i];
     }
   }
   for (var i = 0; i < data.xianchonkouliang.length; i++) {
-    if (thing_name == data.xianchonkouliang[i].name) {
+    if (thing_name === data.xianchonkouliang[i].name) {
       return data.xianchonkouliang[i];
     }
   }
   for (var i = 0; i < data.necklace_list.length; i++) {
-    if (thing_name == data.necklace_list[i].name) {
+    if (thing_name === data.necklace_list[i].name) {
       return data.necklace_list[i];
     }
   }
   for (var i = 0; i < data.shicai_list.length; i++) {
-    if (thing_name == data.shicai_list[i].name) {
+    if (thing_name === data.shicai_list[i].name) {
       return data.shicai_list[i];
+    }
+  }
+  for (var i = 0; i < data.gift_list.length; i++) {
+    if (thing_name === data.gift_list[i].name) {
+      return data.gift_list[i];
     }
   }
   return false;

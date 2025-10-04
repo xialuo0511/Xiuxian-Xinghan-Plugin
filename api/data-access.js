@@ -5,6 +5,7 @@ import fs from 'fs';
 import YAML from 'yaml';
 import path from 'path';
 import data from '../model/XiuxianData.js';
+import XiuxianData from '../model/XiuxianData.js';
 
 
 // --- 创建独立的 Redis 客户端 ---
@@ -214,25 +215,8 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
 
   // 辅助函数，用于查找物品模板，使代码更清晰
   const findItemTemplate = (name, className) => {
-    // 这是一个映射，将 itemClass 映射到 data 对象中的具体列表名
-    const listMap = {
-      '装备': ['equipment_list',
-        'fabao_list',
-        'wuqi_list',
-        'huju_list'],
-      '丹药': ['danyao_list',
-        'newdanyao_list',
-        'timedanyao_list'],
-      '功法': ['gongfa_list',
-        'homegongfa_list',
-        'timegongfa_list'],
-      '道具': ['daoju_list'],
-      '草药': ['caoyao_list'],
-      '材料': ['cailiao_list'],
-      '盒子': ['hezi_list'],
-      '食材': ['shicai_list'],
-      '仙米': ['xianchonkouliang']
-    };
+
+    const listMap = XiuxianData.itemListMap;
     const listsToSearch = listMap[className] || listMap['默认'];
     for (const listName of listsToSearch) {
       const item = data[listName]?.find(i => i.name === name);
@@ -242,6 +226,11 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
   };
 
   const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
+
+    if (!najie[itemClass]) {
+      najie[itemClass] = {};
+      logger.info(`[数据操作] 玩家 ${userId} 的纳戒中尚无 [${itemClass}] 分类，已自动创建。`);
+    }
 
     if (itemClass === '装备') {
       let targetPinji = pinji;
