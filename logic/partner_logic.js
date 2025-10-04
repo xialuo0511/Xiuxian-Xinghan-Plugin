@@ -42,7 +42,7 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
   }
 
   const najie = giverData.najie;
-  const itemCategory = najie['礼物'];
+  const itemCategory = najie.礼物;
   const userItem = itemCategory ? itemCategory[itemName] : undefined;
   console.log(`花篮:${userItem}`);
   console.log(`amount: ${amount}`);
