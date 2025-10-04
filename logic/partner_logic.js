@@ -44,7 +44,8 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
   const najie = giverData.najie;
   const itemCategory = najie['礼物'];
   const userItem = itemCategory ? itemCategory[itemName] : undefined;
-
+  console.log(`花篮:${userItem}`);
+  console.log(`amount: ${amount}`);
   if (!userItem || userItem.amount < amount) {
     return { success: false, message: `你的纳戒中没有足够的 [${itemName}]。` };
   }
