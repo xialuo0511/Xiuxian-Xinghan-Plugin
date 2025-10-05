@@ -15,7 +15,7 @@ export class partner extends plugin {
           fnc: 'giveGift'
         },
         {
-          reg: /^#结为道侣\s*\[cq:at,qq=(\d+)\s*]$/,
+          reg: /^#结为道侣$/,
           fnc: 'propose'
         },
         {
@@ -81,14 +81,25 @@ export class partner extends plugin {
   }
 
   async propose(e) {
-    if (!e.isGroup) return e.reply('求婚乃是大事，当于众人面前表达。');
+    if (!e.isGroup) {
+      return e.reply('求婚乃是大事，当于众人面前表达。');
+    }
+
+    const at = e.message.find(item => item.type === 'at');
+    if (!at) {
+      await e.reply('道友欲与谁结为道侣？请@TA。', true);
+      return true;
+    }
+
     const proposerId = e.user_id;
-    const receiverId = e.at;
+    const receiverId = at.qq;
 
     const result = await partnerLogic.proposeToPartner(proposerId, receiverId);
+
     if (result.success) {
       await e.reply(result.message, true);
-      await e.reply(`[CQ:at,qq=${receiverId}] ${e.sender.card} 向你求婚，你愿意与TA结为道侣吗？请在5分钟内回复【我同意】或【我拒绝】。`, false);
+      await e.reply([segment.at(receiverId),
+        ` ${e.sender.card} 向你求婚，你愿意与TA结为道侣吗？请在5分钟内回复【我同意】或【我拒绝】。`]);
     } else {
       await e.reply(result.message, true);
     }
