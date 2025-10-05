@@ -1,6 +1,6 @@
 import * as DAL from '../api/data-access.js';
 import XiuxianData from '../model/XiuxianData.js';
-import { loadItemConfig } from '../model/ConfigLoader.js';
+import { loadItemConfig, loadSystemConfig } from '../model/ConfigLoader.js';
 import { foundthing } from '../apps/Xiuxian/xiuxian.js';
 
 const giftsConfig = XiuxianData.gift_list;
@@ -20,6 +20,43 @@ export function getRelationshipKey(userId1, userId2) {
   return `XinghanXiuxian:relationship:${minId}:${maxId}`;
 }
 
+/**
+ * 获取道侣等级指南所需的数据
+ * @param {string} userId
+ * @returns {Promise<{success: boolean, data?: object, message?: string}>}
+ */
+export async function getPartnerLevelGuide(userId) {
+  const partnerId = await getPartnerId(userId);
+  const systemConfig = loadSystemConfig('partner_system.yaml'); // 加载系统配置
+
+  let currentLevel = -1;
+  if (partnerId) {
+    const relationshipKey = getRelationshipKey(userId, partnerId);
+    currentLevel = parseInt(await redis.hGet(relationshipKey, 'level') || '0');
+  }
+
+  const startLevel = Math.max(0, currentLevel - 2);
+  const endLevel = currentLevel + 5;
+
+  const displayLevels = partnerLevelsConfig.filter(
+    level => level.level >= startLevel && level.level <= endLevel
+  );
+
+  displayLevels.forEach(level => {
+    level.is_unlocked = (level.level <= currentLevel);
+  });
+
+  const hasMoreLevels = partnerLevelsConfig.some(level => level.level > endLevel);
+
+  const dataForRender = {
+    level_list: displayLevels,
+    has_more_levels: hasMoreLevels,
+    is_partner: !!partnerId,
+    help_text: systemConfig.level_guide_help_text
+  };
+
+  return { success: true, data: dataForRender };
+}
 
 /**
  * 获取姻缘堂商店的详细信息

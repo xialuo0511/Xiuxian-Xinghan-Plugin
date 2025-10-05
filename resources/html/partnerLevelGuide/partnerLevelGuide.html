@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>道侣等级指南</title>
+  <style>
+      /* 复用您之前的样式，这里只写关键部分 */
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background: linear-gradient(135deg, #4a4a4a, #2c2c2c);
+          font-family: "tttgbnumber", sans-serif;
+          box-sizing: border-box;
+      }
+
+      .panel-container {
+          background: rgba(253, 250, 245, 0.88);
+          backdrop-filter: blur(8px);
+          border: 2px solid #a88763;
+          border-radius: 12px;
+          padding: 20px;
+      }
+
+      .title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 32px;
+          color: #6a3906;
+          text-align: center;
+          margin-bottom: 15px;
+      }
+
+      .help-text {
+          background: rgba(0, 0, 0, 0.05);
+          border: 1px dashed #d2b48c;
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          color: #4a2c1a;
+          font-size: 14px;
+          line-height: 1.8;
+          white-space: pre-wrap;
+      }
+
+      .level-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .level-entry {
+          border: 1px solid #d2b48c;
+          border-radius: 8px;
+          padding: 15px;
+          background: rgba(255, 255, 255, 0.3);
+      }
+
+      .level-entry.unlocked {
+          border-left: 5px solid #27ae60;
+          background: rgba(230, 255, 230, 0.4);
+      }
+
+      .level-entry.locked {
+          border-left: 5px solid #cccccc;
+      }
+
+      .level-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+      }
+
+      .level-name {
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          color: #6a3906;
+      }
+
+      .level-req {
+          font-size: 14px;
+          color: #7a5533;
+      }
+
+      .level-desc {
+          font-size: 14px;
+          color: #4a2c1a;
+      }
+
+      .more-levels {
+          text-align: center;
+          color: #7a5533;
+          margin-top: 15px;
+          font-size: 16px;
+      }
+
+      .footer {
+          text-align: center;
+          font-size: 12px;
+          color: #fff;
+          text-shadow: 1px 1px 2px #000;
+          margin-top: 20px;
+      }
+  </style>
+</head>
+<body>
+<div class="panel-container" id="capture">
+  <h1 class="title">道侣等级</h1>
+  <div class="help-text">
+    {{if is_partner}}
+    {{@ help_text }}
+    {{else}}
+    道友尚未结缘，无法查看完整等级信息。<br>
+    与心仪的道友多多互动，赠送礼物增加好感度吧！当好感度达到520时，便可使用【#结为道侣 @TA】缔结良缘，开启你们的仙途。
+    {{/if}}
+  </div>
+  <div class="level-list">
+    {{each level_list level}}
+    <div class="level-entry {{if level.is_unlocked}}unlocked{{else}}locked{{/if}}">
+      <div class="level-header">
+        <span class="level-name">{{level.name}} (Lv.{{level.level}})</span>
+        <span class="level-req">需求亲密度: {{level.intimacy_required}}</span>
+      </div>
+      {{if level.unlock_desc}}
+      <p class="level-desc">解锁: {{level.unlock_desc}}</p>
+      {{/if}}
+    </div>
+    {{/each}}
+    {{if has_more_levels}}
+    <div class="more-levels">【更高等级后解锁该内容】</div>
+    {{/if}}
+  </div>
+</div>
+</body>
+</html>

@@ -43,9 +43,32 @@ export class partner extends plugin {
         {
           reg: /^#道侣购买\s*(.*)/,
           fnc: 'buyPartnerShopItem'
+        },
+        {
+          reg: /^#道侣(等级|帮助)$/,
+          fnc: 'showPartnerLevelGuide'
         }
       ]
     });
+  }
+
+  async showPartnerLevelGuide(e) {
+    const result = await partnerLogic.getPartnerLevelGuide(e.user_id);
+
+    if (!result.success) {
+      // 理论上这个函数总会成功，但以防万一
+      return e.reply(result.message || '获取道侣等级信息失败', true);
+    }
+
+    // 调用 Puppeteer 渲染图片
+    const img = await puppeteer.screenshot('partner/level_guide', result.data);
+
+    if (img) {
+      await e.reply(img);
+    } else {
+      await e.reply('生成道侣等级指南失败，请查看后台日志。');
+    }
+    return true;
   }
 
   async showPartnerShop(e) {

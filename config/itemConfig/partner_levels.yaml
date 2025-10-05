@@ -1,24 +1,31 @@
+# 增加了 unlock_desc 字段用于玩法说明
 - level: 0
   name: "同心之缘"
   intimacy_required: 520
   coin_reward: 10
+  unlock_desc: "解锁【#我的道侣】面板、解锁【#姻缘堂】商店。"
 - level: 1
   name: "比翼双飞"
   intimacy_required: 570
   coin_reward: 15
+  unlock_desc: ""
 - level: 2
   name: "情深意重"
   intimacy_required: 640
   coin_reward: 20
+  unlock_desc: "解锁【仙侣协同签到】玩法。"
 - level: 3
   name: "心有灵犀"
   intimacy_required: 730
   coin_reward: 25
+  unlock_desc: ""
 - level: 4
   name: "神仙眷侣"
   intimacy_required: 840
   coin_reward: 30
+  unlock_desc: ""
 - level: 5
   name: "大道同行"
   intimacy_required: 1000
   coin_reward: 35
+  unlock_desc: ""
