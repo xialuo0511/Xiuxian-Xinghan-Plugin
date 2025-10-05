@@ -344,27 +344,66 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
  * @returns {Promise<number>} - 返回物品的数量，如果不存在则返回 0
  */
 export async function getNajieItemAmount(userId, itemName, itemClass) {
+  logger.mark(`[数量检测诊断] 1. 函数启动，参数: userId=${userId}, itemName='${itemName}', itemClass='${itemClass}'`);
+
   try {
     const playerData = await getAllPlayerData(userId);
-
     if (!playerData || !playerData.najie) {
+      logger.warn('[数量检测诊断] 2. 失败: 未获取到玩家或纳戒数据。');
       return 0;
     }
 
     const category = playerData.najie[itemClass];
-
-    // 检查分类是否存在且为数组
     if (!Array.isArray(category)) {
+      logger.warn(`[数量检测诊断] 3. 失败: 分类 [${itemClass}] 不是一个数组。`);
+      return 0;
+    }
+    logger.mark(`[数量检测诊断] 3. 成功: 找到分类 [${itemClass}]，该分类下有 ${category.length} 个物品。`);
+
+    // --- 【核心诊断逻辑】 ---
+    let foundItem = null;
+    logger.mark('--- 开始逐个对比物品 ---');
+    for (const itemInDb of category) {
+      if (!itemInDb || typeof itemInDb.name === 'undefined') {
+        logger.warn('[数量检测诊断] 发现一个无效或没有name属性的物品:', itemInDb);
+        continue;
+      }
+
+      const itemNameInDb = itemInDb.name;
+      const areTheyEqual = (itemNameInDb === itemName);
+
+      // 打印每一次对比的详细情况
+      logger.mark(`[数量检测诊断] 正在对比...`);
+      logger.mark(`  - 数据库中的名称: "${itemNameInDb}" | 长度: ${itemNameInDb.length}`);
+      logger.mark(`  - 我们要查找的名称: "${itemName}" | 长度: ${itemName.length}`);
+      logger.mark(`  - 是否完全相等 (===): ${areTheyEqual}`);
+
+      // 如果不相等，打印出字符编码以暴露所有隐藏字符
+      if (!areTheyEqual) {
+        const dbCodes = Array.from(itemNameInDb).map(char => char.charCodeAt(0));
+        const targetCodes = Array.from(itemName).map(char => char.charCodeAt(0));
+        logger.warn(`    - 数据库名称的字符编码: [${dbCodes.join(', ')}]`);
+        logger.warn(`    - 查找名称的字符编码: [${targetCodes.join(', ')}]`);
+      } else {
+        foundItem = itemInDb;
+        logger.mark(`  - 匹配成功！跳出循环。`);
+        break; // 找到后就停止循环
+      }
+    }
+    logger.mark('--- 物品对比结束 ---');
+    // --- 诊断结束 ---
+
+    if (!foundItem) {
+      logger.warn(`[数量检测诊断] 遍历完成，最终未找到名为 [${itemName}] 的物品。`);
       return 0;
     }
 
-    // 在数组中查找物品
-    const item = category.find(i => i && i.name === itemName);
-
-    return item?.amount || 0;
+    const finalAmount = foundItem.amount || 0;
+    logger.mark(`[数量检测诊断] 查找成功！最终获取到的数量为: ${finalAmount}`);
+    return finalAmount;
 
   } catch (error) {
-    logger.error(`[getNajieItemAmount] 获取玩家 ${userId} 物品 ${itemName} 数量时出错:`, error);
+    logger.error(`[数量检测诊断] 函数执行期间发生未知错误:`, error);
     return 0;
   }
 }
