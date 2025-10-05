@@ -335,3 +335,36 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
   }
   return true;
 }
+
+/**
+ * 获取玩家纳戒中指定物品的数量
+ * @param {string|number} userId - 玩家ID
+ * @param {string} itemName - 物品名称
+ * @param {string} itemClass - 物品分类
+ * @returns {Promise<number>} - 返回物品的数量，如果不存在则返回 0
+ */
+export async function getNajieItemAmount(userId, itemName, itemClass) {
+  try {
+    // 获取玩家的全部数据
+    const playerData = await getAllPlayerData(userId);
+
+    // 检查玩家数据和纳戒是否存在，不存在则物品数量为0
+    if (!playerData || !playerData.najie) {
+      return 0;
+    }
+
+    const najie = playerData.najie;
+
+    // 安全地检查物品分类和物品是否存在
+    // 如果 najie[itemClass] 不存在，或者 najie[itemClass][itemName] 不存在，则 item 为 undefined
+    const item = najie[itemClass]?.[itemName];
+
+    // 返回数量
+    // 如果 item 存在，则返回 item.amount；否则，返回 0
+    return item?.amount || 0;
+
+  } catch (error) {
+    logger.error(`[getNajieItemAmount] 获取玩家 ${userId} 的物品 ${itemName} 数量时出错:`, error);
+    return 0; // 发生任何错误时，安全地返回0
+  }
+}

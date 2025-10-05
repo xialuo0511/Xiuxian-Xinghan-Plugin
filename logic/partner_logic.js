@@ -35,19 +35,9 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
     return { success: false, message: `似乎没有名为 [${itemName}] 的礼物呢。` };
   }
 
-  // 2. 获取赠送者完整数据，并从纳戒中检查礼物数量
-  const giverData = await DAL.getAllPlayerData(giverId);
-  if (!giverData || !giverData.najie) {
-    return { success: false, message: '无法获取你的纳戒信息。' };
-  }
-  console.log(`玩家:`);
-  console.log(giverData);
-  const najie = giverData.najie;
-  const itemCategory = najie['礼物'];
-  const userItem = itemCategory ? itemCategory[itemName] : undefined;
-  console.log(`花篮:${userItem}`);
-  console.log(`amount: ${amount}`);
-  if (!userItem || userItem.amount < amount) {
+  // 2. 检查赠送者是否有足够的礼物
+  const userItemAmount = await DAL.getNajieItemAmount(giverId, itemName, '礼物');
+  if (userItemAmount < amount) {
     return { success: false, message: `你的纳戒中没有足够的 [${itemName}]。` };
   }
 
