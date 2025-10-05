@@ -1,0 +1,9 @@
+- name: "修为丹·贰万"
+  desc: "蕴含精纯灵气的丹药，使用后可增加20000修为。"
+  purchaseLimit: 10  # 每对道侣最多可购买10次
+  price: 5           # 需要5个道侣币
+
+- name: "花篮"
+  desc: "一个装满了花的篮子，赠送给他人可以增加好感度。"
+  purchaseLimit: 5
+  price: 5

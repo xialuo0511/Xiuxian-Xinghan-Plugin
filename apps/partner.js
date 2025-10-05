@@ -35,9 +35,58 @@ export class partner extends plugin {
         {
           reg: /^#我的道侣$/,
           fnc: 'showPartnerStatus'
+        },
+        {
+          reg: /^#姻缘堂$/,
+          fnc: 'showPartnerShop'
+        },
+        {
+          reg: /^#道侣购买\s*(.*)/,
+          fnc: 'buyPartnerShopItem'
         }
       ]
     });
+  }
+
+  async showPartnerShop(e) {
+    const result = await partnerLogic.getShopDetails(e.user_id);
+    if (!result.success) {
+      return e.reply(result.message, true);
+    }
+
+    const dataForPuppeteer = await new Show(e).get_imgData('partnerShop', result.data);
+    const img = await puppeteer.screenshot('partnerShop', {
+      ...dataForPuppeteer,
+      _page: {
+        deviceScaleFactor: 2 // 开启2倍超清渲染
+      }
+    });
+
+    if (img) {
+      await e.reply(img);
+    } else {
+      await e.reply('生成姻缘堂面板失败，请查看后台日志。');
+    }
+    return true;
+  }
+
+  async buyPartnerShopItem(e) {
+    const inputStr = e.msg.replace(/#道侣购买\s*/, '').trim();
+    if (!inputStr) {
+      return e.reply('请输入要购买的物品，例如：#道侣购买 修为丹·贰万*2', true);
+    }
+
+    let itemName, amount = 1;
+    const amountMatch = inputStr.match(/(.*)\*(\d+)/);
+    if (amountMatch) {
+      itemName = amountMatch[1].trim();
+      amount = parseInt(amountMatch[2]);
+    } else {
+      itemName = inputStr.trim();
+    }
+
+    const result = await partnerLogic.purchaseShopItem(e.user_id, itemName, amount);
+    return e.reply(result.message, true);
   }
 
   async giveGift(e) {

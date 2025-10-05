@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <link href="#" rel="shortcut icon" />
+  <style type="text/css">
+      /* --- 字体定义 (与您的文件保持一致) --- */
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
+
+      /* --- 基础样式 (与您的文件保持一致) --- */
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
+          background-size: cover;
+          background-position: center;
+          font-family: "tttgbnumber", sans-serif;
+          color: #4a2c1a;
+          box-sizing: border-box;
+      }
+
+      /* --- 主容器 (与您的文件保持一致) --- */
+      .panel-container {
+          background: rgba(253, 250, 245, 0.88);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+      }
+
+      /* --- 商店头部 --- */
+      .header-section {
+          text-align: center;
+          padding-bottom: 20px;
+          border-bottom: 2px dashed #d2b48c;
+      }
+
+      .shop-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 32px;
+          color: #6a3906;
+      }
+
+      .coins-display {
+          font-family: "tttgbnumber", sans-serif;
+          font-size: 18px;
+          color: #7a5533;
+          font-weight: bold;
+          margin-top: 8px;
+      }
+
+      .command-hint {
+          font-size: 12px;
+          color: #a88763;
+          margin-top: 5px;
+      }
+
+      /* --- 物品展示区 (与您的文件保持一致) --- */
+      .content-section {
+          padding-top: 20px;
+      }
+
+      .item-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr); /* 每行3个商品，让信息更舒展 */
+          gap: 15px;
+      }
+
+      .item-card {
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid #d2b48c;
+          border-radius: 8px;
+          padding: 15px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #d2b48c;
+          padding-bottom: 8px;
+          margin-bottom: 8px;
+      }
+
+      .item-name {
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          color: #6a3906;
+          font-weight: bold;
+      }
+
+      .item-price {
+          font-size: 14px;
+          font-weight: bold;
+          color: #c0392b; /* 红色价格 */
+      }
+
+      .item-details {
+          font-size: 14px;
+          color: #4a2c1a;
+          line-height: 1.6;
+          flex-grow: 1; /* 让描述部分占据多余空间 */
+      }
+
+      .item-footer {
+          margin-top: auto; /* 推到底部 */
+          padding-top: 10px;
+          font-size: 13px;
+          color: #7a5533;
+          text-align: right;
+      }
+
+      /* --- 页脚 (与您的文件保持一致) --- */
+      .footer {
+          text-align: center;
+          font-size: 12px;
+          color: #a88763;
+          margin-top: 20px;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      }
+  </style>
+</head>
+<body>
+<div class="panel-container" id="capture">
+  <div class="header-section">
+    <h1 class="shop-title">姻缘堂</h1>
+    <p class="coins-display">当前道侣币: {{coins}}</p>
+    <p class="command-hint">指令: #道侣购买 物品名*数量</p>
+  </div>
+
+  <div class="content-section">
+    <div class="item-grid">
+      {{each items item}}
+      <div class="item-card">
+        <div class="item-header">
+          <span class="item-name">{{item.name}}</span>
+          <span class="item-price">{{item.price}}币</span>
+        </div>
+        <div class="item-details">
+          <p>{{item.desc}}</p>
+        </div>
+        <div class="item-footer">
+          <span>限购: {{item.purchased}} / {{item.purchaseLimit}}</span>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+</body>
+</html>

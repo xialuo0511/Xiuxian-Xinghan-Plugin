@@ -1,9 +1,11 @@
 import * as DAL from '../api/data-access.js';
 import XiuxianData from '../model/XiuxianData.js';
 import { loadItemConfig } from '../model/ConfigLoader.js';
+import { foundthing } from '../apps/Xiuxian/xiuxian.js';
 
 const giftsConfig = XiuxianData.gift_list;
 const partnerLevelsConfig = loadItemConfig('partner_levels.yaml');
+const partnerShopConfig = loadItemConfig('partner_shop.yaml'); // 加载商店配置
 
 
 /**
@@ -17,6 +19,111 @@ export function getRelationshipKey(userId1, userId2) {
   const maxId = Math.max(Number(userId1), Number(userId2));
   return `XinghanXiuxian:relationship:${minId}:${maxId}`;
 }
+
+
+/**
+ * 获取姻缘堂商店的详细信息
+ * @param {string} userId
+ * @returns {Promise<{success: boolean, data?: object, message?: string}>}
+ */
+export async function getShopDetails(userId) {
+  const partnerId = await getPartnerId(userId);
+  if (!partnerId) {
+    return { success: false, message: '孤身一人，无法开启姻缘堂。' };
+  }
+
+  const relationshipKey = getRelationshipKey(userId, partnerId);
+  const relationshipStats = await redis.hGetAll(relationshipKey);
+  const currentCoins = parseInt(relationshipStats.coins || '0');
+
+  // 获取已购买数量
+  const purchaseLimits = await redis.hGetAll(relationshipKey + ':limits');
+
+  // 组装商品列表，并加入已购买信息
+  const shopItems = partnerShopConfig.map(item => ({
+    ...item,
+    purchased: parseInt(purchaseLimits[item.name] || '0')
+  }));
+
+  return {
+    success: true,
+    data: {
+      coins: currentCoins,
+      items: shopItems
+    }
+  };
+}
+
+
+/**
+ * 购买姻缘堂商品
+ * @param {string} userId 购买者ID
+ * @param {string} itemName 物品名称
+ * @param {number} amount 购买数量
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function purchaseShopItem(userId, itemName, amount) {
+  if (amount <= 0) return { success: false, message: '购买数量必须大于0。' };
+
+  const partnerId = await getPartnerId(userId);
+  if (!partnerId) {
+    return { success: false, message: '此乃仙侣专属，道友请先寻觅良缘。' };
+  }
+
+  const itemInfo = partnerShopConfig.find(item => item.name === itemName);
+  if (!itemInfo) {
+    return { success: false, message: `姻缘堂中并无 [${itemName}] 此物。` };
+  }
+
+  const relationshipKey = getRelationshipKey(userId, partnerId);
+  const limitKey = relationshipKey + ':limits';
+
+  // 1. 检查购买限额
+  const purchasedAmount = parseInt(await redis.hGet(limitKey, itemName) || '0');
+  if (purchasedAmount + amount > itemInfo.purchaseLimit) {
+    return {
+      success: false,
+      message: `[${itemName}] 每对仙侣限购 ${itemInfo.purchaseLimit} 个，你们已购买 ${purchasedAmount} 个，无法再购买 ${amount} 个。`
+    };
+  }
+
+  // 2. 检查道侣币是否足够
+  const totalCost = itemInfo.price * amount;
+  const currentCoins = parseInt(await redis.hGet(relationshipKey, 'coins') || '0');
+  if (currentCoins < totalCost) {
+    return { success: false, message: `你们的道侣币不足，需要 ${totalCost}，当前拥有 ${currentCoins}。` };
+  }
+
+  // 3. 执行购买（原子操作）
+  const newCoinValue = await redis.hIncrBy(relationshipKey, 'coins', -totalCost);
+  // 检查扣款后是否为负，以防并发问题（虽然hIncrBy是原子的，但这是一个额外的保险）
+  if (newCoinValue < 0) {
+    // 回滚扣款
+    await redis.hIncrBy(relationshipKey, 'coins', totalCost);
+    return { success: false, message: '道侣币不足，请稍后再试。' };
+  }
+
+  // 4. 更新购买数量记录
+  await redis.hIncrBy(limitKey, itemName, amount);
+
+  // 5. 为双方发放物品
+  const itemConfig = await foundthing(itemName); // 获取物品的完整信息，如class
+  if (!itemConfig) {
+    logger.error(`[姻缘堂] 致命错误：商店物品 [${itemName}] 在物品库中不存在！`);
+    return { success: false, message: '系统错误：商品信息不存在，请联系管理员。' };
+  }
+
+  await Promise.all([
+    DAL.updateNajieItem(userId, itemName, itemConfig.class, amount, itemConfig),
+    DAL.updateNajieItem(partnerId, itemName, itemConfig.class, amount, itemConfig)
+  ]);
+
+  return {
+    success: true,
+    message: `购买成功！你们共同消耗了 ${totalCost} 道侣币，双方均获得了 [${itemName}] x ${amount}。`
+  };
+}
+
 
 /** * 赠送礼物以增加好感度
  *

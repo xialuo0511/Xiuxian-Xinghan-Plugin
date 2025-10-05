@@ -44,6 +44,15 @@ export default class Game extends base {
     };
   }
 
+  async get_imgData(modelName, myData) {
+    this.model = modelName;
+    return {
+      ...this.screenData,
+      saveId: modelName,
+      ...myData
+    };
+  }
+
   async get_partnerData(myData) {
     this.model = 'partner';
     return {
