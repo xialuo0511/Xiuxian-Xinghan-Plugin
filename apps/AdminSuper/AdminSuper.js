@@ -35,6 +35,7 @@ const { execSync } = require('child_process');
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import { sql_run } from '../../api/api.js';
+import * as checkinLogic from '../../logic/checkin_logic.js';
 
 /**
  * 修仙设置
@@ -142,10 +143,31 @@ export class AdminSuper extends plugin {
         {
           reg: '#领取本月头像框$',
           fnc: 'lqtxk'
+        },
+        {
+          reg: /^#消除今日签到/,
+          fnc: 'clearTodaySignIn'
         }
       ]
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  async clearTodaySignIn(e) {
+    if (!e.isMaster) {
+      return e.reply('此路不通，非天道之主不可为。');
+    }
+
+    let targetId = e.user_id; // 默认为自己
+    const at = e.message.find(item => item.type === 'at');
+    if (at) {
+      targetId = at.qq; // 如果 at 了别人，则目标为被 at 者
+    }
+
+    // 调用核心逻辑
+    const result = await checkinLogic.clearTodaySignIn(targetId);
+
+    return e.reply(result.message, true);
   }
 
   async lqtxk(e) {

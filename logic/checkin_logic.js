@@ -8,6 +8,51 @@ const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
 monthlyRewardsConfig = Object.values(monthlyRewardsConfig);
 
+
+/**
+ * 为指定用户清除今日的签到记录
+ * @param {string} userId 目标用户ID
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function clearTodaySignIn(userId) {
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+  const yesterdayStr = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const yesterdayDateStr = `${yesterdayStr.getFullYear()}-${yesterdayStr.getMonth() + 1}-${yesterdayStr.getDate()}`;
+
+  const playerData = await DAL.getAllPlayerData(userId);
+  if (!playerData || !playerData.player) {
+    return { success: false, message: '找不到该玩家。' };
+  }
+
+  // 1. 验证玩家今天是否真的签到了
+  if (playerData.player.last_sign_in_date !== todayStr) {
+    return { success: false, message: '该玩家今天尚未签到，无需消除。' };
+  }
+
+  const oldMonthlyCount = playerData.player.sign_in_info?.monthly_cumulative_days || 0;
+
+  // 2. 在数据库事务中回滚玩家核心数据
+  const transactionSuccess = await DAL.transaction_update(userId, (player) => {
+    // a. 上次签到日期恢复到昨天（为了不中断连续签到）
+    player.last_sign_in_date = yesterdayDateStr;
+
+    // b. 连续签到天数 -1
+    if (player.连续签到天数 > 0) {
+      player.连续签到天数 -= 1;
+    }
+
+    // c. 个人月度累计天数 -1
+    if (player.sign_in_info && player.sign_in_info.monthly_cumulative_days > 0) {
+      player.sign_in_info.monthly_cumulative_days -= 1;
+    }
+
+    // d. 如果今天签到刚好达到了某个奖励档位，则撤销该奖励的“已领取”状态
+    const personalRewardsConfig = loadItemConfig('sign_in_rewards.yaml');
+    const triggeredTier = personalRewardsConfig.find(tier => tier.days === oldMonthlyCount);
+    if (triggeredTier && player.sign_in_info.claimed_monthly_rewards) {
+      player.sign_in_info
+
 /**
  * 处理玩家的每日签到逻辑
  * @param {string} userId 玩家ID
