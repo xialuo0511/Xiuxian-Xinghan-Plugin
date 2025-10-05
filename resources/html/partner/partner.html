@@ -13,12 +13,11 @@
 
       body {
           font-family: 'HYWenHei', sans-serif;
-          /* 【风格替换】更换为更具质感的暗色岩石背景，类似练气或装备界面的风格 */
-          background-image: url("https://img.zcool.cn/community/0199275a978396a80120a23429c69e.jpg@1280w_1l_2o_100sh.jpg");
+          background-image: url("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.pptbz.com%2Fpptpic%2FUploadFiles_6909%2F201204%2F2012041411155948.jpg&refer=http%3A%2F%2Fwww.pptbz.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1672502400&t=a82f3d73e72c1c385a4e58b350438f36");
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
-          display: flex;
+          display: flex; /* 【布局修正】使用flex布局使卡片居中 */
           justify-content: center;
           align-items: center;
           min-height: 100vh;
@@ -26,26 +25,21 @@
       }
 
       .main-container {
-          width: 700px;
-          background-image: url(https://gitee.com/bling_yshs/image/raw/master/Resources/Game/Panel/panel_bg.png);
-          background-repeat: no-repeat;
-          background-size: 100% 100%;
-          border-image-source: url(https://gitee.com/bling_yshs/image/raw/master/Resources/Game/Panel/border_3.png);
-          border-image-slice: 15 15 15 15 fill;
-          border-image-width: 15px 15px 15px 15px;
-          border-image-outset: 0px 0px 0px 0px;
-          border-image-repeat: stretch stretch;
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
-          padding: 30px;
-          color: #f3e5d8;
+          width: 700px; /* 稍微加宽以容纳更多信息 */
+          background: rgba(255, 255, 255, 1); /* 【风格统一】深色半透明背景 */
+          border-radius: 16px;
+          border: 1px solid rgba(226, 196, 181, 0.4);
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+          padding: 24px;
+          color: #f3e5d8; /* 基础文字颜色 */
       }
 
       .avatar {
           width: 90px;
           height: 90px;
           border-radius: 50%;
-          border: 3px solid #b8977e;
-          box-shadow: 0 0 15px rgba(255, 220, 180, 0.5);
+          border: 3px solid #e2c4b5;
+          box-shadow: 0 0 15px rgba(255, 220, 180, 0.5); /* 金色辉光 */
       }
 
       .heart-lock {
@@ -60,12 +54,12 @@
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 12px;
-          background: rgba(0, 0, 0, 0.4);
+          background: rgba(0, 0, 0, 0.3);
           padding: 16px;
           border-radius: 8px;
-          border: 1px solid rgba(184, 151, 126, 0.4);
       }
 
+      /* 【进度条优化】 */
       .progress-bar-container {
           position: relative;
           width: 100%;
@@ -73,13 +67,13 @@
       }
       .progress-bar {
           background-color: rgba(0, 0, 0, 0.4);
-          border: 1px solid rgba(184, 151, 126, 0.3);
+          border: 1px solid rgba(226, 196, 181, 0.3);
           border-radius: 12px;
           overflow: hidden;
           height: 100%;
       }
       .progress-filler {
-          background: linear-gradient(90deg, #D4AF37, #C41E3A);
+          background: linear-gradient(90deg, #f59e0b, #ef4444);
           height: 100%;
           border-radius: 12px;
           transition: width 0.5s ease-in-out;
@@ -101,15 +95,10 @@
       }
 
       .coin-icon {
-          width: 28px; height: 28px; color: #D4AF37;
+          width: 28px; height: 28px; color: #f59e0b;
       }
-
       .section-divider {
-          border-color: rgba(184, 151, 126, 0.3);
-      }
-
-      .font-semibold, .font-bold {
-          text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+          border-color: rgba(226, 196, 181, 0.3);
       }
   </style>
 </head>
@@ -136,7 +125,7 @@
     <div class="stats-grid">
       <div class="text-center">
         <p class="text-sm text-gray-400">情缘等级</p>
-        <p class="text-xl font-bold" style="color: #E6C84C;">{{stats.levelName}} (Lv.{{stats.level}})</p>
+        <p class="text-xl font-bold text-amber-400">{{stats.levelName}} (Lv.{{stats.level}})</p>
       </div>
       <div class="text-center">
         <p class="text-sm text-gray-400">道侣币</p>
@@ -144,7 +133,7 @@
           <div class="coin-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd"></svg>
           </div>
-          <p class="text-xl font-bold" style="color: #E6C84C;">{{stats.coins}}</p>
+          <p class="text-xl font-bold text-amber-400">{{stats.coins}}</p>
         </div>
       </div>
     </div>
