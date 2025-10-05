@@ -94,6 +94,14 @@ export async function getPartnerDetails(userId) {
     const totalValue = target - base;
     progress.needed = target;
     progress.percentage = Math.min(100, (progressValue / totalValue) * 100);
+
+
+  }
+
+  let formattedDate = '';
+  if (relationshipStats.marriage_date) {
+    const date = new Date(relationshipStats.marriage_date);
+    formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   }
 
   // 4. 组装最终数据
@@ -110,7 +118,8 @@ export async function getPartnerDetails(userId) {
       intimacy: currentIntimacy,
       level: currentLevel,
       levelName: currentLevelInfo.name,
-      coins: currentCoins
+      coins: currentCoins,
+      marriage_date: formattedDate // 使用格式化后的日期
     },
     progress: progress
   };
