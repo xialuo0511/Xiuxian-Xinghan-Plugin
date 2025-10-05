@@ -170,8 +170,8 @@ export class partner extends plugin {
       return e.reply(result.message, true);
     }
 
-    const dataForPuppeteer = await new Show(e).get_playerData(result.data);
-    const img = await puppeteer.screenshot('player', {
+    const dataForPuppeteer = await new Show(e).get_partnerData(result.data);
+    const img = await puppeteer.screenshot('partner', {
       ...dataForPuppeteer,
       _page: {
         deviceScaleFactor: 2 // 开启2倍超清渲染
