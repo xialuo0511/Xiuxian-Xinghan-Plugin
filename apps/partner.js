@@ -1,5 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import * as partnerLogic from '../logic/partner_logic.js';
+import * as DAL from '../api/data-access.js';
 
 export class partner extends plugin {
   constructor() {
@@ -12,6 +13,22 @@ export class partner extends plugin {
         {
           reg: /^#赠予礼物\s*(.*)/,
           fnc: 'giveGift'
+        },
+        {
+          reg: /^#结为道侣\s*\[cq:at,qq=(\d+)\s*]$/,
+          fnc: 'propose'
+        },
+        {
+          reg: /^我同意$/,
+          fnc: 'acceptProposal'
+        },
+        {
+          reg: /^我拒绝$/,
+          fnc: 'rejectProposal'
+        },
+        {
+          reg: /^#断绝姻缘$/,
+          fnc: 'breakUp'
         }
       ]
     });
@@ -60,6 +77,72 @@ export class partner extends plugin {
     const result = await partnerLogic.giveGift(giverId, receiverId, itemName, amount);
 
     await e.reply(result.message, true);
+    return true;
+  }
+
+  async propose(e) {
+    if (!e.isGroup) return e.reply('求婚乃是大事，当于众人面前表达。');
+    const proposerId = e.user_id;
+    const receiverId = e.at;
+
+    const result = await partnerLogic.proposeToPartner(proposerId, receiverId);
+    if (result.success) {
+      await e.reply(result.message, true);
+      await e.reply(`[CQ:at,qq=${receiverId}] ${e.sender.card} 向你求婚，你愿意与TA结为道侣吗？请在5分钟内回复【我同意】或【我拒绝】。`, false);
+    } else {
+      await e.reply(result.message, true);
+    }
+    return true;
+  }
+
+  async acceptProposal(e) {
+    const result = await partnerLogic.respondToProposal(e.user_id, true);
+    if (!result.success) {
+      // 如果没人求婚，这个指令就不应该被响应，所以可以返回false，让其他插件处理
+      return false;
+    }
+
+    // 如果同意成功
+    if (result.isAccepted) {
+      const proposer = await DAL.getAllPlayerData(result.proposerId);
+      const receiver = await DAL.getAllPlayerData(e.user_id);
+      const proposerName = proposer?.player?.name || result.proposerId;
+      const receiverName = receiver?.player?.name || e.user_id;
+      // 发送全群公告
+      await this.e.reply(`🎉 喜结良缘！恭喜 [${proposerName}] 与 [${receiverName}] 结为仙侣，愿二人道途共进，比翼齐飞！`, false);
+    }
+    return true; // 消费掉“我同意”这条消息
+  }
+
+  async rejectProposal(e) {
+    const result = await partnerLogic.respondToProposal(e.user_id, false);
+    if (!result.success) return false;
+
+    // 通知求婚者
+    const proposer = await DAL.getAllPlayerData(result.proposerId);
+    const proposerName = proposer?.player?.name || result.proposerId;
+    this.e.reply(`你拒绝了 ${proposerName} 的求婚。`, true);
+
+    // 尝试私聊通知被拒绝方
+    const friend = Bot.fl.get(result.proposerId);
+    if (friend) {
+      await Bot.pickUser(result.proposerId).sendMsg(`很遗憾，${e.sender.card} 拒绝了你的求婚。`).catch(() => {
+      });
+    }
+    return true;
+  }
+
+  async breakUp(e) {
+    const result = await partnerLogic.breakUp(e.user_id);
+    if (!result.success) {
+      return e.reply(result.message, true);
+    }
+    const user = await DAL.getAllPlayerData(e.user_id);
+    const partner = await DAL.getAllPlayerData(result.partnerId);
+    const userName = user?.player?.name || e.user_id;
+    const partnerName = partner?.player?.name || result.partnerId;
+
+    await this.e.reply(`叹人间，美中不足今方信。${userName} 与 ${partnerName} 自此仙路殊途，再无瓜葛。`, false);
     return true;
   }
 }
