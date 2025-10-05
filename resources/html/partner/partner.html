@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>仙侣信息</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+      @font-face {
+          font-family: 'HYWenHei';
+          src: url('https://sf6-cdn-tos.douyinstatic.com/obj/ies-music/1655954624223431/HYWenHei-85W.ttf');
+      }
+      body {
+          font-family: 'HYWenHei', sans-serif;
+          background: linear-gradient(135deg, #f5e1da, #d6e6f2);
+          padding: 16px;
+      }
+      .main-container {
+          width: 600px;
+          background: rgba(255, 255, 255, 0.85);
+          border-radius: 16px;
+          border: 2px solid #e2c4b5;
+          box-shadow: 0 8px 32px 0 rgba(131, 131, 131, 0.37);
+          backdrop-filter: blur(8px);
+          padding: 24px;
+      }
+      .avatar {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          border: 3px solid #fff;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .heart-lock {
+          width: 50px;
+          height: 50px;
+          color: #ef4444;
+          filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
+      }
+      .progress-bar {
+          background-color: #e5e7eb;
+          border-radius: 9999px;
+          overflow: hidden;
+          height: 16px;
+      }
+      .progress-filler {
+          background: linear-gradient(90deg, #fbbf24, #f59e0b);
+          height: 100%;
+          border-radius: 9999px;
+          transition: width 0.5s ease-in-out;
+      }
+      .coin-icon {
+          width: 24px; height: 24px; color: #d97706;
+      }
+  </style>
+</head>
+<body>
+<div class="main-container">
+  <div class="flex items-center justify-around">
+    <div class="text-center">
+      <img class="avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user.id}}" alt="User Avatar">
+      <p class="mt-2 font-semibold text-lg text-gray-700">{{user.名号}}</p>
+    </div>
+    <div class="heart-lock">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </div>
+    <div class="text-center">
+      <img class="avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{partner.id}}" alt="Partner Avatar">
+      <p class="mt-2 font-semibold text-lg text-gray-700">{{partner.名号}}</p>
+    </div>
+  </div>
+
+  <div class="text-center mt-6">
+    <p class="text-sm text-gray-500">当前情缘等级</p>
+    <h2 class="text-3xl font-bold text-red-500">{{stats.levelName}} (Lv.{{stats.level}})</h2>
+  </div>
+
+  <div class="mt-4">
+    <div class="flex justify-between text-sm font-medium text-gray-600 mb-1">
+      <span>亲密度</span>
+      <span>{{progress.current}} / {{progress.needed}}</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-filler" style="width: {{progress.percentage}}%;"></div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex items-center justify-center bg-amber-100 border border-amber-300 rounded-lg p-3">
+    <div class="coin-icon mr-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+    </div>
+    <span class="text-lg font-bold text-amber-700">道侣币: {{stats.coins}}</span>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,6 +1,8 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import * as partnerLogic from '../logic/partner_logic.js';
 import * as DAL from '../api/data-access.js';
+import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import Show from '../model/show.js';
 
 export class partner extends plugin {
   constructor() {
@@ -29,6 +31,10 @@ export class partner extends plugin {
         {
           reg: /^#断绝姻缘$/,
           fnc: 'breakUp'
+        },
+        {
+          reg: /^#我的道侣$/,
+          fnc: 'showPartnerStatus'
         }
       ]
     });
@@ -154,6 +160,29 @@ export class partner extends plugin {
     const partnerName = partner?.player?.名号 || result.partnerId;
 
     await this.e.reply(`叹人间，美中不足今方信。${userName} 与 ${partnerName} 自此仙路殊途，再无瓜葛。`, false);
+    return true;
+  }
+
+  async showPartnerStatus(e) {
+    const result = await partnerLogic.getPartnerDetails(e.user_id);
+
+    if (!result.success) {
+      return e.reply(result.message, true);
+    }
+
+    const dataForPuppeteer = await new Show(e).get_playerData(result.data);
+    const img = await puppeteer.screenshot('player', {
+      ...dataForPuppeteer,
+      _page: {
+        deviceScaleFactor: 2 // 开启2倍超清渲染
+      }
+    });
+
+    if (img) {
+      await e.reply(img);
+    } else {
+      await e.reply('生成道侣信息面板失败，请查看后台日志。');
+    }
     return true;
   }
 }

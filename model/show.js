@@ -44,6 +44,15 @@ export default class Game extends base {
     };
   }
 
+  async get_partnerData(myData) {
+    this.model = 'partner';
+    return {
+      ...this.screenData,
+      saveId: 'partner',
+      ...myData
+    };
+  }
+
   async get_yijieplayerData(myData) {
     this.model = 'yijieplayer';
     return {

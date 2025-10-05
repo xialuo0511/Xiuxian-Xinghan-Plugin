@@ -52,6 +52,73 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
 }
 
 /**
+ * 获取道侣双方的详细信息以供渲染
+ * @param {string} userId 发起指令的用户ID
+ * @returns {Promise<{success: boolean, data?: object, message?: string}>}
+ */
+export async function getPartnerDetails(userId) {
+  const partnerId = await getPartnerId(userId);
+  if (!partnerId) {
+    return { success: false, message: '你尚未拥有道侣，无法查看。' };
+  }
+
+  // 1. 获取双方玩家数据
+  const userPlayerData = (await DAL.getAllPlayerData(userId))?.player;
+  const partnerPlayerData = (await DAL.getAllPlayerData(partnerId))?.player;
+
+  if (!userPlayerData || !partnerPlayerData) {
+    return { success: false, message: '无法获取道侣信息，请稍后再试。' };
+  }
+
+  // 2. 获取共享关系数据
+  const relationshipKey = getRelationshipKey(userId, partnerId);
+  const relationshipStats = await redis.hGetAll(relationshipKey);
+  const currentIntimacy = parseInt(relationshipStats.intimacy || '520');
+  const currentLevel = parseInt(relationshipStats.level || '0');
+  const currentCoins = parseInt(relationshipStats.coins || '0');
+
+  // 3. 计算等级和进度条信息
+  const currentLevelInfo = partnerLevelsConfig.find(l => l.level === currentLevel) || partnerLevelsConfig[0];
+  const nextLevelInfo = partnerLevelsConfig.find(l => l.level === currentLevel + 1);
+
+  let progress = {
+    current: currentIntimacy,
+    needed: '已满级',
+    percentage: 100
+  };
+
+  if (nextLevelInfo) {
+    const base = currentLevelInfo.intimacy_required;
+    const target = nextLevelInfo.intimacy_required;
+    const progressValue = currentIntimacy - base;
+    const totalValue = target - base;
+    progress.needed = target;
+    progress.percentage = Math.min(100, (progressValue / totalValue) * 100);
+  }
+
+  // 4. 组装最终数据
+  const dataForRender = {
+    user: {
+      id: userId,
+      name: userPlayerData.name
+    },
+    partner: {
+      id: partnerId,
+      name: partnerPlayerData.name
+    },
+    stats: {
+      intimacy: currentIntimacy,
+      level: currentLevel,
+      levelName: currentLevelInfo.name,
+      coins: currentCoins
+    },
+    progress: progress
+  };
+
+  return { success: true, data: dataForRender };
+}
+
+/**
  * 获取玩家的道侣ID
  *
  */
