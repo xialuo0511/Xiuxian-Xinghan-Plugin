@@ -161,9 +161,13 @@ export async function purchaseShopItem(userId, itemName, amount) {
   };
 }
 
-
-/** * 赠送礼物以增加好感度
- *
+/**
+ * 赠送礼物以增加好感度或亲密度
+ * @param {string} giverId 赠送者ID
+ * @param {string} receiverId 接收者ID
+ * @param {string} itemName 礼物名称
+ * @param {number} amount 数量
+ * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function giveGift(giverId, receiverId, itemName, amount) {
   if (giverId == receiverId) {
@@ -182,17 +186,88 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
 
   await DAL.updateNajieItem(giverId, itemName, '礼物', -amount);
 
-  const favorabilityChange = gift.value * amount;
+  const valueChange = gift.value * amount;
   const relationshipKey = getRelationshipKey(giverId, receiverId);
-  const currentFavorability = await redis.hIncrBy(relationshipKey, 'favorability', favorabilityChange);
-
-  const receiverPlayerData = (await DAL.getAllPlayerData(receiverId)).player;
+  const receiverPlayerData = (await DAL.getAllPlayerData(receiverId))?.player;
   const receiverName = receiverPlayerData?.名号 || receiverId;
 
-  return {
-    success: true,
-    message: `你将 [${itemName}]x${amount} 赠予了 ${receiverName}，你们之间的好感度增加了 ${favorabilityChange}！\n当前总好感度：${currentFavorability}`
-  };
+  // 判断双方是否为道侣
+  const giverPartnerId = await getPartnerId(giverId);
+
+  // --- 分支一：是道侣关系 ---
+  if (giverPartnerId && giverPartnerId == receiverId) {
+    const intimacyChange = Math.ceil(valueChange / 2); // 亲密度折半向上取整
+
+    // 同时增加好感度和亲密度
+    const [currentFavorability, currentIntimacy] = await Promise.all([
+      redis.hIncrBy(relationshipKey, 'favorability', valueChange),
+      redis.hIncrBy(relationshipKey, 'intimacy', intimacyChange)
+    ]);
+
+    // 检查是否升级
+    const levelUpMsg = await checkAndApplyPartnerLevelUp(relationshipKey, giverId, receiverId);
+
+    let finalMessage = `你将 [${itemName}]x${amount} 赠予了你的道侣 ${receiverName}，你们的亲密度增加了 ${intimacyChange}！\n当前亲密度：${currentIntimacy}`;
+    if (levelUpMsg) {
+      finalMessage += `\n${levelUpMsg}`; // 如果升级了，附带上升级信息
+    }
+
+    return { success: true, message: finalMessage };
+  }
+  // --- 分支二：不是道侣关系 ---
+  else {
+    const currentFavorability = await redis.hIncrBy(relationshipKey, 'favorability', valueChange);
+    return {
+      success: true,
+      message: `你将 [${itemName}]x${amount} 赠予了 ${receiverName}，你们之间的好感度增加了 ${valueChange}！\n当前总好感度：${currentFavorability}`
+    };
+  }
+}
+
+/**
+ * 检查并处理道侣等级提升
+ * @param {string} relationshipKey 关系键
+ * @param {string} userId1 玩家1
+ * @param {string} userId2 玩家2
+ * @returns {Promise<string|null>} 如果升级则返回升级贺词，否则返回null
+ */
+async function checkAndApplyPartnerLevelUp(relationshipKey, userId1, userId2) {
+  const stats = await redis.hGetAll(relationshipKey);
+  const currentLevel = parseInt(stats.level || '0');
+  const currentIntimacy = parseInt(stats.intimacy || '0');
+
+  const nextLevelInfo = partnerLevelsConfig.find(l => l.level === currentLevel + 1);
+
+  // 如果没有下一级，或者亲密度未达到要求
+  if (!nextLevelInfo || currentIntimacy < nextLevelInfo.intimacy_required) {
+    return null;
+  }
+
+  // --- 执行升级 ---
+  // 可能会有多级连升的情况，使用 while 循环处理
+  let finalLevel = currentLevel;
+  let totalCoinReward = 0;
+  let nextLevelToCheck = partnerLevelsConfig.find(l => l.level === finalLevel + 1);
+
+  while (nextLevelToCheck && currentIntimacy >= nextLevelToCheck.intimacy_required) {
+    finalLevel = nextLevelToCheck.level;
+    totalCoinReward += nextLevelToCheck.coin_reward;
+    nextLevelToCheck = partnerLevelsConfig.find(l => l.level === finalLevel + 1);
+  }
+
+  // 如果等级有变化，才更新数据和发送消息
+  if (finalLevel > currentLevel) {
+    await redis.hSet(relationshipKey, 'level', finalLevel);
+    await redis.hIncrBy(relationshipKey, 'coins', totalCoinReward);
+
+    const finalLevelInfo = partnerLevelsConfig.find(l => l.level === finalLevel);
+
+    // 构建并返回贺词
+    let msg = `🎉[同心]恭喜！你们的情缘等级提升至【${finalLevelInfo.name} (Lv.${finalLevel})】！\n获得奖励：道侣币 x ${totalCoinReward}`;
+    return msg;
+  }
+
+  return null;
 }
 
 /**
