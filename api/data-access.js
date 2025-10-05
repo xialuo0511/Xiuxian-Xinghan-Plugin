@@ -340,60 +340,31 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
  * 获取玩家纳戒中指定物品的数量
  * @param {string|number} userId - 玩家ID
  * @param {string} itemName - 物品名称
- * @param {string} itemClass - 物品分类 (例如 '礼物', '道具')
+ * @param {string} itemClass - 物品分类
  * @returns {Promise<number>} - 返回物品的数量，如果不存在则返回 0
  */
 export async function getNajieItemAmount(userId, itemName, itemClass) {
-  // 日志1：检查函数收到的参数是否正确
-  logger.mark(`[数量检测诊断] 1. 函数启动，参数: userId=${userId}, itemName='${itemName}', itemClass='${itemClass}'`);
-
   try {
     const playerData = await getAllPlayerData(userId);
 
-    if (!playerData) {
-      logger.error(`[数量检测诊断] 2. 失败: getAllPlayerData(${userId}) 返回了 null。`);
+    if (!playerData || !playerData.najie) {
       return 0;
     }
 
-    // 日志2：检查najie字段是否存在且为对象
-    if (!playerData.najie || typeof playerData.najie !== 'object') {
-      logger.error(`[数量检测诊断] 2. 失败: playerData.najie 不存在或不是一个对象。实际类型: ${typeof playerData.najie}`);
-      console.log('完整的 playerData 对象:', playerData); // 打印完整对象以便观察
+    const category = playerData.najie[itemClass];
+
+    // 检查分类是否存在且为数组
+    if (!Array.isArray(category)) {
       return 0;
     }
-    logger.mark('[数量检测诊断] 2. 成功: 获取到 playerData 且 .najie 是一个对象。');
 
-    const najie = playerData.najie;
-    const category = najie[itemClass];
+    // 在数组中查找物品
+    const item = category.find(i => i && i.name === itemName);
 
-    // 日志3：检查物品分类是否存在
-    if (!category) {
-      logger.warn(`[数量检测诊断] 3. 失败: 在纳戒中未找到分类 [${itemClass}]。`);
-      const availableCategories = Object.keys(najie);
-      logger.warn(`[数量检测诊断] 纳戒中实际存在的分类有: [${availableCategories.join(', ')}]`);
-      return 0;
-    }
-    logger.mark(`[数量检测诊断] 3. 成功: 找到分类 [${itemClass}]。`);
-
-    const item = category[itemName];
-
-    // 日志4：检查物品本身是否存在
-    if (!item) {
-      logger.warn(`[数量检测诊断] 4. 失败: 在分类 [${itemClass}] 中未找到物品 [${itemName}]。`);
-      const availableItems = Object.keys(category);
-      logger.warn(`[数量检测诊断] 该分类下实际存在的物品有: [${availableItems.join(', ')}]`);
-      return 0;
-    }
-    logger.mark(`[数量检测诊断] 4. 成功: 找到物品对象，内容:`, JSON.stringify(item));
-
-    // 日志5：检查并返回数量
-    const finalAmount = item.amount || 0;
-    logger.mark(`[数量检测诊断] 5. 成功: 物品存在 amount 属性，最终获取到的数量为: ${finalAmount}`);
-
-    return finalAmount;
+    return item?.amount || 0;
 
   } catch (error) {
-    logger.error(`[数量检测诊断] X. 严重错误: 函数在执行期间发生未知异常:`, error);
-    return 0; // 发生任何错误时，安全地返回0
+    logger.error(`[getNajieItemAmount] 获取玩家 ${userId} 物品 ${itemName} 数量时出错:`, error);
+    return 0;
   }
 }
