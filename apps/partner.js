@@ -61,7 +61,13 @@ export class partner extends plugin {
     }
 
     // 调用 Puppeteer 渲染图片
-    const img = await puppeteer.screenshot('partner/level_guide', result.data);
+    const dataForPuppeteer = await new Show(e).get_imgData('partnerLevelGuide', result.data);
+    const img = await puppeteer.screenshot('partnerLevelGuide', {
+      ...dataForPuppeteer,
+      _page: {
+        deviceScaleFactor: 2 // 开启2倍超清渲染
+      }
+    });
 
     if (img) {
       await e.reply(img);
