@@ -158,6 +158,30 @@
       {{/each}}
     </div>
   </div>
+  {{if show_coop_signin}}
+  <div class="cumulative-rewards-section p-4">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-semibold text-[#6a3906]">仙侣同心</h2>
+      <span class="text-base text-[#8B4513]">本月协同: <span class="font-bold text-pink-500">{{coop_progress.count}}</span> 天</span>
+    </div>
+
+    <div class="progress-bar-wrapper">
+      <div class="progress-bar">
+        <div class="progress-bar-filler" style="width: {{(coop_progress.count / coop_progress.total_days_in_month) * 100}}%; background: linear-gradient(90deg, #ec4899, #f472b6);"></div>
+      </div>
+
+      {{each coop_progress.config tier}}
+      <% const isClaimed = coop_progress.claimed.includes(tier.days); %>
+      <% const position = (tier.days / coop_progress.total_days_in_month) * 100; %>
+      <div class="reward-icon-wrapper" style="left: <%= position %>%;">
+        <div class="reward-icon <%= isClaimed ? 'claimed' : '' %>" title="<%= tier.name %> - <%= tier.days %>天">
+          ❤️
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+  {{/if}}
   <div class="rewards-section mt-6 p-4 border-t-2 border-dashed border-[#D2B48C]">
     <h2 class="text-xl font-semibold text-[#6a3906] mb-2">本次签到收获:</h2>
     <div class="text-base text-[#8B4513] space-y-1">

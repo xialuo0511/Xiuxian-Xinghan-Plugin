@@ -1,5 +1,5 @@
 import * as DAL from '../api/data-access.js';
-import { shijianc } from '../apps/Xiuxian/xiuxian.js';
+import * as partnerLogic from './partner_logic.js';
 import config from '../model/Config.js';
 
 // 加载月度累计签到奖励配置
@@ -104,7 +104,8 @@ export async function processDailyCheckIn(userId) {
   const checkedInDaysRaw = await redis.sMembers(checkinKey);
 
   const finalMessage = '签到成功！' + (transactionResult.cumulativeMessages.length > 0 ? `\n${transactionResult.cumulativeMessages.join('\n')}` : '');
-  return {
+
+  let finalReturn = {
     success: true,
     message: finalMessage,
     checkInData: {
@@ -116,6 +117,64 @@ export async function processDailyCheckIn(userId) {
       monthly_cumulative_days: transactionResult.player.sign_in_info.monthly_cumulative_days,
       claimed_monthly_rewards: transactionResult.player.sign_in_info.claimed_monthly_rewards
     },
-    cumulativeRewards: transactionResult.cumulativeRewards
+    cumulativeRewards: transactionResult.cumulativeRewards,
+    coopRewardMsg: ''
   };
+
+  try {
+    const partnerId = await partnerLogic.getPartnerId(userId);
+    if (partnerId) {
+      const relationshipKey = partnerLogic.getRelationshipKey(userId, partnerId);
+      const partnerLevel = parseInt(await redis.hGet(relationshipKey, 'level') || '0');
+
+      // 检查是否解锁
+      if (partnerLevel >= 2) {
+        const now = new Date();
+        const yyyymm = `${now.getFullYear()}-${now.getMonth() + 1}`;
+        const yyyymmdd = `${yyyymm}-${now.getDate()}`;
+
+        const dailyTrackerKey = `XinghanXiuxian:co_signin_tracker:${yyyymmdd}:${relationshipKey}`;
+
+        // 检查对方今天是否已签到
+        const isPartnerAlreadySigned = await redis.sIsMember(dailyTrackerKey, partnerId);
+
+        // 将自己加入今天的签到记录，并设置25小时过期
+        await redis.sAdd(dailyTrackerKey, userId);
+        await redis.expire(dailyTrackerKey, 3600 * 25);
+
+        // 如果对方今天已经签到，那么今天协同签到完成！
+        if (isPartnerAlreadySigned) {
+          const monthlyProgressKey = `XinghanXiuxian:co_signin:${yyyymm}:${relationshipKey}`;
+          const newCount = await redis.hIncrBy(monthlyProgressKey, 'count', 1);
+
+          // 检查奖励
+          const claimedRewards = JSON.parse(await redis.hGet(monthlyProgressKey, 'claimed') || '[]');
+          for (const tier of collaborativeSigninConfig) {
+            if (newCount >= tier.days && !claimedRewards.includes(tier.days)) {
+              // 发放奖励给双方
+              for (const reward of tier.rewards) {
+                if (reward.name === '道侣币') {
+                  await redis.hIncrBy(relationshipKey, 'coins', reward.amount);
+                } else {
+                  await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount, reward);
+                  await DAL.updateNajieItem(partnerId, reward.name, reward.class, reward.amount, reward);
+                }
+              }
+              claimedRewards.push(tier.days);
+
+              // 构造奖励消息
+              const rewardText = tier.rewards.map(r => `[${r.name}]x${r.amount}`).join('、');
+              finalReturn.coopRewardMsg = `\n[同心]你们协同签到已达${tier.days}天，双方获得奖励：${rewardText}！`;
+            }
+          }
+          await redis.hSet(monthlyProgressKey, 'claimed', JSON.stringify(claimedRewards));
+        }
+      }
+    }
+  } catch (error) {
+    logger.error('[协同签到] 处理时发生错误:', error);
+  }
+
+
+  return finalReturn;
 }

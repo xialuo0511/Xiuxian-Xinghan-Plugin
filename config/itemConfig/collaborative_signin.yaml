@@ -1,0 +1,21 @@
+# 协同签到奖励配置
+- days: 5
+  name: "同心协力"
+  rewards:
+    - name: "道侣币"
+      class: "数值" # 特殊类，逻辑中单独处理
+      amount: 10
+
+- days: 10
+  name: "风雨同舟"
+  rewards:
+    - name: "道侣币"
+      class: "数值"
+      amount: 20
+
+- days: 20
+  name: "朝夕与共"
+  rewards:
+    - name: "道侣币"
+      class: "数值"
+      amount: 50

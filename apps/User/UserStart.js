@@ -22,6 +22,7 @@ import {
 
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
+import * as partnerLogic from '../../logic/partner_logic.js';
 
 export class UserStart extends plugin {
   constructor() {
@@ -246,6 +247,10 @@ export class UserStart extends plugin {
       return;
     }
 
+    if (result.coopRewardMsg) {
+      await e.reply(result.coopRewardMsg, true);
+    }
+
     const now = new Date();
     const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
@@ -276,6 +281,26 @@ export class UserStart extends plugin {
       total_days_in_month: totalDaysInMonth,
       monthly_rewards_config: monthlyRewardsConfig
     };
+
+    const partnerId = await partnerLogic.getPartnerId(usr_qq);
+    if (partnerId) {
+      const relationshipKey = partnerLogic.getRelationshipKey(usr_qq, partnerId);
+      const partnerLevel = parseInt(await redis.hGet(relationshipKey, 'level') || '0');
+
+      if (partnerLevel >= 2) {
+        const yyyymm = `${now.getFullYear()}-${now.getMonth() + 1}`;
+        const monthlyProgressKey = `XinghanXiuxian:co_signin:${yyyymm}:${relationshipKey}`;
+        const coopData = await redis.hGetAll(monthlyProgressKey);
+
+        calendarData.show_coop_signin = true; // 控制前端是否显示的开关
+        calendarData.coop_progress = {
+          count: parseInt(coopData.count || '0'),
+          config: collaborativeSigninConfig,
+          claimed: JSON.parse(coopData.claimed || '[]'),
+          total_days_in_month: new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+        };
+      }
+    }
 
     // 生成并发送图片
     const dataForPuppeteer = await new Show(e).get_checkin_calendarData(calendarData);
