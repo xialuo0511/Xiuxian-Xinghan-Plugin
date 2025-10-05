@@ -117,8 +117,8 @@ export class partner extends plugin {
     if (result.isAccepted) {
       const proposer = await DAL.getAllPlayerData(result.proposerId);
       const receiver = await DAL.getAllPlayerData(e.user_id);
-      const proposerName = proposer?.player?.name || result.proposerId;
-      const receiverName = receiver?.player?.name || e.user_id;
+      const proposerName = proposer?.player?.名号 || result.proposerId;
+      const receiverName = receiver?.player?.名号 || e.user_id;
       // 发送全群公告
       await this.e.reply(`🎉 喜结良缘！恭喜 [${proposerName}] 与 [${receiverName}] 结为仙侣，愿二人道途共进，比翼齐飞！`, false);
     }
@@ -131,7 +131,7 @@ export class partner extends plugin {
 
     // 通知求婚者
     const proposer = await DAL.getAllPlayerData(result.proposerId);
-    const proposerName = proposer?.player?.name || result.proposerId;
+    const proposerName = proposer?.player?.名号 || result.proposerId;
     this.e.reply(`你拒绝了 ${proposerName} 的求婚。`, true);
 
     // 尝试私聊通知被拒绝方
@@ -150,8 +150,8 @@ export class partner extends plugin {
     }
     const user = await DAL.getAllPlayerData(e.user_id);
     const partner = await DAL.getAllPlayerData(result.partnerId);
-    const userName = user?.player?.name || e.user_id;
-    const partnerName = partner?.player?.name || result.partnerId;
+    const userName = user?.player?.名号 || e.user_id;
+    const partnerName = partner?.player?.名号 || result.partnerId;
 
     await this.e.reply(`叹人间，美中不足今方信。${userName} 与 ${partnerName} 自此仙路殊途，再无瓜葛。`, false);
     return true;

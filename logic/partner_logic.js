@@ -43,7 +43,7 @@ export async function giveGift(giverId, receiverId, itemName, amount) {
   const currentFavorability = await redis.hIncrBy(relationshipKey, 'favorability', favorabilityChange);
 
   const receiverPlayerData = (await DAL.getAllPlayerData(receiverId)).player;
-  const receiverName = receiverPlayerData?.name || receiverId;
+  const receiverName = receiverPlayerData?.名号 || receiverId;
 
   return {
     success: true,
