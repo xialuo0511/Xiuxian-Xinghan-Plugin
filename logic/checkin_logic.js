@@ -51,7 +51,53 @@ export async function clearTodaySignIn(userId) {
     const personalRewardsConfig = loadItemConfig('sign_in_rewards.yaml');
     const triggeredTier = personalRewardsConfig.find(tier => tier.days === oldMonthlyCount);
     if (triggeredTier && player.sign_in_info.claimed_monthly_rewards) {
-      player.sign_in_info
+      player.sign_in_info.claimed_monthly_rewards = player.sign_in_info.claimed_monthly_rewards.filter(
+        day => day !== oldMonthlyCount
+      );
+    }
+  });
+
+  if (!transactionSuccess) {
+    return { success: false, message: '消除签到失败，更新数据库时发生冲突。' };
+  }
+
+  // 3. 回滚 Redis 中的日历记录
+  const calendarKey = `XinghanXiuxian:Player:${userId}:Checkin:${now.getFullYear()}-${now.getMonth() + 1}`;
+  await redis.sRem(calendarKey, String(now.getDate()));
+
+  // 4. 回滚协同签到相关数据
+  const partnerId = await partnerLogic.getPartnerId(userId);
+  if (partnerId) {
+    const relationshipKey = partnerLogic.getRelationshipKey(userId, partnerId);
+    const yyyymmdd = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    const dailyTrackerKey = `XinghanXiuxian:co_signin_tracker:${yyyymmdd}:${relationshipKey}`;
+
+    // 检查今天是否完成了协同签到（即双方都已签到）
+    const didCoopSignIn = (await redis.sCard(dailyTrackerKey)) === 2;
+
+    // 从今日协同记录中移除自己
+    await redis.sRem(dailyTrackerKey, userId);
+
+    // 如果今天确实完成了协同签到，则需要回滚月度协同计数和奖励状态
+    if (didCoopSignIn) {
+      const yyyymm = `${now.getFullYear()}-${now.getMonth() + 1}`;
+      const monthlyProgressKey = `XinghanXiuxian:co_signin:${yyyymm}:${relationshipKey}`;
+
+      const oldCoopCount = parseInt(await redis.hGet(monthlyProgressKey, 'count') || '0');
+      await redis.hIncrBy(monthlyProgressKey, 'count', -1);
+
+      const coopRewardsConfig = loadItemConfig('collaborative_signin.yaml');
+      const triggeredCoopTier = coopRewardsConfig.find(tier => tier.days === oldCoopCount);
+      if (triggeredCoopTier) {
+        let claimedRewards = JSON.parse(await redis.hGet(monthlyProgressKey, 'claimed') || '[]');
+        claimedRewards = claimedRewards.filter(day => day !== oldCoopCount);
+        await redis.hSet(monthlyProgressKey, 'claimed', JSON.stringify(claimedRewards));
+      }
+    }
+  }
+
+  return { success: true, message: `已成功消除玩家 [${playerData.player.名号}] 今日的签到记录，TA现在可以重新签到了。` };
+}
 
 /**
  * 处理玩家的每日签到逻辑
