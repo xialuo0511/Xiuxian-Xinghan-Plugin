@@ -213,10 +213,6 @@ export class UserStart extends plugin {
   }
 
   async daily_gift(e) {
-    if (!e.isGroup) {
-      e.reply('修仙游戏请在群聊中游玩');
-      return;
-    }
     let usr_qq = e.user_id.toString().replace('qg_', '');
     usr_qq = await Gulid(usr_qq);
 
@@ -224,30 +220,10 @@ export class UserStart extends plugin {
       return;
     }
 
-    let result = null;
-    const maxRetries = 3; // 最多重试3次
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      // 调用核心逻辑处理签到
-      result = await processDailyCheckIn(usr_qq);
+    const result = await processDailyCheckIn(usr_qq);
 
-      if (result.success) {
-        // 如果成功，则跳出循环
-        break;
-      }
-
-      // 如果失败是因为冲突，并且还有重试机会
-      if (!result.success && result.message.includes('冲突') && attempt < maxRetries) {
-        logger.warn(`[签到冲突] 用户 ${usr_qq} 签到失败，正在进行第 ${attempt} 次重试...`);
-        // 等待一个短暂的随机时间，避免连续冲突
-        await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
-        continue; // 继续下一次循环尝试
-      }
-    }
-
-    // 根据结果响应
     if (!result.success) {
-      e.reply(result.message);
-      return;
+      return e.reply(result.message);
     }
 
     if (result.coopRewardMsg) {
@@ -256,35 +232,30 @@ export class UserStart extends plugin {
 
     const now = new Date();
     const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-
-    const monthlyRewardsConfig = Object.values(config.getConfig('xiuxian', 'sign_in_rewards'));
-    const claimedMonthlyRewards = result.cumulativeData.claimed_monthly_rewards || [];
-
-    // 遍历奖励配置，为每一项添加一个新的 isClaimed 属性（true 或 false）
-    if (Array.isArray(monthlyRewardsConfig)) {
-      monthlyRewardsConfig.forEach(tier => {
-        tier.isClaimed = claimedMonthlyRewards.includes(tier.days);
-      });
-    }
+    const personalRewardsConfig = loadItemConfig('sign_in_rewards.yaml');
 
     const calendarData = {
       // 基础日历数据
       year: now.getFullYear(),
       month: now.getMonth() + 1,
       today: now.getDate(),
-
-      // 每日签到数据
       checkedInDays: result.checkInData.checkedInDays,
       consecutiveDays: result.checkInData.consecutiveDays,
       dailyRewards: result.dailyRewards,
 
-      // 累计签到数据，传递给HTML
-      monthly_cumulative_days: result.cumulativeData.monthly_cumulative_days,
-      claimed_monthly_rewards: result.cumulativeData.claimed_monthly_rewards,
-      total_days_in_month: totalDaysInMonth,
-      monthly_rewards_config: monthlyRewardsConfig
+      // 个人累计签到数据 (也进行预处理)
+      personal_progress: {
+        count: result.cumulativeData.monthly_cumulative_days,
+        total_days_in_month: totalDaysInMonth,
+        tiers: personalRewardsConfig.map(tier => ({
+          ...tier,
+          isClaimed: result.cumulativeData.claimed_monthly_rewards.includes(tier.days),
+          position: (tier.days / totalDaysInMonth) * 100
+        }))
+      }
     };
 
+    // 检查并添加协同签到数据
     const partnerId = await partnerLogic.getPartnerId(usr_qq);
     if (partnerId) {
       const relationshipKey = partnerLogic.getRelationshipKey(usr_qq, partnerId);
@@ -294,22 +265,28 @@ export class UserStart extends plugin {
         const yyyymm = `${now.getFullYear()}-${now.getMonth() + 1}`;
         const monthlyProgressKey = `XinghanXiuxian:co_signin:${yyyymm}:${relationshipKey}`;
         const coopData = await redis.hGetAll(monthlyProgressKey);
+        const claimedTiers = JSON.parse(coopData.claimed || '[]');
 
-        calendarData.show_coop_signin = true; // 控制前端是否显示的开关
+        calendarData.show_coop_signin = true;
         calendarData.coop_progress = {
           count: parseInt(coopData.count || '0'),
-          config: collaborativeSigninConfig,
-          claimed: JSON.parse(coopData.claimed || '[]'),
-          total_days_in_month: new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+          total_days_in_month: totalDaysInMonth,
+          tiers: collaborativeSigninConfig.map(tier => ({
+            ...tier,
+            isClaimed: claimedTiers.includes(tier.days),
+            position: (tier.days / totalDaysInMonth) * 100
+          }))
         };
       }
     }
 
     // 生成并发送图片
     const dataForPuppeteer = await new Show(e).get_checkin_calendarData(calendarData);
-    const img = await puppeteer.screenshot('checkin_calendar', { ...dataForPuppeteer });
+    const img = await puppeteer.screenshot('checkin_calendar', {
+      ...dataForPuppeteer,
+      _page: { deviceScaleFactor: 2 }
+    });
 
-    // 发送签到成功图片，并@用户
     await e.reply([segment.at(e.user_id),
       img]);
   }

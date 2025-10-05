@@ -141,44 +141,37 @@
   <div class="cumulative-rewards-section p-4">
     <div class="flex justify-between items-center mb-2">
       <h2 class="text-xl font-semibold text-[#6a3906]">本月修行路</h2>
-      <span class="text-base text-[#8B4513]">累计: <span class="font-bold text-amber-600">{{monthly_cumulative_days}}</span> / {{total_days_in_month}} 天</span>
+      <span class="text-base text-[#8B4513]">本月累计: <span class="font-bold text-amber-600">{{personal_progress.count}}</span> / {{personal_progress.total_days_in_month}} 天</span>
     </div>
-
     <div class="progress-bar-wrapper">
       <div class="progress-bar">
-        <div class="progress-bar-filler" style="width: {{(monthly_cumulative_days / total_days_in_month) * 100}}%;"></div>
+        <div class="progress-bar-filler" style="width: {{(personal_progress.count / personal_progress.total_days_in_month) * 100}}%; background: linear-gradient(90deg, #fceabb, #f8b500);"></div>
       </div>
-
-      {{each monthly_rewards_config tier}}
-      <div class="reward-node {{if tier.isClaimed}}claimed{{/if}}" style="left: {{(tier.days / total_days_in_month) * 100}}%;">
-        <span class="reward-icon">🎁</span>
+      {{each personal_progress.tiers tier}}
+      <div class="reward-node" style="left: {{tier.position}}%;">
+        <span class="reward-icon {{if tier.isClaimed}}claimed{{/if}}">🎁</span>
         <span class="reward-day-text">{{tier.days}}天</span>
-        <span class="reward-tooltip text-sm">{{tier.days}}天 | {{tier.name}}</span>
       </div>
       {{/each}}
     </div>
   </div>
+
   {{if show_coop_signin}}
   <div class="cumulative-rewards-section p-4">
     <div class="flex justify-between items-center mb-2">
       <h2 class="text-xl font-semibold text-[#6a3906]">仙侣同心</h2>
       <span class="text-base text-[#8B4513]">本月协同: <span class="font-bold text-pink-500">{{coop_progress.count}}</span> 天</span>
     </div>
-
     <div class="progress-bar-wrapper">
       <div class="progress-bar">
         <div class="progress-bar-filler" style="width: {{(coop_progress.count / coop_progress.total_days_in_month) * 100}}%; background: linear-gradient(90deg, #ec4899, #f472b6);"></div>
       </div>
-
-      {{each coop_progress.config tier}}
-      <% const isClaimed = coop_progress.claimed.includes(tier.days); %>
-      <% const position = (tier.days / coop_progress.total_days_in_month) * 100; %>
-      <div class="reward-icon-wrapper" style="left: <%= position %>%;">
-        <div class="reward-icon <%= isClaimed ? 'claimed' : '' %>" title="<%= tier.name %> - <%= tier.days %>天">
-          ❤️
-        </div>
+      {{each coop_progress.tiers tier}}
+      <div class="reward-node" style="left: {{tier.position}}%;">
+        <span class="reward-icon {{if tier.isClaimed}}claimed{{/if}}">❤️</span>
+        <span class="reward-day-text">{{tier.days}}天</span>
       </div>
-      <% }); %>
+      {{/each}}
     </div>
   </div>
   {{/if}}
