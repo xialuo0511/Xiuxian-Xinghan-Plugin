@@ -16,19 +16,15 @@
           src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
       }
 
-      /* --- 基础样式 --- */
       body {
           width: 700px;
           margin: 0;
           padding: 20px;
-          background: linear-gradient(135deg, #4a4a4a, #2c2c2c);
+          background-image: url('file:///{{pluResPath}}/img/player_pifu/{{user.pifu}}.jpg');
+          background-size: cover;
+          background-position: center center;
           font-family: "tttgbnumber", sans-serif;
           color: #4a2c1a;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          box-sizing: border-box;
       }
 
       .panel-container {
