@@ -23,6 +23,9 @@ import {
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import * as partnerLogic from '../../logic/partner_logic.js';
+import { loadItemConfig } from '../../model/ConfigLoader.js';
+
+const collaborativeSigninConfig = loadItemConfig('collaborative_signin.yaml');
 
 export class UserStart extends plugin {
   constructor() {
