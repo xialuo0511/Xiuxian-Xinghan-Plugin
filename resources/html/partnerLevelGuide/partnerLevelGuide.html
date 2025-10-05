@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>道侣等级指南</title>
   <style>
-      /* 复用您之前的样式，这里只写关键部分 */
       @font-face {
           font-family: "tttgbnumber";
           src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
@@ -19,13 +18,13 @@
           width: 800px;
           margin: 0;
           padding: 20px;
-          background: linear-gradient(135deg, #4a4a4a, #2c2c2c);
+          background: #f7f8fa;
           font-family: "tttgbnumber", sans-serif;
           box-sizing: border-box;
       }
 
       .panel-container {
-          background: rgba(253, 250, 245, 0.88);
+          background: rgba(253, 250, 245, 0.95); /* 背景更亮，卡片可以更不透明一些 */
           backdrop-filter: blur(8px);
           border: 2px solid #a88763;
           border-radius: 12px;
@@ -41,13 +40,15 @@
       }
 
       .help-text {
-          background: rgba(0, 0, 0, 0.05);
+          /* 【核心修改】背景颜色改为与主题协调的淡金色 */
+          background: rgba(168, 135, 99, 0.08);
           border: 1px dashed #d2b48c;
-          padding: 15px;
+          padding: 15px; /* 内边距决定了动态高度 */
           border-radius: 8px;
           margin-bottom: 20px;
           color: #4a2c1a;
-          font-size: 14px;
+          /* 【核心修改】字号稍微调大 */
+          font-size: 15px;
           line-height: 1.8;
           white-space: pre-wrap;
       }
@@ -107,8 +108,7 @@
       .footer {
           text-align: center;
           font-size: 12px;
-          color: #fff;
-          text-shadow: 1px 1px 2px #000;
+          color: #888;
           margin-top: 20px;
       }
   </style>
@@ -139,6 +139,9 @@
     {{if has_more_levels}}
     <div class="more-levels">【更高等级后解锁该内容】</div>
     {{/if}}
+  </div>
+  <div class="footer" style="color: #a88763; text-shadow: none;">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」
+    by:屑洛(2531606029)
   </div>
 </div>
 </body>
