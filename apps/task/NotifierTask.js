@@ -40,7 +40,19 @@ export class NotifierTask extends plugin {
         // 只有当 result 不为 null (即成功收到消息) 时，才会执行下面的代码
         const notificationJson = result.element;
         const notification = JSON.parse(notificationJson);
-        const messageContent = notification.message;
+        let messageContent = notification.message;
+
+        let isAtAll = false;
+        const AT_ALL_FLAG = '__AT_ALL__';
+        if (typeof messageContent === 'string' && messageContent.startsWith(AT_ALL_FLAG)) {
+          isAtAll = true;
+          messageContent = messageContent.substring(AT_ALL_FLAG.length); // 移除标记
+          if (isAtAll) {
+            let finalMsg = [messageContent];
+            finalMsg.unshift(segment.at('all'));
+            await this.pushInfo(notification.group_id, true, finalMsg);
+          }
+        }
 
         // [日志] 现在只在有实际工作时才打印日志
         logger.info(`[星瀚修仙-通知器] 收到通知，准备发送给 ${notification.group_id || notification.user_id}`);

@@ -1,25 +1,27 @@
 import { notify } from '../handlers/notifier.js';
 
+const AT_ALL_FLAG = '__AT_ALL__';
+
 /**
- * 处理“活动开始”通知任务
- * 这个函数在独立的worker中执行，不能使用Yunzai的全局变量如 Bot, segment
+ * 处理“活动开始”通知任务 (在独立的worker中执行)
  * @param {object} task - 从任务队列中获取的任务对象
  */
 export async function startActivityNotification(task) {
+  if (!task) return;
   logger.info(`[工作单元] 开始处理活动通知任务: [${task.name}]`);
 
-  const messageBody = [
-    `\n🔔 活动【${task.name}】已开启！\n`,
-    `\n🕛 活动时间：\n${task.startTime} ~ ${task.endTime}\n`,
-    task.context ? `\n📜 活动详情：\n${task.context}\n` : '',
-    '\n请各位道友尽快参与~'
-  ].join('');
+  // 构建消息文本
+  let msgBody = `\n🔔 活动【${task.name}】已开启！\n\n` +
+    `🕛 活动时间：\n${task.startTime} ~ ${task.endTime}\n`;
 
-  const atAllMessage = {
-    type: 'atAll',
-    text: messageBody
-  };
+  if (task.context) {
+    msgBody += `\n📜 活动详情：\n${task.context}\n`;
+  }
+  msgBody += '\n请各位道友尽快参与~';
 
-  // 通过 notifier 将格式化后的消息推送到通知队列
-  await notify(task.defaultGroup, null, atAllMessage);
+  // 将特殊标记和消息文本拼接起来
+  const finalMessage = AT_ALL_FLAG + msgBody;
+
+  // 通过 notifier.js 将通知推送到Yunzai主进程的监听队列
+  await notify(task.defaultGroup, null, finalMessage);
 }
