@@ -1,6 +1,6 @@
 import * as DAL from '../api/data-access.js';
 import config from '../model/Config.js';
-import { pinyin } from 'pinyin-pro';
+import { pinyin } from 'pinyin-pro'; // 引入拼音库
 
 const versionData = config.getdefSet('version', 'version');
 
@@ -20,25 +20,21 @@ function Strand(now, max) {
 
 /**
  * 将纳戒内的所有物品筛选、整合并分页
- * @param {object} najie - 原始纳戒数据
- * @param {object} options - 包含搜索和分页的选项
- * @returns {object}
  */
 function paginateItems(najie, options = {}) {
   const {
     searchType = 'all',
     searchTerm = '',
     page = 1,
-    pageSize = 20 // 您可以根据模板调整每页数量
+    pageSize = 20
   } = options;
 
   let allItems = [];
-  // 您的扁平化逻辑非常棒，我们直接复用
   for (const category in najie) {
     const items = najie[category];
     if (Array.isArray(items)) {
       items.forEach(item => {
-        if (item && item.name) { // 增加一个健壮性检查
+        if (item && item.name) {
           allItems.push({ ...item, category: category });
         }
       });
@@ -47,19 +43,26 @@ function paginateItems(najie, options = {}) {
 
   let filteredItems = allItems;
 
-  // 筛选逻辑
   if (searchType === 'category') {
     filteredItems = allItems.filter(item => item.category === searchTerm);
-  } else if (searchType === 'name') {
+  } else if (searchType === 'name' && searchTerm) {
     const searchTermLower = searchTerm.toLowerCase();
     filteredItems = allItems.filter(item => {
       if (!item.name) return false;
+
+      // 1. 获取拼音首字母
       const pinyinInitials = pinyin(item.name, { pattern: 'first', toneType: 'none' }).replace(/\s/g, '').toLowerCase();
-      return pinyinInitials.includes(searchTermLower) || item.name.includes(searchTerm); // 同时支持首字母和模糊搜索
+
+      // 2. 获取完整拼音
+      const fullPinyin = pinyin(item.name, { toneType: 'none' }).replace(/\s/g, '').toLowerCase();
+
+      // 3. 同时检查首字母、完整拼音、中文名是否包含搜索词
+      return pinyinInitials.includes(searchTermLower) ||
+        fullPinyin.includes(searchTermLower) ||
+        item.name.toLowerCase().includes(searchTermLower);
     });
   }
 
-  // 如果按名称搜索，处理特殊返回情况
   if (searchType === 'name') {
     if (filteredItems.length === 0) {
       return { status: 'not_found' };
@@ -70,8 +73,7 @@ function paginateItems(najie, options = {}) {
   }
 
   const totalItems = filteredItems.length;
-  // 如果没有任何物品（即使不过滤），也返回一个空状态
-  if (totalItems === 0) {
+  if (totalItems === 0 && searchType !== 'name') { // 如果不是名称搜索且结果为空
     return { status: 'empty' };
   }
 
@@ -81,7 +83,7 @@ function paginateItems(najie, options = {}) {
   const paginatedItems = filteredItems.slice(startIndex, startIndex + pageSize);
 
   return {
-    status: 'success', // 表示成功，需要渲染图片
+    status: 'success',
     items: paginatedItems,
     pagination: {
       currentPage: currentPage,
@@ -93,9 +95,6 @@ function paginateItems(najie, options = {}) {
 
 /**
  * 为纳戒视图准备最终的渲染数据
- * @param {string} userId - 玩家ID
- * @param {object} options - 搜索和分页选项
- * @returns {Promise<object|null>}
  */
 export async function prepareNajieRenderData(userId, options = {}) {
   const playerAllData = await DAL.getAllPlayerData(userId);
@@ -106,10 +105,8 @@ export async function prepareNajieRenderData(userId, options = {}) {
   const { player, najie } = playerAllData;
   const paginatedData = paginateItems(najie, options);
 
-  // 直接透传 paginateItems 返回的状态
   if (paginatedData.status !== 'success') {
     if (paginatedData.status === 'empty') {
-      // 如果纳戒为空，我们仍然希望显示一个空的面板
       paginatedData.items = [];
       paginatedData.pagination = { currentPage: 1, totalPages: 1, totalItems: 0 };
     } else {
