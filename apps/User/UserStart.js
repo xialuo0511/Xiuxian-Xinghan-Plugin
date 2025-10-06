@@ -266,7 +266,7 @@ export class UserStart extends plugin {
 
       if (partnerLevel >= 2) {
         const yyyymm = `${now.getFullYear()}-${now.getMonth() + 1}`;
-        const monthlyProgressKey = `XinghanXian:co_signin:${yyyymm}:${relationshipKey}`;
+        const monthlyProgressKey = `XinghanXiuxian:co_signin:${yyyymm}:${relationshipKey}`;
         const coopData = await redis.hGetAll(monthlyProgressKey);
         const claimedTiers = JSON.parse(coopData.claimed || '[]');
 
