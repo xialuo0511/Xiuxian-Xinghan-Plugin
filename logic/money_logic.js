@@ -16,7 +16,7 @@ export async function addLingshi(userId, amount) {
 }
 
 /**
- * [DAL版] 增加或减少纳戒中的物品
+ * 增加或减少纳戒中的物品
  * @param {string} userId 玩家ID
  * @param {string} thingName 物品名称
  * @param {string} thingClass 物品类别
@@ -25,29 +25,37 @@ export async function addLingshi(userId, amount) {
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function addNajieThing(userId, thingName, thingClass, amount, pinji = null) {
+  // 确保传入的 amount 是数字
+  const numAmount = Number(amount);
+  if (isNaN(numAmount) || numAmount === 0) return { success: true, message: '数量无变化' };
+
   const allData = await DAL.getAllPlayerData(userId);
   if (!allData) return { success: false, message: '玩家数据不存在' };
 
   const { najie } = allData;
   const thingDefinition = await foundthing(thingName);
-  if (amount > 0 && !thingDefinition) return { success: false, message: `物品 ${thingName} 定义不存在` };
+  if (numAmount > 0 && !thingDefinition) return { success: false, message: `物品 ${thingName} 定义不存在` };
 
-  // 统一将'仙宠口粮'类别指向'仙宠口粮'键
   const category = thingClass === '口粮' ? '仙宠口粮' : thingClass;
   if (!najie[category]) najie[category] = [];
 
   let itemIndex = -1;
   if (thingClass === '装备') {
+    // 装备的查找逻辑比较特殊，保持不变
     itemIndex = najie[category].findIndex(i => i.name === thingName && i.pinji === pinji);
   } else {
     itemIndex = najie[category].findIndex(i => i.name === thingName);
   }
 
   if (itemIndex > -1) {
-    najie[category][itemIndex].数量 += amount;
-  } else if (amount > 0) {
-    let newItem = { ...thingDefinition, 数量: amount, islockd: 0 };
-    if (thingClass === '装备') newItem.pinji = pinji;
+    const item = najie[category][itemIndex];
+
+    const currentAmount = Number(item.数量) || 0;
+    item.数量 = currentAmount + numAmount;
+
+  } else if (numAmount > 0) {
+    let newItem = { ...thingDefinition, 数量: numAmount, islockd: 0 };
+    if (thingClass === '装备') newItem.pinji = pinji; // 装备品级处理
     najie[category].push(newItem);
   } else {
     return { success: false, message: `纳戒中没有可减少的 ${thingName}` };
