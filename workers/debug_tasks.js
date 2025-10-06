@@ -1,7 +1,6 @@
-import { createNewClient } from './redis-client.js';
+import { redisClient } from '../api/redis.js';
 
 async function runDiagnostics() {
-  const redisClient = createNewClient();
   try {
     await redisClient.connect();
     console.log('--- Redis 任务系统诊断报告 ---');
