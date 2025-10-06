@@ -212,6 +212,7 @@ export async function saveAssociation(sectName, sectData) {
  */
 export async function updateNajieItem(userId, itemName, itemClass, quantity, pinji = null) {
   if (quantity === 0) return true;
+  quantity = Number(quantity);
 
   // 辅助函数，用于查找物品模板，使代码更清晰
   const findItemTemplate = (name, className) => {
@@ -228,7 +229,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
   const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
 
     if (!najie[itemClass]) {
-      najie[itemClass] = {};
+      najie[itemClass] = [];
       logger.info(`[数据操作] 玩家 ${userId} 的纳戒中尚无 [${itemClass}] 分类，已自动创建。`);
     }
 
@@ -246,7 +247,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
 
         const existingItem = najie.装备.find(item => item.name === itemName && item.pinji === targetPinji);
         if (existingItem) {
-          existingItem.数量 = (existingItem.数量 || 1) + quantity;
+          existingItem.数量 = Number(existingItem.数量 || 0) + numQuantity;
         } else {
           const baseItem = findItemTemplate(itemName, '装备');
           if (!baseItem) {

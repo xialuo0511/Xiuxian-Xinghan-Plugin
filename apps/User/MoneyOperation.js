@@ -216,53 +216,36 @@ export class MoneyOperation extends plugin {
 
       let cursor = '0';
       const userIds = [];
-      let loopCount = 0; // 防止意外的超长循环
+
+      // --- 【新增诊断部分】 ---
+      let loggedKeys = 0;
+      const keysToLog = 20; // 我们只打印前20个找到的键就足够分析了
+      logger.mark('[SCAN 键诊断] 开始扫描玩家数据键...');
+      // --- 诊断部分结束 ---
 
       do {
-        // 安全检查，如果循环次数过多，则强制跳出
-        if (loopCount++ > 1000) {
-          logger.error('[全体发放] SCAN 循环次数过多，已强制中断。');
-          break;
-        }
-
         const scanResult = await redis.scan(cursor, 'MATCH', 'XinghanXiuxian:Data:Player:*', 'COUNT', '200');
 
-        // --- 【新增诊断日志】 ---
-        logger.mark('--- [SCAN 诊断] ---');
-        logger.mark('当前 cursor:', cursor);
-        logger.mark('scanResult 的原始值:');
-        console.log(scanResult); // 使用 console.log 打印完整结构
-        // --- 诊断结束 ---
+        // 兼容 redis v3 和 v4 的返回格式
+        const nextCursor = scanResult.cursor ?? scanResult[0];
+        const keys = scanResult.keys ?? scanResult[1];
 
-        // 根据 scanResult 的可能结构进行适配
-        if (typeof scanResult === 'object' && scanResult !== null && scanResult.cursor !== undefined) {
-          // 结构为 { cursor: string, keys: Array } (ioredis, redis@4)
-          cursor = scanResult.cursor;
-          if (scanResult.keys && scanResult.keys.length > 0) {
-            for (const key of scanResult.keys) {
-              userIds.push(key.split(':').pop());
+        if (keys && keys.length > 0) {
+          for (const key of keys) {
+            // --- 【新增诊断日志】 ---
+            if (loggedKeys < keysToLog) {
+              logger.mark(`[SCAN 键诊断] 发现一个匹配的键: ${key}`);
+              loggedKeys++;
             }
+            // --- 诊断结束 ---
+            userIds.push(key.split(':').pop());
           }
-        } else if (Array.isArray(scanResult)) {
-          // 结构为 [string, Array] (node-redis < 4)
-          cursor = scanResult[0];
-          if (scanResult[1] && scanResult[1].length > 0) {
-            for (const key of scanResult[1]) {
-              userIds.push(key.split(':').pop());
-            }
-          }
-        } else {
-          logger.error('[全体发放] 未知的 redis.scan 返回结构，已中断。');
-          cursor = '0'; // 强制中断循环
         }
-
-        logger.mark(`下一次的 cursor 值: ${cursor}`);
-        logger.mark('--- [SCAN 诊断结束] ---');
-
+        cursor = nextCursor;
       } while (cursor !== '0');
 
       if (userIds.length === 0) {
-        return e.reply('当前无人修仙。', true);
+        return e.reply('当前无人修仙。');
       }
 
       e.reply(`已统计到 ${userIds.length} 位玩家，开始发放 [${item.name}] x ${amount}，过程可能需要一些时间...`);
