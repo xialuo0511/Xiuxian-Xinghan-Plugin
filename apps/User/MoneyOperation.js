@@ -9,7 +9,7 @@ import {
   handleOpenWallet
 } from '../../logic/money_logic.js';
 import { foundthing, convert2integer, Check_thing } from '../Xiuxian/xiuxian.js';
-import { Go } from './UserHome.js'; // 假设Go函数已迁移或重构
+import { Go } from './UserHome.js';
 
 export class MoneyOperation extends plugin {
   constructor() {
@@ -188,39 +188,73 @@ export class MoneyOperation extends plugin {
   }
 
 
-// 优化后的 wup_all 函数
   async wup_all(e) {
-    if (!e.isMaster) return;
-
-    const itemStr = e.msg.replace(/#全体发\s*/, '');
-    const result = await this.parseItemStrAndFind(itemStr);
-
-    if (!result.success) {
-      return e.reply(result.message, true);
+    if (!e.isMaster) {
+      // 权限不足时，最好也给一个回复，而不是静默返回
+      return e.reply('暂无权限操作。', true);
     }
 
-    // 使用 SCAN 代替 KEYS，避免阻塞Redis
-    let cursor = '0';
-    const userIds = [];
-    do {
-      const scanResult = await redis.scan(cursor, 'MATCH', 'XinghanXiuxian:Data:Player:*', 'COUNT', '100');
-      cursor = scanResult.cursor;
-      for (const key of scanResult.keys) {
-        userIds.push(key.split(':').pop());
+    try {
+      // --- 1. 解析与查找物品 (逻辑内聚) ---
+      const itemStr = e.msg.replace(/#全体发\s*/, '');
+      if (!itemStr) {
+        return e.reply('请提供要发放的物品信息，例如：#全体发 秘境之匙*10', true);
       }
-    } while (cursor !== '0');
 
-    if (userIds.length === 0) {
-      return e.reply('当前无人修仙。');
+      const args = itemStr.trim().split('*');
+      const itemName = args[0];
+      const amount = args.length > 1 ? await convert2integer(args[1]) : 1;
+      const pinji = args.length > 2 ? args[2] : null;
+
+      if (!itemName) {
+        return e.reply('请输入要发放的物品名称。', true);
+      }
+
+      const item = await foundthing(itemName);
+      if (!item) {
+        return e.reply(`这方世界似乎没有名为 [${itemName}] 的物品。`, true);
+      }
+
+      // --- 2. 使用 SCAN 安全地获取所有玩家ID ---
+      e.reply('正在统计所有修仙玩家，请稍候...', true); // 先给一个反馈，避免长时间无响应
+
+      let cursor = '0';
+      const userIds = [];
+      do {
+        // 请确保您的 redis 对象是可用的
+        const scanResult = await redis.scan(cursor, 'MATCH', 'XinghanXiuxian:Data:Player:*', 'COUNT', '200');
+        cursor = scanResult.cursor;
+        for (const key of scanResult.keys) {
+          userIds.push(key.split(':').pop());
+        }
+      } while (cursor !== '0');
+
+      if (userIds.length === 0) {
+        return e.reply('当前无人修仙。', true);
+      }
+
+      // --- 3. 批量发放 ---
+      e.reply(`已统计到 ${userIds.length} 位玩家，开始发放 [${item.name}] x ${amount}，过程可能需要一些时间...`);
+
+      let successCount = 0;
+      for (const userId of userIds) {
+        try {
+          await addNajieThing(userId, item.name, item.class, amount, pinji);
+          successCount++;
+        } catch (addError) {
+          logger.error(`[全体发放] 为用户 ${userId} 发放 [${item.name}] 时失败:`, addError);
+          // 遇到单个用户失败时，只打印日志，继续为下一个用户发放
+        }
+      }
+
+      // --- 4. 最终回复 ---
+      e.reply(`操作成功！\n已为 ${successCount} / ${userIds.length} 位玩家发放了 [${item.name}] x ${amount}。`);
+
+    } catch (error) {
+      // --- 【核心】捕获所有未知错误 ---
+      logger.error(`[全体发放] 执行时发生严重错误:`, error);
+      return e.reply('执行全体发放时遇到未知错误，请查看后台日志。', true);
     }
-
-    // 批量发放
-    for (const userId of userIds) {
-      // 为防止消息风暴，此处不在循环内单独回复
-      await addNajieThing(userId, result.item.name, result.item.class, result.amount, result.pinji);
-    }
-
-    e.reply(`操作成功！\n已为全部 ${userIds.length} 位玩家发放 [${result.item.name}] x ${result.amount}。`);
   }
 
   async Deduction(e) {
