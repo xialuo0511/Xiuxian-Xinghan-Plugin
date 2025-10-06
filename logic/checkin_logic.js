@@ -4,7 +4,7 @@ import config from '../model/Config.js';
 import { loadItemConfig } from '../model/ConfigLoader.js';
 
 // 加载月度累计签到奖励配置
-let monthlyRewardsConfig = config.getConfig('xiuxian', 'sign_in_rewards');
+let monthlyRewardsConfig = loadItemConfig('sign_in_rewards.yaml');
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
 monthlyRewardsConfig = Object.values(monthlyRewardsConfig);
