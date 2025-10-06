@@ -26,7 +26,7 @@ export class UserAction extends plugin {
       priority: 600,
       rule: [
         {
-          reg: '^#我的纳戒',
+          reg: '^#我的纳戒.*',
           fnc: 'Show_najie'
         },
         {
@@ -44,25 +44,54 @@ export class UserAction extends plugin {
     usr_qq = await Gulid(usr_qq);
 
     if (!await DAL.existPlayer(usr_qq)) {
-      return; // 玩家不存在则不处理
-    }
-
-    // 从消息中解析页码, e.g., "#我的纳戒 2"
-    let page = e.msg.match(/\d+/)?.[0] || 1;
-    page = parseInt(page);
-
-    // 调用新的逻辑函数准备数据
-    const renderData = await prepareNajieRenderData(usr_qq, page);
-
-    if (!renderData) {
-      e.reply('获取纳戒信息失败，请稍后再试。');
       return;
     }
 
-    const dataForPuppeteer = await new Show(e).get_najieData(renderData);
-    const img = await puppeteer.screenshot('najie', { ...dataForPuppeteer });
+    let msg = e.msg.replace(/#我的纳戒/i, '').trim();
 
-    e.reply(img);
+    let options = {
+      searchType: 'all',
+      searchTerm: '',
+      page: 1
+    };
+
+    // 提取末尾的页码 (e.g., "道具2", "nsmg3")
+    const pageMatch = msg.match(/(\d+)$/);
+    if (pageMatch) {
+      options.page = parseInt(pageMatch[0]);
+      msg = msg.replace(/(\d+)$/, '').trim(); // 移除页码部分
+    }
+
+    // 判断搜索类型
+    if (msg.startsWith('+')) {
+      options.searchType = 'category';
+      options.searchTerm = msg.substring(1).trim();
+    } else if (msg) {
+      options.searchType = 'name';
+      options.searchTerm = msg.trim();
+    }
+
+    const result = await prepareNajieRenderData(usr_qq, options);
+
+    // 根据不同的返回状态进行处理
+    switch (result.status) {
+      case 'success':
+        const dataForPuppeteer = await new Show(e).get_najieData(result.renderData);
+        const img = await puppeteer.screenshot('najie', { ...dataForPuppeteer });
+        await e.reply(img);
+        break;
+      case 'not_found':
+        await e.reply(`你的纳戒中似乎没有与【${options.searchTerm}】相关的物品。`, true);
+        break;
+      case 'single_item':
+        const item = result.item;
+        await e.reply(`你拥有【${item.name}】x ${item.数量}。`, true);
+        break;
+      case 'error':
+        await e.reply(result.message, true);
+        break;
+    }
+    return true;
   }
 
   async Lv_up_najie(e) {

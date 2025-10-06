@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
-    "redis": "^5.6.0"
+    "redis": "^5.6.0",
+    "pinyin-pro": "^3.18.0"
   }
 }
