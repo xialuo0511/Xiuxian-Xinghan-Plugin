@@ -1,91 +1,183 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/ningmenghome/ningmenghome.css" />
-  <!-- <link rel="stylesheet" type="text/css" href="../../html/player/player.css" /> -->
-  <link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
-  <!-- <link rel="preload" href="../../img/player/xiuxian-01.png" as="image" /> -->
-  <link rel="shortcut icon" href="#" />
-</head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <link href="#" rel="shortcut icon" />
+  <style type="text/css">
+      /* --- 字体定义 (与您的其他模板保持一致) --- */
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
 
-<body>
-	<div> 
-		<div class="user_bottom1">
-  <!-- 你要是闲得无聊,每个装备可以搞个icon -->
-		<div class="use_data">
-			<div class="user_font use_data_head" style="text-align: center;padding-left: 0px;">
-				<div>柠檬堂</div>
-				<div style="font-size:0.8em;">购买指令：#购买+物品名</div>
-				<div style="font-size:0.8em;">筛选指令：#柠檬堂+物品类型</div>
-			</div>
-			<div class="use_data_body">
-				{{each commodities_list item}}
-					<div class="user_font">
-						<div >
-							<div style="display:inline-block;">【{{item.type}}】{{item.name}}</div>
-							<div class="price">{{item.出售价*1.2}}灵石</div>
-						</div>
-					{{if item.class=="装备"}}
-						<div class="info" style="width:130px;">攻：{{item.atk}}</div>
-						<div class="info" style="width:130px;">防：{{item.def}}</div>
-						<div class="info" style="width:130px;">血：{{item.HP}}</div>
-						<div class="info" style="width:130px;">暴：{{item.bao*100}}%</div>
-					{{else if item.class=="丹药"}}
-						<div class="info">效果：{{item.HP/1000}}%{{item.exp}}{{item.xueqi}}</div>
-					{{else if item.class=="功法"}}
-						<div class="info">修炼加成：{{(item.修炼加成*100).toFixed(0)}}%</div>
-						
-					{{else if item.class=="道具"}}
-						<div class="info">描述：{{item.desc}}</div>
-					{{else if item.class=="草药"}}
-						<div class="info">描述：{{item.desc}}</div>
-					{{/if}}
-					</div>
-				{{/each}}
-			</div>
-		</div>
-		</div>
-<!--
-    {{each commodities_list item}}
-    <div class="user_bottom1">
-		<div class="use_data">
-			<div class="user_font">{{item.name}}【{{item.class}}】</div>
-			{{if item.desc}}<div class="user_font">说明：{{item.desc}}</div>{{/if}}
-			{{if item.class=="装备"}}<div class="user_font">部位：{{item.type}}</div>{{/if}}
-			<div class="user_font">
-				{{if item.atk>0}}
-					攻[{{item.atk}}]
-				{{/if}}
-				{{if item.def>0}}
-					防[{{item.def}}]
-				{{/if}}
-				{{if item.HP>0}}
-					血[{{item.HP}}]
-				{{/if}}
-				{{if item.bao>0}}
-					暴[{{item.bao*100}}%]
-				{{/if}}
-				{{if item.修炼加成>0}}
-					天赋[{{item.修炼加成*100}}%]
-				{{/if}}
-				{{if item.exp>0}}
-					修为[{{item.exp}}]
-				{{/if}}
-				{{if item.xueqi>0}}
-					血气[{{item.xueqi}}]
-				{{/if}}
-			</div>
-			<div class="user_font">价格：{{item.出售价}}</div>
-		</div>
-    </div>
-    {{/each}}-->
-  </div>
-  <style>
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
 
+      /* --- 基础样式 (与您的其他模板保持一致) --- */
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background-size: cover;
+          background-position: center;
+          font-family: "tttgbnumber", sans-serif;
+          color: #4a2c1a;
+          box-sizing: border-box;
+      }
+
+      /* --- 主容器 (与您的其他模板保持一致) --- */
+      .panel-container {
+          background: rgba(253, 250, 245, 0.88);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+      }
+
+      /* --- 商店头部 --- */
+      .header-section {
+          text-align: center;
+          padding-bottom: 20px;
+          border-bottom: 2px dashed #d2b48c;
+      }
+
+      .shop-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 32px;
+          color: #6a3906;
+      }
+
+      .command-hint {
+          font-size: 14px;
+          color: #a88763;
+          margin-top: 5px;
+      }
+
+      .command-hint span {
+          font-weight: bold;
+          color: #7a5533;
+      }
+
+      /* --- 物品展示区 --- */
+      .content-section {
+          padding-top: 20px;
+      }
+
+      .item-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr); /* 每行2个商品，可以展示更多详情 */
+          gap: 15px;
+      }
+
+      .item-card {
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid #d2b48c;
+          border-radius: 8px;
+          padding: 15px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #d2b48c;
+          padding-bottom: 8px;
+          margin-bottom: 8px;
+      }
+
+      .item-name {
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          color: #6a3906;
+          font-weight: bold;
+      }
+
+      .item-category {
+          font-size: 12px;
+          background: #a88763;
+          color: white;
+          padding: 2px 6px;
+          border-radius: 4px;
+      }
+
+      .item-details {
+          font-size: 14px;
+          color: #4a2c1a;
+          line-height: 1.8; /* 增加行高 */
+          flex-grow: 1;
+      }
+
+      .item-footer {
+          margin-top: auto; /* 推到底部 */
+          padding-top: 10px;
+          font-size: 16px;
+          text-align: right;
+          font-weight: bold;
+          color: #c0392b; /* 红色价格 */
+      }
+
+      .footer {
+          text-align: center;
+          font-size: 12px;
+          color: #a88763;
+          margin-top: 20px;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      }
   </style>
+</head>
+<body>
+<div class="panel-container" id="capture">
+  <div class="header-section">
+    <h1 class="shop-title">柠檬堂</h1>
+    <p class="command-hint">
+      <span>购买指令:</span> #购买+物品名 | <span>筛选指令:</span> #柠檬堂+物品类型
+    </p>
+  </div>
 
+  <div class="content-section">
+    <div class="item-grid">
+      {{each commodities_list item}}
+      <div class="item-card">
+        <div class="item-header">
+          <span class="item-name">{{item.name}}</span>
+          <span class="item-category">{{item.type}}</span>
+        </div>
+        <div class="item-details">
+          {{if item.class=="装备"}}
+          <div>攻: {{item.atk}} | 防: {{item.def}} | 血: {{item.HP}}</div>
+          <div>暴击: {{item.bao*100}}%</div>
+          {{else if item.class=="丹药"}}
+          {{if item.HP > 0}}
+          <div>恢复生命: {{item.HP}}</div>
+          {{/if}}
+          {{if item.exp > 0}}
+          <div>增加修为: {{item.exp}}</div>
+          {{/if}}
+          {{if item.xueqi > 0}}
+          <div>增加血气: {{item.xueqi}}</div>
+          {{/if}}
+          {{else if item.class=="功法"}}
+          <div>修炼加成: {{(item.修炼加成*100).toFixed(0)}}%</div>
+          {{else if item.desc}}
+          <div>{{item.desc}}</div>
+          {{/if}}
+        </div>
+        <div class="item-footer">
+          <span>{{Math.ceil(item.出售价 * 1.2)}} 灵石</span>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="footer">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
+</div>
 </body>
-
 </html>
