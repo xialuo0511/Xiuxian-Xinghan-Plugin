@@ -212,6 +212,8 @@ export class UserStart extends plugin {
     }
   }
 
+  // 在 apps/UserStart.js 文件中
+
   async daily_gift(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '');
     usr_qq = await Gulid(usr_qq);
@@ -243,7 +245,6 @@ export class UserStart extends plugin {
       consecutiveDays: result.checkInData.consecutiveDays,
       dailyRewards: result.dailyRewards,
 
-      // 个人累计签到数据 (也进行预处理)
       personal_progress: {
         count: result.cumulativeData.monthly_cumulative_days,
         total_days_in_month: totalDaysInMonth,
@@ -252,7 +253,9 @@ export class UserStart extends plugin {
           isClaimed: result.cumulativeData.claimed_monthly_rewards.includes(tier.days),
           position: (tier.days / totalDaysInMonth) * 100
         }))
-      }
+      },
+
+      show_coop_signin: false
     };
 
     // 检查并添加协同签到数据
@@ -263,7 +266,7 @@ export class UserStart extends plugin {
 
       if (partnerLevel >= 2) {
         const yyyymm = `${now.getFullYear()}-${now.getMonth() + 1}`;
-        const monthlyProgressKey = `XinghanXiuxian:co_signin:${yyyymm}:${relationshipKey}`;
+        const monthlyProgressKey = `XinghanXian:co_signin:${yyyymm}:${relationshipKey}`;
         const coopData = await redis.hGetAll(monthlyProgressKey);
         const claimedTiers = JSON.parse(coopData.claimed || '[]');
 
