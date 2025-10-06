@@ -8,7 +8,7 @@ const AT_ALL_FLAG = '__AT_ALL__';
  */
 export async function startActivityNotification(task) {
   if (!task) return;
-  logger.info(`[工作单元] 开始处理活动通知任务: [${task.name}]`);
+  console.info(`[工作单元] 开始处理活动通知任务: [${task.name}]`);
 
   // 构建消息文本
   let msgBody = `\n🔔 活动【${task.name}】已开启！\n\n` +
