@@ -50,7 +50,7 @@ export class NotifierTask extends plugin {
           if (isAtAll) {
             let finalMsg = [messageContent];
             finalMsg.unshift(segment.at('all'));
-            await this.pushInfo(notification.group_id, true, finalMsg);
+            await pushInfo(notification.group_id, true, finalMsg);
           }
         }
 
