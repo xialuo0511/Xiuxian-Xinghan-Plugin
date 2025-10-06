@@ -241,6 +241,7 @@ export async function processDailyCheckIn(userId) {
 
           // 检查奖励
           const claimedRewards = JSON.parse(await redis.hGet(monthlyProgressKey, 'claimed') || '[]');
+          const collaborativeSigninConfig = loadItemConfig('collaborative_signin.yaml');
           for (const tier of collaborativeSigninConfig) {
             if (newCount >= tier.days && !claimedRewards.includes(tier.days)) {
               // 发放奖励给双方
