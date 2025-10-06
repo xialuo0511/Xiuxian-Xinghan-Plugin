@@ -1,0 +1,6 @@
+# Redis 数据库配置
+Redis:
+  host: '127.0.0.1'       # 修改成您的 Redis 服务器 IP 地址
+  port: 6379             # 修改成您的 Redis 端口，默认是 6379
+  password: ''           # 如果您的 Redis 有密码，请填写在这里，否则留空
+  db: 0            # 要连接的 Redis 数据库编号，默认为 0
