@@ -188,6 +188,8 @@ export class MoneyOperation extends plugin {
   }
 
 
+  // 【最终修复版】
+
   async wup_all(e) {
     if (!e.isMaster) {
       return e.reply('暂无权限操作。', true);
@@ -214,35 +216,24 @@ export class MoneyOperation extends plugin {
 
       e.reply('正在统计所有修仙玩家，请稍候...', true);
 
-      let cursor = '0';
+      let cursor = 0; // SCAN的初始游标必须是数字0，而不是字符串'0'
       const userIds = [];
 
-      // --- 【新增诊断部分】 ---
-      let loggedKeys = 0;
-      const keysToLog = 20; // 我们只打印前20个找到的键就足够分析了
-      logger.mark('[SCAN 键诊断] 开始扫描玩家数据键...');
-      // --- 诊断部分结束 ---
-
       do {
-        const scanResult = await redis.scan(cursor, 'MATCH', 'XinghanXiuxian:Data:Player:*', 'COUNT', '200');
+        // --- 【核心修正】改用对象形式传递SCAN参数 ---
+        const scanResult = await redis.scan(cursor, {
+          MATCH: 'XinghanXiuxian:Data:Player:*',
+          COUNT: 200
+        });
+        // --- 修正结束 ---
 
-        // 兼容 redis v3 和 v4 的返回格式
-        const nextCursor = scanResult.cursor ?? scanResult[0];
-        const keys = scanResult.keys ?? scanResult[1];
-
-        if (keys && keys.length > 0) {
-          for (const key of keys) {
-            // --- 【新增诊断日志】 ---
-            if (loggedKeys < keysToLog) {
-              logger.mark(`[SCAN 键诊断] 发现一个匹配的键: ${key}`);
-              loggedKeys++;
-            }
-            // --- 诊断结束 ---
+        cursor = scanResult.cursor;
+        if (scanResult.keys && scanResult.keys.length > 0) {
+          for (const key of scanResult.keys) {
             userIds.push(key.split(':').pop());
           }
         }
-        cursor = nextCursor;
-      } while (cursor !== '0');
+      } while (cursor !== 0); // 循环的终止条件也是数字0
 
       if (userIds.length === 0) {
         return e.reply('当前无人修仙。');
