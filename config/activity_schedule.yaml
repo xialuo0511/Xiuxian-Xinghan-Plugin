@@ -5,7 +5,7 @@ defaultGroup: 140651878
 
 activities:
   - name: "测试活动"
-    startTime: "2025-10-06 22:51:00"
+    startTime: "2025-10-06 22:54:00"
     endTime: "2099-12-31 23:59:59"
     context: |
       测试活动测试活动
