@@ -1,6 +1,10 @@
 import * as DAL from '../api/data-access.js';
 import config from '../model/Config.js';
-import { pinyin } from 'pinyin-pro'; // 引入拼音库
+import { pinyin } from 'pinyin-pro';
+import path from 'path';
+import fs from 'fs'; // 引入拼音库
+import YAML from 'yaml';
+
 
 const versionData = config.getdefSet('version', 'version');
 
@@ -29,13 +33,24 @@ function paginateItems(najie, options = {}) {
     pageSize = 20
   } = options;
 
+  const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
+  const file = fs.readFileSync(configPath, 'utf8');
+  let activitySchedule = YAML.parse(file);
+
   let allItems = [];
   for (const category in najie) {
     const items = najie[category];
     if (Array.isArray(items)) {
       items.forEach(item => {
         if (item && item.name) {
-          allItems.push({ ...item, category: category });
+          let enhancedItem = { ...item, category: category };
+          if (item.eventKey && activitySchedule?.activities) {
+            const activity = activitySchedule.activities.find(a => a.eventKey === item.eventKey);
+            if (activity) {
+              enhancedItem.endTime = activity.endTime; // 将活动结束时间附加到物品上
+            }
+          }
+          allItems.push(enhancedItem);
         }
       });
     }

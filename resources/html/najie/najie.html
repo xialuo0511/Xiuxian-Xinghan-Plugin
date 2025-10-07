@@ -216,6 +216,14 @@
           border-top: 1px solid #eee; /* 在上方增加一条细分隔线 */
           line-height: 1.5; /* 增加行高，方便阅读长文本 */
       }
+
+      .item-expiration {
+          font-size: 12px;
+          color: #e74c3c; /* 使用醒目的红色 */
+          font-weight: bold;
+          margin-top: 5px;
+          text-align: right; /* 靠右显示 */
+      }
   </style>
 </head>
 <body>
@@ -292,6 +300,11 @@
           <div>&nbsp;</div> <!-- 其他类型占位 -->
           {{/if}}
         </div>
+        {{if item.endTime}}
+        <div class="item-expiration">
+          <span>过期时间: {{item.endTime}}</span>
+        </div>
+        {{/if}}
         {{if item.desc}}
         <div class="item-desc">{{item.desc}}</div>
         {{/if}}
