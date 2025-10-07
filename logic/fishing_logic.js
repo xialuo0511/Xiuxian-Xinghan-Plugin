@@ -13,6 +13,7 @@ const allRods = loadItemConfig('fishing_rods.yaml');
 const allBaits = loadItemConfig('fishing_baits.yaml');
 const allCatches = loadItemConfig('fishing_items.yaml');
 const fishShopConfig = loadItemConfig('fishing_shop.yaml');
+const catchableItemNames = new Set(allCatches.map(c => c.name));
 
 const EVENT_KEY = 'hanjiang_fishing_2025_10';
 
@@ -36,7 +37,9 @@ export async function getFishShopData(userId) {
 
   let ownedFish = {};
   activityItems.forEach(item => {
-    ownedFish[item.name] = item.数量;
+    if (catchableItemNames.has(item.name)) {
+      ownedFish[item.name] = item.数量;
+    }
   });
 
   const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
