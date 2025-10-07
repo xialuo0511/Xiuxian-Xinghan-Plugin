@@ -26,7 +26,7 @@ function Strand(now, max) {
 /**
  * 将纳戒内的所有物品筛选、整合并分页
  */
-async function paginateItems(najie, options = {}) {
+function paginateItems(najie, options = {}) {
   const {
     searchType = 'all',
     searchTerm = '',
