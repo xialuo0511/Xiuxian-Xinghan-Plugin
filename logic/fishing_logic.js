@@ -172,18 +172,28 @@ export function getActivityStatus(eventKey) {
 }
 
 /**
- * 获取玩家当前的钓鱼装备信息
+ * 【升级版】获取玩家当前的钓鱼状态信息（渔具及鱼饵数量）
  * @param {string} userId
- * @returns {Promise<{rod: object|null, bait: object|null}>}
+ * @returns {Promise<{rod: object|null, bait: object|null, bait_amount: number}>}
  */
-export async function getFishingGear(userId) {
+export async function getFishingStatus(userId) {
   const gearKey = `XinghanXiuxian:player_fishing_gear:${userId}`;
   const equipped = await redis.hGetAll(gearKey);
 
   const rod = allRods.find(r => r.name === equipped.rod);
   const bait = allBaits.find(b => b.name === equipped.bait);
 
-  return { rod, bait };
+  let baitAmount = 0;
+  // 【核心修改】如果玩家已装备鱼饵，则查询其在纳戒中的数量
+  if (bait) {
+    baitAmount = await DAL.getNajieItemAmount(userId, bait.name, '活动');
+  }
+
+  return {
+    rod,
+    bait,
+    bait_amount: baitAmount // 将数量也一并返回
+  };
 }
 
 /**

@@ -63,7 +63,7 @@ export class fishing extends plugin {
 
   async showStatus(e) {
     if (!await this.checkActivity(e)) return true;
-    const gear = await fishingLogic.getFishingGear(e.user_id);
+    const gear = await fishingLogic.getFishingStatus(e.user_id);
     const dataForRender = {
       ...gear,
       activity: fishingLogic.getActivityStatus(EVENT_KEY)

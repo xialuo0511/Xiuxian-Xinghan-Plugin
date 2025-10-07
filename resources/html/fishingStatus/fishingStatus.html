@@ -3,7 +3,6 @@
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <style>
-      /* 复用您之前的风格，这里只写关键部分 */
       @font-face {
           font-family: "tttgbnumber";
           src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
@@ -66,8 +65,20 @@
           margin-bottom: 8px;
       }
 
+      .gear-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+
       .gear-name {
           font-size: 16px;
+          font-weight: bold;
+      }
+
+      .gear-amount {
+          font-size: 14px;
+          color: #c0392b;
           font-weight: bold;
       }
 
@@ -118,7 +129,10 @@
     <div class="gear-card">
       <h2 class="gear-title">当前鱼饵</h2>
       {{if bait}}
-      <p class="gear-name">【{{bait.name}}】</p>
+      <div class="gear-header">
+        <p class="gear-name">【{{bait.name}}】</p>
+        <span class="gear-amount">剩余: {{bait_amount}}</span>
+      </div>
       <p class="gear-desc">{{bait.desc}}</p>
       <div class="item-pool">
         <p><b>可能钓上:</b> {{bait.item_pool.join('、 ')}}</p>
