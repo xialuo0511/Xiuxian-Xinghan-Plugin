@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import Config from './Config.js';
 import path from 'path';
+import { loadItemConfig } from './ConfigLoader.js';
 //引入获取配置的js
 
 /*
@@ -248,6 +249,11 @@ class XiuxianData {
     //加载技能列表
     this.jineng1 = JSON.parse(fs.readFileSync(`${this.lib_path}/技能列表1.json`));
     this.jineng2 = JSON.parse(fs.readFileSync(`${this.lib_path}/技能列表2.json`));
+
+    //活动
+    this.fishing_rods_list = loadItemConfig('fishing_rods.yaml');
+    this.fishing_baits_list = loadItemConfig('fishing_baits.yaml');
+    this.fishing_items_list = loadItemConfig('fishing_items.yaml');
 
   }
 

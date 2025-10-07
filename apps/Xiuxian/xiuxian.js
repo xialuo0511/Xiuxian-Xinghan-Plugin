@@ -2170,97 +2170,46 @@ export async function anti_cheating(e) {
 }
 
 /**
- *
- * @param {*} thing_name 物品名
- * @returns
+ * 遍历所有已知的物品列表来查找物品
+ * @param {string} thing_name 物品名
+ * @returns {object|false} 找到则返回物品对象，否则返回false
  */
-//遍历物品
 export async function foundthing(thing_name) {
-  for (var i = 0; i < data.daoju_list.length; i++) {
-    if (thing_name === data.daoju_list[i].name) {
-      return data.daoju_list[i];
+  // 将所有需要搜索的物品列表统一放入一个数组
+  const itemListsToSearch = [
+    data.daoju_list,
+    data.danyao_list,
+    data.newdanyao_list,
+    data.equipment_list,
+    data.gongfa_list,
+    data.homegongfa_list,
+    data.timegongfa_list,
+    data.timeequipmen_list,
+    data.timedanyao_list,
+    data.caoyao_list,
+    data.cailiao_list,
+    data.hezi_list,
+    data.xianchon,
+    data.xianchonkouliang,
+    data.necklace_list,
+    data.shicai_list,
+    data.gift_list,
+    data.fishing_rods_list,
+    data.fishing_baits_list,
+    data.fishing_items_list
+  ];
+
+  for (const list of itemListsToSearch) {
+    // 确保列表存在且是一个数组
+    if (Array.isArray(list)) {
+      const item = list.find(i => i && i.name === thing_name);
+      if (item) {
+        return item; // 一旦找到，立刻返回结果
+      }
     }
   }
-  for (var i = 0; i < data.danyao_list.length; i++) {
-    if (thing_name === data.danyao_list[i].name) {
-      return data.danyao_list[i];
-    }
-  }
-  for (var i = 0; i < data.newdanyao_list.length; i++) {
-    if (thing_name === data.newdanyao_list[i].name) {
-      return data.newdanyao_list[i];
-    }
-  }
-  for (var i = 0; i < data.equipment_list.length; i++) {
-    if (thing_name === data.equipment_list[i].name) {
-      return data.equipment_list[i];
-    }
-  }
-  for (var i = 0; i < data.gongfa_list.length; i++) {
-    if (thing_name === data.gongfa_list[i].name) {
-      return data.gongfa_list[i];
-    }
-  }
-  for (var i = 0; i < data.homegongfa_list.length; i++) {
-    if (thing_name === data.homegongfa_list[i].name) {
-      return data.homegongfa_list[i];
-    }
-  }
-  for (var i = 0; i < data.timegongfa_list.length; i++) {
-    if (thing_name === data.timegongfa_list[i].name) {
-      return data.timegongfa_list[i];
-    }
-  }
-  for (var i = 0; i < data.timeequipmen_list.length; i++) {
-    if (thing_name === data.timeequipmen_list[i].name) {
-      return data.timeequipmen_list[i];
-    }
-  }
-  for (var i = 0; i < data.timedanyao_list.length; i++) {
-    if (thing_name === data.timedanyao_list[i].name) {
-      return data.timedanyao_list[i];
-    }
-  }
-  for (var i = 0; i < data.caoyao_list.length; i++) {
-    if (thing_name === data.caoyao_list[i].name) {
-      return data.caoyao_list[i];
-    }
-  }
-  for (var i = 0; i < data.cailiao_list.length; i++) {
-    if (thing_name === data.cailiao_list[i].name) {
-      return data.cailiao_list[i];
-    }
-  }
-  for (var i = 0; i < data.hezi_list.length; i++) {
-    if (thing_name === data.hezi_list[i].name) {
-      return data.hezi_list[i];
-    }
-  }
-  for (var i = 0; i < data.xianchon.length; i++) {
-    if (thing_name === data.xianchon[i].name) {
-      return data.xianchon[i];
-    }
-  }
-  for (var i = 0; i < data.xianchonkouliang.length; i++) {
-    if (thing_name === data.xianchonkouliang[i].name) {
-      return data.xianchonkouliang[i];
-    }
-  }
-  for (var i = 0; i < data.necklace_list.length; i++) {
-    if (thing_name === data.necklace_list[i].name) {
-      return data.necklace_list[i];
-    }
-  }
-  for (var i = 0; i < data.shicai_list.length; i++) {
-    if (thing_name === data.shicai_list[i].name) {
-      return data.shicai_list[i];
-    }
-  }
-  for (var i = 0; i < data.gift_list.length; i++) {
-    if (thing_name === data.gift_list[i].name) {
-      return data.gift_list[i];
-    }
-  }
+
+  // 如果遍历完所有列表都没找到，则返回 false
   return false;
 }
 
