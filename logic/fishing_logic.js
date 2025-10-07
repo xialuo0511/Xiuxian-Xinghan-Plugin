@@ -14,6 +14,8 @@ const allBaits = loadItemConfig('fishing_baits.yaml');
 const allCatches = loadItemConfig('fishing_items.yaml');
 const fishShopConfig = loadItemConfig('fishing_shop.yaml');
 
+const EVENT_KEY = 'hanjiang_fishing_2025_10';
+
 /**
  * 获取渔友商行所需的数据
  * @param {string} userId
