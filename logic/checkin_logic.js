@@ -176,7 +176,30 @@ export async function processDailyCheckIn(userId) {
     return { success: false, message: signinError || '签到失败，数据更新时发生冲突，请重试。' };
   }
 
-  // 【重要】不再需要单独的 redis.set 来记录签到时间，因为 player 数据已是最新
+  let extraRewards = [];
+  let extraMessages = [];
+
+  // 添加本次获得的【个人月度累计奖励】
+  if (transactionResult.cumulativeRewards && transactionResult.cumulativeRewards.length > 0) {
+    extraRewards.push(...transactionResult.cumulativeRewards);
+    extraMessages.push(...transactionResult.cumulativeMessages);
+  }
+
+  // 检查并添加【钓鱼活动】的每日签到奖励
+  const fishingActivity = getActivityStatus('hanjiang_fishing_2025_10');
+  if (fishingActivity) {
+    const fishingRewards = [
+      { name: '青玉蚯蚓', class: '活动', amount: 20 },
+      { name: '龙须灵虾', class: '活动', amount: 5 }
+    ];
+    extraRewards.push(...fishingRewards);
+    extraMessages.push('【寒江独钓】活动福利');
+
+    // 为玩家发放活动签到奖励
+    for (const reward of fishingRewards) {
+      await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount, reward);
+    }
+  }
 
   // 发放奖励物品 (事务成功后执行)
   await DAL.updateNajieItem(userId, '秘境之匙', '道具', transactionResult.dailyRewards.秘境之匙);
@@ -210,7 +233,11 @@ export async function processDailyCheckIn(userId) {
       claimed_monthly_rewards: transactionResult.player.sign_in_info.claimed_monthly_rewards
     },
     cumulativeRewards: transactionResult.cumulativeRewards,
-    coopRewardMsg: ''
+    coopRewardMsg: '',
+    extraRewardsInfo: {
+      messages: [...new Set(extraMessages)], // 消息去重
+      items: extraRewards
+    }
   };
 
   try {

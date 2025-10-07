@@ -278,3 +278,28 @@ export async function goFishing(userId) {
 
   return { success: true, message: lootMessage };
 }
+
+/**
+ * 为首次参与钓鱼活动的玩家发放初始奖励
+ * @param {string} userId
+ * @param {string} eventKey
+ * @returns {Promise<string|null>} 如果成功发放奖励，则返回提示消息，否则返回null
+ */
+export async function grantFirstTimeBonus(userId, eventKey) {
+  const bonusKey = `XinghanXiuxian:fishing_bonus:${eventKey}:${userId}`;
+
+  // 使用 redis.set 的 NX 模式，这是一个原子操作，能保证只成功设置一次
+  const wasSet = await redis.set(bonusKey, 'true', { NX: true });
+
+  if (wasSet) {
+    // 如果设置成功，说明是第一次
+    const rodName = '绿竹鱼竿';
+    const rodDef = await foundthing(rodName);
+    if (rodDef) {
+      await DAL.updateNajieItem(userId, rodName, '活动', 1, rodDef);
+      return `初次临江，仙缘已至。你获得了【${rodName}】x1，开启你的垂钓之旅吧！`;
+    }
+  }
+
+  return null; // 如果不是第一次，或发放失败，则不返回任何消息
+}

@@ -176,7 +176,7 @@
   </div>
   {{/if}}
   <div class="rewards-section mt-6 p-4 border-t-2 border-dashed border-[#D2B48C]">
-    <h2 class="text-xl font-semibold text-[#6a3906] mb-2">本次签到收获:</h2>
+    <h2 class="text-xl font-semibold text-[#6a3906] mb-2">签到成功！本次收获:</h2>
     <div class="text-base text-[#8B4513] space-y-1">
       <p>连续签到: <span class="font-bold text-green-700">{{consecutiveDays}}</span> 天</p>
       <p>获得修为: <span class="font-bold text-green-700">{{dailyRewards.修为}}</span></p>
@@ -185,6 +185,19 @@
       <p class="text-sm italic text-yellow-700 mt-2">{{dailyRewards.message[0]}}</p>
       {{/if}}
     </div>
+    {{if extraRewardsInfo && extraRewardsInfo.items.length > 0}}
+    <div class="rewards-section mt-4 p-4 border-t-2 border-dashed border-[#D2B48C]" style="background: rgba(252, 229, 174, 0.2);">
+      <h2 class="text-xl font-semibold text-[#6a3906] mb-2">
+        🎉 额外收获
+        <span class="text-sm font-normal">({{extraRewardsInfo.messages.join('、')}})</span>
+      </h2>
+      <div class="text-base text-[#8B4513] space-y-1">
+        {{each extraRewardsInfo.items item}}
+        <p>获得 {{item.name}}: <span class="font-bold text-yellow-700">{{item.amount || item.数量}}</span></p>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
   </div>
 </div>
 

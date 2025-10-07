@@ -62,11 +62,18 @@ export class fishing extends plugin {
   }
 
   async showStatus(e) {
+    // 在每个函数开头都进行检查
     if (!await this.checkActivity(e)) return true;
-    const gear = await fishingLogic.getFishingStatus(e.user_id);
+
+    const bonusMessage = await fishingLogic.grantFirstTimeBonus(e.user_id, EVENT_KEY);
+    if (bonusMessage) {
+      await e.reply(bonusMessage, true);
+    }
+
+    const statusData = await fishingLogic.getFishingStatus(e.user_id);
     const dataForRender = {
-      ...gear,
-      activity: fishingLogic.getActivityStatus(EVENT_KEY)
+      ...statusData,
+      activity: e.activity
     };
     const dataForPuppeteer = await new Show(e).get_imgData('fishingStatus', dataForRender);
     const img = await puppeteer.screenshot('fishingStatus', { ...dataForPuppeteer });

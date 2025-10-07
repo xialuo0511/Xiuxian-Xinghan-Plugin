@@ -212,7 +212,6 @@ export class UserStart extends plugin {
     }
   }
 
-  // 在 apps/UserStart.js 文件中
 
   async daily_gift(e) {
     let usr_qq = e.user_id.toString().replace('qg_', '');
@@ -226,10 +225,6 @@ export class UserStart extends plugin {
 
     if (!result.success) {
       return e.reply(result.message);
-    }
-
-    if (result.coopRewardMsg) {
-      await e.reply(result.coopRewardMsg, true);
     }
 
     const now = new Date();
@@ -254,6 +249,7 @@ export class UserStart extends plugin {
           position: (tier.days / totalDaysInMonth) * 100
         }))
       },
+      extraRewardsInfo: result.extraRewardsInfo,
 
       show_coop_signin: false
     };
