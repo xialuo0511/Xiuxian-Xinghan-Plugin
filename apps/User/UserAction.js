@@ -32,10 +32,41 @@ export class UserAction extends plugin {
         {
           reg: '^#升级纳戒$',
           fnc: 'Lv_up_najie'
+        },
+        {
+          reg: /^#设定纳戒\s+([\u4e00-\u9fa5a-zA-Z0-9]+)\s+(#[0-9a-fA-F]{6})$/,
+          fnc: 'setNajieColor'
         }
       ]
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  async setNajieColor(e) {
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await Gulid(usr_qq);
+
+    const match = e.msg.match(/^#设定纳戒\s+([\u4e00-\u9fa5a-zA-Z0-9]+)\s+(#[0-9a-fA-F]{6})$/);
+    if (!match) return;
+
+    const categoryName = match[1];
+    const colorCode = match[2];
+
+    const settingsKey = `XinghanXiuxian:player_settings:${usr_qq}`;
+    const colorConfigJson = await redis.hGet(settingsKey, 'najie_category_colors');
+
+    let colorMap = {};
+    if (colorConfigJson) {
+      try {
+        colorMap = JSON.parse(colorConfigJson);
+      } catch (error) {
+      }
+    }
+
+    colorMap[categoryName] = colorCode;
+
+    await redis.hSet(settingsKey, 'najie_category_colors', JSON.stringify(colorMap));
+    await e.reply(`已成功将分类【${categoryName}】的颜色设置为 ${colorCode}！`, true);
   }
 
 

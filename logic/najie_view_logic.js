@@ -4,6 +4,7 @@ import { pinyin } from 'pinyin-pro';
 import path from 'path';
 import fs from 'fs'; // 引入拼音库
 import YAML from 'yaml';
+import { loadItemConfig } from '../model/ConfigLoader.js';
 
 
 const versionData = config.getdefSet('version', 'version');
@@ -25,13 +26,29 @@ function Strand(now, max) {
 /**
  * 将纳戒内的所有物品筛选、整合并分页
  */
-function paginateItems(najie, options = {}) {
+async function paginateItems(najie, options = {}) {
   const {
     searchType = 'all',
     searchTerm = '',
     page = 1,
     pageSize = 20
   } = options;
+
+  const defaultColors = loadItemConfig('category_colors.yaml');
+  let colorMap = {};
+  defaultColors.forEach(item => {
+    colorMap[item.category] = item.color;
+  });
+
+  const settingsKey = `XinghanXiuxian:player_settings:${userId}`;
+  const userColorsJson = await redis.hGet(settingsKey, 'najie_category_colors');
+  if (userColorsJson) {
+    try {
+      const userColors = JSON.parse(userColorsJson);
+      Object.assign(colorMap, userColors);
+    } catch (e) {
+    }
+  }
 
   const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
   const file = fs.readFileSync(configPath, 'utf8');

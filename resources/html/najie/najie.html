@@ -150,10 +150,10 @@
 
       .item-category {
           font-size: 12px;
-          background: #a88763;
           color: white;
           padding: 2px 6px;
           border-radius: 4px;
+          text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
       }
 
       .item-details {
@@ -260,7 +260,9 @@
       <div class="item-card">
         <div class="item-header">
           <span class="item-name">{{item.name}}</span>
-          <span class="item-category">{{item.category}}</span>
+          <span class="item-category" style="background-color: {{colorMap[item.category] || '#95a5a6'}};">
+            {{item.category}}
+          </span>
         </div>
         <div class="item-details">
           {{if item.category == "装备"}}

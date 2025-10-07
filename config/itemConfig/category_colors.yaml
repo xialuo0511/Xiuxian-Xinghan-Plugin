@@ -1,0 +1,25 @@
+# 物品分类颜色配置
+- category: "装备"
+  color: "#E67E22" # 橙色
+- category: "丹药"
+  color: "#2ECC71" # 绿色
+- category: "道具"
+  color: "#3498DB" # 蓝色
+- category: "功法"
+  color: "#9B59B6" # 紫色
+- category: "活动"
+  color: "#E74C3C" # 红色
+- category: "材料"
+  color: "#7F8C8D" # 灰色
+- category: "食材"
+  color: "#F1C40F" # 黄色
+- category: "仙宠"
+  color: "#1ABC9C" # 青色
+- category: "仙宠口粮"
+  color: "#F39C12" # 琥珀色
+- category: "项链"
+  color: "#E67E22" # 同装备
+- category: "盒子"
+  color: "#BDC3C7" # 银色
+- category: "礼物"
+  color: "#FF69B4" # 粉色
