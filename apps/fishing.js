@@ -17,9 +17,27 @@ export class fishing extends plugin {
         { reg: /^#钓鱼竿装备(.*)/, fnc: 'equipRod' },
         { reg: /^#鱼饵装备(.*)/, fnc: 'equipBait' },
         { reg: /^#钓鱼$/, fnc: 'goFish' },
-        { reg: /^#钓鱼图鉴$/, fnc: 'showCodex' }
+        { reg: /^#钓鱼图鉴$/, fnc: 'showCodex' },
+        { reg: /^#渔友商行$/, fnc: 'showFishShop' },
+        { reg: /^#渔获兑换(.*)/, fnc: 'buyFromShop' }
       ]
     });
+  }
+
+  async showFishShop(e) {
+    const shopData = await fishingLogic.getFishShopData(e.user_id);
+    const dataForPuppeteer = await new Show(e).get_imgData('fishingShop', shopData);
+    const img = await puppeteer.screenshot('fishingShop', { ...dataForPuppeteer });
+    await e.reply(img);
+  }
+
+  async buyFromShop(e) {
+    const itemName = e.msg.replace(/#渔获兑换/, '').trim();
+    if (!itemName) {
+      return e.reply('请输入要兑换的物品名称，例如：#渔获兑换 寒铁鱼竿', true);
+    }
+    const result = await fishingLogic.buyFromFishShop(e.user_id, itemName);
+    await e.reply(result.message, true);
   }
 
   async showCodex(e) {

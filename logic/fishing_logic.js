@@ -12,6 +12,93 @@ const activities = activityConfig?.activities || [];
 const allRods = loadItemConfig('fishing_rods.yaml');
 const allBaits = loadItemConfig('fishing_baits.yaml');
 const allCatches = loadItemConfig('fishing_items.yaml');
+const fishShopConfig = loadItemConfig('fishing_shop.yaml');
+
+/**
+ * 获取渔友商行所需的数据
+ * @param {string} userId
+ * @returns {Promise<object>}
+ */
+export async function getFishShopData(userId) {
+  const { najie } = await DAL.getAllPlayerData(userId);
+  const activityItems = najie['活动'] || [];
+
+  // 1. 统计玩家拥有的鱼（货币）
+  let ownedFish = {};
+  activityItems.forEach(item => {
+    // 简单假设所有渔获都可以作为货币，您也可以在这里精确指定
+    ownedFish[item.name] = item.数量;
+  });
+
+  // 2. 获取玩家的购买记录
+  const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`; // 按活动分别记录
+  const purchaseHistory = await redis.hGetAll(purchaseHistoryKey);
+
+  // 3. 组装商品列表
+  const shopItems = fishShopConfig.map(item => ({
+    ...item,
+    purchased: parseInt(purchaseHistory[item.name] || '0')
+  }));
+
+  return {
+    ownedFish: ownedFish,
+    shopItems: shopItems
+  };
+}
+
+/**
+ * 从渔友商行兑换物品
+ * @param {string} userId
+ * @param {string} itemName
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function buyFromFishShop(userId, itemName) {
+  const shopItem = fishShopConfig.find(i => i.name === itemName);
+  if (!shopItem) {
+    return { success: false, message: `渔友商行中并无 [${itemName}] 此物。` };
+  }
+
+  const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
+
+  // 1. 检查限购
+  const purchasedAmount = parseInt(await redis.hGet(purchaseHistoryKey, itemName) || '0');
+  if (purchasedAmount >= shopItem.purchaseLimit) {
+    return { success: false, message: `[${itemName}] 每人限购 ${shopItem.purchaseLimit} 个，你已达到上限。` };
+  }
+
+  // 2. 检查货币（鱼）是否足够
+  for (const cost of shopItem.price) {
+    const ownedAmount = await DAL.getNajieItemAmount(userId, cost.name, '活动');
+    if (ownedAmount < cost.amount) {
+      return {
+        success: false,
+        message: `你的 [${cost.name}] 不足，兑换需要 ${cost.amount} 个，你只有 ${ownedAmount} 个。`
+      };
+    }
+  }
+
+  // 3. 扣除货币（鱼）
+  for (const cost of shopItem.price) {
+    await DAL.updateNajieItem(userId, cost.name, '活动', -cost.amount);
+  }
+
+  // 4. 发放购买的物品
+  const itemDef = await foundthing(itemName);
+  if (!itemDef) {
+    logger.error(`[渔友商行] 致命错误：商店物品 [${itemName}] 在物品库中不存在！`);
+    // 回滚已扣除的货币
+    for (const cost of shopItem.price) {
+      await DAL.updateNajieItem(userId, cost.name, '活动', cost.amount);
+    }
+    return { success: false, message: '系统错误：商品信息不存在，请联系管理员。' };
+  }
+  await DAL.updateNajieItem(userId, itemName, itemDef.class, 1, itemDef);
+
+  // 5. 更新购买记录
+  await redis.hIncrBy(purchaseHistoryKey, itemName, 1);
+
+  return { success: true, message: `恭喜！你成功兑换了 [${itemName}] x 1！` };
+}
 
 /**
  * 获取钓鱼图鉴所需的数据
@@ -159,12 +246,12 @@ export async function goFishing(userId) {
   }
 
   // 发放物品
-  let lootMessage = '收获颇丰！你钓上了：\n';
+  let lootMessage = '收获颇丰！你钓上了：';
   for (const itemName of loot) {
     const itemDef = await foundthing(itemName);
     if (itemDef) {
       await DAL.updateNajieItem(userId, itemName, itemDef.class, 1, itemDef);
-      lootMessage += `  - [${itemName}] x 1\n`;
+      lootMessage += `\n  - [${itemName}] x 1`;
     }
   }
 
