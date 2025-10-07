@@ -146,23 +146,6 @@ export async function prepareNajieRenderData(userId, options = {}) {
     }
   }
 
-
-  console.log({
-    status: 'success',
-    renderData: {
-      pifu: player.练气皮肤,
-      user_id: userId,
-      player: player,
-      najie: najie,
-      paginatedItems: paginatedData.items,
-      pagination: paginatedData.pagination,
-      strand_hp: Strand(player.当前血量, player.血量上限),
-      strand_lingshi: Strand(najie.灵石, najie.灵石上限),
-      修仙版本: versionData,
-      colorMap: colorMap
-    }
-  });
-
   return {
     status: 'success',
     renderData: {
