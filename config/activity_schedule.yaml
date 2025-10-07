@@ -4,8 +4,8 @@
 defaultGroup: 140651878
 
 activities:
-  - name: "测试活动"
-    startTime: "2025-10-06 23:12:00"
-    endTime: "2099-12-31 23:59:59"
-    context: |
-      测试活动测试活动
+  - name: "寒江独钓"
+    eventKey: "hanjiang_fishing_2025_10"
+    startTime: "2025-10-07 09:57:00"
+    endTime: "2025-10-31 23:59:59"
+    context: "江雪初霁，鱼肥蟹美，正是垂钓的绝佳时机。活动期间可于江边垂钓，兑换限定宝物。"

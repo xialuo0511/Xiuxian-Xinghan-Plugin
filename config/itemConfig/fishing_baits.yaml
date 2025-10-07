@@ -1,0 +1,18 @@
+- name: "青玉蚯蚓"
+  class: "活动"
+  desc: "灵气滋养的蚯蚓，对普通鱼类有致命的吸引力。"
+  eventKey: "hanjiang_fishing_2025_10"
+  item_pool:
+    - "寒江鲤"
+    - "赤尾鲢"
+    - "破旧的草鞋"
+
+- name: "龙须灵虾"
+  class: "活动"
+  desc: "形似龙须的上品灵虾，奇香无比，能引来稀有的水族与沉宝。"
+  eventKey: "hanjiang_fishing_2025_10"
+  item_pool:
+    - "赤尾鲢"
+    - "金鳞龙鱼"
+    - "沉底的宝箱"
+    - "花篮"

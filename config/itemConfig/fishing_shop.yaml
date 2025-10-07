@@ -1,0 +1,17 @@
+- name: "寒铁鱼竿"
+  purchaseLimit: 1
+  price:
+    - name: "寒江鲤"
+      amount: 20
+    - name: "赤尾鲢"
+      amount: 5
+- name: "龙须灵虾"
+  purchaseLimit: 10
+  price:
+    - name: "赤尾鲢"
+      amount: 3
+- name: "限定称号·寒江渔客"
+  purchaseLimit: 1
+  price:
+    - name: "金鳞龙鱼"
+      amount: 1

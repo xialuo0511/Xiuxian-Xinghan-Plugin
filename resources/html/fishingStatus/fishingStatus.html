@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <style>
+      /* 复用您之前的风格，这里只写关键部分 */
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background: #f7f8fa;
+          font-family: "tttgbnumber", sans-serif;
+          box-sizing: border-box;
+      }
+
+      .panel-container {
+          background: rgba(253, 250, 245, 0.88);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          padding: 20px;
+      }
+
+      .title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 32px;
+          color: #6a3906;
+          text-align: center;
+          margin-bottom: 10px;
+      }
+
+      .subtitle {
+          text-align: center;
+          color: #7a5533;
+          margin-bottom: 20px;
+          border-bottom: 2px dashed #d2b48c;
+          padding-bottom: 15px;
+      }
+
+      .gear-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+      }
+
+      .gear-card {
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid #d2b48c;
+          border-radius: 8px;
+          padding: 15px;
+      }
+
+      .gear-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          color: #6a3906;
+          margin-bottom: 8px;
+      }
+
+      .gear-name {
+          font-size: 16px;
+          font-weight: bold;
+      }
+
+      .gear-stats, .gear-desc {
+          font-size: 14px;
+          line-height: 1.6;
+          margin-top: 5px;
+      }
+
+      .unequipped {
+          color: #999;
+          font-style: italic;
+      }
+
+      .item-pool {
+          background: rgba(0, 0, 0, 0.05);
+          padding: 8px;
+          border-radius: 6px;
+          margin-top: 10px;
+      }
+
+      .footer-hint {
+          margin-top: 20px;
+          text-align: center;
+          font-size: 14px;
+          color: #a88763;
+      }
+  </style>
+</head>
+<body>
+<div class="panel-container" id="capture">
+  <h1 class="title">{{activity.name}}</h1>
+  <p class="subtitle">活动时间: {{activity.startTime}} ~ {{activity.endTime}}</p>
+
+  <div class="gear-grid">
+    <div class="gear-card">
+      <h2 class="gear-title">当前鱼竿</h2>
+      {{if rod}}
+      <p class="gear-name">【{{rod.name}}】</p>
+      <p class="gear-stats">成功率: {{(rod.success_rate * 100).toFixed(0)}}% | 每次收获: {{rod.yield}}件</p>
+      <p class="gear-desc">{{rod.desc}}</p>
+      {{else}}
+      <p class="unequipped">未装备鱼竿</p>
+      <p class="gear-desc">使用指令 #钓鱼竿装备+名称 来装备</p>
+      {{/if}}
+    </div>
+
+    <div class="gear-card">
+      <h2 class="gear-title">当前鱼饵</h2>
+      {{if bait}}
+      <p class="gear-name">【{{bait.name}}】</p>
+      <p class="gear-desc">{{bait.desc}}</p>
+      <div class="item-pool">
+        <p><b>可能钓上:</b> {{bait.item_pool.join('、 ')}}</p>
+      </div>
+      {{else}}
+      <p class="unequipped">未装备鱼饵</p>
+      <p class="gear-desc">使用指令 #鱼饵装备+名称 来装备</p>
+      {{/if}}
+    </div>
+  </div>
+  <div class="footer-hint">
+    <p>发送【#钓鱼】开始垂钓 | 发送【#钓鱼图鉴】查看所有渔获</p>
+  </div>
+</div>
+</body>
+</html>

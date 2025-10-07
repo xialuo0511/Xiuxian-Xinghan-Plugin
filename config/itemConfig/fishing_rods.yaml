@@ -1,0 +1,20 @@
+- name: "绿竹鱼竿"
+  class: "活动"
+  success_rate: 0.25
+  yield: 1
+  desc: "新手常用的竹制鱼竿，结实耐用。"
+  eventKey: "hanjiang_fishing_2025_10"
+
+- name: "寒铁鱼竿"
+  class: "活动"
+  success_rate: 0.45
+  yield: 1
+  desc: "由玄冰寒铁所制，手感沉稳，能感知到更深处的水流。"
+  eventKey: "hanjiang_fishing_2025_10"
+
+- name: "碧海潮生竿"
+  class: "活动"
+  success_rate: 0.85
+  yield: 2
+  desc: "传说中的钓竿，挥舞时隐有潮声，能引来非凡之物。"
+  eventKey: "hanjiang_fishing_2025_10"

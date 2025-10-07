@@ -1,0 +1,117 @@
+import * as DAL from '../api/data-access.js';
+import { loadItemConfig } from '../model/ConfigLoader.js';
+
+const activities = loadItemConfig('activity_schedule.yaml')?.activities || [];
+const allRods = loadItemConfig('fishing_rods.yaml');
+const allBaits = loadItemConfig('fishing_baits.yaml');
+const allFish = loadItemConfig('fishing_items.yaml'); // 用于图鉴
+
+/**
+ * 检查指定key的活动当前是否正在进行
+ * @param {string} eventKey - 活动的唯一ID
+ * @returns {object|null} 如果活动正在进行，则返回活动对象，否则返回null
+ */
+export function getActivityStatus(eventKey) {
+  const activity = activities.find(a => a.eventKey === eventKey);
+  if (!activity) return null;
+
+  const now = Date.now();
+  const startTime = new Date(activity.startTime).getTime();
+  const endTime = new Date(activity.endTime).getTime();
+
+  if (now >= startTime && now <= endTime) {
+    return activity;
+  }
+  return null;
+}
+
+/**
+ * 获取玩家当前的钓鱼装备信息
+ * @param {string} userId
+ * @returns {Promise<{rod: object|null, bait: object|null}>}
+ */
+export async function getFishingGear(userId) {
+  const gearKey = `XinghanXiuxian:player_fishing_gear:${userId}`;
+  const equipped = await redis.hGetAll(gearKey);
+
+  const rod = allRods.find(r => r.name === equipped.rod);
+  const bait = allBaits.find(b => b.name === equipped.bait);
+
+  return { rod, bait };
+}
+
+/**
+ * 装备渔具
+ * @param {string} userId
+ * @param {'rod' | 'bait'} itemType 装备类型
+ * @param {string} itemName 物品名称
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function equip(userId, itemType, itemName) {
+  const config = (itemType === 'rod') ? allRods : allBaits;
+  const item = config.find(i => i.name === itemName);
+
+  if (!item) {
+    return { success: false, message: `不存在名为 [${itemName}] 的${itemType === 'rod' ? '鱼竿' : '鱼饵'}。` };
+  }
+
+  const ownedAmount = await DAL.getNajieItemAmount(userId, itemName, '活动');
+  if (ownedAmount < 1) {
+    return { success: false, message: `你的纳戒中没有 [${itemName}]。` };
+  }
+
+  const gearKey = `XinghanXiuxian:player_fishing_gear:${userId}`;
+  await redis.hSet(gearKey, itemType, itemName);
+
+  return { success: true, message: `已成功装备【${itemName}】。` };
+}
+
+/**
+ * 执行钓鱼
+ * @param {string} userId
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export async function goFishing(userId) {
+  const { rod, bait } = await getFishingGear(userId);
+
+  if (!rod || !bait) {
+    const missing = [];
+    if (!rod) missing.push('鱼竿');
+    if (!bait) missing.push('鱼饵');
+    // 特殊回复事件1：没装备
+    return { success: false, message: `工欲善其事，必先利其器。你尚未装备${missing.join('和')}，对着江面徒然发呆。` };
+  }
+
+  // 掷骰子判断是否成功
+  if (Math.random() > rod.success_rate) {
+    // 特殊回复事件2：失败
+    const failReplies = [
+      `鱼线动了一下，你猛地一提，结果只钓上来一只破旧的草鞋...`,
+      `你在江边打了个盹，醒来时发现鱼饵已被不知名的小鱼偷吃干净了。`,
+      `一条大鱼上钩了！你与之搏斗了半天，结果线断鱼跑，空欢喜一场。`
+    ];
+    const randomReply = failReplies[Math.floor(Math.random() * failReplies.length)];
+    return { success: false, message: randomReply };
+  }
+
+  // --- 钓鱼成功 ---
+  let loot = [];
+  for (let i = 0; i < rod.yield; i++) {
+    // 从鱼饵的物品池中随机抽取一个
+    const randomLootName = bait.item_pool[Math.floor(Math.random() * bait.item_pool.length)];
+    loot.push(randomLootName);
+  }
+
+  // 发放物品
+  let lootMessage = '收获颇丰！你钓上了：\n';
+  for (const itemName of loot) {
+    // 这里需要一个能根据物品名找到物品定义的函数，我们复用已有的 foundthing
+    const itemDef = await foundthing(itemName);
+    if (itemDef) {
+      await DAL.updateNajieItem(userId, itemName, itemDef.class, 1, itemDef);
+      lootMessage += `  - [${itemName}] x 1\n`;
+    }
+  }
+
+  return { success: true, message: lootMessage };
+}
