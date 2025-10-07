@@ -6,7 +6,6 @@ import YAML from 'yaml';
 import path from 'path';
 import data from '../model/XiuxianData.js';
 import XiuxianData from '../model/XiuxianData.js';
-import { foundthing } from '../apps/Xiuxian/xiuxian.js';
 
 
 // --- 创建独立的 Redis 客户端 ---
@@ -212,17 +211,20 @@ export async function saveAssociation(sectName, sectData) {
  * @returns {Promise<boolean>} 操作是否成功
  */
 export async function updateNajieItem(userId, itemName, itemClass, quantity, pinji = null) {
-  const numQuantity = Number(quantity);
-  if (isNaN(numQuantity) || numQuantity === 0) return true;
+  if (quantity === 0) return true;
+  quantity = Number(quantity);
 
-  let itemTemplate = null;
-  if (numQuantity > 0) {
-    itemTemplate = await foundthing(itemName);
-    if (!itemTemplate) {
-      logger.warn(`[updateNajieItem] 找不到物品模板: ${itemName}`);
-      return false;
+  // 辅助函数，用于查找物品模板，使代码更清晰
+  const findItemTemplate = (name, className) => {
+
+    const listMap = XiuxianData.itemListMap;
+    const listsToSearch = listMap[className] || listMap['默认'];
+    for (const listName of listsToSearch) {
+      const item = data[listName]?.find(i => i.name === name);
+      if (item) return item;
     }
-  }
+    return null;
+  };
 
   const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
 
@@ -247,7 +249,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
         if (existingItem) {
           existingItem.数量 = Number(existingItem.数量 || 0) + numQuantity;
         } else {
-          const baseItem = itemTemplate;
+          const baseItem = findItemTemplate(itemName, '装备');
           if (!baseItem) {
             log('warn', `找不到装备模板: ${itemName}`);
             return false;
@@ -314,6 +316,7 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
         najie[najieKey].splice(itemIndex, 1);
       }
     } else if (quantity > 0) { // 物品不存在，且是增加操作
+      const itemTemplate = findItemTemplate(itemName, itemClass);
       if (!itemTemplate) {
         console.warn(`找不到物品模板: [${itemName}] 在类别 [${itemClass}] 中`);
         return false;

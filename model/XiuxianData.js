@@ -27,7 +27,10 @@ class XiuxianData {
       '盒子': ['hezi_list'],
       '食材': ['shicai_list'],
       '仙米': ['xianchonkouliang'],
-      '礼物': ['gift_list']
+      '礼物': ['gift_list'],
+      '活动': ['fishing_rods_list',
+        'fishing_baits_list',
+        'fishing_items_list']
     };
 
     //获取配置文件参数
