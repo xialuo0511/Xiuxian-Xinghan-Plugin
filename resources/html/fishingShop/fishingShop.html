@@ -3,7 +3,6 @@
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <style>
-      /* 复用您之前的风格 */
       @font-face {
           font-family: "tttgbnumber";
           src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
@@ -50,12 +49,22 @@
       .owned-fish-title {
           font-weight: bold;
           color: #7a5533;
-          margin-bottom: 5px;
+          margin-bottom: 8px;
       }
 
+      /* 【核心修改】为动态列表增加样式 */
       .owned-fish-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 15px;
           font-size: 14px;
           color: #4a2c1a;
+      }
+
+      .fish-item {
+          background: rgba(168, 135, 99, 0.1);
+          padding: 2px 8px;
+          border-radius: 4px;
       }
 
       .shop-grid {
@@ -110,11 +119,15 @@
 
   <div class="owned-fish-section">
     <p class="owned-fish-title">我的渔获:</p>
-    <p class="owned-fish-list">
-      寒江鲤: {{ownedFish['寒江鲤'] || 0}} |
-      赤尾鲢: {{ownedFish['赤尾鲢'] || 0}} |
-      金鳞龙鱼: {{ownedFish['金鳞龙鱼'] || 0}}
-    </p>
+    <div class="owned-fish-list">
+      {{if Object.keys(ownedFish).length > 0}}
+      {{each ownedFish num name}}
+      <span class="fish-item">{{name}}: {{num}}</span>
+      {{/each}}
+      {{else}}
+      <span>暂无渔获，快去 <a style="color:#c0392b;">#钓鱼</a> 吧！</span>
+      {{/if}}
+    </div>
   </div>
 
   <div class="shop-grid">

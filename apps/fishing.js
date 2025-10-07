@@ -24,7 +24,18 @@ export class fishing extends plugin {
     });
   }
 
+  /**
+   * 新增一个通用的活动状态检查函数
+   * @param e 事件对象
+   * @returns {Promise<boolean>} 活动是否正在进行
+   */
+  async checkActivity(e) {
+    return fishingLogic.getActivityStatus(EVENT_KEY);
+
+  }
+
   async showFishShop(e) {
+    if (!await this.checkActivity(e)) return true;
     const shopData = await fishingLogic.getFishShopData(e.user_id);
     const dataForPuppeteer = await new Show(e).get_imgData('fishingShop', shopData);
     const img = await puppeteer.screenshot('fishingShop', { ...dataForPuppeteer });
@@ -32,6 +43,7 @@ export class fishing extends plugin {
   }
 
   async buyFromShop(e) {
+    if (!await this.checkActivity(e)) return true;
     const itemName = e.msg.replace(/#渔获兑换/, '').trim();
     if (!itemName) {
       return e.reply('请输入要兑换的物品名称，例如：#渔获兑换 寒铁鱼竿', true);
@@ -41,24 +53,15 @@ export class fishing extends plugin {
   }
 
   async showCodex(e) {
+    if (!await this.checkActivity(e)) return true;
     const codexData = await fishingLogic.getAnglerCodex(e.user_id);
     const dataForPuppeteer = await new Show(e).get_imgData('fishingCodex', codexData);
     const img = await puppeteer.screenshot('fishingCodex', { ...dataForPuppeteer });
     await e.reply(img);
   }
 
-  // 所有指令前的通用活动检查
-  async before(e) {
-    const activity = fishingLogic.getActivityStatus(EVENT_KEY);
-    if (!activity) {
-      e.reply('【寒江独钓】活动尚未开启或已经结束。', true);
-      return false; // 返回false可以中断后续指令的执行
-    }
-    e.activity = activity; // 将活动信息挂载到e对象上，方便后续使用
-    return true;
-  }
-
   async showStatus(e) {
+    if (!await this.checkActivity(e)) return true;
     const gear = await fishingLogic.getFishingGear(e.user_id);
     const dataForRender = {
       ...gear,
@@ -70,6 +73,7 @@ export class fishing extends plugin {
   }
 
   async equipRod(e) {
+    if (!await this.checkActivity(e)) return true;
     const itemName = e.msg.replace(/#钓鱼竿装备/, '').trim();
     if (!itemName) return e.reply('请指定要装备的鱼竿名称。', true);
     const result = await fishingLogic.equip(e.user_id, 'rod', itemName);
@@ -77,6 +81,7 @@ export class fishing extends plugin {
   }
 
   async equipBait(e) {
+    if (!await this.checkActivity(e)) return true;
     const itemName = e.msg.replace(/#鱼饵装备/, '').trim();
     if (!itemName) return e.reply('请指定要装备的鱼饵名称。', true);
     const result = await fishingLogic.equip(e.user_id, 'bait', itemName);
@@ -84,6 +89,7 @@ export class fishing extends plugin {
   }
 
   async goFish(e) {
+    if (!await this.checkActivity(e)) return true;
     // 增加一个简单的冷却，例如10秒
     const cdKey = `XinghanXiuxian:fishing_cd:${e.user_id}`;
     if (await redis.get(cdKey)) {
