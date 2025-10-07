@@ -2,6 +2,7 @@ import * as DAL from '../api/data-access.js';
 import * as partnerLogic from './partner_logic.js';
 import config from '../model/Config.js';
 import { loadItemConfig } from '../model/ConfigLoader.js';
+import { getActivityStatus } from './fishing_logic.js';
 
 // 加载月度累计签到奖励配置
 let monthlyRewardsConfig = loadItemConfig('sign_in_rewards.yaml');
