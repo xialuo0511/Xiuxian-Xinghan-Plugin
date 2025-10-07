@@ -36,7 +36,7 @@ export class fishing extends plugin {
     const gear = await fishingLogic.getFishingGear(e.user_id);
     const dataForRender = {
       ...gear,
-      activity: e.activity
+      activity: fishingLogic.getActivityStatus(EVENT_KEY)
     };
     const dataForPuppeteer = await new Show(e).get_imgData('fishingStatus', dataForRender);
     const img = await puppeteer.screenshot('fishingStatus', { ...dataForPuppeteer });
