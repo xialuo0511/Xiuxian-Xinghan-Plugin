@@ -130,6 +130,14 @@ export async function goFishing(userId) {
     return { success: false, message: `工欲善其事，必先利其器。你尚未装备${missing.join('和')}，对着江面徒然发呆。` };
   }
 
+  const baitAmount = await DAL.getNajieItemAmount(userId, bait.name, '活动');
+  if (baitAmount < 1) {
+    return { success: false, message: `你的【${bait.name}】已经用完了，去渔友商行补充一些吧。` };
+  }
+
+  // 消耗一个鱼饵
+  await DAL.updateNajieItem(userId, bait.name, '活动', -1);
+
   // 掷骰子判断是否成功
   if (Math.random() > rod.success_rate) {
     // 特殊回复事件2：失败
