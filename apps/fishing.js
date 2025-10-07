@@ -1,5 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import * as fishingLogic from '../logic/fishing_logic.js';
+import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import Show from '../model/show.js';
 
 const EVENT_KEY = 'hanjiang_fishing_2025_10'; // 本次活动的唯一ID
 
@@ -36,7 +38,8 @@ export class fishing extends plugin {
       ...gear,
       activity: e.activity
     };
-    const img = await puppeteer.screenshot('fishing/status', dataForRender);
+    const dataForPuppeteer = await new Show(e).get_imgData('fishingStatus', dataForRender);
+    const img = await puppeteer.screenshot('fishingStatus', { ...dataForPuppeteer });
     await e.reply(img);
   }
 
