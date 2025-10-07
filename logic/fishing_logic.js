@@ -3,6 +3,7 @@ import { loadItemConfig } from '../model/ConfigLoader.js';
 import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs';
+import { foundthing } from '../apps/Xiuxian/xiuxian.js';
 
 const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
 const file = fs.readFileSync(configPath, 'utf8');
@@ -152,7 +153,6 @@ export async function goFishing(userId) {
   // 发放物品
   let lootMessage = '收获颇丰！你钓上了：\n';
   for (const itemName of loot) {
-    // 这里需要一个能根据物品名找到物品定义的函数，我们复用已有的 foundthing
     const itemDef = await foundthing(itemName);
     if (itemDef) {
       await DAL.updateNajieItem(userId, itemName, itemDef.class, 1, itemDef);
