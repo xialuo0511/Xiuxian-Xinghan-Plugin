@@ -1,13 +1,15 @@
-import { handleTribulationStrike } from '../logic/tribulation.js';
-import { settleBiguan } from '../logic/retreat.js';
-import { work } from '../logic/work.js';
-import { settleRealm } from '../logic/realm_logic.js';
-import { startActivityNotification } from '../logic/activity_handler.js';
+import { handleTribulationStrike } from '../logic/tribulation.js';// 渡劫
+import { settleBiguan } from '../logic/retreat.js';// 闭关
+import { work } from '../logic/work.js';//降妖
+import { settleRealm } from '../logic/realm_logic.js';//降临秘境
+import { startActivityNotification } from '../logic/activity_handler.js';//活动调度
+import { cleanupExpiredItems } from '../logic/cleanup_logic.js';//活动物品清除
 
 export {
-  handleTribulationStrike, // 渡劫
-  settleBiguan, // 闭关
-  work, //降妖
-  settleRealm, //降临秘境
-  startActivityNotification
+  handleTribulationStrike,
+  settleBiguan,
+  work,
+  settleRealm,
+  startActivityNotification,
+  cleanupExpiredItems
 };

@@ -33,20 +33,28 @@ async function scheduleAllActivities() {
   }
   let scheduledCount = 0;
   for (const activity of activityConfig.activities) {
-    const startTime = new Date(activity.startTime);
-    const timestamp = startTime.getTime();
+    const startTime = new Date(activity.startTime).getTime();
+    const endTime = new Date(activity.endTime).getTime();
 
-    if (timestamp < Date.now()) continue; // 跳过已过期的活动
+    if (startTime > Date.now()) {
+      const startTaskPayload = {
+        type: 'startActivityNotification',
+        ...activity,
+        defaultGroup: activityConfig.defaultGroup
+      };
+      await scheduleTask(startTaskPayload, startTime);
+      logger.mark(`[活动调度器] 已成功调度 [${activity.name}] 的【开始通知】任务`);
+      scheduledCount++;
+    }
 
-    const taskPayload = {
-      type: 'startActivityNotification', // 定义新的任务类型
-      ...activity, // 将活动的所有信息都放入负载
-      defaultGroup: activityConfig.defaultGroup
-    };
-
-    await scheduleTask(taskPayload, timestamp);
-    scheduledCount++;
-    logger.mark(`[活动调度器] 已成功调度活动 [${activity.name}] 于 ${activity.startTime}`);
+    if (endTime > Date.now()) {
+      const endTaskPayload = {
+        type: 'cleanupExpiredItems',
+        eventKey: activity.eventKey // 只需传递关键的 eventKey
+      };
+      await scheduleTask(endTaskPayload, endTime);
+      logger.mark(`[活动调度器] 已成功调度 [${activity.name}] 的【结束清理】任务`);
+    }
   }
   return scheduledCount;
 }
