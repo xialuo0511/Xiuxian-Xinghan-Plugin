@@ -17,7 +17,7 @@ const fishShopConfig = loadItemConfig('fishing_shop.yaml');
 const EVENT_KEY = 'hanjiang_fishing_2025_10';
 
 /**
- * 【健壮版】获取渔友商行所需的数据
+ * 获取渔友商行所需的数据
  * @param {string} userId
  * @returns {Promise<object>}
  */
@@ -27,23 +27,21 @@ export async function getFishShopData(userId) {
     logger.warn(`[渔友商行] 未能获取到玩家 ${userId} 的纳戒数据。`);
     return {
       ownedFish: {},
+      hasOwnedFish: false,
       shopItems: []
     };
   }
 
   const activityItems = playerData.najie['活动'] || [];
 
-  // 1. 统计玩家拥有的鱼（货币）
   let ownedFish = {};
   activityItems.forEach(item => {
     ownedFish[item.name] = item.数量;
   });
 
-  // 2. 获取玩家的购买记录
   const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
   const purchaseHistory = await redis.hGetAll(purchaseHistoryKey);
 
-  // 3. 组装商品列表
   const shopItems = fishShopConfig.map(item => ({
     ...item,
     purchased: parseInt(purchaseHistory[item.name] || '0')
@@ -51,6 +49,7 @@ export async function getFishShopData(userId) {
 
   return {
     ownedFish: ownedFish,
+    hasOwnedFish: Object.keys(ownedFish).length > 0,
     shopItems: shopItems
   };
 }

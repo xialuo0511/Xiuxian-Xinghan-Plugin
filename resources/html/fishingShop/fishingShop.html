@@ -120,7 +120,7 @@
   <div class="owned-fish-section">
     <p class="owned-fish-title">我的渔获:</p>
     <div class="owned-fish-list">
-      {{if Object.keys(ownedFish).length > 0}}
+      {{if hasOwnedFish}}
       {{each ownedFish num name}}
       <span class="fish-item">{{name}}: {{num}}</span>
       {{/each}}
