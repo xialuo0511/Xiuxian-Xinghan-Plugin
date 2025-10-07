@@ -37,6 +37,7 @@ export class fishing extends plugin {
   async showFishShop(e) {
     if (!await this.checkActivity(e)) return true;
     const shopData = await fishingLogic.getFishShopData(e.user_id);
+    console.mark('[商店数据诊断] 准备渲染的数据:', shopData);
     const dataForPuppeteer = await new Show(e).get_imgData('fishingShop', shopData);
     const img = await puppeteer.screenshot('fishingShop', { ...dataForPuppeteer });
     await e.reply(img);
