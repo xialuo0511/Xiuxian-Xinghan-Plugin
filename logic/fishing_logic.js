@@ -1,7 +1,13 @@
 import * as DAL from '../api/data-access.js';
 import { loadItemConfig } from '../model/ConfigLoader.js';
+import path from 'path';
+import YAML from 'yaml';
+import fs from 'fs';
 
-const activities = loadItemConfig('activity_schedule.yaml')?.activities || [];
+const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
+const file = fs.readFileSync(configPath, 'utf8');
+let activityConfig = YAML.parse(file);
+const activities = activityConfig?.activities || [];
 const allRods = loadItemConfig('fishing_rods.yaml');
 const allBaits = loadItemConfig('fishing_baits.yaml');
 const allFish = loadItemConfig('fishing_items.yaml'); // 用于图鉴
