@@ -85,7 +85,7 @@ export async function transaction_update(userId, updateFunction) {
 
     const allData = await transactionClient.hGetAll(mainKey);
     if (!allData || Object.keys(allData).length === 0) {
-      log('warn', `[TX] 尝试更新不存在的玩家: ${userId}`);
+      console.log('warn', `[TX] 尝试更新不存在的玩家: ${userId}`);
       return false; // 玩家不存在
     }
 
