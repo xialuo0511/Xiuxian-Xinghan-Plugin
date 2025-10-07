@@ -75,25 +75,20 @@ export class UserAction extends plugin {
     usr_qq = await Gulid(usr_qq);
 
     if (!await DAL.existPlayer(usr_qq)) {
-      return;
+      return; // 玩家不存在则不处理
     }
 
     let msg = e.msg.replace(/#我的纳戒/i, '').trim();
-
     let options = {
       searchType: 'all',
       searchTerm: '',
       page: 1
     };
-
-    // 提取末尾的页码 (e.g., "道具2", "nsmg3")
     const pageMatch = msg.match(/(\d+)$/);
     if (pageMatch) {
       options.page = parseInt(pageMatch[0]);
-      msg = msg.replace(/(\d+)$/, '').trim(); // 移除页码部分
+      msg = msg.replace(/(\d+)$/, '').trim();
     }
-
-    // 判断搜索类型
     if (msg.startsWith('+')) {
       options.searchType = 'category';
       options.searchTerm = msg.substring(1).trim();
@@ -104,7 +99,6 @@ export class UserAction extends plugin {
 
     const result = await prepareNajieRenderData(usr_qq, options);
 
-    // 根据不同的返回状态进行处理
     switch (result.status) {
       case 'success':
         const dataForPuppeteer = await new Show(e).get_najieData(result.renderData);
