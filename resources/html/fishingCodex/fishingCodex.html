@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <style>
+      /* 复用您之前的样式，这里只写关键部分 */
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background: #f7f8fa;
+          font-family: "tttgbnumber", sans-serif;
+          box-sizing: border-box;
+      }
+
+      .panel-container {
+          background: rgba(253, 250, 245, 0.88);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          padding: 20px;
+      }
+
+      .main-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 32px;
+          color: #6a3906;
+          text-align: center;
+          margin-bottom: 20px;
+      }
+
+      .category-section {
+          margin-bottom: 20px;
+      }
+
+      .category-title {
+          font-family: "NZBZ", sans-serif;
+          font-size: 24px;
+          text-align: center;
+          color: #6a3906;
+          margin-bottom: 15px;
+          border-bottom: 2px dashed #d2b48c;
+          padding-bottom: 10px;
+      }
+
+      .codex-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+      }
+
+      .codex-entry {
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid #d2b48c;
+          border-radius: 8px;
+          padding: 15px;
+      }
+
+      .codex-entry.locked {
+          filter: grayscale(80%) opacity(0.7);
+      }
+
+      .entry-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #d2b48c;
+          padding-bottom: 8px;
+          margin-bottom: 8px;
+      }
+
+      .item-name {
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          color: #6a3906;
+      }
+
+      .owned-status {
+          font-size: 14px;
+          font-weight: bold;
+      }
+
+      .owned-status.yes {
+          color: #27ae60;
+      }
+
+      .owned-status.no {
+          color: #999;
+      }
+
+      .item-details {
+          font-size: 14px;
+          color: #4a2c1a;
+          line-height: 1.6;
+      }
+  </style>
+</head>
+<body>
+<div class="panel-container" id="capture">
+  <h1 class="main-title">寒江独钓图鉴</h1>
+
+  <div class="category-section">
+    <h2 class="category-title">渔具</h2>
+    <div class="codex-grid">
+      {{each rods item}}
+      <div class="codex-entry {{if item.owned_amount <= 0}}locked{{/if}}">
+        <div class="entry-header">
+          <span class="item-name">{{item.name}}</span>
+          <span class="owned-status {{if item.owned_amount > 0}}yes{{else}}no{{/if}}">
+                        {{if item.owned_amount > 0}}已获得: {{item.owned_amount}}{{else}}未获得{{/if}}
+                    </span>
+        </div>
+        <p class="item-details">成功率: {{(item.success_rate * 100).toFixed(0)}}% | 每次收获: {{item.yield}}件</p>
+        <p class="item-details">{{item.desc}}</p>
+      </div>
+      {{/each}}
+      {{each baits item}}
+      <div class="codex-entry {{if item.owned_amount <= 0}}locked{{/if}}">
+        <div class="entry-header">
+          <span class="item-name">{{item.name}}</span>
+          <span class="owned-status {{if item.owned_amount > 0}}yes{{else}}no{{/if}}">
+                        {{if item.owned_amount > 0}}已获得: {{item.owned_amount}}{{else}}未获得{{/if}}
+                    </span>
+        </div>
+        <p class="item-details">{{item.desc}}</p>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">渔获</h2>
+    <div class="codex-grid">
+      {{each catches item}}
+      <div class="codex-entry {{if item.owned_amount <= 0}}locked{{/if}}">
+        <div class="entry-header">
+          <span class="item-name">{{item.name}}</span>
+          <span class="owned-status {{if item.owned_amount > 0}}yes{{else}}no{{/if}}">
+                        {{if item.owned_amount > 0}}已获得: {{item.owned_amount}}{{else}}未获得{{/if}}
+                    </span>
+        </div>
+        <p class="item-details">{{item.desc}}</p>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+</body>
+</html>

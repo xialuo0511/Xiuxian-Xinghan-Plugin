@@ -16,9 +16,17 @@ export class fishing extends plugin {
         { reg: /^#寒江独钓$/, fnc: 'showStatus' },
         { reg: /^#钓鱼竿装备(.*)/, fnc: 'equipRod' },
         { reg: /^#鱼饵装备(.*)/, fnc: 'equipBait' },
-        { reg: /^#钓鱼$/, fnc: 'goFish' }
+        { reg: /^#钓鱼$/, fnc: 'goFish' },
+        { reg: /^#钓鱼图鉴$/, fnc: 'showCodex' }
       ]
     });
+  }
+
+  async showCodex(e) {
+    const codexData = await fishingLogic.getAnglerCodex(e.user_id);
+    const dataForPuppeteer = await new Show(e).get_imgData('fishingCodex', codexData);
+    const img = await puppeteer.screenshot('fishingCodex', { ...dataForPuppeteer });
+    await e.reply(img);
   }
 
   // 所有指令前的通用活动检查

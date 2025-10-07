@@ -10,7 +10,48 @@ let activityConfig = YAML.parse(file);
 const activities = activityConfig?.activities || [];
 const allRods = loadItemConfig('fishing_rods.yaml');
 const allBaits = loadItemConfig('fishing_baits.yaml');
-const allFish = loadItemConfig('fishing_items.yaml'); // 用于图鉴
+const allCatches = loadItemConfig('fishing_items.yaml');
+
+/**
+ * 获取钓鱼图鉴所需的数据
+ * @param {string} userId
+ * @returns {Promise<object>}
+ */
+export async function getAnglerCodex(userId) {
+  const { najie } = await DAL.getAllPlayerData(userId);
+
+  // 检查函数，用于获取纳戒中某个活动物品的数量
+  const getOwnedAmount = (itemName) => {
+    const category = najie['活动'];
+    if (!Array.isArray(category)) return 0;
+    const item = category.find(i => i && i.name === itemName);
+    return item?.数量 || 0;
+  };
+
+  // 1. 处理鱼竿
+  const rods = allRods.map(rod => ({
+    ...rod,
+    owned_amount: getOwnedAmount(rod.name)
+  }));
+
+  // 2. 处理鱼饵
+  const baits = allBaits.map(bait => ({
+    ...bait,
+    owned_amount: getOwnedAmount(bait.name)
+  }));
+
+  // 3. 处理所有渔获
+  const catches = allCatches.map(fish => ({
+    ...fish,
+    owned_amount: getOwnedAmount(fish.name)
+  }));
+
+  return {
+    rods,
+    baits,
+    catches
+  };
+}
 
 /**
  * 检查指定key的活动当前是否正在进行
