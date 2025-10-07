@@ -34,22 +34,6 @@ async function paginateItems(najie, options = {}) {
     pageSize = 20
   } = options;
 
-  const defaultColors = loadItemConfig('category_colors.yaml');
-  let colorMap = {};
-  defaultColors.forEach(item => {
-    colorMap[item.category] = item.color;
-  });
-
-  const settingsKey = `XinghanXiuxian:player_settings:${userId}`;
-  const userColorsJson = await redis.hGet(settingsKey, 'najie_category_colors');
-  if (userColorsJson) {
-    try {
-      const userColors = JSON.parse(userColorsJson);
-      Object.assign(colorMap, userColors);
-    } catch (e) {
-    }
-  }
-
   const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
   const file = fs.readFileSync(configPath, 'utf8');
   let activitySchedule = YAML.parse(file);
@@ -132,6 +116,22 @@ export async function prepareNajieRenderData(userId, options = {}) {
   const playerAllData = await DAL.getAllPlayerData(userId);
   if (!playerAllData) {
     return { status: 'error', message: '无法获取玩家信息。' };
+  }
+
+  const defaultColors = loadItemConfig('category_colors.yaml');
+  let colorMap = {};
+  defaultColors.forEach(item => {
+    colorMap[item.category] = item.color;
+  });
+
+  const settingsKey = `XinghanXiuxian:player_settings:${userId}`;
+  const userColorsJson = await redis.hGet(settingsKey, 'najie_category_colors');
+  if (userColorsJson) {
+    try {
+      const userColors = JSON.parse(userColorsJson);
+      Object.assign(colorMap, userColors);
+    } catch (e) {
+    }
   }
 
   const { player, najie } = playerAllData;
