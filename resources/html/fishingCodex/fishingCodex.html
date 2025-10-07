@@ -109,7 +109,7 @@
   <h1 class="main-title">寒江独钓图鉴</h1>
 
   <div class="category-section">
-    <h2 class="category-title">渔具</h2>
+    <h2 class="category-title">鱼竿</h2>
     <div class="codex-grid">
       {{each rods item}}
       <div class="codex-entry {{if item.owned_amount <= 0}}locked{{/if}}">
@@ -123,6 +123,12 @@
         <p class="item-details">{{item.desc}}</p>
       </div>
       {{/each}}
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">鱼饵</h2>
+    <div class="codex-grid">
       {{each baits item}}
       <div class="codex-entry {{if item.owned_amount <= 0}}locked{{/if}}">
         <div class="entry-header">
