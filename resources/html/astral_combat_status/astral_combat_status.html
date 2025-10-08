@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <style> /* 复用您之前的风格 */ </style>
 </head>
 <body>
-
+<div class="panel-container" id="capture">
+  <h1 class="shop-title">我的星魂队伍</h1>
+  <p class="command-hint">指令: #星魂装备[1-4]号 [星魂名称]</p>
+  <div class="team-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+    {{each team soul}}
+    <div class="item-card" style="{{if !soul.equipped}}opacity: 0.6;{{/if}}">
+      <div class="item-header">
+        <span class="item-name">{{soul.slot}}号位: {{soul.name}}</span>
+      </div>
+      {{if soul.equipped}}
+      <div class="item-details">
+        <p>等级: {{soul.base_stats.等级 || 1}} | 属性: {{soul.base_stats.属性}}</p>
+        <p>攻击: {{soul.base_stats.攻击}} | 防御: {{soul.base_stats.防御}}</p>
+        <p>生命: {{soul.base_stats.生命}} | 速度: {{soul.base_stats.速度}}</p>
+        <p>抗性: {{(soul.base_stats.抗性*100).toFixed(0)}}% | 嘲讽: {{soul.base_stats.嘲讽}}</p>
+      </div>
+      {{else}}
+      <div class="item-details" style="text-align: center; padding: 20px 0; color: #888;">空</div>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
 </body>
 </html>
