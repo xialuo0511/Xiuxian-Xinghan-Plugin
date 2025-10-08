@@ -30,7 +30,8 @@ class XiuxianData {
       '礼物': ['gift_list'],
       '活动': ['fishing_rods_list',
         'fishing_baits_list',
-        'fishing_items_list']
+        'fishing_items_list',
+        'start_souls_list']
     };
 
     //获取配置文件参数
@@ -257,6 +258,8 @@ class XiuxianData {
     this.fishing_rods_list = loadItemConfig('fishing_rods.yaml');
     this.fishing_baits_list = loadItemConfig('fishing_baits.yaml');
     this.fishing_items_list = loadItemConfig('fishing_items.yaml');
+
+    this.start_souls_list = loadItemConfig('start_souls.yaml');
 
   }
 

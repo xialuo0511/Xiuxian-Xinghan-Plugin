@@ -2196,7 +2196,8 @@ export async function foundthing(thing_name) {
     data.gift_list,
     data.fishing_rods_list,
     data.fishing_baits_list,
-    data.fishing_items_list
+    data.fishing_items_list,
+    data.start_souls_list
   ];
 
   for (const list of itemListsToSearch) {
