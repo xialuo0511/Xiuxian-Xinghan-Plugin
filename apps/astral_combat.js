@@ -28,7 +28,6 @@ export class astral_combat extends plugin {
    * @returns {Promise<boolean>} 活动是否正在进行
    */
   async checkActivity(e) {
-    // 复用我们在 fishing_logic.js 中已经写好的函数
     const activity = getActivityStatus(EVENT_KEY);
     if (!activity) {
       // 在活动时间外，静默返回，不响应指令
@@ -42,33 +41,29 @@ export class astral_combat extends plugin {
     if (!await this.checkActivity(e)) return true;
 
     const playerData = (await DAL.getAllPlayerData(e.user_id))?.player;
+    if (!playerData) {
+      return e.reply('无法获取您的角色信息。', true);
+    }
 
-    logger.mark('--- [万象天机-读取诊断] ---');
-    logger.mark('1. 从数据库读取到的 player.equipped_star_souls 原始内容:');
-    console.log(playerData.equipped_star_souls);
-
+    // 从数据库读取到的原始内容
     const equipped = playerData.equipped_star_souls || {};
 
     let teamData = [];
     for (let i = 1; i <= 4; i++) {
       const soulName = equipped[i];
       if (soulName) {
+        // 从配置文件中查找星魂的完整定义
         const soulInfo = allStarSouls.find(s => s.name === soulName);
-        teamData.push({ slot: i, equipped: true, ...soulInfo });
+
+        if (soulInfo) {
+          teamData.push({ slot: i, equipped: true, ...soulInfo });
+        } else {
+          teamData.push({ slot: i, equipped: false, name: '数据错误' });
+        }
       } else {
         teamData.push({ slot: i, equipped: false, name: '未装备' });
       }
     }
-
-    logger.mark('2. 准备传递给前端模板的 teamData 数组:');
-    console.log(teamData);
-    logger.mark('--- [诊断结束] ---');
-
-    const renderData = {
-      team: teamData,
-      pifu: playerData.pifu,
-      pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
-    };
     const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_status', teamData);
     const img = await puppeteer.screenshot('astral_combat_status', { ...dataForPuppeteer });
     await e.reply(img);
