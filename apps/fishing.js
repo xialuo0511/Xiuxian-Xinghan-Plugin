@@ -2,8 +2,16 @@ import plugin from '../../../lib/plugins/plugin.js';
 import * as fishingLogic from '../logic/fishing_logic.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
 import Show from '../model/show.js';
+import path from 'path';
+import fs from 'fs';
+import YAML from 'yaml';
 
 const EVENT_KEY = 'hanjiang_fishing_2025_10'; // 本次活动的唯一ID
+
+const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
+const file = fs.readFileSync(configPath, 'utf8');
+let activityConfig = YAML.parse(file);
+const activities = activityConfig?.activities || [];
 
 export class fishing extends plugin {
   constructor() {
@@ -73,7 +81,7 @@ export class fishing extends plugin {
     const statusData = await fishingLogic.getFishingStatus(e.user_id);
     const dataForRender = {
       ...statusData,
-      activity: e.activity
+      activity: activities.find(a => a.eventKey === EVENT_KEY)
     };
     const dataForPuppeteer = await new Show(e).get_imgData('fishingStatus', dataForRender);
     const img = await puppeteer.screenshot('fishingStatus', { ...dataForPuppeteer });
