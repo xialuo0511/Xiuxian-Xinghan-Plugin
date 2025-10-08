@@ -39,10 +39,15 @@ export class astral_combat extends plugin {
   }
 
   async showTeamStatus(e) {
-    // 在每个指令的开头都进行检查
     if (!await this.checkActivity(e)) return true;
+
     const playerData = (await DAL.getAllPlayerData(e.user_id))?.player;
-    const equipped = playerData.equipped_star_souls || {}; // 假设为对象
+
+    logger.mark('--- [万象天机-读取诊断] ---');
+    logger.mark('1. 从数据库读取到的 player.equipped_star_souls 原始内容:');
+    console.log(playerData.equipped_star_souls);
+
+    const equipped = playerData.equipped_star_souls || {};
 
     let teamData = [];
     for (let i = 1; i <= 4; i++) {
@@ -54,6 +59,16 @@ export class astral_combat extends plugin {
         teamData.push({ slot: i, equipped: false, name: '未装备' });
       }
     }
+
+    logger.mark('2. 准备传递给前端模板的 teamData 数组:');
+    console.log(teamData);
+    logger.mark('--- [诊断结束] ---');
+
+    const renderData = {
+      team: teamData,
+      pifu: playerData.pifu,
+      pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+    };
     const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_status', teamData);
     const img = await puppeteer.screenshot('astral_combat_status', { ...dataForPuppeteer });
     await e.reply(img);
