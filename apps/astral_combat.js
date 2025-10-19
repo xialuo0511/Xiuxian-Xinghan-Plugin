@@ -51,6 +51,8 @@ export class astral_combat extends plugin {
     // 运行战斗引擎
     const result = await runCombat(playerSouls, enemyNames);
 
+    console.log(result.log);
+
     // 渲染日志
     const renderData = {
       log: result.log,
