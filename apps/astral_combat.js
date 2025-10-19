@@ -71,7 +71,9 @@ export class astral_combat extends plugin {
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
 
-    const img = await puppeteer.screenshot('astral_combat/status', renderData);
+
+    const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_status', renderData);
+    const img = await puppeteer.screenshot('astral_combat_status', { ...dataForPuppeteer });
     await e.reply(img);
   }
 
