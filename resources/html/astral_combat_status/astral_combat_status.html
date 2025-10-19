@@ -4,16 +4,18 @@
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <link href="#" rel="shortcut icon" />
   <style type="text/css">
-      /* --- 字体定义 (与您的其他模板保持一致) --- */
+      /* --- 字体定义 --- */
       @font-face {
           font-family: "tttgbnumber";
           src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
       }
+
       @font-face {
           font-family: "NZBZ";
           src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
       }
-      /* --- 基础样式 (与您的其他模板保持一致) --- */
+
+      /* --- 基础样式 --- */
       body {
           width: 800px;
           margin: 0;
@@ -27,7 +29,8 @@
           align-items: center;
           min-height: 100vh;
       }
-      /* --- 主容器 (与您的其他模板保持一致) --- */
+
+      /* --- 主容器 --- */
       .panel-container {
           width: 100%;
           background: rgba(253, 250, 245, 0.88);
@@ -38,6 +41,7 @@
           box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
           padding: 20px;
       }
+
       /* --- 标题和提示 --- */
       .shop-title {
           font-family: "NZBZ", sans-serif;
@@ -47,12 +51,14 @@
           padding-bottom: 15px;
           border-bottom: 2px dashed #d2b48c;
       }
+
       .command-hint {
           font-size: 14px;
           color: #a88763;
           text-align: center;
           margin-top: 5px;
       }
+
       /* --- 队伍网格与卡片样式 --- */
       .team-grid {
           display: grid;
@@ -60,35 +66,46 @@
           gap: 15px;
           margin-top: 20px;
       }
+
       .item-card {
           background: rgba(255, 255, 255, 0.4);
           border: 1px solid #d2b48c;
           border-radius: 8px;
           padding: 15px;
       }
+
       .item-header {
           border-bottom: 1px solid #d2b48c;
           padding-bottom: 8px;
           margin-bottom: 8px;
       }
+
       .item-name {
           font-family: "NZBZ", sans-serif;
           font-size: 20px;
           color: #6a3906;
       }
+
       .item-details {
           font-size: 14px;
           color: #4a2c1a;
           line-height: 1.8;
       }
+
       .item-details p {
           margin: 0;
       }
+
       .unequipped-text {
           text-align: center;
           padding: 20px 0;
           color: #999;
           font-size: 18px;
+      }
+
+      /* --- 【核心修正】新增的样式 --- */
+      .item-card.unequipped {
+          opacity: 0.6;
       }
   </style>
 </head>
@@ -101,7 +118,7 @@
 
   <div class="team-grid">
     {{each team soul}}
-    <div class="item-card" style="{{if !soul.equipped}}opacity: 0.6;{{/if}}">
+    <div class="item-card {{if !soul.equipped}}unequipped{{/if}}">
       <div class="item-header">
         <span class="item-name">{{soul.slot}}号位: {{soul.name}}</span>
       </div>
