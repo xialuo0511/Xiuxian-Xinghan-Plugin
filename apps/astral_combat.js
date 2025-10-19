@@ -4,6 +4,7 @@ import { loadItemConfig } from '../model/ConfigLoader.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
 import Show from '../model/show.js';
 import { getActivityStatus } from '../logic/fishing_logic.js';
+import { runCombat } from '../logic/combat/CombatEngine.js';
 
 const allStarSouls = loadItemConfig('star_souls.yaml');
 const EVENT_KEY = 'wanxiang_tianji_2025_10';
