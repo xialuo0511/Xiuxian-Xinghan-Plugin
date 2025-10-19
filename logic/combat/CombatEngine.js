@@ -51,12 +51,20 @@ export async function runCombat(playerSouls, enemyNames) {
     const damage = Math.max(1, Math.floor(caster.attack - target.defense * (1 - target.resistance)));
     target.takeDamage(damage);
 
-    const getUnitStatus = (unit) => ({
-      name: unit.name,
-      hp: unit.current_hp,
-      max_hp: unit.max_hp,
-      hp_percent: (unit.current_hp / unit.max_hp) * 100
-    });
+    const getUnitStatus = (unit) => {
+      const max_hp = unit.max_hp > 0 ? unit.max_hp : 1;
+      const current_hp = unit.current_hp || 0;
+
+      let hp_percent = (current_hp / max_hp) * 100;
+      hp_percent = Math.max(0, Math.min(hp_percent, 100));
+
+      return {
+        name: unit.name,
+        hp: current_hp,
+        max_hp: unit.max_hp,
+        hp_percent: hp_percent
+      };
+    };
 
     combatLog.push({
       type: 'action',
