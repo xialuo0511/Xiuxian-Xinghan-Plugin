@@ -1,11 +1,10 @@
 export class Combatant {
   constructor(id, source, team) {
-    this.id = id; // A unique ID for this unit in the battle, e.g., 'player_1', 'monster_3'
+    this.id = id;
     this.name = source.name;
-    this.team = team; // 'player' or 'enemy'
-    this.source = source; // The original config object
+    this.team = team;
+    this.source = source;
 
-    // Current combat stats
     this.max_hp = source.base_stats.health;
     this.current_hp = source.base_stats.health;
     this.attack = source.base_stats.attack;
@@ -14,6 +13,9 @@ export class Combatant {
     this.resistance = source.base_stats.resistance;
     this.taunt = source.base_stats.taunt;
     this.element = source.base_stats.element;
+
+    // 【核心新增】行动点，初始为0
+    this.actionPoints = 0;
   }
 
   isAlive() {

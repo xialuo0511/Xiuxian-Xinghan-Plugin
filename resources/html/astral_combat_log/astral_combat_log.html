@@ -3,54 +3,123 @@
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <style>
-      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
-      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
-      body {width: 800px; margin: 0; padding: 20px; background: #f7f8fa; font-family: "tttgbnumber", sans-serif; color: #4a2c1a; box-sizing: border-box;}
-      .log-container {background: rgba(253, 250, 245, 0.92); border: 2px solid #a88763; border-radius: 15px; padding: 20px; font-size: 16px; line-height: 1.8;}
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+
+      @font-face {
+          font-family: "NZBZ";
+          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background: #f7f8fa;
+          font-family: "tttgbnumber", sans-serif;
+          color: #4a2c1a;
+          box-sizing: border-box;
+      }
+
+      .log-container {
+          background: rgba(253, 250, 245, 0.92);
+          border: 2px solid #a88763;
+          border-radius: 15px;
+          padding: 20px;
+          font-size: 16px;
+          line-height: 1.8;
+      }
 
       .log-line {
-          /* 【核心修正】为每条日志增加下边距，防止内容重叠 */
           margin-bottom: 12px;
       }
 
-      .player-name { color: #3498db; font-weight: bold; }
-      .enemy-name { color: #c0392b; font-weight: bold; }
-      .damage-number { color: #e67e22; font-weight: bold; font-size: 1.1em; }
+      .player-name {
+          color: #3498db;
+          font-weight: bold;
+      }
 
+      .enemy-name {
+          color: #c0392b;
+          font-weight: bold;
+      }
+
+      .damage-number {
+          color: #e67e22;
+          font-weight: bold;
+          font-size: 1.1em;
+      }
+
+      /* 回合分割线现在不再使用，但保留样式以备不时之需 */
       .turn-header {
-          font-family: "NZBZ", sans-serif; font-size: 20px; color: #6a3906; text-align: center;
-          border-top: 1px dashed #d2b48c; border-bottom: 1px dashed #d2b48c;
-          margin: 20px 0; /* 增加回合分割线的上下边距，让版面更舒展 */
+          font-family: "NZBZ", sans-serif;
+          font-size: 20px;
+          color: #6a3906;
+          text-align: center;
+          border-top: 1px dashed #d2b48c;
+          border-bottom: 1px dashed #d2b48c;
+          margin: 20px 0;
           padding: 8px 0;
       }
 
-      .start-text, .system-text {color: #7a5533; font-style: italic;}
-      .end-text {font-family: "NZBZ", sans-serif; font-weight: bold; text-align: center; margin-top: 20px; font-size: 24px; color: #6a3906;}
+      .start-text, .system-text {
+          color: #7a5533;
+          font-style: italic;
+      }
+
+      .end-text {
+          font-family: "NZBZ", sans-serif;
+          font-weight: bold;
+          text-align: center;
+          margin-top: 20px;
+          font-size: 24px;
+          color: #6a3906;
+      }
 
       .teams-status-container {
           font-size: 12px;
           background: rgba(0, 0, 0, 0.04);
           border-radius: 6px;
           padding: 8px;
-          margin-top: 8px; /* 【核心修正】在攻击文本和血量条之间增加一点间距 */
+          margin-top: 8px;
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 15px;
       }
-      .team-status-list p { margin: 2px 0; }
+
+      .team-status-list p {
+          margin: 2px 0;
+      }
+
       .unit-hp-bar {
           width: 80px;
           height: 8px;
-          background: #e0e0e0; /* 将底色改为更明显的灰色 */
+          background: #e0e0e0;
           border-radius: 4px;
           display: inline-block;
           margin-left: 5px;
-          border: 1px solid #ccc; /* 增加一个细边框 */
+          border: 1px solid #ccc;
       }
-      .unit-hp-filler { height: 100%; border-radius: 4px; }
-      .unit-hp-filler.player { background: #3498db; }
-      .unit-hp-filler.enemy { background: #c0392b; }
-      .unit-dead { text-decoration: line-through; color: #999; }
+
+      .unit-hp-filler {
+          height: 100%;
+          border-radius: 4px;
+      }
+
+      .unit-hp-filler.player {
+          background: #3498db;
+      }
+
+      .unit-hp-filler.enemy {
+          background: #c0392b;
+      }
+
+      .unit-dead {
+          text-decoration: line-through;
+          color: #999;
+      }
   </style>
 </head>
 <body>
@@ -59,8 +128,6 @@
   <div class="log-line">
     {{if line.type === 'start' || line.type === 'system' || line.type === 'end'}}
     <div class="{{line.type}}-text">{{line.text}}</div>
-    {{else if line.type === 'turn'}}
-    <div class="turn-header">{{line.text}}</div>
     {{else if line.type === 'action'}}
     <div>
       <span class="{{line.caster.team}}-name">【{{line.caster.name}}】</span>
@@ -68,6 +135,7 @@
       <span class="{{line.target.team}}-name">【{{line.target.name}}】</span>
       <span>，造成了 <span class="damage-number">{{line.damage}}</span> 点伤害！</span>
     </div>
+
     <div class="teams-status-container">
       <div class="team-status-list">
         {{each line.teamStatus.player unit}}
@@ -75,8 +143,8 @@
           <span class="player-name">{{unit.name}}:</span>
           <span>{{unit.hp}}/{{unit.max_hp}}</span>
           <span class="unit-hp-bar">
-                            <div class="unit-hp-filler player" style="width: {{(unit.hp / unit.max_hp) * 100}}%;"></div>
-                        </span>
+                    <div class="unit-hp-filler player" style="width: {{unit.hp_percent}}%;"></div>
+                </span>
         </p>
         {{/each}}
       </div>
@@ -86,8 +154,8 @@
           <span class="enemy-name">{{unit.name}}:</span>
           <span>{{unit.hp}}/{{unit.max_hp}}</span>
           <span class="unit-hp-bar">
-                            <div class="unit-hp-filler enemy" style="width: {{(unit.hp / unit.max_hp) * 100}}%;"></div>
-                        </span>
+                    <div class="unit-hp-filler enemy" style="width: {{unit.hp_percent}}%;"></div>
+                </span>
         </p>
         {{/each}}
       </div>
