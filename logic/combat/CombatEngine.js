@@ -7,15 +7,6 @@ const ACTION_THRESHOLD = 1000;
 /**
  * 战斗引擎
  */
-import { Combatant } from './Combatant.js';
-import { loadItemConfig } from '../../model/ConfigLoader.js';
-
-const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
-const ACTION_THRESHOLD = 1000;
-
-/**
- * 【最终版】引入回合制的 N v M 战斗引擎
- */
 export async function runCombat(playerSouls, enemyNames) {
   const combatLog = [];
   const playerTeam = playerSouls.map((soul, i) => new Combatant(`player_${i + 1}`, soul, 'player'));
