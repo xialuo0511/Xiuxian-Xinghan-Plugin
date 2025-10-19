@@ -259,7 +259,7 @@ class XiuxianData {
     this.fishing_baits_list = loadItemConfig('fishing_baits.yaml');
     this.fishing_items_list = loadItemConfig('fishing_items.yaml');
 
-    this.start_souls_list = loadItemConfig('start_souls.yaml');
+    this.start_souls_list = loadItemConfig('star_souls.yaml');
 
   }
 
