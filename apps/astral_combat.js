@@ -24,17 +24,34 @@ export class astral_combat extends plugin {
     });
   }
 
+
   async testCombat(e) {
     if (!await this.checkActivity(e)) return true;
+    // 1. 获取玩家的完整数据
+    const playerData = (await DAL.getAllPlayerData(e.user_id))?.player;
+    if (!playerData) {
+      return e.reply('无法获取您的角色信息。', true);
+    }
 
-    // For this test, we'll hardcode the teams
-    const playerSouls = [allStarSouls.find(s => s.name === '剑魂·庚金')];
+    // 2. 从玩家数据中提取已装备的星魂名称
+    const equippedSoulNames = Object.values(playerData.equipped_star_souls || {}).filter(Boolean); // filter(Boolean) 会移除所有 null 或 undefined 的空位
+
+    if (equippedSoulNames.length === 0) {
+      return e.reply('你尚未装备任何星魂，无法开始战斗。', true);
+    }
+
+    // 3. 根据名称，从配置中找到完整的星魂数据
+    const playerSouls = equippedSoulNames.map(name =>
+      allStarSouls.find(s => s.name === name)
+    ).filter(Boolean); // 再次过滤，以防玩家装备了不存在的星魂
+
+    // 敌人队伍可以保持不变，或您也可以根据需要修改
     const enemyNames = ['石傀儡'];
 
-    // Run the combat engine
+    // 运行战斗引擎
     const result = await runCombat(playerSouls, enemyNames);
 
-    // Render the log
+    // 渲染日志
     const renderData = {
       log: result.log,
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
