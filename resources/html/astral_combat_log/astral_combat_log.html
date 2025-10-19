@@ -73,7 +73,7 @@
         {{each line.teamStatus.player unit}}
         <p class="{{if unit.hp <= 0}}unit-dead{{/if}}">
           <span class="unit-info"><span class="player-name">{{unit.name}}:</span> {{unit.hp}}/{{unit.max_hp}}</span>
-          <span class="unit-hp-bar"><div class="unit-hp-filler player" style="width: {{#unit.hp_percent}}%;"></div></span>
+          <span class="unit-hp-bar"><div class="unit-hp-filler player" style="width: {{unit.hp_percent}}%;"></div></span>
         </p>
         {{/each}}
       </div>
@@ -81,7 +81,7 @@
         {{each line.teamStatus.enemy unit}}
         <p class="{{if unit.hp <= 0}}unit-dead{{/if}}">
           <span class="unit-info"><span class="enemy-name">{{unit.name}}:</span> {{unit.hp}}/{{unit.max_hp}}</span>
-          <span class="unit-hp-bar"><div class="unit-hp-filler enemy" style="width: {{#unit.hp_percent}}%;"></div></span>
+          <span class="unit-hp-bar"><div class="unit-hp-filler enemy" style="width: {{unit.hp_percent}}%;"></div></span>
         </p>
         {{/each}}
       </div>

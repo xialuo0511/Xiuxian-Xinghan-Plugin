@@ -2,11 +2,8 @@ import { Combatant } from './Combatant.js';
 import { loadItemConfig } from '../../model/ConfigLoader.js';
 
 const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
-const ACTION_THRESHOLD = 1000; // 行动所需的行动点阈值
+const ACTION_THRESHOLD = 1000;
 
-/**
- * 战斗引擎
- */
 export async function runCombat(playerSouls, enemyNames) {
   const combatLog = [];
   const playerTeam = playerSouls.map((soul, i) => new Combatant(`player_${i + 1}`, soul, 'player'));
@@ -69,28 +66,17 @@ export async function runCombat(playerSouls, enemyNames) {
   return { playerWon, log: combatLog };
 }
 
-/**
- * 根据嘲讽值选择目标的AI函数
- * @param {Array<Combatant>} targetTeam - 目标队伍
- * @returns {Combatant|null} - 选中的目标
- */
+
 function selectTargetByTaunt(targetTeam) {
   const aliveTargets = targetTeam.filter(t => t.isAlive());
   if (aliveTargets.length === 0) return null;
-
-  // 计算总嘲讽值
   const totalTaunt = aliveTargets.reduce((sum, target) => sum + target.taunt, 0);
-
-  // 生成一个0到总嘲讽值之间的随机数
   let randomPoint = Math.random() * totalTaunt;
-
-  // 轮盘赌算法，根据嘲讽值权重选择目标
   for (const target of aliveTargets) {
     randomPoint -= target.taunt;
     if (randomPoint <= 0) {
       return target;
     }
   }
-
-  return aliveTargets[0]; // 保底返回第一个
+  return aliveTargets[0];
 }
