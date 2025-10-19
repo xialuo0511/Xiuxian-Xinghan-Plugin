@@ -45,12 +45,6 @@ export class astral_combat extends plugin {
       return e.reply('无法获取您的角色信息。', true);
     }
 
-    // --- 【诊断日志 1】 ---
-    logger.mark('--- [万象天机-读取诊断] ---');
-    logger.mark('1. 从数据库读取到的 player.equipped_star_souls 原始内容:');
-    console.log(playerData.equipped_star_souls);
-    // --- 诊断结束 ---
-
     const equipped = playerData.equipped_star_souls || {};
 
     let teamData = [];
@@ -59,6 +53,9 @@ export class astral_combat extends plugin {
       if (soulName) {
         const soulInfo = allStarSouls.find(s => s.name === soulName);
         if (soulInfo) {
+          if (soulInfo.base_stats && soulInfo.base_stats.resistance !== undefined) {
+            soulInfo.base_stats.resistance_percent = (soulInfo.base_stats.resistance * 100).toFixed(0) + '%';
+          }
           teamData.push({ slot: i, equipped: true, ...soulInfo });
         } else {
           teamData.push({ slot: i, equipped: false, name: '数据错误' });
@@ -68,20 +65,13 @@ export class astral_combat extends plugin {
       }
     }
 
-    // --- 【诊断日志 2】 ---
-    logger.mark('2. 准备传递给前端模板的 teamData 数组:');
-    console.log(teamData);
-    logger.mark('--- [诊断结束] ---');
-    // --- 诊断结束 ---
-
     const renderData = {
       team: teamData,
       pifu: playerData.pifu || playerData.练气皮肤,
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
 
-    const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_status', teamData);
-    const img = await puppeteer.screenshot('astral_combat_status', { ...dataForPuppeteer });
+    const img = await puppeteer.screenshot('astral_combat/status', renderData);
     await e.reply(img);
   }
 
