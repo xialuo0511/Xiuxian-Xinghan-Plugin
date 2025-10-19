@@ -2,7 +2,7 @@ import { Combatant } from './Combatant.js';
 import { loadItemConfig } from '../../model/ConfigLoader.js';
 
 const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
-const ACTION_THRESHOLD = 1000;
+const ACTION_THRESHOLD = 1000; // 行动所需的行动点阈值
 
 /**
  * 战斗引擎
@@ -14,13 +14,7 @@ export async function runCombat(playerSouls, enemyNames) {
   const allCombatants = [...playerTeam,
     ...enemyTeam];
 
-  // 【核心修改】引入回合制计数器
-  let turn = 1;
-  let actionCountInTurn = 0;
-  const initialCombatantCount = allCombatants.length;
-
   combatLog.push({ type: 'start', text: '战斗开始！' });
-  combatLog.push({ type: 'turn', text: `--- 第 ${turn} 回合 ---` });
 
   let cycle = 0;
   while (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
@@ -42,7 +36,6 @@ export async function runCombat(playerSouls, enemyNames) {
       }
     }
     caster.actionPoints -= ACTION_THRESHOLD;
-    actionCountInTurn++; // 每次行动，计数器+1
 
     const targetTeam = (caster.team === 'player') ? enemyTeam : playerTeam;
     const target = selectTargetByTaunt(targetTeam);
@@ -55,7 +48,7 @@ export async function runCombat(playerSouls, enemyNames) {
       name: unit.name,
       hp: unit.current_hp,
       max_hp: unit.max_hp,
-      hp_percent: (unit.current_hp / unit.max_hp) * 100
+      hp_percent: (unit.max_hp > 0 ? (unit.current_hp / unit.max_hp) * 100 : 0) // 在后端计算
     });
 
     combatLog.push({
@@ -68,16 +61,6 @@ export async function runCombat(playerSouls, enemyNames) {
         enemy: enemyTeam.map(getUnitStatus)
       }
     });
-
-    // 【核心修改】检查是否需要进入下一回合
-    if (actionCountInTurn >= initialCombatantCount) {
-      actionCountInTurn = 0; // 重置回合内行动计数
-      turn++;
-      // 只有在战斗还未结束时才显示下一回合
-      if (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
-        combatLog.push({ type: 'turn', text: `--- 第 ${turn} 回合 ---` });
-      }
-    }
   }
 
   const playerWon = playerTeam.some(p => p.isAlive());
