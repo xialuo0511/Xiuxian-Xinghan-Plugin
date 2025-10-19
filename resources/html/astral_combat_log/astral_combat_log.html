@@ -7,33 +7,45 @@
       @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
       body {width: 800px; margin: 0; padding: 20px; background: #f7f8fa; font-family: "tttgbnumber", sans-serif; color: #4a2c1a; box-sizing: border-box;}
       .log-container {background: rgba(253, 250, 245, 0.92); border: 2px solid #a88763; border-radius: 15px; padding: 20px; font-size: 16px; line-height: 1.8;}
-      .log-line {margin-bottom: 12px;}
+
+      .log-line {
+          /* 【核心修正】为每条日志增加下边距，防止内容重叠 */
+          margin-bottom: 12px;
+      }
+
       .player-name { color: #3498db; font-weight: bold; }
       .enemy-name { color: #c0392b; font-weight: bold; }
       .damage-number { color: #e67e22; font-weight: bold; font-size: 1.1em; }
-      .turn-header {font-family: "NZBZ", sans-serif; font-size: 20px; color: #6a3906; text-align: center; border-top: 1px dashed #d2b48c; border-bottom: 1px dashed #d2b48c; margin: 15px 0; padding: 8px 0;}
+
+      .turn-header {
+          font-family: "NZBZ", sans-serif; font-size: 20px; color: #6a3906; text-align: center;
+          border-top: 1px dashed #d2b48c; border-bottom: 1px dashed #d2b48c;
+          margin: 20px 0; /* 增加回合分割线的上下边距，让版面更舒展 */
+          padding: 8px 0;
+      }
+
       .start-text, .system-text {color: #7a5533; font-style: italic;}
       .end-text {font-family: "NZBZ", sans-serif; font-weight: bold; text-align: center; margin-top: 20px; font-size: 24px; color: #6a3906;}
 
-      /* --- 【新增】个体血量展示区样式 --- */
       .teams-status-container {
+          font-size: 12px;
+          background: rgba(0, 0, 0, 0.04);
+          border-radius: 6px;
+          padding: 8px;
+          margin-top: 8px; /* 【核心修正】在攻击文本和血量条之间增加一点间距 */
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 15px;
-          font-size: 12px;
-          margin-top: 8px;
-          padding: 8px;
-          background: rgba(0, 0, 0, 0.04);
-          border-radius: 6px;
       }
       .team-status-list p { margin: 2px 0; }
       .unit-hp-bar {
           width: 80px;
           height: 8px;
-          background: #ccc;
+          background: #e0e0e0; /* 将底色改为更明显的灰色 */
           border-radius: 4px;
           display: inline-block;
           margin-left: 5px;
+          border: 1px solid #ccc; /* 增加一个细边框 */
       }
       .unit-hp-filler { height: 100%; border-radius: 4px; }
       .unit-hp-filler.player { background: #3498db; }
