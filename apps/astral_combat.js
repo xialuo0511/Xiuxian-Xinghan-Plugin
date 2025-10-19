@@ -45,16 +45,19 @@ export class astral_combat extends plugin {
       return e.reply('无法获取您的角色信息。', true);
     }
 
-    // 从数据库读取到的原始内容
+    // --- 【诊断日志 1】 ---
+    logger.mark('--- [万象天机-读取诊断] ---');
+    logger.mark('1. 从数据库读取到的 player.equipped_star_souls 原始内容:');
+    console.log(playerData.equipped_star_souls);
+    // --- 诊断结束 ---
+
     const equipped = playerData.equipped_star_souls || {};
 
     let teamData = [];
     for (let i = 1; i <= 4; i++) {
       const soulName = equipped[i];
       if (soulName) {
-        // 从配置文件中查找星魂的完整定义
         const soulInfo = allStarSouls.find(s => s.name === soulName);
-
         if (soulInfo) {
           teamData.push({ slot: i, equipped: true, ...soulInfo });
         } else {
@@ -64,8 +67,20 @@ export class astral_combat extends plugin {
         teamData.push({ slot: i, equipped: false, name: '未装备' });
       }
     }
-    const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_status', teamData);
-    const img = await puppeteer.screenshot('astral_combat_status', { ...dataForPuppeteer });
+
+    // --- 【诊断日志 2】 ---
+    logger.mark('2. 准备传递给前端模板的 teamData 数组:');
+    console.log(teamData);
+    logger.mark('--- [诊断结束] ---');
+    // --- 诊断结束 ---
+
+    const renderData = {
+      team: teamData,
+      pifu: playerData.pifu || playerData.练气皮肤,
+      pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+
+    const img = await puppeteer.screenshot('astral_combat/status', renderData);
     await e.reply(img);
   }
 
