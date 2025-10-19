@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <style>
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+      }
+
+      body {
+          width: 600px;
+          margin: 0;
+          padding: 20px;
+          background: #2c2c2c;
+          font-family: "tttgbnumber", sans-serif;
+          color: #eee;
+          font-size: 16px;
+          line-height: 1.8;
+          box-sizing: border-box;
+      }
+
+      .log-container {
+          background: rgba(0, 0, 0, 0.5);
+          border: 1px solid #555;
+          border-radius: 10px;
+          padding: 15px;
+      }
+
+      .log-line {
+          padding: 2px 0;
+      }
+
+      /* --- Color Definitions --- */
+      .player-name {
+          color: #3498db;
+      }
+
+      /* Blue for player */
+      .enemy-name {
+          color: #e74c3c;
+      }
+
+      /* Red for enemy */
+      .damage-number {
+          color: #f1c40f;
+          font-weight: bold;
+      }
+
+      /* Yellow for damage */
+      .turn-header {
+          color: #95a5a6;
+          text-align: center;
+          border-top: 1px dashed #555;
+          border-bottom: 1px dashed #555;
+          margin: 8px 0;
+          padding: 4px 0;
+      }
+
+      .system-text {
+          color: #1abc9c;
+          font-style: italic;
+      }
+
+      .end-text {
+          font-weight: bold;
+          text-align: center;
+          margin-top: 10px;
+          font-size: 20px;
+      }
+  </style>
+</head>
+<body>
+<div class="log-container" id="capture">
+  {{each log line}}
+  <div class="log-line">
+    {{if line.type === 'start' || line.type === 'system' || line.type === 'end'}}
+    <div class="{{line.type}}-text">{{line.text}}</div>
+    {{else if line.type === 'turn'}}
+    <div class="turn-header">{{line.text}}</div>
+    {{else if line.type === 'action'}}
+    <span class="{{line.caster.team}}-name">【{{line.caster.name}}】</span>
+    <span>攻击了</span>
+    <span class="{{line.target.team}}-name">【{{line.target.name}}】</span>
+    <span>，造成了</span>
+    <span class="damage-number">{{line.damage}}</span>
+    <span>点伤害！</span>
+    {{/if}}
+  </div>
+  {{/each}}
+</div>
+</body>
+</html>

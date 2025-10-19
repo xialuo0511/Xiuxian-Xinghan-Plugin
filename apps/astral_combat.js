@@ -17,9 +17,31 @@ export class astral_combat extends plugin {
       priority: 500,
       rule: [
         { reg: /^#万象天机$/, fnc: 'showTeamStatus' },
-        { reg: /^#星魂装备(\d)号\s*(.*)/, fnc: 'equipStarSoul' }
+        { reg: /^#星魂装备(\d)号\s*(.*)/, fnc: 'equipStarSoul' },
+        { reg: /^#测试战斗$/, fnc: 'testCombat' }
       ]
     });
+  }
+
+  async testCombat(e) {
+    if (!await this.checkActivity(e)) return true;
+
+    // For this test, we'll hardcode the teams
+    const playerSouls = [allStarSouls.find(s => s.name === '剑魂·庚金')];
+    const enemyNames = ['石傀儡'];
+
+    // Run the combat engine
+    const result = await runCombat(playerSouls, enemyNames);
+
+    // Render the log
+    const renderData = {
+      log: result.log,
+      pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+
+    const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+    const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+    await e.reply(img);
   }
 
   /**
