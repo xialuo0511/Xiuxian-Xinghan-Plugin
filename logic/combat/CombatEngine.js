@@ -4,29 +4,23 @@ import { loadItemConfig } from '../../model/ConfigLoader.js';
 const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
 
 /**
- * 战斗引擎，日志中包含血量信息
- * @param {Array<object>} playerSouls - 玩家的星魂数组
- * @param {Array<string>} enemyNames - 怪物名称数组
- * @returns {Promise<object>}
+ * 战斗引擎
  */
 export async function runCombat(playerSouls, enemyNames) {
   const combatLog = [];
 
+  // --- 1. 初始化单位 ---
   const playerTeam = playerSouls.map((soul, i) => new Combatant(`player_${i + 1}`, soul, 'player'));
   const enemyTeam = enemyNames.map((name, i) => {
     const monsterData = allMonsters.find(m => m.name === name);
     return new Combatant(`enemy_${i + 1}`, monsterData, 'enemy');
   });
-
-  // 【新增】辅助函数，用于获取并格式化队伍的总血量状态
-  const getTeamHpStatus = (team) => {
-    const current = team.reduce((sum, unit) => sum + unit.current_hp, 0);
-    const max = team.reduce((sum, unit) => sum + unit.max_hp, 0);
-    return `${current} / ${max}`;
-  };
+  const allCombatants = [...playerTeam,
+    ...enemyTeam];
 
   combatLog.push({ type: 'start', text: '战斗开始！' });
 
+  // --- 2. 核心战斗循环 ---
   let turn = 1;
   while (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
     if (turn > 50) {
@@ -35,48 +29,76 @@ export async function runCombat(playerSouls, enemyNames) {
     }
     combatLog.push({ type: 'turn', text: `--- 第 ${turn} 回合 ---` });
 
-    const activePlayer = playerTeam.find(p => p.isAlive());
-    const activeEnemy = enemyTeam.find(e => e.isAlive());
+    // a. 根据速度决定行动顺序
+    const actionQueue = allCombatants
+      .filter(c => c.isAlive())
+      .sort((a, b) => b.speed - a.speed);
 
-    // 玩家回合
-    if (activePlayer) {
-      const target = enemyTeam.find(e => e.isAlive());
-      const damage = Math.max(1, Math.floor(activePlayer.attack - target.defense * (1 - target.resistance)));
+    // b. 依次行动
+    for (const caster of actionQueue) {
+      // 如果行动者在本回合中被击败，则跳过其行动
+      if (!caster.isAlive()) continue;
+
+      const targetTeam = (caster.team === 'player') ? enemyTeam : playerTeam;
+
+      // c. 根据嘲讽值选择目标
+      const target = selectTargetByTaunt(targetTeam);
+      if (!target) continue; // 如果没有可选目标，跳过
+
+      // d. 计算伤害并行动
+      const damage = Math.max(1, Math.floor(caster.attack - target.defense * (1 - target.resistance)));
       target.takeDamage(damage);
-      // 【核心修改】在日志中加入双方血量
+
+      // e. 记录详细日志，包含所有单位的个体血量
       combatLog.push({
         type: 'action',
-        caster: { name: activePlayer.name, team: 'player' },
-        target: { name: target.name, team: 'enemy' },
+        caster: { name: caster.name, team: caster.team },
+        target: { name: target.name, team: target.team },
         damage: damage,
-        playerTeamHp: getTeamHpStatus(playerTeam),
-        enemyTeamHp: getTeamHpStatus(enemyTeam)
+        // 记录行动结束时，场上所有单位的状态
+        teamStatus: {
+          player: playerTeam.map(p => ({ name: p.name, hp: p.current_hp, max_hp: p.max_hp })),
+          enemy: enemyTeam.map(e => ({ name: e.name, hp: e.current_hp, max_hp: e.max_hp }))
+        }
       });
-    }
 
-    // 敌人回合 (如果玩家攻击后，敌人仍然存活)
-    if (enemyTeam.some(e => e.isAlive()) && activeEnemy) {
-      const target = playerTeam.find(p => p.isAlive());
-      const damage = Math.max(1, Math.floor(activeEnemy.attack - target.defense * (1 - target.resistance)));
-      target.takeDamage(damage);
-      // 【核心修改】在日志中加入双方血量
-      combatLog.push({
-        type: 'action',
-        caster: { name: activeEnemy.name, team: 'enemy' },
-        target: { name: target.name, team: 'player' },
-        damage: damage,
-        playerTeamHp: getTeamHpStatus(playerTeam),
-        enemyTeamHp: getTeamHpStatus(enemyTeam)
-      });
+      // f. 检查目标队伍是否已被全灭，如果是，则提前结束本回合
+      if (!targetTeam.some(t => t.isAlive())) {
+        break;
+      }
     }
     turn++;
   }
 
+  // 3. 决定胜负
   const playerWon = playerTeam.some(p => p.isAlive());
   combatLog.push({ type: 'end', text: playerWon ? '恭喜你，获得了胜利！' : '很遗憾，你失败了。' });
 
-  return {
-    playerWon,
-    log: combatLog
-  };
+  return { playerWon, log: combatLog };
+}
+
+/**
+ * 根据嘲讽值选择目标的AI函数
+ * @param {Array<Combatant>} targetTeam - 目标队伍
+ * @returns {Combatant|null} - 选中的目标
+ */
+function selectTargetByTaunt(targetTeam) {
+  const aliveTargets = targetTeam.filter(t => t.isAlive());
+  if (aliveTargets.length === 0) return null;
+
+  // 计算总嘲讽值
+  const totalTaunt = aliveTargets.reduce((sum, target) => sum + target.taunt, 0);
+
+  // 生成一个0到总嘲讽值之间的随机数
+  let randomPoint = Math.random() * totalTaunt;
+
+  // 轮盘赌算法，根据嘲讽值权重选择目标
+  for (const target of aliveTargets) {
+    randomPoint -= target.taunt;
+    if (randomPoint <= 0) {
+      return target;
+    }
+  }
+
+  return aliveTargets[0]; // 保底返回第一个
 }

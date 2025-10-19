@@ -3,108 +3,42 @@
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <style>
-      /* --- 字体定义 (与您的其他模板保持一致) --- */
-      @font-face {
-          font-family: "tttgbnumber";
-          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
-      }
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+      body {width: 800px; margin: 0; padding: 20px; background: #f7f8fa; font-family: "tttgbnumber", sans-serif; color: #4a2c1a; box-sizing: border-box;}
+      .log-container {background: rgba(253, 250, 245, 0.92); border: 2px solid #a88763; border-radius: 15px; padding: 20px; font-size: 16px; line-height: 1.8;}
+      .log-line {margin-bottom: 12px;}
+      .player-name { color: #3498db; font-weight: bold; }
+      .enemy-name { color: #c0392b; font-weight: bold; }
+      .damage-number { color: #e67e22; font-weight: bold; font-size: 1.1em; }
+      .turn-header {font-family: "NZBZ", sans-serif; font-size: 20px; color: #6a3906; text-align: center; border-top: 1px dashed #d2b48c; border-bottom: 1px dashed #d2b48c; margin: 15px 0; padding: 8px 0;}
+      .start-text, .system-text {color: #7a5533; font-style: italic;}
+      .end-text {font-family: "NZBZ", sans-serif; font-weight: bold; text-align: center; margin-top: 20px; font-size: 24px; color: #6a3906;}
 
-      @font-face {
-          font-family: "NZBZ";
-          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
-      }
-
-      /* --- 基础样式 (与您的其他模板保持一致) --- */
-      body {
-          width: 800px;
-          margin: 0;
-          padding: 20px;
-          background: #f7f8fa; /* 使用简洁的亮色背景 */
-          font-family: "tttgbnumber", sans-serif;
-          color: #4a2c1a;
-          box-sizing: border-box;
-      }
-
-      /* --- 主容器 (与您的其他模板保持一致) --- */
-      .log-container {
-          background: rgba(253, 250, 245, 0.92);
-          backdrop-filter: blur(8px);
-          border: 2px solid #a88763;
-          border-radius: 15px;
-          padding: 20px;
-          font-size: 16px;
-          line-height: 1.8;
-      }
-
-      .log-line {
-          margin-bottom: 8px;
-      }
-
-      /* --- 颜色与风格定义 --- */
-      .player-name {
-          color: #3498db;
-          font-weight: bold;
-      }
-
-      /* 我方蓝色 */
-      .enemy-name {
-          color: #c0392b;
-          font-weight: bold;
-      }
-
-      /* 敌方红色 */
-      .damage-number {
-          color: #e67e22;
-          font-weight: bold;
-          font-size: 1.1em;
-      }
-
-      /* 伤害橙色 */
-
-      .turn-header {
-          font-family: "NZBZ", sans-serif;
-          font-size: 20px;
-          color: #6a3906;
-          text-align: center;
-          border-top: 1px dashed #d2b48c;
-          border-bottom: 1px dashed #d2b48c;
-          margin: 15px 0;
-          padding: 8px 0;
-      }
-
-      .start-text, .system-text {
-          color: #7a5533;
-          font-style: italic;
-      }
-
-      .end-text {
-          font-family: "NZBZ", sans-serif;
-          font-weight: bold;
-          text-align: center;
-          margin-top: 20px;
-          font-size: 24px;
-          color: #6a3906;
-      }
-
-      /* --- 【新增】血量显示样式 --- */
-      .hp-status-bar {
+      /* --- 【新增】个体血量展示区样式 --- */
+      .teams-status-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
           font-size: 12px;
-          background: rgba(0, 0, 0, 0.05);
+          margin-top: 8px;
+          padding: 8px;
+          background: rgba(0, 0, 0, 0.04);
+          border-radius: 6px;
+      }
+      .team-status-list p { margin: 2px 0; }
+      .unit-hp-bar {
+          width: 80px;
+          height: 8px;
+          background: #ccc;
           border-radius: 4px;
-          padding: 4px 8px;
-          margin-top: 6px;
-          display: flex;
-          justify-content: space-between;
+          display: inline-block;
+          margin-left: 5px;
       }
-
-      .hp-status-bar .player {
-          color: #2980b9;
-      }
-
-      .hp-status-bar .enemy {
-          color: #a5281b;
-      }
-
+      .unit-hp-filler { height: 100%; border-radius: 4px; }
+      .unit-hp-filler.player { background: #3498db; }
+      .unit-hp-filler.enemy { background: #c0392b; }
+      .unit-dead { text-decoration: line-through; color: #999; }
   </style>
 </head>
 <body>
@@ -120,13 +54,31 @@
       <span class="{{line.caster.team}}-name">【{{line.caster.name}}】</span>
       <span>攻击了</span>
       <span class="{{line.target.team}}-name">【{{line.target.name}}】</span>
-      <span>，造成了</span>
-      <span class="damage-number">{{line.damage}}</span>
-      <span>点伤害！</span>
+      <span>，造成了 <span class="damage-number">{{line.damage}}</span> 点伤害！</span>
     </div>
-    <div class="hp-status-bar">
-      <span class="player">我方血量: {{line.playerTeamHp}}</span>
-      <span class="enemy">敌方血量: {{line.enemyTeamHp}}</span>
+    <div class="teams-status-container">
+      <div class="team-status-list">
+        {{each line.teamStatus.player unit}}
+        <p class="{{if unit.hp <= 0}}unit-dead{{/if}}">
+          <span class="player-name">{{unit.name}}:</span>
+          <span>{{unit.hp}}/{{unit.max_hp}}</span>
+          <span class="unit-hp-bar">
+                            <div class="unit-hp-filler player" style="width: {{(unit.hp / unit.max_hp) * 100}}%;"></div>
+                        </span>
+        </p>
+        {{/each}}
+      </div>
+      <div class="team-status-list">
+        {{each line.teamStatus.enemy unit}}
+        <p class="{{if unit.hp <= 0}}unit-dead{{/if}}">
+          <span class="enemy-name">{{unit.name}}:</span>
+          <span>{{unit.hp}}/{{unit.max_hp}}</span>
+          <span class="unit-hp-bar">
+                            <div class="unit-hp-filler enemy" style="width: {{(unit.hp / unit.max_hp) * 100}}%;"></div>
+                        </span>
+        </p>
+        {{/each}}
+      </div>
     </div>
     {{/if}}
   </div>
