@@ -9,7 +9,6 @@ import { Gulid } from '../../api/api.js';
 import { canPlayerAction } from '../../logic/transaction_logic.js';
 import { depositWithdrawLingshi } from '../../logic/item_logic.js';
 import { findItemLocation } from '../../logic/search_logic.js';
-import { exchangeRedemptionCode } from '../../logic/exchange_logic.js';
 import { refineEquipment } from '../../logic/refine_logic.js';
 import { drawFromPool } from '../../logic/gacha_logic.js';
 import { offerStone } from '../../logic/stone_logic.js';
@@ -23,6 +22,7 @@ import {
   sleep
 } from '../Xiuxian/xiuxian.js';
 import { Add_仙宠 } from '../Pokemon/Pokemon.js';
+import { redeemCode } from '../../logic/remdeem_logic.js';
 
 /**
  * 修仙模块 - 物品和货币操作
@@ -84,8 +84,8 @@ export class UserHome extends plugin {
           fnc: 'offerStone'
         },
         {
-          reg: '^#兑换码兑换.*$',
-          fnc: 'exchangeCode'
+          reg: /^#兑换码兑换\s*(.*)/,
+          fnc: 'redeem'
         },
         {
           reg: '^#幻影牌面.*$',
@@ -94,6 +94,25 @@ export class UserHome extends plugin {
       ]
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  async redeem(e) {
+    let usr_qq = e.user_id.toString().replace('qg_', '');
+    usr_qq = await Gulid(usr_qq);
+
+    if (!await DAL.existPlayer(usr_qq)) {
+      return e.reply('请先踏入仙途，才能接收天道馈赠。', true);
+    }
+
+    const code = e.msg.replace(/#兑换码兑换\s*/, '').trim();
+    if (!code) {
+      return e.reply('请输入你要兑换的兑换码。', true);
+    }
+
+    // 调用核心逻辑
+    const result = await redeemCode(usr_qq, code);
+
+    return e.reply(result.message, true);
   }
 
   /**
@@ -150,7 +169,7 @@ export class UserHome extends plugin {
     // 根据返回结果回复用户
     const player = (await DAL.getAllPlayerData(userId))?.player;
     e.reply([`【${player.名号}】`,
-    result.message]);
+      result.message]);
   }
 
   /**
@@ -177,19 +196,6 @@ export class UserHome extends plugin {
     }
 
     e.reply('你现在拥有' + code[0] + '*' + quantity);
-  }
-
-  /**
-   * #兑换码兑换
-   */
-  async exchangeCode(e) {
-    const userId = await this.preCheck(e);
-    if (!userId) return;
-
-    const name = e.msg.replace('#兑换码兑换', '').trim();
-    const result = await exchangeRedemptionCode(userId, name);
-
-    e.reply(result.message);
   }
 
   /**
