@@ -51,6 +51,18 @@
       .unit-hp-filler.enemy { background: #c0392b; }
       .unit-dead { text-decoration: line-through; color: #999; }
       .unit-info { flex-grow: 1; } /* 让名字和血量文本占据左侧空间 */
+      .counter-tag {
+          color: #e74c3c;
+          font-family: "NZBZ", sans-serif;
+          font-size: 1.2em;
+          margin: 0 5px;
+          animation: pulse 0.8s infinite;
+      }
+      @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+      }
   </style>
 </head>
 <body>
@@ -66,6 +78,9 @@
       <span class="{{line.caster.team}}-name">【{{line.caster.name}}】</span>
       <span>攻击了</span>
       <span class="{{line.target.team}}-name">【{{line.target.name}}】</span>
+      {{if line.is_counter}}
+      <span class="counter-tag">[克制!]</span>
+      {{/if}}
       <span>，造成了 <span class="damage-number">{{line.damage}}</span> 点伤害！</span>
     </div>
     <div class="teams-status-container">

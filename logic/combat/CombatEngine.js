@@ -4,6 +4,16 @@ import { loadItemConfig } from '../../model/ConfigLoader.js';
 const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
 const ACTION_THRESHOLD = 1000;
 
+// 定义克制关系
+const elementCounterMap = {
+  '金': '木',
+  '木': '土',
+  '土': '水',
+  '水': '火',
+  '火': '金'
+};
+const COUNTER_BONUS = 1.5; // 克制伤害提升
+
 /**
  * 战斗引擎
  */
@@ -48,6 +58,13 @@ export async function runCombat(playerSouls, enemyNames) {
     const target = selectTargetByTaunt(targetTeam);
     if (!target) continue;
 
+    let elementalBonus = 1.0;
+    let isCounter = false;
+    if (elementCounterMap[caster.element] === target.element) {
+      elementalBonus = COUNTER_BONUS;
+      isCounter = true;
+    }
+
     const damage = Math.max(1, Math.floor(caster.attack - target.defense * (1 - target.resistance)));
     target.takeDamage(damage);
 
@@ -71,6 +88,7 @@ export async function runCombat(playerSouls, enemyNames) {
       caster: { name: caster.name, team: caster.team },
       target: { name: target.name, team: target.team },
       damage: damage,
+      is_counter: isCounter,
       teamStatus: {
         player: playerTeam.map(getUnitStatus),
         enemy: enemyTeam.map(getUnitStatus)
