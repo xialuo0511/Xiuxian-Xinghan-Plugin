@@ -18,12 +18,12 @@ export async function redeemCode(userId, code) {
     return { success: false, message: '无效的兑换码。' };
   }
 
+  // 2. 检查白名单
   if (codeInfo.whitelist && Array.isArray(codeInfo.whitelist)) {
     if (!codeInfo.whitelist.includes(Number(userId))) {
       return { success: false, message: '抱歉，你没有资格兑换这个专属兑换码。' };
     }
   }
-  // --- 修改结束 ---
 
 
   // 3. 检查玩家是否已使用过此兑换码 (逻辑不变)
