@@ -86,21 +86,33 @@
           color: #6a3906;
       }
 
-      .item-details {
-          font-size: 14px;
-          color: #4a2c1a;
-          line-height: 1.8;
-      }
-
-      .item-details p {
-          margin: 0;
-      }
-
       .unequipped-text {
           text-align: center;
           padding: 20px 0;
           color: #999;
           font-size: 18px;
+      }
+
+      /* --- 【核心修改】全新的属性展示样式 --- */
+      .item-details {
+          font-size: 15px; /* 稍微增大字号 */
+          color: #4a2c1a;
+          line-height: 1.8;
+          display: grid; /* 使用grid布局 */
+          grid-template-columns: 1fr 1fr; /* 两列 */
+          gap: 8px; /* 间距 */
+      }
+
+      .stat-line {
+          display: flex;
+          align-items: center;
+      }
+
+      .stat-line svg {
+          width: 16px;
+          height: 16px;
+          margin-right: 6px;
+          fill: #7a5533; /* 图标颜色 */
       }
   </style>
 </head>
@@ -119,10 +131,61 @@
       </div>
       <div class="item-details">
         {{if soul.equipped}}
-        <p>等级: {{soul.等级 || 1}} | 属性: {{soul.base_stats.element}}</p>
-        <p>攻击: {{soul.base_stats.attack}} | 防御: {{soul.base_stats.defense}}</p>
-        <p>生命: {{soul.base_stats.health}} | 速度: {{soul.base_stats.speed}}</p>
-        <p>抗性: {{soul.base_stats.resistance_percent}} | 嘲讽: {{soul.base_stats.taunt}}</p>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V7h2v10z" />
+          </svg>
+          <span>等级: {{soul.等级 || 1}}</span>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+          </svg>
+          <span>属性: {{soul.base_stats.element}}</span>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M19.7 3.3C17.5 1 14.5 0 11.5 0S5.5 1 3.3 3.3C1 5.5 0 8.5 0 11.5S1 17.5 3.3 19.7c2.2 2.2 5.2 3.3 8.2 3.3s6-1 8.2-3.3c2.2-2.2 3.3-5.2 3.3-8.2S22 5.5 19.7 3.3z M17.4 17.4c-1.8 1.8-4.2 2.8-6.9 2.8s-5.1-1-6.9-2.8C1.8 15.6 0.8 13.2 0.8 10.5S1.8 5.4 3.6 3.6c1.8-1.8 4.2-2.8 6.9-2.8s5.1 1 6.9 2.8c1.8 1.8 2.8 4.2 2.8 6.9S19.2 15.6 17.4 17.4z M10.4 14.2h3.2v-3H16L11.5 6 7 11.2h3.4V14.2z" />
+          </svg>
+          <span>攻击: {{soul.base_stats.attack}}</span>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5L12 1zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.79z" />
+          </svg>
+          <span>防御: {{soul.base_stats.defense}}</span>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          <span>生命: {{soul.base_stats.health}}</span>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h2v-4h2v-2h-8.35zM7 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
+          </svg>
+          <span>速度: {{soul.base_stats.speed}}</span>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+          </svg>
+          <span>抗性: {{soul.base_stats.resistance_percent}}</span>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z" />
+          </svg>
+          <span>嘲讽: {{soul.base_stats.taunt}}</span>
+        </div>
         {{else}}
         <p class="unequipped-text">【空】</p>
         {{/if}}
