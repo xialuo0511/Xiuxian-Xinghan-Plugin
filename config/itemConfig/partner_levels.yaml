@@ -6,26 +6,26 @@
   unlock_desc: "解锁【#我的道侣】面板、解锁【#姻缘堂】商店。"
 - level: 1
   name: "比翼双飞"
-  intimacy_required: 570
-  coin_reward: 15
+  intimacy_required: 640
+  coin_reward: 25
   unlock_desc: ""
 - level: 2
   name: "情深意重"
-  intimacy_required: 640
-  coin_reward: 20
+  intimacy_required: 800
+  coin_reward: 40
   unlock_desc: "解锁【仙侣协同签到】玩法。"
 - level: 3
   name: "心有灵犀"
-  intimacy_required: 730
-  coin_reward: 25
+  intimacy_required: 1050
+  coin_reward: 60
   unlock_desc: ""
 - level: 4
   name: "神仙眷侣"
-  intimacy_required: 840
-  coin_reward: 30
+  intimacy_required: 1400
+  coin_reward: 80
   unlock_desc: ""
 - level: 5
   name: "大道同行"
-  intimacy_required: 1000
-  coin_reward: 35
+  intimacy_required: 2000
+  coin_reward: 120
   unlock_desc: ""

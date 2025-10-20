@@ -8,10 +8,8 @@
     - 987654321
   rewards:
     - name: "2w"
-      class: "道具"
       amount: 10
     - name: "七星玄元丹"
-      class: "丹药"
       amount: 5
 
 - code: "PUBLIC_GIFT_OCTOBER"
@@ -19,4 +17,8 @@
   type: "one_time_per_player"
   rewards:
     - name: "2w"
+      amount: 6
+    - name: "七星玄元丹"
       amount: 5
+    - name: "花篮"
+      amount: 10

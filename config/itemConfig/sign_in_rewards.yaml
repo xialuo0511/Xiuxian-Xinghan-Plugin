@@ -7,18 +7,25 @@
   rewards:
     - name: "5k"
       class: "道具"
-      amount: 1
+      amount: 2
 
 - days: 15
+  name: "精进之礼"
+  rewards:
+    - name: "5k"
+      class: "道具"
+      amount: 10
+
+- days: 20
   name: "持之以恒"
   rewards:
     - name: "2w"
       class: "道具"
-      amount: 2
+      amount: 5
 
 - days: 25
   name: "全勤仙尊"
   rewards:
-    - name: "2w"
+    - name: "七星玄元丹"
       class: "道具"
-      amount: 5
+      amount: 2

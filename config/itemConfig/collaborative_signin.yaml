@@ -2,20 +2,20 @@
 - days: 5
   name: "同心协力"
   rewards:
-    - name: "道侣币"
-      class: "数值" # 特殊类，逻辑中单独处理
-      amount: 10
+    - name: "花篮"
+      class: "道具"
+      amount: 3
 
 - days: 10
   name: "风雨同舟"
   rewards:
-    - name: "道侣币"
-      class: "数值"
-      amount: 20
+    - name: "花篮"
+      class: "道具"
+      amount: 5
 
 - days: 20
   name: "朝夕与共"
   rewards:
     - name: "道侣币"
-      class: "数值"
-      amount: 50
+      class: "数值" # 特殊类，逻辑中单独处理
+      amount: 100
