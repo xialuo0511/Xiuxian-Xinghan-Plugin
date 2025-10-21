@@ -1,19 +1,27 @@
 # 兑换码配置文件
 
-- code: "TESTSERVER_REWARD_2025"
+- code: "SRFG45A45W6E"
   description: "测试服专属奖励"
   type: "one_time_per_player"
   whitelist:
-    - 123456789
-    - 987654321
+    - 3499269137
+    - 3235482308
+    - 1154725082
+    - 1982975523
+    - 214391698
+    - 3177135505
+    - 1354903463
+    - 2283096140
+    - 480730470
+    - 2507239514
   rewards:
     - name: "2w"
       amount: 10
     - name: "七星玄元丹"
       amount: 5
 
-- code: "PUBLIC_GIFT_OCTOBER"
-  description: "十月公共福利"
+- code: "ADSG5DF4Q"
+  description: "版本更新补偿"
   type: "one_time_per_player"
   rewards:
     - name: "2w"
