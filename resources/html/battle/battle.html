@@ -177,7 +177,7 @@
     </div>
 
     <div class="log-panel">
-      {{each log item}}
+      {{each msg item}}
       {{if item.startsWith('\n==')}}
       <div class="log-entry round-header">{{item}}</div>
       {{else if item.includes('击败了')}}

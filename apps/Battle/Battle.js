@@ -132,8 +132,8 @@ export class Battle extends plugin {
     e.reply(`【${A_player.名号}】向【${B_player.名号}】发起了切磋！`);
 
     const battleResult = await battleEngine(A_battle_data, B_battle_data);
-    A_player.当前血量 = battleResult.A_xue;
-    B_player.当前血量 = battleResult.B_xue;
+    // A_player.当前血量 = battleResult.A_xue;
+    // B_player.当前血量 = battleResult.B_xue;
 
 
     let img = await this.renderBattle(e, battleResult);
@@ -253,8 +253,8 @@ export class Battle extends plugin {
 
     // 只显示前10回合的战报
     // battleResult.log = battleResult.log.length > 21 ? battleResult.log.filter((_, index) => index < 21) : battleResult.log;
-    battleResult.B_player.当前血量 = Math.max(battleResult.B_player.当前血量, 1);
-    battleResult.log.push('\n...一顿操作后，木桩依旧屹立不倒...');
+    battleResult.B_player_final.当前血量 = Math.max(battleResult.B_player_final.当前血量, 1);
+    battleResult.msg.push('\n...一顿操作后，木桩依旧屹立不倒...');
     let img = await this.renderBattle(e, battleResult);
     e.reply(img);
   }
@@ -294,8 +294,8 @@ export class Battle extends plugin {
    * 【核心修正】: 统一的渲染函数
    */
   async renderBattle(e, dataForRender) {
-    const A_player = dataForRender.A_player;
-    const B_player = dataForRender.B_player;
+    const A_player = dataForRender.A_player_final;
+    const B_player = dataForRender.B_player_final;
 
     console.log('Aplayer:' + A_player);
     console.log('Aplayer:' + A_player.血量上限);
