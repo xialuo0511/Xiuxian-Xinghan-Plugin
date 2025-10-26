@@ -23,6 +23,7 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { Add_仙宠 } from '../Pokemon/Pokemon.js';
 import { redeemCode } from '../../logic/remdeem_logic.js';
+import { enchantItem, openItem } from '../../logic/item_advanced_logic.js';
 
 /**
  * 修仙模块 - 物品和货币操作
@@ -297,17 +298,20 @@ export class UserHome extends plugin {
   }
 
   /**
-   * #装备/消耗/服用等操作
+   * 【修正版】#装备/消耗/服用等操作，支持解析数量
    */
   async playerUse(e) {
     const userId = await this.preCheck(e, true);
     if (!userId) return;
 
     const match = e.msg.match(/^#(装备|消耗|服用|学习|打开|解除封印|寻宝|合成|加工|附魔)(.*)$/);
-    const action = match[1];
-    const itemName = match[2].trim();
+    // 如果指令格式不匹配，直接返回，避免后续报错
+    if (!match) return;
 
-    if (!itemName) {
+    const action = match[1];
+    const argumentStr = match[2].trim(); // 获取指令后的完整参数字符串
+
+    if (!argumentStr) {
       e.reply('请指定要操作的物品名称');
       return;
     }
@@ -315,33 +319,29 @@ export class UserHome extends plugin {
     let result;
     switch (action) {
       case '装备':
-        result = await equipItem(userId, itemName);
+        result = await equipItem(userId, argumentStr);
         break;
       case '消耗':
-      case '服用':
-        result = await consumeItem(userId, itemName);
+      case '服用': {
+        const parts = argumentStr.split('*');
+        const itemName = parts[0].trim();
+        const quantity = parts.length > 1 ? parseInt(parts[1]) : 1;
+
+        if (isNaN(quantity) || quantity <= 0) {
+          return e.reply('请输入有效的数量。', true);
+        }
+
+        result = await consumeItem(userId, itemName, quantity);
+      }
         break;
       case '学习':
-        result = await learnSkill(userId, itemName);
+        result = await learnSkill(userId, argumentStr);
         break;
       case '打开':
-        result = await openItem(userId, itemName);
-        break;
-      case '解除封印':
-        result = await unsealItem(userId, itemName);
-        break;
-      case '寻宝':
-        result = await treasureHunt(userId, itemName);
-        break;
-      case '合成':
-        result = await synthesizeItem(userId, itemName);
-        break;
-      case '加工':
-        result = await processItem(userId, itemName);
+        result = await openItem(userId, argumentStr);
         break;
       case '附魔':
-        // 附魔需要两个参数：附魔书和目标装备
-        const parts = itemName.split(' ');
+        const parts = argumentStr.split(' ');
         if (parts.length < 2) {
           result = { success: false, message: '附魔格式：#附魔 附魔书名称 目标装备名称' };
         } else {
@@ -355,7 +355,9 @@ export class UserHome extends plugin {
         };
     }
 
-    e.reply(result.message);
+    if (result && result.message) {
+      e.reply(result.message);
+    }
   }
 
   /**
