@@ -119,15 +119,15 @@ export class Battle extends plugin {
     const A_battle_data = {
       ...A_player,
       id: A_id,
-      当前血量: A_player.血量上限,
       equipment: await DAL.getAllPlayerData(A_id).equipment
     };
+    A_battle_data.当前血量 = A_player.血量上限;
     const B_battle_data = {
       ...B_player,
       id: B_id,
-      当前血量: B_player.血量上限,
       equipment: await DAL.getAllPlayerData(B_id).equipment
     };
+    B_battle_data.当前血量 = B_player.血量上限;
 
     e.reply(`【${A_player.名号}】向【${B_player.名号}】发起了切磋！`);
 
