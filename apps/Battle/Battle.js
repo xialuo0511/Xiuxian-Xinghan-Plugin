@@ -297,6 +297,9 @@ export class Battle extends plugin {
     const A_player = dataForRender.A_player;
     const B_player = dataForRender.B_player;
 
+    console.log('Aplayer:' + A_player);
+    console.log('Aplayer:' + A_player.血量上限);
+
     // 在这里预先计算好血量百分比
     let A_player_percent_hp = A_player.血量上限 > 0 ? (A_player.当前血量 / A_player.血量上限 * 100) : 0;
     let B_player_percent_hp = B_player.血量上限 > 0 ? (B_player.当前血量 / B_player.血量上限 * 100) : 0;
