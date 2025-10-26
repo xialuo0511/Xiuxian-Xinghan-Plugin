@@ -308,7 +308,7 @@ export class UserHome extends plugin {
     if (!match) return;
     let userId;
     console.log('match', match);
-    if (match[0].equal('消耗') || match[1].equal('服用')) {
+    if (match[1] == '消耗' || match[1] == '服用') {
       userId = await this.preCheck(e, false);
     } else {
       userId = await this.preCheck(e, true);
