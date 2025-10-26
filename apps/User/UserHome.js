@@ -301,13 +301,20 @@ export class UserHome extends plugin {
    * 【修正版】#装备/消耗/服用等操作，支持解析数量
    */
   async playerUse(e) {
-    const userId = await this.preCheck(e, true);
-    if (!userId) return;
+
 
     const match = e.msg.match(/^#(装备|消耗|服用|学习|打开|解除封印|寻宝|合成|加工|附魔)(.*)$/);
     // 如果指令格式不匹配，直接返回，避免后续报错
     if (!match) return;
+    let userId;
+    console.log('match', match);
+    if (match[0].equal('消耗') || match[1].equal('服用')) {
+      userId = await this.preCheck(e, false);
+    } else {
+      userId = await this.preCheck(e, true);
+    }
 
+    if (!userId) return;
     const action = match[1];
     const argumentStr = match[2].trim(); // 获取指令后的完整参数字符串
 
