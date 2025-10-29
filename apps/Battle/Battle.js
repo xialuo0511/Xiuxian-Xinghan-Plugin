@@ -108,12 +108,14 @@ export class Battle extends plugin {
       return;
     }
 
-    const A_player = (await DAL.getAllPlayerData(A_id)).player;
-    const B_player = (await DAL.getAllPlayerData(B_id)).player;
+    let A_player = (await DAL.getAllPlayerData(A_id)).player;
+    let B_player = (await DAL.getAllPlayerData(B_id)).player;
     if (!A_player || !B_player) {
       e.reply('对方或你尚未踏入仙途。');
       return;
     }
+    A_player.当前血量 = A_player.血量上限;
+    B_player.当前血量 = B_player.血量上限;
 
     // 准备战斗数据副本
     const A_battle_data = {
@@ -121,19 +123,17 @@ export class Battle extends plugin {
       id: A_id,
       equipment: await DAL.getAllPlayerData(A_id).equipment
     };
-    A_battle_data.当前血量 = A_player.血量上限;
+
     const B_battle_data = {
       ...B_player,
       id: B_id,
       equipment: await DAL.getAllPlayerData(B_id).equipment
     };
-    B_battle_data.当前血量 = B_player.血量上限;
+
 
     e.reply(`【${A_player.名号}】向【${B_player.名号}】发起了切磋！`);
 
     const battleResult = await battleEngine(A_battle_data, B_battle_data);
-    // A_player.当前血量 = battleResult.A_xue;
-    // B_player.当前血量 = battleResult.B_xue;
 
 
     let img = await this.renderBattle(e, battleResult);
@@ -195,8 +195,12 @@ export class Battle extends plugin {
     }, { ...B_data.player, id: B_id, equipment: B_data.equipment });
 
     await ForwardMsg(e, battleResult.msg);
-    await Add_HP(A_id, battleResult.A_xue_change);
-    await Add_HP(B_id, battleResult.B_xue_change);
+    let A_xue = battleResult.A_player_final.当前血量 - A_data.player.当前血量;
+    let B_xue = battleResult.B_player_final.当前血量 - B_data.player.当前血量;
+    if (A_xue > 0)
+      await Add_HP(A_id, A_xue);
+    if (B_xue > 0)
+      await Add_HP(B_id, battleResult.B_xue_change);
 
     let finalMessage = '';
     if (battleResult.A_win) {

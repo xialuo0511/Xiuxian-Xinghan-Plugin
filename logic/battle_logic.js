@@ -48,6 +48,8 @@ export async function battleEngine(A_player, B_player) {
   let turn = 0;
   let messages = [];
   let statusEffects = {};
+  let ANowBlood = A_player.当前血量;
+  let BNowBlood = B_player.当前血量;
 
   while (A_player.当前血量 > 0 && B_player.当前血量 > 0) {
     if (turn >= 30) {
