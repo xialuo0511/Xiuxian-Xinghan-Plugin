@@ -108,31 +108,28 @@ export async function enterRealm(userId, realmName, realmType, e, runCount = 1, 
 
 
 /**
-
  * [任务处理器] 结算探索的核心逻辑
-
  * @param {object} task - 任务载荷
-
  */
 export async function settleRealm(task) {
   const { userId, realmInfo, groupId } = task;
-  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+
   try {
     const player = (await DAL.getAllPlayerData(userId))?.player;
     if (!player) return;
 
     const realmDataList = {
-      '秘境': data.didian_list,
-      '禁地': data.forbiddenarea_list,
-      '仙府': data.timeplace_list,
-      '仙境': data.Fairyrealm_list,
-      '遗迹': data.yiji_list
+        '秘境': data.didian_list,
+        '禁地': data.forbiddenarea_list,
+        '仙府': data.timeplace_list,
+        '仙境': data.Fairyrealm_list,
+        '遗迹': data.yiji_list
     };
     const realm = realmDataList[realmInfo.type].find(item => item.name === realmInfo.name);
     if (!realm) return;
 
     // 1. 遭遇怪物并战斗
-    const monster = findEncounterMonster(realm, player); // 查找遭遇的怪物
+    const monster = findEncounterMonster(realm, player);
     const A_battle_data = { ...player, id: userId, equipment: (await DAL.getAllPlayerData(userId)).equipment };
     const B_battle_data = { ...monster, id: 'monster' };
     const battleResult = await battleEngine(A_battle_data, B_battle_data);
@@ -140,67 +137,62 @@ export async function settleRealm(task) {
     // 2. 计算掉落和奖励
     let rewards = { items: [], xiuwei: 0, xueqi: 0 };
     if (battleResult.A_win) {
-      rewards = calculateLoot(realm, player);
+        rewards = calculateLoot(realm, player);
     } else {
-      rewards.xiuwei = 800; // 失败保底奖励
+        rewards.xiuwei = 800; // 失败保底奖励
     }
 
     // 3. 更新玩家数据
     await DAL.transaction_update(userId, async (p) => {
-      p.修为 += rewards.xiuwei;
-      p.血气 += rewards.xueqi;
-      p.当前血量 = battleResult.A_player_final.当前血量;
-
-      // 在事务内部处理物品添加，确保数据一致性
-      for (const item of rewards.items) {
-        await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
-      }
-      return true;
+        p.修为 += rewards.xiuwei;
+        p.血气 += rewards.xueqi;
+        p.当前血量 = battleResult.A_player_final.当前血量;
+        for (const item of rewards.items) {
+            await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+        }
+        return true;
     });
-
 
     const renderData = {
-      A_win: battleResult.A_win,
-      battleLog: battleResult.msg.slice(-1)[0], // 只取最后一句总结
-      rewards: rewards,
-      realmName: realm.name
+        A_win: battleResult.A_win,
+        battleLog: battleResult.msg.slice(-1)[0],
+        rewards: rewards,
+        realmName: realm.name
     };
 
-    // 4. 将“渲染请求”通过 Notifier 发送出去
+    // 4. 发送本次结算通知
     await Notifier.notify(groupId, userId, {
-      render: 'secret_place_log', // 告诉接收方要使用哪个模板
-      data: renderData // 绘图所需的数据
+        render: 'secret_place_log',
+        data: renderData
     });
 
-    // 5. [新增] 检查并处理循环任务
+    // 5. 检查并处理后续任务
     if (task.remainingRuns && task.remainingRuns > 0) {
-      const nextTaskPayload = { ...task, remainingRuns: task.remainingRuns - 1 };
-      const singleDuration = task.endTime - task.startTime;
-      const nextEndTime = Date.now() + singleDuration;
+        const nextTaskPayload = { ...task, remainingRuns: task.remainingRuns - 1 };
+        const singleDuration = task.endTime - task.startTime;
+        const nextEndTime = Date.now() + singleDuration;
 
-      await scheduleTask(nextTaskPayload, nextEndTime);
+        await scheduleTask(nextTaskPayload, nextEndTime);
 
-      // 更新总状态的结束时间
-      const currentAction = await DAL.getPlayerAction(userId);
-      if (currentAction) {
-        currentAction.endTime = nextEndTime;
-        await DAL.setPlayerAction(userId, currentAction);
-      }
-
-      // 发送进度通知
-      await Notifier.notify(groupId, userId, {
-        message: `本次探索结算完成，剩余 ${task.remainingRuns} 次探索。`
-      });
-
-      return; // 提前返回，不执行 finally 中的清理
+        const currentAction = await DAL.getPlayerAction(userId);
+        if (currentAction) {
+            currentAction.endTime = nextEndTime;
+            await DAL.setPlayerAction(userId, currentAction);
+        }
+        
+        await Notifier.notify(groupId, userId, {
+            message: `本次探索结算完成，剩余 ${task.remainingRuns} 次探索。`
+        });
+    } else {
+        // 这是最后一次运行，或单次运行，清理总状态
+        await DAL.deletePlayerAction(userId);
     }
-
-  } finally {
-    // 无论成功与否，都删除对应的动作
-    await DAL.deletePlayerAction(userId);
+  } catch (error) {
+      console.error(`[settleRealm] 结算用户 ${userId} 时发生错误:`, error);
+      // 发生任何未捕获的错误时，都应清理玩家状态，防止玩家卡死
+      await DAL.deletePlayerAction(userId);
   }
 }
-
 
 function findEncounterMonster(realm, player) {
   return data.monster_list[0];
