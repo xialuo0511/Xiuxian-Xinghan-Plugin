@@ -177,63 +177,65 @@ export async function enterRealmAddicted(userId, realmName, count, realmType, e)
  */
 export async function settleRealm(task) {
   const { userId, realmInfo, groupId } = task;
-  const player = (await DAL.getAllPlayerData(userId))?.player;
-  if (!player) return;
-
-  const realmDataList = {
-    '秘境': data.didian_list,
-    '禁地': data.forbiddenarea_list,
-    '仙府': data.timeplace_list,
-    '仙境': data.Fairyrealm_list,
-    '遗迹': data.yiji_list
-  };
-  const realm = realmDataList[realmInfo.type].find(item => item.name === realmInfo.name);
-  if (!realm) return;
-
-  // 1. 遭遇怪物并战斗
-  const monster = findEncounterMonster(realm, player); // 查找遭遇的怪物
-  const A_battle_data = { ...player, id: userId, equipment: (await DAL.getAllPlayerData(userId)).equipment };
-  const B_battle_data = { ...monster, id: 'monster' };
-  const battleResult = await battleEngine(A_battle_data, B_battle_data);
-
-  // 2. 计算掉落和奖励
-  let rewards = { items: [], xiuwei: 0, xueqi: 0 };
-  if (battleResult.A_win) {
-    rewards = calculateLoot(realm, player);
-  } else {
-    rewards.xiuwei = 800; // 失败保底奖励
-  }
-
-  // 3. 更新玩家数据
-  await DAL.transaction_update(userId, async (p) => {
-    p.修为 += rewards.xiuwei;
-    p.血气 += rewards.xueqi;
-    p.当前血量 = battleResult.A_player_final.当前血量;
-
-    // 在事务内部处理物品添加，确保数据一致性
-    for (const item of rewards.items) {
-      await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
-    }
-    return true;
-  });
-
-
-  const renderData = {
-    A_win: battleResult.A_win,
-    battleLog: battleResult.msg.slice(-1)[0], // 只取最后一句总结
-    rewards: rewards,
-    realmName: realm.name
-  };
-
-  // 4. 将“渲染请求”通过 Notifier 发送出去
-  await Notifier.notify(groupId, userId, {
-    render: 'secret_place_log', // 告诉接收方要使用哪个模板
-    data: renderData // 绘图所需的数据
-  });
-
-  // 删除对应的动作
   const actionKey = `XinghanXiuxian:Player:${userId}:action`;
-  await redis.del(actionKey);
+  try {
+    const player = (await DAL.getAllPlayerData(userId))?.player;
+    if (!player) return;
+
+    const realmDataList = {
+      '秘境': data.didian_list,
+      '禁地': data.forbiddenarea_list,
+      '仙府': data.timeplace_list,
+      '仙境': data.Fairyrealm_list,
+      '遗迹': data.yiji_list
+    };
+    const realm = realmDataList[realmInfo.type].find(item => item.name === realmInfo.name);
+    if (!realm) return;
+
+    // 1. 遭遇怪物并战斗
+    const monster = findEncounterMonster(realm, player); // 查找遭遇的怪物
+    const A_battle_data = { ...player, id: userId, equipment: (await DAL.getAllPlayerData(userId)).equipment };
+    const B_battle_data = { ...monster, id: 'monster' };
+    const battleResult = await battleEngine(A_battle_data, B_battle_data);
+
+    // 2. 计算掉落和奖励
+    let rewards = { items: [], xiuwei: 0, xueqi: 0 };
+    if (battleResult.A_win) {
+      rewards = calculateLoot(realm, player);
+    } else {
+      rewards.xiuwei = 800; // 失败保底奖励
+    }
+
+    // 3. 更新玩家数据
+    await DAL.transaction_update(userId, async (p) => {
+      p.修为 += rewards.xiuwei;
+      p.血气 += rewards.xueqi;
+      p.当前血量 = battleResult.A_player_final.当前血量;
+
+      // 在事务内部处理物品添加，确保数据一致性
+      for (const item of rewards.items) {
+        await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+      }
+      return true;
+    });
+
+
+    const renderData = {
+      A_win: battleResult.A_win,
+      battleLog: battleResult.msg.slice(-1)[0], // 只取最后一句总结
+      rewards: rewards,
+      realmName: realm.name
+    };
+
+    // 4. 将“渲染请求”通过 Notifier 发送出去
+    await Notifier.notify(groupId, userId, {
+      render: 'secret_place_log', // 告诉接收方要使用哪个模板
+      data: renderData // 绘图所需的数据
+    });
+  } finally {
+    // 无论成功与否，都删除对应的动作
+    await redis.del(actionKey);
+  }
 }
 
 
