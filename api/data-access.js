@@ -390,3 +390,5 @@ export async function getNajieItemAmount(userId, itemName, itemClass) {
     return 0;
   }
 }
+
+export { redisClient };
