@@ -8,183 +8,102 @@ import { battleEngine } from './battle_logic.js';
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
 /**
-
  * [统一函数] 玩家进入探索地点（秘境、禁地等）的核心逻辑
-
  * @param {string} userId 玩家ID
-
  * @param {string} realmName 地点名称
-
  * @param {'秘境'|'禁地'|'仙境'} realmType 地点类型
-
  * @param {object} e 消息对象
-
  * @param {number} runCount 轮数 (沉迷功能)
-
+ * @param {boolean} isAddiction 是否为沉迷模式
  * @returns {Promise<{success: boolean, message: string}>}
-
  */
-
-export async function enterRealm(userId, realmName, realmType, e, runCount = 1) {
-
-  if (runCount <= 0 || runCount > 10) {
-
-    return { success: false, message: '轮数必须在1到10之间。' };
-
-  }
-
-
-  const isAddiction = runCount > 1;
-
-  const realmDataList = {
-
-    '秘境': data.didian_list,
-
-    '禁地': data.forbiddenarea_list,
-
-    '仙境': data.Fairyrealm_list
-
-  };
-
-
-  const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
-
-  if (!realmInfo) {
-
-    return { success: false, message: `未知的${realmType}：${realmName}` };
-
-  }
-
-
-  const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
-
-  const totalRuns = isAddiction ? 10 * runCount : 1;
-
-  const totalDuration = singleDuration * totalRuns;
-
-
-  let checkResult = { success: true, message: '' };
-
-  const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
-
-    const costMultiplier = isAddiction ? totalRuns : 1;
-
-    const totalCost = realmInfo.Price * costMultiplier;
-
-
-    if (player.灵石 < totalCost) {
-
-      checkResult = { success: false, message: `灵石不足, 需要${totalCost}灵石。` };
-
-      return false;
-
+export async function enterRealm(userId, realmName, realmType, e, runCount = 1, isAddiction = false) {
+    if (runCount <= 0 || runCount > 10) {
+        return { success: false, message: '轮数必须在1到10之间。' };
     }
 
-
-    if (isAddiction) {
-
-      const keyName = '秘境之匙';
-
-      const keyCategory = '道具';
-
-      const keyItem = najie[keyCategory]?.find(item => item.name === keyName);
-
-      if (!keyItem || keyItem.数量 < runCount) {
-
-        checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。' };
-
-        return false;
-
-      }
-
-      keyItem.数量 -= runCount;
-
-    }
-
-
-    player.灵石 -= totalCost;
-
-    if (realmInfo.experience) {
-
-      player.修为 -= (realmInfo.experience * costMultiplier);
-
-    }
-
-    return true;
-
-  });
-
-
-  if (!transactionSuccess) {
-
-    return checkResult;
-
-  }
-
-
-  const startTime = Date.now();
-
-  const endTime = isAddiction ? startTime + totalDuration : startTime + singleDuration;
-
-
-  const actionName = isAddiction ? `沉迷${realmType}探索` : `${realmType}探索`;
-
-
-  const actionDetails = {
-
-    action: actionName,
-
-    startTime: startTime,
-
-    endTime: endTime,
-
-    groupId: e.group_id,
-
-    realmInfo: { name: realmName, type: realmType }
-
-  };
-
-
-  const taskPayload = {
-
-    type: 'settleRealm',
-
-    userId: userId,
-
-    startTime: startTime,
-
-    endTime: startTime + singleDuration,
-
-    groupId: e.group_id,
-
-    realmInfo: { name: realmName, type: realmType }
-
-  };
-
-
-  if (isAddiction) {
-
-    taskPayload.remainingRuns = totalRuns - 1;
-
-  }
-
-
-  await DAL.setPlayerAction(userId, actionDetails);
-
-  await scheduleTask(taskPayload, startTime + singleDuration);
-
-
-  if (isAddiction) {
-
-    return {
-      success: true,
-      message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。`
+    const realmDataList = {
+        '秘境': data.didian_list,
+        '禁地': data.forbiddenarea_list,
+        '仙境': data.Fairyrealm_list,
     };
 
-  }
+    const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
+    if (!realmInfo) {
+        return { success: false, message: `未知的${realmType}：${realmName}` };
+    }
 
-  return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
+    const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
+    const totalRuns = isAddiction ? 10 * runCount : 1;
+    const totalDuration = singleDuration * totalRuns;
 
+    let checkResult = { success: true, message: '' };
+    const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
+        const costMultiplier = totalRuns; // 沉迷模式按总次数算，单次就是1
+        const totalCost = realmInfo.Price * costMultiplier;
+
+        if (player.灵石 < totalCost) {
+            checkResult = { success: false, message: `灵石不足, 需要${totalCost}灵石。` };
+            return false;
+        }
+
+        if (isAddiction) {
+            const keyName = '秘境之匙';
+            const keyCategory = '道具';
+            const keyItem = najie[keyCategory]?.find(item => item.name === keyName);
+            if (!keyItem || keyItem.数量 < runCount) {
+                checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。'};
+                return false;
+            }
+            keyItem.数量 -= runCount;
+        }
+        
+        player.灵石 -= totalCost;
+        if (realmInfo.experience) {
+            // 确保修为也乘以正确的倍数
+            player.修为 -= (realmInfo.experience * costMultiplier);
+        }
+        return true;
+    });
+
+    if (!transactionSuccess) {
+        return checkResult;
+    }
+
+    const startTime = Date.now();
+    // 最终结束时间无论是沉迷还是单次，都是总时长
+    const endTime = startTime + totalDuration; 
+    
+    const actionName = isAddiction ? `沉迷${realmType}探索` : `${realmType}探索`;
+
+    const actionDetails = {
+        action: actionName,
+        startTime: startTime,
+        endTime: endTime,
+        groupId: e.group_id,
+        realmInfo: { name: realmName, type: realmType },
+    };
+
+    const taskPayload = {
+        type: 'settleRealm',
+        userId: userId,
+        startTime: startTime,
+        endTime: startTime + singleDuration,
+        groupId: e.group_id,
+        realmInfo: { name: realmName, type: realmType },
+    };
+    
+    if (isAddiction && totalRuns > 1) {
+        taskPayload.remainingRuns = totalRuns - 1;
+    }
+
+    await DAL.setPlayerAction(userId, actionDetails);
+    await scheduleTask(taskPayload, startTime + singleDuration);
+    
+    if (isAddiction) {
+        return { success: true, message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。` };
+    }
+    return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
 }
 
 

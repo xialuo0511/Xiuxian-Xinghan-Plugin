@@ -85,8 +85,8 @@ export class SecretPlace extends plugin {
     const userId = await this.preCheck(e);
     if (!userId) return;
     const realmName = e.msg.replace('#降临秘境', '').trim();
-    // 调用统一的 enterRealm, runCount 默认为 1
-    const result = await enterRealm(userId, realmName, '秘境', e);
+    // 调用统一的 enterRealm, isAddiction 为 false
+    const result = await enterRealm(userId, realmName, '秘境', e, 1, false);
     e.reply(result.message);
   }
 
@@ -94,7 +94,7 @@ export class SecretPlace extends plugin {
     const userId = await this.preCheck(e);
     if (!userId) return;
     const realmName = e.msg.replace('#前往禁地', '').trim();
-    const result = await enterRealm(userId, realmName, '禁地', e);
+    const result = await enterRealm(userId, realmName, '禁地', e, 1, false);
     e.reply(result.message);
   }
 
@@ -105,8 +105,8 @@ export class SecretPlace extends plugin {
     const [realmName, countStr] = input.split('*');
     const runCount = parseInt(countStr) || 1;
 
-    // 调用统一的 enterRealm, 并传入 runCount
-    const result = await enterRealm(userId, realmName, '秘境', e, runCount);
+    // 调用统一的 enterRealm, isAddiction 为 true
+    const result = await enterRealm(userId, realmName, '秘境', e, runCount, true);
     e.reply(result.message);
   }
 
@@ -116,8 +116,7 @@ export class SecretPlace extends plugin {
     const input = e.msg.replace('#沉迷禁地', '').trim();
     const [realmName, countStr] = input.split('*');
     const runCount = parseInt(countStr) || 1;
-    // 修正此处的参数顺序和数量
-    const result = await enterRealm(userId, realmName, '禁地', e, runCount);
+    const result = await enterRealm(userId, realmName, '禁地', e, runCount, true);
     e.reply(result.message);
   }
 
@@ -127,8 +126,7 @@ export class SecretPlace extends plugin {
     const input = e.msg.replace('#沉迷仙境', '').trim();
     const [realmName, countStr] = input.split('*');
     const runCount = parseInt(countStr) || 1;
-    // 修正此处的参数顺序和数量
-    const result = await enterRealm(userId, realmName, '仙境', e, runCount);
+    const result = await enterRealm(userId, realmName, '仙境', e, runCount, true);
     e.reply(result.message);
   }
 
