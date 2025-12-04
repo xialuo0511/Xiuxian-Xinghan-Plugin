@@ -27,178 +27,165 @@ const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
 export async function enterRealm(userId, realmName, realmType, e, runCount = 1) {
 
-    if (runCount <= 0 || runCount > 10) {
+  if (runCount <= 0 || runCount > 10) {
 
-        return { success: false, message: '轮数必须在1到10之间。' };
+    return { success: false, message: '轮数必须在1到10之间。' };
 
-    }
-
-
-
-    const isAddiction = runCount > 1;
-
-    const realmDataList = {
-
-        '秘境': data.didian_list,
-
-        '禁地': data.forbiddenarea_list,
-
-        '仙境': data.Fairyrealm_list,
-
-    };
+  }
 
 
+  const isAddiction = runCount > 1;
 
-    const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
+  const realmDataList = {
 
-    if (!realmInfo) {
+    '秘境': data.didian_list,
 
-        return { success: false, message: `未知的${realmType}：${realmName}` };
+    '禁地': data.forbiddenarea_list,
 
-    }
+    '仙境': data.Fairyrealm_list
 
-
-
-    const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
-
-    const totalRuns = isAddiction ? 10 * runCount : 1;
-
-    const totalDuration = singleDuration * totalRuns;
+  };
 
 
+  const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
 
-    let checkResult = { success: true, message: '' };
+  if (!realmInfo) {
 
-    const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
+    return { success: false, message: `未知的${realmType}：${realmName}` };
 
-        const costMultiplier = isAddiction ? totalRuns : 1;
-
-        const totalCost = realmInfo.Price * costMultiplier;
-
+  }
 
 
-        if (player.灵石 < totalCost) {
+  const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
 
-            checkResult = { success: false, message: `灵石不足, 需要${totalCost}灵石。` };
+  const totalRuns = isAddiction ? 10 * runCount : 1;
 
-            return false;
-
-        }
+  const totalDuration = singleDuration * totalRuns;
 
 
+  let checkResult = { success: true, message: '' };
 
-        if (isAddiction) {
+  const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
 
-            const keyName = '秘境之匙';
+    const costMultiplier = isAddiction ? totalRuns : 1;
 
-            const keyCategory = '道具';
-
-            const keyItem = najie[keyCategory]?.find(item => item.name === keyName);
-
-            if (!keyItem || keyItem.数量 < runCount) {
-
-                checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。' };
-
-                return false;
-
-            }
-
-            keyItem.数量 -= runCount;
-
-        }
-
-        
-
-        player.灵石 -= totalCost;
-
-        if (realmInfo.experience) {
-
-            player.修为 -= (realmInfo.experience * costMultiplier);
-
-        }
-
-        return true;
-
-    });
+    const totalCost = realmInfo.Price * costMultiplier;
 
 
+    if (player.灵石 < totalCost) {
 
-    if (!transactionSuccess) {
+      checkResult = { success: false, message: `灵石不足, 需要${totalCost}灵石。` };
 
-        return checkResult;
+      return false;
 
     }
 
-
-
-    const startTime = Date.now();
-
-    const endTime = isAddiction ? startTime + totalDuration : startTime + singleDuration;
-
-    
-
-    const actionName = isAddiction ? `沉迷${realmType}探索` : `${realmType}探索`;
-
-
-
-    const actionDetails = {
-
-        action: actionName,
-
-        startTime: startTime,
-
-        endTime: endTime,
-
-        groupId: e.group_id,
-
-        realmInfo: { name: realmName, type: realmType },
-
-    };
-
-
-
-    const taskPayload = {
-
-        type: 'settleRealm',
-
-        userId: userId,
-
-        startTime: startTime,
-
-        endTime: startTime + singleDuration,
-
-        groupId: e.group_id,
-
-        realmInfo: { name: realmName, type: realmType },
-
-    };
-
-    
 
     if (isAddiction) {
 
-        taskPayload.remainingRuns = totalRuns - 1;
+      const keyName = '秘境之匙';
+
+      const keyCategory = '道具';
+
+      const keyItem = najie[keyCategory]?.find(item => item.name === keyName);
+
+      if (!keyItem || keyItem.数量 < runCount) {
+
+        checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。' };
+
+        return false;
+
+      }
+
+      keyItem.数量 -= runCount;
 
     }
 
 
+    player.灵石 -= totalCost;
 
-    await DAL.setPlayerAction(userId, actionDetails);
+    if (realmInfo.experience) {
 
-    await scheduleTask(taskPayload, startTime + singleDuration);
-
-    
-
-    if (isAddiction) {
-
-        return { success: true, message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。` };
+      player.修为 -= (realmInfo.experience * costMultiplier);
 
     }
 
-    return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
+    return true;
+
+  });
+
+
+  if (!transactionSuccess) {
+
+    return checkResult;
+
+  }
+
+
+  const startTime = Date.now();
+
+  const endTime = isAddiction ? startTime + totalDuration : startTime + singleDuration;
+
+
+  const actionName = isAddiction ? `沉迷${realmType}探索` : `${realmType}探索`;
+
+
+  const actionDetails = {
+
+    action: actionName,
+
+    startTime: startTime,
+
+    endTime: endTime,
+
+    groupId: e.group_id,
+
+    realmInfo: { name: realmName, type: realmType }
+
+  };
+
+
+  const taskPayload = {
+
+    type: 'settleRealm',
+
+    userId: userId,
+
+    startTime: startTime,
+
+    endTime: startTime + singleDuration,
+
+    groupId: e.group_id,
+
+    realmInfo: { name: realmName, type: realmType }
+
+  };
+
+
+  if (isAddiction) {
+
+    taskPayload.remainingRuns = totalRuns - 1;
+
+  }
+
+
+  await DAL.setPlayerAction(userId, actionDetails);
+
+  await scheduleTask(taskPayload, startTime + singleDuration);
+
+
+  if (isAddiction) {
+
+    return {
+      success: true,
+      message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。`
+    };
+
+  }
+
+  return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
 
 }
-
 
 
 /**
@@ -280,7 +267,7 @@ export async function settleRealm(task) {
         currentAction.endTime = nextEndTime;
         await DAL.setPlayerAction(userId, currentAction);
       }
-      
+
       // 发送进度通知
       await Notifier.notify(groupId, userId, {
         message: `本次探索结算完成，剩余 ${task.remainingRuns} 次探索。`

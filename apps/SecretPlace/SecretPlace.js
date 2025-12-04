@@ -5,7 +5,7 @@ import * as DAL from '../../api/data-access.js';
 import { Gulid, puppeteer, Show, plugin } from '../../api/api.js';
 
 // 【新增】: 导入新的逻辑函数
-import { enterRealm, enterRealmAddiction } from '../../logic/realm_logic.js';
+import { enterRealm } from '../../logic/realm_logic.js';
 
 export class SecretPlace extends plugin {
   constructor() {
