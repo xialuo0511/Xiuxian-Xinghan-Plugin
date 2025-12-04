@@ -181,11 +181,6 @@ export async function settleRealm(task) {
 
       await scheduleTask(nextTaskPayload, nextEndTime);
 
-      const currentAction = await DAL.getPlayerAction(userId);
-      if (currentAction) {
-          currentAction.endTime = nextEndTime;
-          await DAL.setPlayerAction(userId, currentAction);
-      }
     } catch(e) {
       console.error(`[settleRealm] 循环任务调度或通知出错 (用户: ${userId}):`, e);
       // 此处出错也应中断，防止无限循环
