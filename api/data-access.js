@@ -172,6 +172,16 @@ export async function getPlayerAction(userId) {
 }
 
 /**
+ * [新增] 删除玩家的动作状态
+ * @param {string} userId 玩家ID
+ * @returns {Promise<void>}
+ */
+export async function deletePlayerAction(userId) {
+  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+  await redisClient.del(actionKey);
+}
+
+/**
  * 获取宗门信息
  * @param {string} sectName - 宗门名称
  * @returns {Promise<object|null>}

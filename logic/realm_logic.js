@@ -234,7 +234,7 @@ export async function settleRealm(task) {
     });
   } finally {
     // 无论成功与否，都删除对应的动作
-    await redis.del(actionKey);
+    await DAL.deletePlayerAction(userId);
   }
 }
 
