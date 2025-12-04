@@ -8,256 +8,205 @@ import { battleEngine } from './battle_logic.js';
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
 /**
- * 玩家进入探索地点（秘境、禁地等）的核心逻辑
+
+ * [统一函数] 玩家进入探索地点（秘境、禁地等）的核心逻辑
+
  * @param {string} userId 玩家ID
+
  * @param {string} realmName 地点名称
- * @param {'秘境'|'禁地'|'仙府'|'仙境'|'遗迹'} realmType 地点类型
- * @param {object} e 消息对象
- * @returns {Promise<{success: boolean, message: string}>}
- */
-export async function enterRealm(userId, realmName, realmType, e) {
-  const realmDataList = {
-    '秘境': data.didian_list,
-    '禁地': data.forbiddenarea_list,
-    '仙府': data.timeplace_list,
-    '仙境': data.Fairyrealm_list,
-    '遗迹': data.yiji_list
-  };
 
-  const realmInfo = realmDataList[realmType].find(item => item.name === realmName);
-  if (!realmInfo) {
-    return { success: false, message: `未知的${realmType}：${realmName}` };
-  }
-
-  let checkResult = { success: true, message: '' };
-  const transactionSuccess = await DAL.transaction_update(userId, (player) => {
-    // --- 前置条件检查 ---
-    if (player.灵石 < realmInfo.Price) {
-      checkResult = { success: false, message: `没有灵石寸步难行,攒到${realmInfo.Price}灵石才够哦~` };
-      return false;
-    }
-    if (realmInfo.experience && player.修为 < realmInfo.experience) {
-      checkResult = { success: false, message: `你需要积累${realmInfo.experience}修为，才能抵抗此地威压！` };
-      return false;
-    }
-    // ... 可在此添加更多如等级、职业等特定检查 ...
-
-    // 扣除门票
-    player.灵石 -= realmInfo.Price;
-    if (realmInfo.experience) {
-      player.修为 -= realmInfo.experience;
-    }
-    return true;
-  });
-
-  if (!transactionSuccess) {
-    return checkResult;
-  }
-
-  const duration = xiuxianConfigData.CD.secretplace * 60 * 1000;
-  // const duration = 30 * 1000;
-  const startTime = Date.now();
-  const endTime = startTime + duration;
-
-  // 设置玩家行动状态
-  const taskPayload = {
-    type: 'settleRealm',
-    userId: userId,
-    startTime: startTime,
-    endTime: endTime,
-    groupId: e.group_id,
-    realmInfo: { name: realmName, type: realmType }
-  };
-
-  // 2. 将其字符串化，用于后续的存储和删除
-  const taskPayloadString = JSON.stringify(taskPayload);
-
-  // 3. 设置玩家行动状态时，把这个字符串也存进去
-  const actionDetails = {
-    action: `${realmType}探索`,
-    startTime: startTime,
-    endTime: endTime,
-    groupId: e.group_id,
-    realmInfo: { name: realmName, type: realmType },
-    taskPayloadString: taskPayloadString // <-- 关键改动
-  };
-  await redis.set(`XinghanXiuxian:Player:${userId}:action`, JSON.stringify(actionDetails));
-
-  // 4. 调度后台任务
-  await scheduleTask(taskPayload, endTime);
-
-  return { success: true, message: `开始${realmType}【${realmName}】的探索, ${duration / 60000}分钟后归来!` };
-}
-
-/**
- * 玩家进入沉迷探索地点
- * @param {string} userId 玩家ID
- * @param {string} realmName 地点名称
- * @param {number} runCount 沉迷轮数
  * @param {'秘境'|'禁地'|'仙境'} realmType 地点类型
+
  * @param {object} e 消息对象
+
+ * @param {number} runCount 轮数 (沉迷功能)
+
  * @returns {Promise<{success: boolean, message: string}>}
+
  */
-export async function enterRealmAddiction(userId, realmName, runCount, realmType, e) {
-  if (runCount <= 0 || runCount > 10) {
-    return { success: false, message: '沉迷轮数必须在1到10之间。' };
-  }
 
-  const realmDataList = {
-    '秘境': data.didian_list,
-    '禁地': data.forbiddenarea_list,
-    '仙境': data.Fairyrealm_list,
-  };
+export async function enterRealm(userId, realmName, realmType, e, runCount = 1) {
 
-  const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
-  if (!realmInfo) {
-    return { success: false, message: `未知的${realmType}：${realmName}` };
-  }
+    if (runCount <= 0 || runCount > 10) {
 
-  const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
-  // const singleDuration = 30 * 1000; // for testing
-  const totalRuns = 10 * runCount;
-  const totalDuration = singleDuration * totalRuns;
+        return { success: false, message: '轮数必须在1到10之间。' };
 
-  let checkResult = { success: true, message: '' };
-  const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
-    // 1. 检查秘境之匙
-    const keyName = '秘境之匙';
-    const keyCategory = '道具';
-    let keyItem = najie[keyCategory]?.find(item => item.name === keyName);
-    if (!keyItem || keyItem.数量 < runCount) {
-      checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。' };
-      return false;
     }
 
-    // 2. 检查其他费用 (以10倍计算)
-    const totalCost = realmInfo.Price * totalRuns;
-    if (player.灵石 < totalCost) {
-      checkResult = { success: false, message: `沉迷探索需要 ${totalCost} 灵石，你不够哦~` };
-      return false;
+
+
+    const isAddiction = runCount > 1;
+
+    const realmDataList = {
+
+        '秘境': data.didian_list,
+
+        '禁地': data.forbiddenarea_list,
+
+        '仙境': data.Fairyrealm_list,
+
+    };
+
+
+
+    const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
+
+    if (!realmInfo) {
+
+        return { success: false, message: `未知的${realmType}：${realmName}` };
+
     }
 
-    // 3. 扣除费用
-    keyItem.数量 -= runCount;
-    player.灵石 -= totalCost;
 
-    return true;
-  });
 
-  if (!transactionSuccess) {
-    return checkResult;
-  }
+    const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
 
-  const startTime = Date.now();
-  const endTime = startTime + totalDuration; // 总结束时间
+    const totalRuns = isAddiction ? 10 * runCount : 1;
 
-  // 设置一个总的、长时间的行动状态
-  const actionDetails = {
-          };
-          await DAL.setPlayerAction(userId, actionDetails);
+    const totalDuration = singleDuration * totalRuns;
 
-  // 准备第一个任务
-  const firstTaskPayload = {
-    type: 'settleRealm',
-    userId: userId,
-    startTime: startTime,
-    endTime: startTime + singleDuration,
-    groupId: e.group_id,
-    realmInfo: { name: realmName, type: realmType },
-    remainingRuns: totalRuns - 1, // 剩余的执行次数
-  };
 
-  // 调度第一个任务
-  await scheduleTask(firstTaskPayload, startTime + singleDuration);
 
-  return { success: true, message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。` };
+    let checkResult = { success: true, message: '' };
+
+    const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
+
+        const costMultiplier = isAddiction ? totalRuns : 1;
+
+        const totalCost = realmInfo.Price * costMultiplier;
+
+
+
+        if (player.灵石 < totalCost) {
+
+            checkResult = { success: false, message: `灵石不足, 需要${totalCost}灵石。` };
+
+            return false;
+
+        }
+
+
+
+        if (isAddiction) {
+
+            const keyName = '秘境之匙';
+
+            const keyCategory = '道具';
+
+            const keyItem = najie[keyCategory]?.find(item => item.name === keyName);
+
+            if (!keyItem || keyItem.数量 < runCount) {
+
+                checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。' };
+
+                return false;
+
+            }
+
+            keyItem.数量 -= runCount;
+
+        }
+
+        
+
+        player.灵石 -= totalCost;
+
+        if (realmInfo.experience) {
+
+            player.修为 -= (realmInfo.experience * costMultiplier);
+
+        }
+
+        return true;
+
+    });
+
+
+
+    if (!transactionSuccess) {
+
+        return checkResult;
+
+    }
+
+
+
+    const startTime = Date.now();
+
+    const endTime = isAddiction ? startTime + totalDuration : startTime + singleDuration;
+
+    
+
+    const actionName = isAddiction ? `沉迷${realmType}探索` : `${realmType}探索`;
+
+
+
+    const actionDetails = {
+
+        action: actionName,
+
+        startTime: startTime,
+
+        endTime: endTime,
+
+        groupId: e.group_id,
+
+        realmInfo: { name: realmName, type: realmType },
+
+    };
+
+
+
+    const taskPayload = {
+
+        type: 'settleRealm',
+
+        userId: userId,
+
+        startTime: startTime,
+
+        endTime: startTime + singleDuration,
+
+        groupId: e.group_id,
+
+        realmInfo: { name: realmName, type: realmType },
+
+    };
+
+    
+
+    if (isAddiction) {
+
+        taskPayload.remainingRuns = totalRuns - 1;
+
+    }
+
+
+
+    await DAL.setPlayerAction(userId, actionDetails);
+
+    await scheduleTask(taskPayload, startTime + singleDuration);
+
+    
+
+    if (isAddiction) {
+
+        return { success: true, message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。` };
+
+    }
+
+    return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
+
 }
 
-/**
- * 玩家进入探索地点（秘境、禁地等）的核心逻辑
- * @param {string} userId 玩家ID
- * @param {string} realmName 地点名称
- * @param count 探索次数
- * @param {'秘境'|'禁地'|'仙府'|'仙境'|'遗迹'} realmType 地点类型
- * @param {object} e 消息对象
- * @returns {Promise<{success: boolean, message: string}>}
- */
-export async function enterRealmAddicted(userId, realmName, count, realmType, e) {
-  const realmDataList = {
-    '秘境': data.didian_list,
-    '禁地': data.forbiddenarea_list,
-    '仙府': data.timeplace_list,
-    '仙境': data.Fairyrealm_list,
-    '遗迹': data.yiji_list
-  };
 
-  const realmInfo = realmDataList[realmType].find(item => item.name === realmName);
-  if (!realmInfo) {
-    return { success: false, message: `未知的${realmType}：${realmName}` };
-  }
-
-  let checkResult = { success: true, message: '' };
-  const transactionSuccess = await DAL.transaction_update(userId, (player) => {
-    // --- 前置条件检查 ---
-    if (player.灵石 < realmInfo.Price) {
-      checkResult = { success: false, message: `没有灵石寸步难行,攒到${realmInfo.Price}灵石才够哦~` };
-      return false;
-    }
-    if (realmInfo.experience && player.修为 < realmInfo.experience) {
-      checkResult = { success: false, message: `你需要积累${realmInfo.experience}修为，才能抵抗此地威压！` };
-      return false;
-    }
-
-    // 扣除门票
-    player.灵石 -= realmInfo.Price;
-    if (realmInfo.experience) {
-      player.修为 -= realmInfo.experience;
-    }
-    return true;
-  });
-
-  if (!transactionSuccess) {
-    return checkResult;
-  }
-
-  const duration = xiuxianConfigData.CD.secretplace * 60 * 1000;
-  // const duration = 30 * 1000;
-  const startTime = Date.now();
-  const endTime = startTime + duration;
-
-  // 设置玩家行动状态
-  const taskPayload = {
-    type: 'settleRealm',
-    userId: userId,
-    startTime: startTime,
-    endTime: endTime,
-    groupId: e.group_id,
-    realmInfo: { name: realmName, type: realmType }
-  };
-
-  // 2. 将其字符串化，用于后续的存储和删除
-  const taskPayloadString = JSON.stringify(taskPayload);
-
-  // 3. 设置玩家行动状态时，把这个字符串也存进去
-  const actionDetails = {
-    action: `${realmType}探索`,
-    startTime: startTime,
-    endTime: endTime,
-    groupId: e.group_id,
-    realmInfo: { name: realmName, type: realmType },
-    taskPayloadString: taskPayloadString // <-- 关键改动
-  };
-  await redis.set(`XinghanXiuxian:Player:${userId}:action`, JSON.stringify(actionDetails));
-
-  // 4. 调度后台任务
-  await scheduleTask(taskPayload, endTime);
-
-  return { success: true, message: `开始${realmType}【${realmName}】的探索, ${duration / 60000}分钟后归来!` };
-}
 
 /**
+
  * [任务处理器] 结算探索的核心逻辑
+
  * @param {object} task - 任务载荷
+
  */
 export async function settleRealm(task) {
   const { userId, realmInfo, groupId } = task;
