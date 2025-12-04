@@ -172,6 +172,17 @@ export async function getPlayerAction(userId) {
 }
 
 /**
+ * [新增] 设置玩家的动作状态
+ * @param {string} userId 玩家ID
+ * @param {object} actionDetails 动作详情
+ * @returns {Promise<void>}
+ */
+export async function setPlayerAction(userId, actionDetails) {
+  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
+  await redisClient.set(actionKey, JSON.stringify(actionDetails));
+}
+
+/**
  * [新增] 删除玩家的动作状态
  * @param {string} userId 玩家ID
  * @returns {Promise<void>}

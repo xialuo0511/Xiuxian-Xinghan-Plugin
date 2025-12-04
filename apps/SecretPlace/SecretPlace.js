@@ -5,7 +5,7 @@ import * as DAL from '../../api/data-access.js';
 import { Gulid, puppeteer, Show, plugin } from '../../api/api.js';
 
 // 【新增】: 导入新的逻辑函数
-import { enterRealm } from '../../logic/realm_logic.js';
+import { enterRealm, enterRealmAddiction } from '../../logic/realm_logic.js';
 
 export class SecretPlace extends plugin {
   constructor() {
@@ -17,13 +17,11 @@ export class SecretPlace extends plugin {
       rule: [
         { reg: '^#秘境$', fnc: 'secretPlaceList' },
         { reg: '^#降临秘境.*$', fnc: 'goSecretPlace' },
+        { reg: '^#沉迷秘境.*$', fnc: 'goSecretPlaceAddiction' },
         { reg: '^#禁地$', fnc: 'forbiddenAreaList' },
         { reg: '^#前往禁地.*$', fnc: 'goForbiddenArea' },
-
-        { reg: '^#沉迷秘境.*$', fnc: 'goSecretPlaceAddiction' },
         { reg: '^#沉迷禁地.*$', fnc: 'goForbiddenAreaAddiction' },
         { reg: '^#沉迷仙境.*$', fnc: 'goFairyRealmAddiction' },
-
         { reg: '^#逃离', fnc: 'giveUp' }
       ]
     });
@@ -105,11 +103,8 @@ export class SecretPlace extends plugin {
     const input = e.msg.replace('#沉迷秘境', '').trim();
     const [realmName, countStr] = input.split('*');
     const runCount = parseInt(countStr) || 1;
-    if (runCount > 12) {
-      e.reply('单次沉迷最多进行12轮探索。');
-      return;
-    }
-    const result = await enterRealmAddiction(userId, realmName, '秘境', runCount, e);
+    
+    const result = await enterRealmAddiction(userId, realmName, runCount, '秘境', e);
     e.reply(result.message);
   }
 
