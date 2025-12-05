@@ -24,6 +24,7 @@ import {
 import { Add_仙宠 } from '../Pokemon/Pokemon.js';
 import { redeemCode } from '../../logic/remdeem_logic.js';
 import { enchantItem, openItem } from '../../logic/item_advanced_logic.js';
+import { equipPhantomCard, getPhantomCardList } from '../../logic/phantom_logic.js';
 
 /**
  * 修仙模块 - 物品和货币操作
