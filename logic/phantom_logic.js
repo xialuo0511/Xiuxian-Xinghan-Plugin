@@ -30,7 +30,7 @@ export async function equipPhantomCard(userId, cardName, cardType) {
         item.name === cardName && item.type === '幻影卡面_练气'
       );
     } else if (cardType === '装备') {
-      cardInfo = data.yinghuanpaimian_list.find(item =>
+      cardInfo = data.kamian.find(item =>
         item.name === cardName && item.type === '幻影卡面_装备'
       );
     }
