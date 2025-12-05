@@ -8,32 +8,29 @@ import data from '../model/XiuxianData.js';
  * @param {string} userId 用户ID
  * @param {string} cardName 牌面名称
  * @param {string} cardType 牌面类型 ('练气' 或 '装备')
- * @returns {Promise<{success: boolean, message: string}>}
+ * @returns {Promise<boolean>}
  */
 export async function equipPhantomCard(userId, cardName, cardType) {
-  return await transaction_update(userId, async (player) => {
+  let result = { success: false, message: '装备失败，发生未知错误。' };
 
-    // 检查是否拥有该牌面，先检查'影幻牌面'分类，再检查'道具'分类
+  const transactionSuccess = await transaction_update(userId, async (player) => {
+    // 检查是否拥有该牌面
     let hasCard = await DAL.getNajieItemAmount(userId, cardName, '影幻牌面') > 0;
     if (!hasCard) {
       hasCard = await DAL.getNajieItemAmount(userId, cardName, '道具') > 0;
     }
 
     if (!hasCard) {
-      return {
-        success: false,
-        message: `你没有[${cardName}]这张牌面，或者它的物品类别不正确`
-      };
+      result = { success: false, message: `你没有[${cardName}]这张牌面。` };
+      return false; // 中止事务
     }
 
     // 查找牌面信息
-    let cardInfo = data.yinghuanpaimian_list.find(item => item.name === cardName) || data.daoju_list.find(item => item.name === cardName);
+    const cardInfo = data.yinghuanpaimian_list.find(item => item.name === cardName) || data.daoju_list.find(item => item.name === cardName);
 
     if (!cardInfo) {
-      return {
-        success: false,
-        message: `在配置中未找到[${cardName}]的牌面信息`
-      };
+      result = { success: false, message: `在配置中未找到[${cardName}]的牌面信息。` };
+      return false; // 中止事务
     }
     
     // 装备牌面
@@ -42,14 +39,19 @@ export async function equipPhantomCard(userId, cardName, cardType) {
     } else {
       player.装备皮肤 = cardName;
     }
-
-    return {
-      success: true,
-      message: `成功装备${cardType}幻影牌面[${cardName}]`
-    };
+    
+    // 设置成功信息
+    result = { success: true, message: `成功装备${cardType}幻影牌面[${cardName}]` };
+    return true; // 提交事务
   });
-}
 
+  // 如果事务本身因为冲突等原因失败，但逻辑判断是成功的，需要覆盖结果
+  if (!transactionSuccess && result.success) {
+    result = { success: false, message: '装备失败，数据写入时发生冲突，请重试。' };
+  }
+  
+  return result;
+}
 /**
  * 查看幻影牌面列表
  * @param {string} cardType 牌面类型
