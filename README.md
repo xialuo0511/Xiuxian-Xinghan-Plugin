@@ -1,6 +1,6 @@
-# 绝云间修仙2.3.0 【仙韵绕春华】
+# 绝云间修仙3.0.0 【一竿风月共听潮】
 
-## 请注意！本插件进入停更状态！目前正在重写！有需要联系QQ2531606029
+## 作者联系：QQ2531606029
 
 ## QQ游玩反馈群：906061358
 
@@ -22,7 +22,7 @@ resources/data/association
 
 ```
 
-2. 在机器人根目录执行下列代码（请在机器人不在运行时执行，但请保持redis开启）
+2. 在机器人根目录执行下列代码（请在机器人非运行状态时执行，但请保持redis开启）
 
 ```
 node ./plugins/xiuxian-emulator-plugin/migrate-to-redis.js
@@ -36,8 +36,6 @@ node ./plugins/xiuxian-emulator-plugin/migrate-to-redis.js
 ## 访问量：
 
 <br><img src="https://count.getloli.com/get/@:xiuxian-emulator-plugin?theme=rule34" /> <br>
-
-## 如需查看大版本更新日志，请前往[官网](http://xialuo.top/)(补偿仅对本人开的服务器)
 
 ## 安装
 
