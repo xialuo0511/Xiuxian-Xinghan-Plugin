@@ -171,10 +171,6 @@ export async function settleRealm(task) {
   if (task.remainingRuns && task.remainingRuns > 0) {
     // 是循环任务，先通知，再调度
     try {
-      await Notifier.notify(groupId, userId, {
-          message: `本次探索结算完成，剩余 ${task.remainingRuns} 次探索。`
-      });
-
       const nextTaskPayload = { ...task, remainingRuns: task.remainingRuns - 1 };
       const singleDuration = task.endTime - task.startTime;
       const nextEndTime = Date.now() + singleDuration;
@@ -192,14 +188,14 @@ export async function settleRealm(task) {
     await DAL.deletePlayerAction(userId);
   }
 
-  // --- 发送最终的、复杂的图片战报 ---
   // 将其包裹在独立的 try-catch 中，防止它失败时影响核心状态
   try {
     const renderData = {
         A_win: battleResult.A_win,
         battleLog: battleResult.msg.slice(-1)[0],
         rewards: rewards,
-        realmName: realm.name
+        realmName: realm.name,
+        remainingRuns: task.remainingRuns || 0 // 将剩余次数添加到渲染数据中
     };
     await Notifier.notify(groupId, userId, {
         render: 'secret_place_log',

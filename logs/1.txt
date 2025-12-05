@@ -1,0 +1,54 @@
+0|TRSS-Yunzai  | [调度器] 发现 1 个到期任务。
+0|TRSS-Yunzai  | [工作单元] 接收到任务: settleRealm (用户: 2531606029)
+0|TRSS-Yunzai  | [22:58:00.018][INFO][  TRSSYz  ] [星瀚修仙-通知器] 收到通知，准备发送给 1078340911
+0|TRSS-Yunzai  | [settleRealm] 循环任务调度或通知出错 (用户: 2531606029): ReferenceError: redis is not defined
+0|TRSS-Yunzai  |     at scheduleTask (file:///D:/Bot/Yunzai/plugins/xiuxian-emulator-plugin/api/task-scheduler.js:7:3)
+0|TRSS-Yunzai  |     at Module.settleRealm (file:///D:/Bot/Yunzai/plugins/xiuxian-emulator-plugin/logic/realm_logic.js:182:13)
+0|TRSS-Yunzai  |     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+0|TRSS-Yunzai  |     at async startWorker (file:///D:/Bot/Yunzai/plugins/xiuxian-emulator-plugin/workers/worker.js:17:11)
+0|TRSS-Yunzai  | [22:58:00.018][INFO][3504183573 => 1078340911] 发送群消息：[{"type":"at","data":{"qq":"2531606029"}},{"data":{"message":"本次探索结算完成，剩余 9 次探索。"}}]
+0|TRSS-Yunzai  | [22:58:00.024][ERRO][  TRSSYz  ] [通知器] 发送消息到 1078340911 失败: Error: converter is not a function
+0|TRSS-Yunzai  |     at Proxy.makeError (file:///D:/Bot/Yunzai/lib/util.js:30:26)
+0|TRSS-Yunzai  |     at file:///D:/Bot/Yunzai/plugins/adapter/OneBotv11.js:32:23
+0|TRSS-Yunzai  |     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+0|TRSS-Yunzai  |     at async OneBotv11Adapter.sendMsg (file:///D:/Bot/Yunzai/plugins/adapter/OneBotv11.js:97:36)
+0|TRSS-Yunzai  |     at async NotifierTask.pushInfo (file:///D:/Bot/Yunzai/plugins/xiuxian-emulator-plugin/apps/task/NotifierTask.js:24:9)
+0|TRSS-Yunzai  |     at async NotifierTask.startListener (file:///D:/Bot/Yunzai/plugins/xiuxian-emulator-plugin/apps/task/NotifierTask.js:76:11) {
+0|TRSS-Yunzai  |   action: 'send_msg',
+0|TRSS-Yunzai  |   params: { group_id: 1078340911, message: [ [Object], [Object] ] },
+0|TRSS-Yunzai  |   echo: '01KBMXXF6JRX4D5PTV4Z9GYJ70',
+0|TRSS-Yunzai  |   error: {
+0|TRSS-Yunzai  |     status: 'failed',
+0|TRSS-Yunzai  |     retcode: 1200,
+0|TRSS-Yunzai  |     data: null,
+0|TRSS-Yunzai  |     message: 'converter is not a function',
+0|TRSS-Yunzai  |     wording: 'converter is not a function',
+0|TRSS-Yunzai  |     echo: '01KBMXXF6JRX4D5PTV4Z9GYJ70',
+0|TRSS-Yunzai  |     raw: '{"status":"failed","retcode":1200,"data":null,"message":"converter is not a function","wording":"converter is not a function","echo":"01KBMXXF6JRX4D5PTV4Z9GYJ70"}'
+0|TRSS-Yunzai  |   }
+0|TRSS-Yunzai  | }
+0|TRSS-Yunzai  | [22:58:00.029][INFO][  TRSSYz  ] [星瀚修仙-通知器] 收到通知，准备发送给 1078340911
+0|TRSS-Yunzai  | [22:58:00.029][INFO][3504183573 => 1078340911] 发送群消息：[{"type":"at","data":{"qq":"2531606029"}},{"data":{"message":"沉迷探索因意外中断。"}}]
+0|TRSS-Yunzai  | [22:58:00.030][INFO][  TRSSYz  ] [星瀚修仙-通知器] 收到通知，准备发送给 1078340911
+0|TRSS-Yunzai  | [22:58:00.033][ERRO][  TRSSYz  ] [通知器] 发送消息到 1078340911 失败: Error: converter is not a function
+0|TRSS-Yunzai  |     at Proxy.makeError (file:///D:/Bot/Yunzai/lib/util.js:30:26)
+0|TRSS-Yunzai  |     at file:///D:/Bot/Yunzai/plugins/adapter/OneBotv11.js:32:23
+0|TRSS-Yunzai  |     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+0|TRSS-Yunzai  |     at async OneBotv11Adapter.sendMsg (file:///D:/Bot/Yunzai/plugins/adapter/OneBotv11.js:97:36)
+0|TRSS-Yunzai  |     at async NotifierTask.pushInfo (file:///D:/Bot/Yunzai/plugins/xiuxian-emulator-plugin/apps/task/NotifierTask.js:24:9)
+0|TRSS-Yunzai  |     at async NotifierTask.startListener (file:///D:/Bot/Yunzai/plugins/xiuxian-emulator-plugin/apps/task/NotifierTask.js:76:11) {
+0|TRSS-Yunzai  |   action: 'send_msg',
+0|TRSS-Yunzai  |   params: { group_id: 1078340911, message: [ [Object], [Object] ] },
+0|TRSS-Yunzai  |   echo: '01KBMXXF6X5PJCXSZXPTPM62WD',
+0|TRSS-Yunzai  |   error: {
+0|TRSS-Yunzai  |     status: 'failed',
+0|TRSS-Yunzai  |     retcode: 1200,
+0|TRSS-Yunzai  |     data: null,
+0|TRSS-Yunzai  |     message: 'converter is not a function',
+0|TRSS-Yunzai  |     wording: 'converter is not a function',
+0|TRSS-Yunzai  |     echo: '01KBMXXF6X5PJCXSZXPTPM62WD',
+0|TRSS-Yunzai  |     raw: '{"status":"failed","retcode":1200,"data":null,"message":"converter is not a function","wording":"converter is not a function","echo":"01KBMXXF6X5PJCXSZXPTPM62WD"}'
+0|TRSS-Yunzai  |   }
+0|TRSS-Yunzai  | }
+0|TRSS-Yunzai  | [22:58:01.161][MARK][  TRSSYz  ] [图片生成][secret_place_log][3次] 43.19KB 1129ms
+0|TRSS-Yunzai  | [22:58:01.161][INFO][3504183573 => 1078340911] 发送群消息：[{"type":"at","data":{"qq":"2531606029"}},{"type":"image","data":{"file":"base64://..."}}]
