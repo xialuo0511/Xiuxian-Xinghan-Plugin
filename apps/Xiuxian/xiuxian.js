@@ -712,13 +712,8 @@ export async function exist_yijie_beibao_thing(usr_qq, thing_name, thing_class) 
  * 判断物品
  */
 export async function exist_najie_thing(usr_qq, thing_name, thing_class, thing_pinji = null) {
-  // 此函数已废弃，其逻辑应由 DAL.getNajieItemAmount 替代
-  // 为保证向前兼容，此处暂时保留并调用新函数
-  // 注意：DAL.getNajieItemAmount 不支持品级查询，这是一个简化。
-  // 如果需要精确品级查询，应在DAL中实现。
   if (thing_class === '装备' && thing_pinji !== null) {
     console.warn(`[exist_najie_thing] 警告: 此函数不支持精确到品级的装备查询，请更新调用逻辑。`);
-    // 可以在此添加临时的兼容逻辑，如果非常需要的话
   }
   return await DAL.getNajieItemAmount(usr_qq, thing_name, thing_class);
 }
