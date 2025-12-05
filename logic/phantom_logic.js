@@ -33,18 +33,17 @@ export async function equipPhantomCard(userId, cardName, cardType) {
       return false; // 中止事务
     }
 
-    // 装备牌面
-    if (cardType === '练气') {
-      player.练气皮肤 = cardName;
-    } else {
-      player.装备皮肤 = cardName;
-    }
-
-    // 设置成功信息
-    result = { success: true, message: `成功装备${cardType}幻影牌面[${cardName}]` };
-    return true; // 提交事务
-  });
-
+        // 装备牌面
+        if (cardType === '练气') {
+          player.练气皮肤 = cardInfo.id;
+        } else {
+          player.装备皮肤 = cardInfo.id;
+        }
+        
+        // 设置成功信息
+        result = { success: true, message: `成功装备${cardType}幻影牌面[${cardInfo.name}]` };
+        return true; // 提交事务
+      });
   // 如果事务本身因为冲突等原因失败，但逻辑判断是成功的，需要覆盖结果
   if (!transactionSuccess && result.success) {
     result = { success: false, message: '装备失败，数据写入时发生冲突，请重试。' };
