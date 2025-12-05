@@ -26,20 +26,20 @@ export async function equipPhantomCard(userId, cardName, cardType) {
     }
 
     // 查找牌面信息
-    const cardInfo = data.yinghuanpaimian_list.find(item => item.name === cardName) || data.daoju_list.find(item => item.name === cardName);
+    const cardInfo = data.kamian.find(item => item.name === cardName) || data.daoju_list.find(item => item.name === cardName);
 
     if (!cardInfo) {
       result = { success: false, message: `在配置中未找到[${cardName}]的牌面信息。` };
       return false; // 中止事务
     }
-    
+
     // 装备牌面
     if (cardType === '练气') {
       player.练气皮肤 = cardName;
     } else {
       player.装备皮肤 = cardName;
     }
-    
+
     // 设置成功信息
     result = { success: true, message: `成功装备${cardType}幻影牌面[${cardName}]` };
     return true; // 提交事务
@@ -49,9 +49,10 @@ export async function equipPhantomCard(userId, cardName, cardType) {
   if (!transactionSuccess && result.success) {
     result = { success: false, message: '装备失败，数据写入时发生冲突，请重试。' };
   }
-  
+
   return result;
 }
+
 /**
  * 查看幻影牌面列表
  * @param {string} cardType 牌面类型
@@ -63,7 +64,7 @@ export async function getPhantomCardList(cardType) {
   if (cardType === '练气') {
     cards = data.daoju_list.filter(item => item.type === '幻影卡面_练气');
   } else if (cardType === '装备') {
-    cards = data.yinghuanpaimian_list || [];
+    cards = data.kamian || [];
   }
 
   return {
