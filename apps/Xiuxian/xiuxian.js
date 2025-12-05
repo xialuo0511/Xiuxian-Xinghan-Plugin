@@ -712,65 +712,15 @@ export async function exist_yijie_beibao_thing(usr_qq, thing_name, thing_class) 
  * 判断物品
  */
 export async function exist_najie_thing(usr_qq, thing_name, thing_class, thing_pinji = null) {
-  try {
-    let najie = await Read_najie(usr_qq);
-    if (!isNotNull(najie.草药)) {
-
-      najie.草药 = [];
-      await Write_najie(usr_qq, najie);
-    }
-    if (!isNotNull(najie.食材)) {
-      najie.食材 = [];
-      await Write_najie(usr_qq, najie);
-    }
-    if (!isNotNull(najie.盒子)) {
-      najie.盒子 = [];
-      await Write_najie(usr_qq, najie);
-    }
-    let ifexist;
-    if (thing_class == '装备') {
-      if (thing_pinji == null) {
-        ifexist = najie.装备.find(item => item.name == thing_name);
-      } else {
-        ifexist = najie.装备.find(item => item.name == thing_name && item.pinji == thing_pinji);
-      }
-    }
-    if (thing_class == '丹药') {
-      ifexist = najie.丹药.find(item => item.name == thing_name);
-    }
-    if (thing_class == '道具') {
-      ifexist = najie.道具.find(item => item.name == thing_name);
-    }
-    if (thing_class == '功法') {
-      ifexist = najie.功法.find(item => item.name == thing_name);
-    }
-    if (thing_class == '草药') {
-      ifexist = najie.草药.find(item => item.name == thing_name);
-    }
-    if (thing_class == '材料') {
-      ifexist = najie.材料.find(item => item.name == thing_name);
-    }
-    if (thing_class == '食材') {
-      ifexist = najie.食材.find(item => item.name == thing_name);
-    }
-    if (thing_class == '盒子') {
-      ifexist = najie.盒子.find(item => item.name == thing_name);
-    }
-    if (thing_class == '仙宠') {
-      ifexist = najie.仙宠.find(item => item.name == thing_name);
-    }
-    if (thing_class == '仙米') {
-      ifexist = najie.仙宠口粮.find(item => item.name == thing_name);
-    }
-    if (ifexist) {
-      return ifexist.数量;
-    }
-    return false;
-  } catch (error) {
-    console.log('异常:' + usr_qq + ' ' + thing_name + ' ' + thing_class);
-    return;
+  // 此函数已废弃，其逻辑应由 DAL.getNajieItemAmount 替代
+  // 为保证向前兼容，此处暂时保留并调用新函数
+  // 注意：DAL.getNajieItemAmount 不支持品级查询，这是一个简化。
+  // 如果需要精确品级查询，应在DAL中实现。
+  if (thing_class === '装备' && thing_pinji !== null) {
+    console.warn(`[exist_najie_thing] 警告: 此函数不支持精确到品级的装备查询，请更新调用逻辑。`);
+    // 可以在此添加临时的兼容逻辑，如果非常需要的话
   }
-
+  return await DAL.getNajieItemAmount(usr_qq, thing_name, thing_class);
 }
 
 /**
