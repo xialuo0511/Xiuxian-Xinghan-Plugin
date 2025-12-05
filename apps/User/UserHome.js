@@ -38,6 +38,14 @@ export class UserHome extends plugin {
       priority: 600,
       rule: [
         {
+          reg: '^#装备(练气|装备)幻影(.*)$',
+          fnc: 'equipPhantomCardHandler'
+        },
+        {
+          reg: '^#幻影牌面$',
+          fnc: 'listPhantomCards'
+        },
+        {
           reg: '^#(存|取)灵石(.*)$',
           fnc: 'takeLingshi'
         },
@@ -88,10 +96,6 @@ export class UserHome extends plugin {
         {
           reg: /^#兑换码兑换\s*(.*)/,
           fnc: 'redeem'
-        },
-        {
-          reg: '^#幻影牌面.*$',
-          fnc: 'phantomCard'
         }
       ]
     });
@@ -369,32 +373,56 @@ export class UserHome extends plugin {
   }
 
   /**
-   * #幻影牌面
+   * [新] #装备练气幻影 / #装备装备幻影
    */
-  async phantomCard(e) {
+  async equipPhantomCardHandler(e) {
+    const userId = await this.preCheck(e);
+    if (!userId) return;
+    
+    const match = e.msg.match(/^#装备(练气|装备)幻影(.*)$/);
+    const cardType = match[1];
+    const cardName = match[2].trim();
+
+    if (!cardName) {
+      return e.reply('请提供要装备的幻影牌面名称。');
+    }
+
+    const result = await equipPhantomCard(userId, cardName, cardType);
+    if (result && result.message) {
+      e.reply(result.message);
+    } else {
+      e.reply('装备失败，请检查牌面名称是否正确或你是否拥有该牌面。');
+    }
+  }
+
+  /**
+   * [新] #幻影牌面
+   */
+  async listPhantomCards(e) {
     const userId = await this.preCheck(e);
     if (!userId) return;
 
-    const match = e.msg.match(/^#幻影牌面\s*(装备|练气)?\s*(.*)$/);
-    const cardType = match[1] || '练气';
-    const cardName = match[2]?.trim();
+    let message = '【您的幻影牌面】';
+    let foundAny = false;
 
-    if (cardName) {
-      // 装备指定牌面
-      const result = await equipPhantomCard(userId, cardName, cardType);
-      e.reply(result.message);
-    } else {
-      // 查看牌面列表
-      const result = await getPhantomCardList(cardType);
-      if (result.success) {
-        const cardList = result.cards.map(card =>
-          `${card.id}: ${card.name} (${card.type2 || '常驻'})`
+    for (const cardType of ['练气', '装备']) {
+      // getPhantomCardList需要用户ID来查找他拥有的牌面
+      const result = await getPhantomCardList(userId, cardType);
+      if (result.success && result.cards.length > 0) {
+        foundAny = true;
+        message += `\n\n--- ${cardType} --- \n`;
+        const cardList = result.cards.map(card => 
+          `- ${card.name}`
         ).join('\n');
-        e.reply(`${cardType}幻影牌面列表：\n${cardList}`);
-      } else {
-        e.reply('获取牌面列表失败');
+        message += cardList;
       }
     }
+
+    if (!foundAny) {
+      return e.reply('你似乎还没有任何幻影牌面。');
+    }
+    
+    e.reply(message);
   }
 }
 
