@@ -99,8 +99,8 @@ export async function transaction_update(userId, updateFunction) {
     const originalPlayer = JSON.stringify(playerData);
     const originalEquipment = JSON.stringify(equipmentData);
 
-    // 将所有数据作为独立参数传递给回调函数
-    const result = updateFunction(playerData, equipmentData, najieData);
+    // 将所有数据作为独立参数传递给回调函数 (增加await)
+    const result = await updateFunction(playerData, equipmentData, najieData);
 
     // 如果更新函数明确返回 false，则中止事务
     if (result === false) {
