@@ -279,6 +279,50 @@ export async function goFishing(userId) {
   return { success: true, message: lootMessage };
 }
 
+
+/**
+ * 检查秘境探索中是否掉落鱼饵
+ * @param {string} userId
+ * @param {string} eventKey 关联的活动key，用于检查活动状态
+ * @returns {Promise<string>} 掉落信息消息
+ */
+export async function checkSecretPlaceBaitDrops(userId, eventKey) {
+  const activity = getActivityStatus(eventKey);
+  if (!activity) {
+    return ''; // 活动未开启，不掉落
+  }
+
+  const drops = [
+    { name: '极寒冰蚕', chance: 0.25, dailyCap: 5 },
+    { name: '妖兽内丹碎片', chance: 0.15, dailyCap: 5 },
+    { name: '万灵诱引散', chance: 0.05, dailyCap: 5 }
+  ];
+
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const dropLimitKey = `XinghanXiuxian:secret_place_bait_drops:${userId}:${today}`;
+
+  let dropMessages = [];
+
+  for (const bait of drops) {
+    // 获取玩家今日已获得该鱼饵的数量
+    const currentDrops = parseInt(await redis.hGet(dropLimitKey, bait.name) || '0');
+
+    if (currentDrops < bait.dailyCap && Math.random() < bait.chance) {
+      // 达到上限前，且概率命中
+      const itemDef = await foundthing(bait.name);
+      if (itemDef) {
+        await DAL.updateNajieItem(userId, bait.name, itemDef.class, 1, itemDef);
+        await redis.hIncrBy(dropLimitKey, bait.name, 1);
+        dropMessages.push(`你意外获得了【${bait.name}】x1！(今日已获得${currentDrops + 1}/${bait.dailyCap})`);
+      } else {
+        logger.error(`[秘境鱼饵掉落] 致命错误：鱼饵 [${bait.name}] 在物品库中不存在！`);
+      }
+    }
+  }
+
+  return dropMessages.join('\n');
+}
+
 /**
  * 为首次参与钓鱼活动的玩家发放初始奖励
  * @param {string} userId

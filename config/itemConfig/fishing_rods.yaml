@@ -12,9 +12,23 @@
   desc: "由玄冰寒铁所制，手感沉稳，能感知到更深处的水流。"
   eventKey: "hanjiang_fishing_2025_10"
 
+- name: "天青水韵竿"
+  class: "活动"
+  success_rate: 0.60
+  yield: 1
+  desc: "竿身通体天青，挥动间仿佛引动水韵，能大幅提高垂钓成功率。"
+  eventKey: "hanjiang_fishing_2025_10"
+
 - name: "碧海潮生竿"
   class: "活动"
-  success_rate: 0.85
+  success_rate: 0.80
   yield: 2
   desc: "传说中的钓竿，挥舞时隐有潮声，能引来非凡之物。"
+  eventKey: "hanjiang_fishing_2025_10"
+
+- name: "九天揽月钩"
+  class: "活动"
+  success_rate: 0.80
+  yield: 3
+  desc: "不仅是鱼竿，更是法器。直钩垂钓，愿者上钩，往往能钓起稀世奇珍。"
   eventKey: "hanjiang_fishing_2025_10"

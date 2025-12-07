@@ -105,6 +105,8 @@ export async function Check_thing(data) {
     state = 1;
   } else if (data.id >= 400991 && data.id <= 400999) {
     state = 1;
+  } else if (data.class == '活动') {
+    state = 1;
   }
   return state;
 }

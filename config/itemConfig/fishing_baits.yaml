@@ -14,5 +14,48 @@
   item_pool:
     - "赤尾鲢"
     - "金鳞龙鱼"
-    - "沉底的宝箱"
     - "花篮"
+
+- name: "灵泉面团"
+  class: "活动"
+  desc: "使用灵泉水和面制成的面团，香气扑鼻，深受鱼类喜爱。"
+  eventKey: "hanjiang_fishing_2025_10"
+  item_pool:
+    - "寒江鲤"
+    - "水晶虾"
+    - "水草"
+
+- name: "七彩香丸"
+  class: "活动"
+  desc: "散发着七彩光芒的香丸，能吸引好奇心强的灵鱼。"
+  eventKey: "hanjiang_fishing_2025_10"
+  item_pool:
+    - "赤尾鲢"
+    - "金鳞龙鱼"
+    - "神秘碎片"
+
+- name: "极寒冰蚕"
+  class: "活动"
+  desc: "生长在极寒之地的冰蚕，是垂钓深海珍宝的绝佳诱饵。"
+  eventKey: "hanjiang_fishing_2025_10"
+  item_pool:
+    - "深海寒铁"
+    - "冰晶鱼"
+    - "万年玄冰"
+
+- name: "妖兽内丹碎片"
+  class: "活动"
+  desc: "妖兽内丹的碎片，蕴含狂暴的灵气，能引来凶猛的水族。"
+  eventKey: "hanjiang_fishing_2025_10"
+  item_pool:
+    - "霸王蟹"
+    - "吞天鲸"
+
+- name: "万灵诱引散"
+  class: "活动"
+  desc: "传说中能诱引万灵的药散，撒入水中，万鱼来朝。"
+  eventKey: "hanjiang_fishing_2025_10"
+  item_pool:
+    - "上古遗物"
+    - "仙家法宝"
+    - "混沌灵鱼"

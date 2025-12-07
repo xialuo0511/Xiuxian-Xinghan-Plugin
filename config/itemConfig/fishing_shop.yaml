@@ -5,13 +5,51 @@
       amount: 20
     - name: "赤尾鲢"
       amount: 5
-- name: "龙须灵虾"
+
+- name: "天青水韵竿"
+  purchaseLimit: 1
+  price:
+    - name: "金鳞龙鱼"
+      amount: 20
+    - name: "破旧的草鞋"
+      amount: 5
+
+- name: "碧海潮生竿"
+  purchaseLimit: 1
+  price:
+    - name: "水晶虾"
+      amount: 20
+    - name: "冰晶鱼"
+      amount: 20
+    - name: "万年玄冰"
+      amount: 20
+
+- name: "九天揽月钩"
+  purchaseLimit: 1
+  price:
+    - name: "上古遗物"
+      amount: 5
+    - name: "仙家法宝"
+      amount: 5
+    - name: "混沌灵鱼"
+      amount: 5
+    - name: "神秘碎片"
+      amount: 10
+
+- name: "花篮"
   purchaseLimit: 10
   price:
     - name: "赤尾鲢"
       amount: 3
-- name: "限定称号·寒江渔客"
-  purchaseLimit: 1
+
+- name: "七星玄元丹"
+  purchaseLimit: 10
   price:
-    - name: "金鳞龙鱼"
-      amount: 1
+    - name: "上古遗物"
+      amount: 5
+    - name: "仙家法宝"
+      amount: 5
+    - name: "混沌灵鱼"
+      amount: 5
+    - name: "神秘碎片"
+      amount: 5

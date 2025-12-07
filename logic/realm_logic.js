@@ -4,6 +4,7 @@ import { scheduleTask } from '../api/task-scheduler.js';
 import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
 import { battleEngine } from './battle_logic.js';
+import { checkSecretPlaceBaitDrops } from '../logic/fishing_logic.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
@@ -114,6 +115,7 @@ export async function enterRealm(userId, realmName, realmType, e, runCount = 1, 
 export async function settleRealm(task) {
   const { userId, realmInfo, groupId } = task;
   let battleResult, rewards, realm;
+  let fishingDropMessage = ''; // Declare outside try-catch for wider scope
 
   try {
     // --- 核心结算逻辑 ---
@@ -158,6 +160,11 @@ export async function settleRealm(task) {
         return true;
     });
 
+    // Only drop baits if player wins the battle
+    if (battleResult.A_win) {
+      fishingDropMessage = await checkSecretPlaceBaitDrops(userId, 'hanjiang_fishing_2025_10');
+    }
+
   } catch (error) {
     console.error(`[settleRealm] 核心结算逻辑出错 (用户: ${userId}):`, error);
     // 核心逻辑出错，必须清理状态防止卡死
@@ -195,7 +202,8 @@ export async function settleRealm(task) {
         battleLog: battleResult.msg.slice(-1)[0],
         rewards: rewards,
         realmName: realm.name,
-        remainingRuns: task.remainingRuns || 0 // 将剩余次数添加到渲染数据中
+        remainingRuns: task.remainingRuns || 0, // 将剩余次数添加到渲染数据中
+        extraInfo: fishingDropMessage // Include the extra message here
     };
     await Notifier.notify(groupId, userId, {
         render: 'secret_place_log',

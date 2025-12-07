@@ -190,8 +190,10 @@ export async function processDailyCheckIn(userId) {
   const fishingActivity = getActivityStatus('hanjiang_fishing_2025_10');
   if (fishingActivity) {
     const fishingRewards = [
-      { name: '青玉蚯蚓', class: '活动', amount: 20 },
-      { name: '龙须灵虾', class: '活动', amount: 5 }
+      { name: '青玉蚯蚓', class: '活动', amount: 10 },
+      { name: '龙须灵虾', class: '活动', amount: 10 },
+      { name: '灵泉面团', class: '活动', amount: 5 },
+      { name: '七彩香丸', class: '活动', amount: 5 }
     ];
     extraRewards.push(...fishingRewards);
     extraMessages.push('【寒江独钓】活动福利');
