@@ -8,18 +8,23 @@
       
       :root {
           /* 古风配色 */
-          --bg-paper: #f4f0e6; /* 宣纸底色 */
-          --ink-color: #2c2c2c; /* 墨色 */
+          --bg-paper: #f4f0e6;
+          --ink-color: #2c2c2c;
           --ink-light: #5a5a5a;
-          --red-seal: #b22c2c; /* 印泥红 */
-          --border-color: #8c7b65; /* 褐色边框 */
+          --red-seal: #b22c2c;
+          --border-color: #8c7b65;
           
-          /* 五行色 - 调低饱和度，更具古韵 */
+          /* 五行色 */
           --gold: #b58900;
           --wood: #598c14;
           --water: #266b96;
           --fire: #c53828;
           --earth: #8f653b;
+          
+          /* 效果色 */
+          --heal-green: #4caf50;
+          --shield-yellow: #f0a500;
+          --damage-red: #c53828;
       }
 
       body {
@@ -27,9 +32,8 @@
           margin: 0;
           padding: 30px;
           background: #e6e2d3;
-          /* 这里可以加一个宣纸纹理背景图，如果没有就用纯色 */
           background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
-          font-family: "NZBZ", "Microsoft YaHei", sans-serif; /* 优先使用书法字体 */
+          font-family: "NZBZ", "Microsoft YaHei", sans-serif;
           color: var(--ink-color);
           box-sizing: border-box;
       }
@@ -43,7 +47,6 @@
           border-radius: 4px;
       }
       
-      /* 四角云纹装饰 (CSS模拟) */
       .log-container::before {
           content: "";
           position: absolute;
@@ -67,7 +70,7 @@
           text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
       }
       
-      /* 回合分割线 - 水墨风格 */
+      /* 回合分割 */
       .turn-header {
           text-align: center;
           font-size: 22px;
@@ -84,7 +87,7 @@
           vertical-align: middle;
       }
 
-      /* 行动卡片 - 卷轴/符箓风格 */
+      /* 行动卡片 */
       .action-card {
           background: #fdfbf7;
           border: 1px solid #d4cbb8;
@@ -98,17 +101,19 @@
       .action-card.player-action { border-left-color: var(--water); }
       .action-card.enemy-action { border-left-color: var(--fire); }
 
+      /* 卡片头部：施法者信息 */
       .action-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 12px;
           font-size: 18px;
+          border-bottom: 1px dashed #efebe0;
+          padding-bottom: 8px;
       }
 
       .caster-info { display: flex; align-items: center; gap: 8px; }
       
-      /* 时辰/消耗时间 */
       .av-badge {
           font-size: 14px;
           color: var(--ink-light);
@@ -118,6 +123,13 @@
           border-radius: 2px;
           background: #f2efe6;
       }
+      
+      .skill-name {
+          font-size: 14px;
+          color: var(--ink-light);
+          margin-left: 10px;
+          font-style: italic;
+      }
 
       /* 五行字色 */
       .ele-金 { color: var(--gold); }
@@ -126,30 +138,50 @@
       .ele-火 { color: var(--fire); }
       .ele-土 { color: var(--earth); }
 
-      .action-arrow { color: #aaa; margin: 0 8px; font-size: 14px; }
+      /* 目标列表区 */
+      .targets-container {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+      }
 
-      .damage-info {
-          text-align: right;
+      .target-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 16px;
+      }
+      
+      .target-name { display: flex; align-items: center; gap: 5px; }
+      .action-arrow { color: #aaa; margin-right: 5px; font-size: 12px; }
+
+      .effect-info {
           font-family: "tttgbnumber", serif;
-          font-size: 26px;
-          color: var(--red-seal);
+          font-size: 24px;
           font-weight: bold;
       }
+      
+      /* 不同效果的颜色 */
+      .effect-damage { color: var(--damage-red); }
+      .effect-heal { color: var(--heal-green); }
+      .effect-shield { color: var(--shield-yellow); }
+
       .counter-tag {
-          font-size: 16px;
+          font-size: 14px;
           color: var(--fire);
           margin-right: 5px;
           font-family: "NZBZ";
           border: 1px solid var(--fire);
           padding: 0 4px;
           border-radius: 4px;
+          vertical-align: middle;
       }
 
       /* 状态条区域 */
       .status-panel {
-          margin-top: 12px;
+          margin-top: 15px;
           padding-top: 10px;
-          border-top: 1px dashed #d4cbb8;
+          border-top: 1px solid #e0ddd5;
           display: flex;
           gap: 30px;
       }
@@ -163,7 +195,7 @@
       }
       .unit-name { width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       
-      /* 古风血条 */
+      /* 血条容器 */
       .hp-track {
           flex: 1;
           height: 8px;
@@ -174,9 +206,20 @@
           margin: 0 10px;
           position: relative;
       }
-      .hp-fill { height: 100%; transition: width 0.3s; }
-      .hp-fill.player { background: #5c8d9e; } /* 靛青 */
-      .hp-fill.enemy { background: #b85c5c; } /* 胭脂红 */
+      .hp-fill { height: 100%; position: absolute; top:0; left:0; transition: width 0.3s; }
+      .hp-fill.player { background: #5c8d9e; z-index: 1;} 
+      .hp-fill.enemy { background: #b85c5c; z-index: 1;}
+      
+      /* 护盾条 (白色半透明覆盖在血条上) */
+      .shield-fill {
+          height: 100%;
+          position: absolute;
+          top: 0; left: 0;
+          background: rgba(255, 255, 255, 0.6);
+          border-right: 2px solid #fff;
+          z-index: 2; /* 在血条之上 */
+          box-shadow: 0 0 2px rgba(255,255,255,0.8);
+      }
       
       .hp-val { width: 70px; text-align: right; font-family: "tttgbnumber", serif; font-size: 14px;}
       
@@ -194,9 +237,7 @@
     {{if line.type === 'start' || line.type === 'system'}}
       <div class="system-text">◈ {{line.text}} ◈</div>
     {{else if line.type === 'end'}}
-      <div class="end-text">
-         ☁ {{line.text}} ☁
-      </div>
+      <div class="end-text">☁ {{line.text}} ☁</div>
     
     <!-- 回合分割 -->
     {{else if line.type === 'turn'}}
@@ -206,20 +247,33 @@
     {{else if line.type === 'action'}}
       <div class="action-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
         
-        <!-- 头部: 谁 -> 谁 (消耗AV) -->
+        <!-- 头部: 施法者 + 技能名 -->
         <div class="action-header">
             <div class="caster-info">
-                <span class="av-badge" title="消耗时间">耗时 {{line.av_cost}}</span>
+                <span class="av-badge">耗时 {{line.av_cost}}</span>
                 <span class="ele-{{line.caster.element}}">{{line.caster.name}}</span>
-                <span class="action-arrow">➢</span>
-                <span class="ele-{{line.target.element}}">{{line.target.name}}</span>
+                <span class="skill-name">「{{line.skill}}」</span>
             </div>
-            
-            <!-- 伤害显示 -->
-            <div class="damage-info">
-                {{if line.is_counter}}<span class="counter-tag">克制</span>{{/if}}
-                -{{line.damage}}
+        </div>
+
+        <!-- 中部: 目标列表 (循环遍历所有目标) -->
+        <div class="targets-container">
+            {{each line.targets target}}
+            <div class="target-row">
+                <div class="target-name">
+                    <span class="action-arrow">➢</span>
+                    <span class="ele-{{target.element}}">{{target.name}}</span>
+                </div>
+                
+                <div class="effect-info effect-{{target.type}}">
+                    {{if target.is_counter}}<span class="counter-tag">克制</span>{{/if}}
+                    {{if target.type === 'damage'}}-{{target.value}}
+                    {{else if target.type === 'heal'}}+{{target.value}}
+                    {{else if target.type === 'shield'}}🛡{{target.value}}
+                    {{/if}}
+                </div>
             </div>
+            {{/each}}
         </div>
 
         <!-- 底部: 双方状态简略 -->
@@ -229,7 +283,12 @@
                 {{each line.teamStatus.player unit}}
                 <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
                     <span class="unit-name">{{unit.name}}</span>
-                    <div class="hp-track"><div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div></div>
+                    <div class="hp-track">
+                        <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
+                        {{if unit.shield > 0}}
+                        <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                        {{/if}}
+                    </div>
                     <span class="hp-val">{{unit.hp}}</span>
                 </div>
                 {{/each}}
@@ -239,7 +298,12 @@
                 {{each line.teamStatus.enemy unit}}
                 <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
                     <span class="unit-name">{{unit.name}}</span>
-                    <div class="hp-track"><div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div></div>
+                    <div class="hp-track">
+                        <div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div>
+                        {{if unit.shield > 0}}
+                        <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                        {{/if}}
+                    </div>
                     <span class="hp-val">{{unit.hp}}</span>
                 </div>
                 {{/each}}

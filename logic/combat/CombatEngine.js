@@ -15,111 +15,92 @@ const COUNTER_BONUS = 1.5; // 克制伤害提升
 
 /**
  * 战斗引擎 (Action Value System / 跑条制)
+ * v2.0: 支持多目标、多类型效果（伤害/治疗/护盾）的日志结构
  */
 export async function runCombat(playerSouls, enemyNames) {
   const combatLog = [];
-
+  
   // 1. 初始化战斗单位
   const playerTeam = playerSouls.map((soul, i) => new Combatant(`player_${i + 1}`, soul, 'player'));
   const enemyTeam = enemyNames.map((name, i) => new Combatant(`enemy_${i + 1}`, allMonsters.find(m => m.name === name), 'enemy')).filter(Boolean);
-  const allCombatants = [...playerTeam,
-    ...enemyTeam];
+  const allCombatants = [...playerTeam, ...enemyTeam];
 
-  // 2. 初始化行动值 (AV)
-  // 初始状态下，所有单位的 AV = 10000 / Speed
+  // 2. 初始化行动值
   allCombatants.forEach(c => c.resetAV());
 
   combatLog.push({ type: 'start', text: '战斗开始！' });
-
-  let totalElapsedAV = 0; // 总流逝的行动值
-  let actionCount = 0;    // 总行动次数
-  let roundCount = 1;     // 回合数 (简单计数)
+  
+  let totalElapsedAV = 0;
+  let actionCount = 0;
+  let roundCount = 1;
 
   combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
 
   // 3. 战斗循环
   while (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
-    // 防止死循环
     if (actionCount > 300) {
       combatLog.push({ type: 'system', text: '战斗僵持过久，强制结束。' });
       break;
     }
 
-    // 3.1 寻找当前 AV 最小的单位 (Next Actor)
-    // 存活的单位中，current_av 最小的
+    // 3.1 寻找 Next Actor
     const aliveUnits = allCombatants.filter(c => c.isAlive());
-    if (aliveUnits.length === 0) break; // 应该不会发生
+    if (aliveUnits.length === 0) break;
 
-    // 排序找到最小 AV
     aliveUnits.sort((a, b) => a.current_av - b.current_av);
     const activeUnit = aliveUnits[0];
-    const elapsedAV = activeUnit.current_av; // 这一轮流逝的时间
+    const elapsedAV = activeUnit.current_av;
 
-    // 3.2 时间流逝：所有单位减去 elapsedAV
-    // 注意：死人不需要跑条，但如果复活机制存在，可能需要考虑。目前假设死人不跑条。
+    // 3.2 时间流逝
     aliveUnits.forEach(unit => {
       unit.current_av -= elapsedAV;
-      // 修正浮点数误差，虽然 JS 数字较大时还好，但以防万一
       if (unit.current_av < 0.0001) unit.current_av = 0;
+      // TODO: 这里可以处理 Buff 的持续时间/跳伤害
     });
 
     totalElapsedAV += elapsedAV;
-
-    // 3.3 行动逻辑
     actionCount++;
 
-    // 简单的“回合”显示：每行动 10 次算一轮 (仅展示用)
     if (actionCount % 10 === 0) {
       roundCount++;
       combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
     }
 
+    // --- 行动逻辑开始 ---
+    // 目前默认为普通攻击，未来可以在这里扩展 AI 逻辑选择技能
     const targetTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
-    const target = selectTargetByTaunt(targetTeam);
+    // 目标选择目前仍为单体，但我们把它封装成数组，为未来群攻做准备
+    const primaryTarget = selectTargetByTaunt(targetTeam);
 
-    if (target) {
-      // 计算伤害
-      let elementalBonus = 1.0;
-      let isCounter = false;
-      if (elementCounterMap[activeUnit.element] === target.element) {
-        elementalBonus = COUNTER_BONUS;
-        isCounter = true;
-      }
+    const actionResults = []; // 存储所有受击者的结果
+    const skillName = "普通攻击";
 
-      // 基础伤害公式 (简化版)
-      // 伤害 = (攻击 - 防御 * (1-穿透)) * 增伤 * 随机浮动
-      // 这里暂时沿用之前的逻辑，但加上元素克制
-                      // 采用经典的 RPG 曲线伤害公式 (乘法减伤公式)
-                      // 避免了 "不破防即为1" 的尴尬，同时防御收益存在边际递减
-                      const DEF_CONSTANT = 280; // 防御常数，数值越大数据越膨胀。针对目前100-200的属性，280较为平滑
-                      
-                      let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
-                      let resistanceMultiplier = (1 - target.resistance);
-                      
-                      // 基础伤害 = 攻击力 * 防御减免 * 抗性减免
-                      let baseDmg = activeUnit.attack * defenseMultiplier * resistanceMultiplier;
-                      
-                      // 应用元素克制和随机波动
-                      let finalDmg = Math.floor(baseDmg * elementalBonus * (0.9 + Math.random() * 0.2)); 
-                      finalDmg = Math.max(1, finalDmg);
-              
-                      target.takeDamage(finalDmg);      // 3.4 记录日志
-      combatLog.push({
-        type: 'action',
-        av_cost: Math.floor(elapsedAV), // 消耗的时间
-        caster: { name: activeUnit.name, team: activeUnit.team, element: activeUnit.element },
-        target: { name: target.name, team: target.team, element: target.element },
-        damage: finalDmg,
-        is_counter: isCounter,
-        teamStatus: {
-          player: playerTeam.map(getUnitStatus),
-          enemy: enemyTeam.map(getUnitStatus)
-        }
-      });
+    if (primaryTarget) {
+        // 计算伤害 (单体)
+        // 这是一个标准的攻击 Action
+        const result = calculateAttack(activeUnit, primaryTarget);
+        actionResults.push(result);
     }
 
-    // 3.5 行动结束，重置该单位的 AV
-    // 如果有“拉条”或“推条”技能，会在 action 中修改 AV，但这里是行动后重置
+    // 3.4 记录日志 (新结构)
+    combatLog.push({
+        type: 'action',
+        av_cost: Math.floor(elapsedAV),
+        skill: skillName, // 记录技能名
+        caster: { 
+            name: activeUnit.name, 
+            team: activeUnit.team, 
+            element: activeUnit.element 
+        },
+        // 关键变更：targets 是一个数组，包含所有受影响的单位
+        targets: actionResults,
+        teamStatus: {
+            player: playerTeam.map(getUnitStatus),
+            enemy: enemyTeam.map(getUnitStatus)
+        }
+    });
+
+    // 3.5 行动结束
     activeUnit.resetAV();
   }
 
@@ -130,39 +111,66 @@ export async function runCombat(playerSouls, enemyNames) {
 }
 
 /**
- * 嘲讽目标选择系统
+ * 封装攻击计算逻辑
  */
+function calculateAttack(attacker, target) {
+    let elementalBonus = 1.0;
+    let isCounter = false;
+    if (elementCounterMap[attacker.element] === target.element) {
+        elementalBonus = COUNTER_BONUS;
+        isCounter = true;
+    }
+
+    const DEF_CONSTANT = 280;
+    let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
+    let resistanceMultiplier = (1 - target.resistance);
+    
+    let baseDmg = attacker.attack * defenseMultiplier * resistanceMultiplier;
+    let finalDmg = Math.floor(baseDmg * elementalBonus * (0.9 + Math.random() * 0.2)); 
+    finalDmg = Math.max(1, finalDmg);
+
+    // 实际扣血
+    target.takeDamage(finalDmg);
+
+    // 返回标准化的结果对象
+    return {
+        name: target.name,
+        team: target.team,
+        element: target.element,
+        type: 'damage', // 类型：伤害
+        value: finalDmg, // 数值
+        is_counter: isCounter, // 是否克制
+        is_crit: false // 预留暴击字段
+    };
+}
+
 function selectTargetByTaunt(targetTeam) {
   const aliveTargets = targetTeam.filter(t => t.isAlive());
   if (aliveTargets.length === 0) return null;
-
   const totalTaunt = aliveTargets.reduce((sum, target) => sum + target.taunt, 0);
   let randomPoint = Math.random() * totalTaunt;
-
   for (const target of aliveTargets) {
     randomPoint -= target.taunt;
-    if (randomPoint <= 0) {
-      return target;
-    }
+    if (randomPoint <= 0) return target;
   }
   return aliveTargets[aliveTargets.length - 1];
 }
 
-/**
- * 获取单位状态用于日志显示
- */
 const getUnitStatus = (unit) => {
-  const max_hp = unit.max_hp > 0 ? unit.max_hp : 1;
-  const current_hp = unit.current_hp || 0;
+    const max_hp = unit.max_hp > 0 ? unit.max_hp : 1;
+    const current_hp = unit.current_hp || 0;
+    let hp_percent = (current_hp / max_hp) * 100;
+    
+    // 计算护盾比例 (相对于最大血量，用于UI显示)
+    let shield_percent = (unit.shield / max_hp) * 100;
 
-  let hp_percent = (current_hp / max_hp) * 100;
-  hp_percent = Math.max(0, Math.min(hp_percent, 100));
-
-  return {
-    name: unit.name,
-    hp: current_hp,
-    max_hp: unit.max_hp,
-    hp_percent: hp_percent,
-    av: Math.floor(unit.current_av) // 在日志中显示下一次行动所需的 AV
-  };
+    return {
+      name: unit.name,
+      hp: current_hp,
+      max_hp: unit.max_hp,
+      shield: unit.shield,
+      hp_percent: Math.max(0, Math.min(hp_percent, 100)),
+      shield_percent: Math.min(shield_percent, 100), // 护盾条限制
+      av: Math.floor(unit.current_av)
+    };
 };
