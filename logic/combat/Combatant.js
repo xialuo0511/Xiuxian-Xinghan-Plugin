@@ -14,8 +14,17 @@ export class Combatant {
     this.taunt = source.base_stats.taunt;
     this.element = source.base_stats.element;
 
-    // 【核心新增】行动点，初始为0
-    this.actionPoints = 0;
+    // 【核心新增】当前行动值 (Action Value)，越小越先行动
+    // 初始值将在战斗引擎中设置，或者在这里设为标准值
+    this.current_av = 0;
+  }
+
+  /**
+   * 重置行动值 (跑圈)
+   * 公式: AV = 10000 / Speed
+   */
+  resetAV() {
+    this.current_av = 10000 / Math.max(1, this.speed);
   }
 
   isAlive() {

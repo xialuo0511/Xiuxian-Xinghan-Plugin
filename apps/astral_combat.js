@@ -70,6 +70,9 @@ export class astral_combat extends plugin {
    * @returns {Promise<boolean>} 活动是否正在进行
    */
   async checkActivity(e) {
+    if (e.isMaster) {
+      return true;
+    }
     const activity = getActivityStatus(EVENT_KEY);
     if (!activity) {
       // 在活动时间外，静默返回，不响应指令
