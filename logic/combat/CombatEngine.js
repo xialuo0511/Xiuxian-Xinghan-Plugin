@@ -101,8 +101,8 @@ export async function runCombat(playerSouls, enemyNames) {
         combatLog.push({
             type: 'action',
             av_cost: Math.floor(elapsedAV), // 消耗的时间
-            caster: { name: activeUnit.name, team: activeUnit.team },
-            target: { name: target.name, team: target.team },
+            caster: { name: activeUnit.name, team: activeUnit.team, element: activeUnit.element },
+            target: { name: target.name, team: target.team, element: target.element },
             damage: finalDmg,
             is_counter: isCounter,
             teamStatus: {

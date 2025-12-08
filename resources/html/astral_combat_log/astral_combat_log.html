@@ -5,105 +5,222 @@
   <style>
       @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
       @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
-      body {width: 800px; margin: 0; padding: 20px; background: #f7f8fa; font-family: "tttgbnumber", sans-serif; color: #4a2c1a; box-sizing: border-box;}
-      .log-container {background: rgba(253, 250, 245, 0.92); border: 2px solid #a88763; border-radius: 15px; padding: 20px; font-size: 16px; line-height: 1.6;}
-
-      .log-line {
-          margin-bottom: 15px; /* 增加日志条目间距 */
+      
+      :root {
+          --bg-color: #1a1a24;
+          --card-bg: rgba(30, 30, 40, 0.85);
+          --player-color: #61afef;
+          --enemy-color: #e06c75;
+          --gold: #FFD700;
+          --wood: #4CAF50;
+          --water: #2196F3;
+          --fire: #FF5722;
+          --earth: #8D6E63;
+          --text-main: #abb2bf;
+          --border-color: #3e4451;
       }
 
-      .player-name { color: #3498db; font-weight: bold; }
-      .enemy-name { color: #c0392b; font-weight: bold; }
-      .damage-number { color: #e67e22; font-weight: bold; font-size: 1.1em; }
-      .turn-header {font-family: "NZBZ", sans-serif; font-size: 20px; color: #6a3906; text-align: center; border-top: 1px dashed #d2b48c; border-bottom: 1px dashed #d2b48c; margin: 20px 0; padding: 8px 0;}
-      .start-text, .system-text {color: #7a5533; font-style: italic;}
-      .end-text {font-family: "NZBZ", sans-serif; font-weight: bold; text-align: center; margin-top: 20px; font-size: 24px; color: #6a3906;}
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background: var(--bg-color);
+          font-family: "Microsoft YaHei", "tttgbnumber", sans-serif;
+          color: var(--text-main);
+          background-image: linear-gradient(to bottom right, #14141a, #20202c);
+      }
 
-      /* --- 【核心修正】血量展示区全新紧凑样式 --- */
-      .teams-status-container {
+      .log-container {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+      }
+
+      /* 通用文本 */
+      .start-text, .system-text, .end-text {
+          text-align: center;
+          padding: 10px;
+          font-family: "NZBZ", sans-serif;
+          color: #d19a66;
+          text-shadow: 0 0 5px rgba(209, 154, 102, 0.3);
+      }
+      .end-text { font-size: 24px; color: #98c379; margin-top: 20px; }
+      
+      /* 回合分割线 */
+      .turn-header {
+          position: relative;
+          text-align: center;
+          font-family: "NZBZ", sans-serif;
+          font-size: 18px;
+          color: #5c6370;
+          margin: 15px 0;
+      }
+      .turn-header::before, .turn-header::after {
+          content: "";
+          display: inline-block;
+          width: 30%;
+          height: 1px;
+          background: #3e4451;
+          vertical-align: middle;
+          margin: 0 10px;
+      }
+
+      /* 行动卡片 */
+      .action-card {
+          background: var(--card-bg);
+          border-left: 4px solid #5c6370;
+          border-radius: 4px;
+          padding: 12px 15px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+          position: relative;
+          overflow: hidden;
+      }
+
+      .action-card.player-action { border-left-color: var(--player-color); background: linear-gradient(90deg, rgba(97, 175, 239, 0.1), transparent); }
+      .action-card.enemy-action { border-left-color: var(--enemy-color); background: linear-gradient(90deg, rgba(224, 108, 117, 0.1), transparent); }
+
+      .action-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+          font-size: 16px;
+      }
+
+      .caster-info { font-weight: bold; display: flex; align-items: center; gap: 8px; }
+      .av-badge {
           font-size: 12px;
-          margin-top: 8px;
-          display: flex; /* 改为flex布局 */
-          gap: 10px;
-          align-items: flex-start; /* 顶部对齐 */
+          background: #3e4451;
+          color: #fff;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-family: monospace;
       }
-      .team-status-list {
-          flex: 1; /* 两列等宽 */
-          background: rgba(0, 0, 0, 0.04);
-          border-radius: 6px;
-          padding: 8px;
+
+      /* 元素颜色 */
+      .ele-金 { color: var(--gold); }
+      .ele-木 { color: var(--wood); }
+      .ele-水 { color: var(--water); }
+      .ele-火 { color: var(--fire); }
+      .ele-土 { color: var(--earth); }
+
+      .action-arrow { color: #5c6370; margin: 0 10px; font-size: 12px; }
+
+      .damage-info {
+          text-align: right;
+          font-family: "tttgbnumber", sans-serif;
+          font-size: 24px;
+          color: #e6e6e6;
+          text-shadow: 0 0 10px rgba(255,255,255,0.1);
       }
-      .team-status-list p {
-          margin: 4px 0; /* 调整行间距 */
+      .counter-tag {
+          font-size: 14px;
+          color: #e06c75;
+          margin-right: 5px;
+          vertical-align: middle;
+      }
+
+      /* 状态条区域 */
+      .status-panel {
+          margin-top: 10px;
+          padding-top: 10px;
+          border-top: 1px solid rgba(255,255,255,0.05);
+          display: flex;
+          gap: 20px;
+      }
+      .team-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+      
+      .unit-status-row {
           display: flex;
           align-items: center;
+          font-size: 12px;
+          color: #828997;
       }
-      .unit-hp-bar {
-          width: 60px; /* 缩短血条 */
-          height: 8px;
-          background: #e0e0e0;
-          border-radius: 4px;
-          display: inline-block;
-          margin-left: auto; /* 让血条靠右 */
+      .unit-name { width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .hp-track {
+          flex: 1;
+          height: 6px;
+          background: #282c34;
+          border-radius: 3px;
+          overflow: hidden;
+          margin: 0 8px;
+          position: relative;
       }
-      .unit-hp-filler { height: 100%; border-radius: 4px; }
-      .unit-hp-filler.player { background: #3498db; }
-      .unit-hp-filler.enemy { background: #c0392b; }
-      .unit-dead { text-decoration: line-through; color: #999; }
-      .unit-info { flex-grow: 1; } /* 让名字和血量文本占据左侧空间 */
-      .counter-tag {
-          color: #e74c3c;
-          font-family: "NZBZ", sans-serif;
-          font-size: 1.2em;
-          margin: 0 5px;
-          animation: pulse 0.8s infinite;
-      }
-      @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
-      }
+      .hp-fill { height: 100%; transition: width 0.3s; }
+      .hp-fill.player { background: var(--player-color); }
+      .hp-fill.enemy { background: var(--enemy-color); }
+      .hp-val { width: 60px; text-align: right; font-family: monospace; }
+      
+      .dead { opacity: 0.5; text-decoration: line-through; }
+
+      /* AV 预测条 (可选，如果有数据) */
+      .next-av { color: #5c6370; font-size: 10px; margin-left: 5px;}
+
   </style>
 </head>
 <body>
-<div class="log-container" id="capture">
+
+<div class="log-container">
   {{each log line}}
-  <div class="log-line">
-    {{if line.type === 'start' || line.type === 'system' || line.type === 'end'}}
-    <div class="{{line.type}}-text">{{line.text}}</div>
+
+    <!-- 开始/结束/系统信息 -->
+    {{if line.type === 'start' || line.type === 'system'}}
+      <div class="system-text">★ {{line.text}} ★</div>
+    {{else if line.type === 'end'}}
+      <div class="end-text">{{line.text}}</div>
+    
+    <!-- 回合分割 -->
     {{else if line.type === 'turn'}}
-    <div class="turn-header">{{line.text}}</div>
+      <div class="turn-header">{{line.text}}</div>
+
+    <!-- 战斗行动卡片 -->
     {{else if line.type === 'action'}}
-    <div>
-      <span class="{{line.caster.team}}-name">【{{line.caster.name}}】</span>
-      <span>攻击了</span>
-      <span class="{{line.target.team}}-name">【{{line.target.name}}】</span>
-      {{if line.is_counter}}
-      <span class="counter-tag">[克制!]</span>
-      {{/if}}
-      <span>，造成了 <span class="damage-number">{{line.damage}}</span> 点伤害！</span>
-    </div>
-    <div class="teams-status-container">
-      <div class="team-status-list">
-        {{each line.teamStatus.player unit}}
-        <p class="{{if unit.hp <= 0}}unit-dead{{/if}}">
-          <span class="unit-info"><span class="player-name">{{unit.name}}:</span> {{unit.hp}}/{{unit.max_hp}}</span>
-          <span class="unit-hp-bar"><div class="unit-hp-filler player" style="width: {{unit.hp_percent}}%;"></div></span>
-        </p>
-        {{/each}}
+      <div class="action-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
+        
+        <!-- 头部: 谁 -> 谁 (消耗AV) -->
+        <div class="action-header">
+            <div class="caster-info">
+                <span class="av-badge" title="消耗时间">⏱ {{line.av_cost}}</span>
+                <span class="ele-{{line.caster.element}}">{{line.caster.name}}</span>
+                <span class="action-arrow">▶</span>
+                <span class="ele-{{line.target.element}}">{{line.target.name}}</span>
+            </div>
+            
+            <!-- 伤害显示 -->
+            <div class="damage-info">
+                {{if line.is_counter}}<span class="counter-tag">WEAK!</span>{{/if}}
+                -{{line.damage}}
+            </div>
+        </div>
+
+        <!-- 底部: 双方状态简略 -->
+        <div class="status-panel">
+            <!-- 我方状态 -->
+            <div class="team-col">
+                {{each line.teamStatus.player unit}}
+                <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
+                    <span class="unit-name">{{unit.name}}</span>
+                    <div class="hp-track"><div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div></div>
+                    <span class="hp-val">{{unit.hp}}</span>
+                </div>
+                {{/each}}
+            </div>
+            <!-- 敌方状态 -->
+            <div class="team-col">
+                {{each line.teamStatus.enemy unit}}
+                <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
+                    <span class="unit-name">{{unit.name}}</span>
+                    <div class="hp-track"><div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div></div>
+                    <span class="hp-val">{{unit.hp}}</span>
+                </div>
+                {{/each}}
+            </div>
+        </div>
       </div>
-      <div class="team-status-list">
-        {{each line.teamStatus.enemy unit}}
-        <p class="{{if unit.hp <= 0}}unit-dead{{/if}}">
-          <span class="unit-info"><span class="enemy-name">{{unit.name}}:</span> {{unit.hp}}/{{unit.max_hp}}</span>
-          <span class="unit-hp-bar"><div class="unit-hp-filler enemy" style="width: {{unit.hp_percent}}%;"></div></span>
-        </p>
-        {{/each}}
-      </div>
-    </div>
     {{/if}}
-  </div>
+
   {{/each}}
 </div>
+
 </body>
 </html>
