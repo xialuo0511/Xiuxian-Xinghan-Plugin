@@ -4,12 +4,10 @@ import path from 'path';
 import Config from './model/Config.js';
 import chalk from 'chalk';
 
-// --- 启动日志 ---
 const versionData = Config.getdefSet('version', 'version');
 logger.info(`__________________________`);
 logger.info(chalk.yellow(`【星瀚修仙】${versionData[0].version}「${versionData[0].name}」初始化`));
 
-// --- 后台工作进程管理器 ---
 const __dirname = path.resolve();
 const pluginRoot = path.join(__dirname, 'plugins', 'xiuxian-emulator-plugin');
 const workerPath = path.join(pluginRoot, 'workers');
@@ -44,12 +42,9 @@ workersToStart.forEach(startWorker);
 
 logger.info(`__________________________`);
 
-// --- 动态模块加载 ---
 const apps = {};
 const appsPath = path.join(pluginRoot, 'apps');
 
-// [修正] 移除 (async () => { ... })(); 包裹，直接在顶层使用 await
-// 这将强制程序等待所有模块加载完毕后再继续
 try {
   const mainDirs = fs.readdirSync(appsPath).filter(file => {
     const stat = fs.statSync(path.join(appsPath, file));
@@ -64,7 +59,6 @@ try {
       const name = file.replace('.js', '');
       const modulePath = `file://${path.join(currentPath, file).replace(/\\/g, '/')}`;
       try {
-        // [修正] 直接在顶层 await，确保加载完成
         const module = await import(modulePath);
         if (module[name]) {
           apps[name] = module[name];
@@ -79,5 +73,4 @@ try {
   logger.error(chalk.red('[星瀚修仙] 加载功能模块时出现错误:'), error);
 }
 
-// [修正] 现在，当执行到这里时，apps 对象已经是完全填充好的了
 export { apps };
