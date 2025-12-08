@@ -7,154 +7,181 @@
       @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
       
       :root {
-          --bg-color: #1a1a24;
-          --card-bg: rgba(30, 30, 40, 0.85);
-          --player-color: #61afef;
-          --enemy-color: #e06c75;
-          --gold: #FFD700;
-          --wood: #4CAF50;
-          --water: #2196F3;
-          --fire: #FF5722;
-          --earth: #8D6E63;
-          --text-main: #abb2bf;
-          --border-color: #3e4451;
+          /* 古风配色 */
+          --bg-paper: #f4f0e6; /* 宣纸底色 */
+          --ink-color: #2c2c2c; /* 墨色 */
+          --ink-light: #5a5a5a;
+          --red-seal: #b22c2c; /* 印泥红 */
+          --border-color: #8c7b65; /* 褐色边框 */
+          
+          /* 五行色 - 调低饱和度，更具古韵 */
+          --gold: #b58900;
+          --wood: #598c14;
+          --water: #266b96;
+          --fire: #c53828;
+          --earth: #8f653b;
       }
 
       body {
           width: 800px;
           margin: 0;
-          padding: 20px;
-          background: var(--bg-color);
-          font-family: "Microsoft YaHei", "tttgbnumber", sans-serif;
-          color: var(--text-main);
-          background-image: linear-gradient(to bottom right, #14141a, #20202c);
+          padding: 30px;
+          background: #e6e2d3;
+          /* 这里可以加一个宣纸纹理背景图，如果没有就用纯色 */
+          background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+          font-family: "NZBZ", "Microsoft YaHei", sans-serif; /* 优先使用书法字体 */
+          color: var(--ink-color);
+          box-sizing: border-box;
       }
 
       .log-container {
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
+          background: rgba(255, 255, 255, 0.6);
+          padding: 20px;
+          box-shadow: 0 0 15px rgba(0,0,0,0.1);
+          border: 2px solid var(--border-color);
+          position: relative;
+          border-radius: 4px;
+      }
+      
+      /* 四角云纹装饰 (CSS模拟) */
+      .log-container::before {
+          content: "";
+          position: absolute;
+          top: 5px; left: 5px; right: 5px; bottom: 5px;
+          border: 1px solid var(--border-color);
+          pointer-events: none;
       }
 
       /* 通用文本 */
       .start-text, .system-text, .end-text {
           text-align: center;
           padding: 10px;
-          font-family: "NZBZ", sans-serif;
-          color: #d19a66;
-          text-shadow: 0 0 5px rgba(209, 154, 102, 0.3);
-      }
-      .end-text { font-size: 24px; color: #98c379; margin-top: 20px; }
-      
-      /* 回合分割线 */
-      .turn-header {
-          position: relative;
-          text-align: center;
-          font-family: "NZBZ", sans-serif;
           font-size: 18px;
-          color: #5c6370;
-          margin: 15px 0;
+          color: var(--ink-light);
+      }
+      .end-text { 
+          font-size: 32px; 
+          color: var(--red-seal); 
+          margin-top: 30px; 
+          font-weight: bold;
+          text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+      }
+      
+      /* 回合分割线 - 水墨风格 */
+      .turn-header {
+          text-align: center;
+          font-size: 22px;
+          color: var(--ink-color);
+          margin: 25px 0;
+          position: relative;
+          font-weight: bold;
       }
       .turn-header::before, .turn-header::after {
-          content: "";
-          display: inline-block;
-          width: 30%;
-          height: 1px;
-          background: #3e4451;
+          content: "— ✤ —";
+          color: var(--border-color);
+          font-size: 16px;
+          margin: 0 15px;
           vertical-align: middle;
-          margin: 0 10px;
       }
 
-      /* 行动卡片 */
+      /* 行动卡片 - 卷轴/符箓风格 */
       .action-card {
-          background: var(--card-bg);
-          border-left: 4px solid #5c6370;
-          border-radius: 4px;
-          padding: 12px 15px;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+          background: #fdfbf7;
+          border: 1px solid #d4cbb8;
+          border-left: 6px solid #5c6370;
+          margin-bottom: 12px;
+          padding: 15px;
+          box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
           position: relative;
-          overflow: hidden;
       }
 
-      .action-card.player-action { border-left-color: var(--player-color); background: linear-gradient(90deg, rgba(97, 175, 239, 0.1), transparent); }
-      .action-card.enemy-action { border-left-color: var(--enemy-color); background: linear-gradient(90deg, rgba(224, 108, 117, 0.1), transparent); }
+      .action-card.player-action { border-left-color: var(--water); }
+      .action-card.enemy-action { border-left-color: var(--fire); }
 
       .action-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 8px;
-          font-size: 16px;
+          margin-bottom: 12px;
+          font-size: 18px;
       }
 
-      .caster-info { font-weight: bold; display: flex; align-items: center; gap: 8px; }
+      .caster-info { display: flex; align-items: center; gap: 8px; }
+      
+      /* 时辰/消耗时间 */
       .av-badge {
-          font-size: 12px;
-          background: #3e4451;
-          color: #fff;
+          font-size: 14px;
+          color: var(--ink-light);
+          font-family: "tttgbnumber", serif;
+          border: 1px solid #d4cbb8;
           padding: 2px 6px;
-          border-radius: 4px;
-          font-family: monospace;
+          border-radius: 2px;
+          background: #f2efe6;
       }
 
-      /* 元素颜色 */
+      /* 五行字色 */
       .ele-金 { color: var(--gold); }
       .ele-木 { color: var(--wood); }
       .ele-水 { color: var(--water); }
       .ele-火 { color: var(--fire); }
       .ele-土 { color: var(--earth); }
 
-      .action-arrow { color: #5c6370; margin: 0 10px; font-size: 12px; }
+      .action-arrow { color: #aaa; margin: 0 8px; font-size: 14px; }
 
       .damage-info {
           text-align: right;
-          font-family: "tttgbnumber", sans-serif;
-          font-size: 24px;
-          color: #e6e6e6;
-          text-shadow: 0 0 10px rgba(255,255,255,0.1);
+          font-family: "tttgbnumber", serif;
+          font-size: 26px;
+          color: var(--red-seal);
+          font-weight: bold;
       }
       .counter-tag {
-          font-size: 14px;
-          color: #e06c75;
+          font-size: 16px;
+          color: var(--fire);
           margin-right: 5px;
-          vertical-align: middle;
+          font-family: "NZBZ";
+          border: 1px solid var(--fire);
+          padding: 0 4px;
+          border-radius: 4px;
       }
 
       /* 状态条区域 */
       .status-panel {
-          margin-top: 10px;
+          margin-top: 12px;
           padding-top: 10px;
-          border-top: 1px solid rgba(255,255,255,0.05);
+          border-top: 1px dashed #d4cbb8;
           display: flex;
-          gap: 20px;
+          gap: 30px;
       }
-      .team-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+      .team-col { flex: 1; display: flex; flex-direction: column; gap: 6px; }
       
       .unit-status-row {
           display: flex;
           align-items: center;
-          font-size: 12px;
-          color: #828997;
+          font-size: 14px;
+          color: var(--ink-light);
       }
-      .unit-name { width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .unit-name { width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      
+      /* 古风血条 */
       .hp-track {
           flex: 1;
-          height: 6px;
-          background: #282c34;
-          border-radius: 3px;
+          height: 8px;
+          background: #e0ddd5;
+          border: 1px solid #c0b8a8;
+          border-radius: 4px;
           overflow: hidden;
-          margin: 0 8px;
+          margin: 0 10px;
           position: relative;
       }
       .hp-fill { height: 100%; transition: width 0.3s; }
-      .hp-fill.player { background: var(--player-color); }
-      .hp-fill.enemy { background: var(--enemy-color); }
-      .hp-val { width: 60px; text-align: right; font-family: monospace; }
+      .hp-fill.player { background: #5c8d9e; } /* 靛青 */
+      .hp-fill.enemy { background: #b85c5c; } /* 胭脂红 */
       
-      .dead { opacity: 0.5; text-decoration: line-through; }
-
-      /* AV 预测条 (可选，如果有数据) */
-      .next-av { color: #5c6370; font-size: 10px; margin-left: 5px;}
+      .hp-val { width: 70px; text-align: right; font-family: "tttgbnumber", serif; font-size: 14px;}
+      
+      .dead { opacity: 0.6; text-decoration: line-through; color: #999; }
+      .dead .hp-track { opacity: 0.3; }
 
   </style>
 </head>
@@ -165,9 +192,11 @@
 
     <!-- 开始/结束/系统信息 -->
     {{if line.type === 'start' || line.type === 'system'}}
-      <div class="system-text">★ {{line.text}} ★</div>
+      <div class="system-text">◈ {{line.text}} ◈</div>
     {{else if line.type === 'end'}}
-      <div class="end-text">{{line.text}}</div>
+      <div class="end-text">
+         ☁ {{line.text}} ☁
+      </div>
     
     <!-- 回合分割 -->
     {{else if line.type === 'turn'}}
@@ -180,15 +209,15 @@
         <!-- 头部: 谁 -> 谁 (消耗AV) -->
         <div class="action-header">
             <div class="caster-info">
-                <span class="av-badge" title="消耗时间">⏱ {{line.av_cost}}</span>
+                <span class="av-badge" title="消耗时间">耗时 {{line.av_cost}}</span>
                 <span class="ele-{{line.caster.element}}">{{line.caster.name}}</span>
-                <span class="action-arrow">▶</span>
+                <span class="action-arrow">➢</span>
                 <span class="ele-{{line.target.element}}">{{line.target.name}}</span>
             </div>
             
             <!-- 伤害显示 -->
             <div class="damage-info">
-                {{if line.is_counter}}<span class="counter-tag">WEAK!</span>{{/if}}
+                {{if line.is_counter}}<span class="counter-tag">克制</span>{{/if}}
                 -{{line.damage}}
             </div>
         </div>
