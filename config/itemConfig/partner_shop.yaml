@@ -9,3 +9,8 @@
   desc: "一个装满了花的篮子，赠送给他人可以增加好感度。"
   purchaseLimit: 5
   price: 5
+
+- name: "七星玄元丹"
+  desc: "为修仙者提供巨量的修为"
+  purchaseLimit: 5
+  price: 150
