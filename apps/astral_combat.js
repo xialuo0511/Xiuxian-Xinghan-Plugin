@@ -18,10 +18,24 @@ export class astral_combat extends plugin {
       priority: 500,
       rule: [
         { reg: /^#万象天机$/, fnc: 'showTeamStatus' },
+        { reg: /^#星魂图鉴$/, fnc: 'showCodex' },
         { reg: /^#星魂装备(\d)号\s*(.*)/, fnc: 'equipStarSoul' },
         { reg: /^#测试战斗$/, fnc: 'testCombat' }
       ]
     });
+  }
+
+  async showCodex(e) {
+    if (!await this.checkActivity(e)) return true;
+
+    const renderData = {
+      souls: allStarSouls,
+      pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+
+    const dataForPuppeteer = await new Show(e).get_imgData('star_soul_codex', renderData);
+    const img = await puppeteer.screenshot('star_soul_codex', { ...dataForPuppeteer });
+    await e.reply(img);
   }
 
 

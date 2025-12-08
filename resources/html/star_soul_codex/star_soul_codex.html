@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+
+      :root {
+          --bg-paper: #f4f0e6;
+          --ink-color: #2c2c2c;
+          --border-brown: #8c7b65;
+          --gold: #b58900;
+          --wood: #598c14;
+          --water: #266b96;
+          --fire: #c53828;
+          --earth: #8f653b;
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 30px;
+          background: #e6e2d3;
+          background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+          font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+          color: var(--ink-color);
+      }
+
+      .container {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+
+      .title {
+          text-align: center;
+          font-size: 48px;
+          color: var(--ink-color);
+          margin-bottom: 10px;
+          text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      }
+
+      .soul-card {
+          background: rgba(255, 255, 255, 0.7);
+          border: 2px solid var(--border-brown);
+          border-radius: 8px;
+          padding: 15px;
+          display: flex;
+          gap: 20px;
+          position: relative;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      }
+
+      .soul-icon {
+          width: 100px;
+          height: 100px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 48px;
+          border: 2px solid #d4cbb8;
+          border-radius: 50%;
+          background: #fff;
+          font-family: "NZBZ";
+      }
+
+      /* 元素边框色 */
+      .card-金 { border-left: 8px solid var(--gold); }
+      .card-木 { border-left: 8px solid var(--wood); }
+      .card-水 { border-left: 8px solid var(--water); }
+      .card-火 { border-left: 8px solid var(--fire); }
+      .card-土 { border-left: 8px solid var(--earth); }
+      
+      .icon-金 { color: var(--gold); border-color: var(--gold); }
+      .icon-木 { color: var(--wood); border-color: var(--wood); }
+      .icon-水 { color: var(--water); border-color: var(--water); }
+      .icon-火 { color: var(--fire); border-color: var(--fire); }
+      .icon-土 { color: var(--earth); border-color: var(--earth); }
+
+      .soul-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+
+      .soul-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          border-bottom: 1px dashed var(--border-brown);
+          padding-bottom: 5px;
+      }
+
+      .soul-name { font-size: 28px; font-weight: bold; }
+      .soul-role { font-size: 18px; color: #666; font-family: "tttgbnumber"; }
+
+      .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 5px;
+          background: rgba(0,0,0,0.03);
+          padding: 8px;
+          border-radius: 4px;
+          font-size: 14px;
+          font-family: "tttgbnumber";
+      }
+
+      .desc-text {
+          font-size: 16px;
+          color: #555;
+          font-style: italic;
+          margin-top: 5px;
+      }
+
+      .mechanic-box {
+          margin-top: 5px;
+          background: #fdfbf7;
+          border: 1px solid #d4cbb8;
+          padding: 10px;
+          border-radius: 4px;
+      }
+
+      .skill-name { font-size: 20px; font-weight: bold; color: var(--ink-color); margin-bottom: 4px;}
+      .mechanic-text { font-size: 16px; color: var(--fire); }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="title">万象天机 · 星魂图鉴</div>
+  
+  {{each souls soul}}
+  <div class="soul-card card-{{soul.base_stats.element}}">
+      <div class="soul-icon icon-{{soul.base_stats.element}}">
+          {{soul.base_stats.element}}
+      </div>
+      <div class="soul-info">
+          <div class="soul-header">
+              <span class="soul-name">{{soul.name}}</span>
+              <!-- 简单的定位判断 -->
+              <span class="soul-role">
+                  {{if soul.skill.type === 'damage'}}【输出】
+                  {{else if soul.skill.type === 'heal'}}【治疗】
+                  {{else if soul.skill.type === 'shield'}}【生存】
+                  {{/if}}
+                  速度: {{soul.base_stats.speed}}
+              </span>
+          </div>
+          
+          <div class="stats-grid">
+              <div>攻击: {{soul.base_stats.attack}}</div>
+              <div>防御: {{soul.base_stats.defense}}</div>
+              <div>生命: {{soul.base_stats.health}}</div>
+              <div>抗性: {{soul.base_stats.resistance * 100}}%</div>
+          </div>
+
+          <div class="desc-text">{{soul.desc}}</div>
+
+          <div class="mechanic-box">
+              <div class="skill-name">绝技 · {{soul.skill.name}}</div>
+              <div class="mechanic-text">{{soul.mechanics}}</div>
+          </div>
+      </div>
+  </div>
+  {{/each}}
+</div>
+
+</body>
+</html>

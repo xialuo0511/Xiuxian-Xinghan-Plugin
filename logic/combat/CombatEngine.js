@@ -15,7 +15,7 @@ const COUNTER_BONUS = 1.5; // 克制伤害提升
 
 /**
  * 战斗引擎 (Action Value System / 跑条制)
- * v2.0: 支持多目标、多类型效果（伤害/治疗/护盾）的日志结构
+ * v3.0: 技能驱动的动态战斗系统
  */
 export async function runCombat(playerSouls, enemyNames) {
   const combatLog = [];
@@ -55,7 +55,6 @@ export async function runCombat(playerSouls, enemyNames) {
     aliveUnits.forEach(unit => {
       unit.current_av -= elapsedAV;
       if (unit.current_av < 0.0001) unit.current_av = 0;
-      // TODO: 这里可以处理 Buff 的持续时间/跳伤害
     });
 
     totalElapsedAV += elapsedAV;
@@ -67,38 +66,39 @@ export async function runCombat(playerSouls, enemyNames) {
     }
 
     // --- 行动逻辑开始 ---
-    // 目前默认为普通攻击，未来可以在这里扩展 AI 逻辑选择技能
-    const targetTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
-    // 目标选择目前仍为单体，但我们把它封装成数组，为未来群攻做准备
-    const primaryTarget = selectTargetByTaunt(targetTeam);
+    // 获取单位的技能配置，如果没有(如怪物)，则使用默认普攻逻辑
+    const skillConfig = activeUnit.source.skill || {
+        name: "普通攻击",
+        type: "damage",
+        target: "single_enemy",
+        value_type: "atk",
+        value: 1.0
+    };
 
-    const actionResults = []; // 存储所有受击者的结果
-    const skillName = "普通攻击";
+    const friendlyTeam = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
+    const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
 
-    if (primaryTarget) {
-        // 计算伤害 (单体)
-        // 这是一个标准的攻击 Action
-        const result = calculateAttack(activeUnit, primaryTarget);
-        actionResults.push(result);
+    // 执行技能
+    const actionResults = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
+
+    // 3.4 记录日志
+    if (actionResults.length > 0) {
+        combatLog.push({
+            type: 'action',
+            av_cost: Math.floor(elapsedAV),
+            skill: skillConfig.name,
+            caster: { 
+                name: activeUnit.name, 
+                team: activeUnit.team, 
+                element: activeUnit.element 
+            },
+            targets: actionResults,
+            teamStatus: {
+                player: playerTeam.map(getUnitStatus),
+                enemy: enemyTeam.map(getUnitStatus)
+            }
+        });
     }
-
-    // 3.4 记录日志 (新结构)
-    combatLog.push({
-        type: 'action',
-        av_cost: Math.floor(elapsedAV),
-        skill: skillName, // 记录技能名
-        caster: { 
-            name: activeUnit.name, 
-            team: activeUnit.team, 
-            element: activeUnit.element 
-        },
-        // 关键变更：targets 是一个数组，包含所有受影响的单位
-        targets: actionResults,
-        teamStatus: {
-            player: playerTeam.map(getUnitStatus),
-            enemy: enemyTeam.map(getUnitStatus)
-        }
-    });
 
     // 3.5 行动结束
     activeUnit.resetAV();
@@ -111,9 +111,76 @@ export async function runCombat(playerSouls, enemyNames) {
 }
 
 /**
- * 封装攻击计算逻辑
+ * 技能执行器
  */
-function calculateAttack(attacker, target) {
+function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
+    let targets = [];
+    const results = [];
+
+    // 1. 目标选择
+    const aliveHostiles = hostileTeam.filter(u => u.isAlive());
+    const aliveFriendlies = friendlyTeam.filter(u => u.isAlive());
+
+    if (aliveHostiles.length === 0 && skill.type === 'damage') return []; // 敌全灭，无目标
+
+    switch (skill.target) {
+        case 'single_enemy':
+            const t = selectTargetByTaunt(aliveHostiles);
+            if (t) targets.push(t);
+            break;
+        case 'all_enemies':
+            targets = aliveHostiles;
+            break;
+        case 'lowest_hp_ally':
+            // 找血量百分比最低的
+            targets = aliveFriendlies.sort((a, b) => (a.current_hp/a.max_hp) - (b.current_hp/b.max_hp)).slice(0, 1);
+            break;
+        case 'all_allies':
+            targets = aliveFriendlies;
+            break;
+        default:
+            // 默认单体
+            const defT = selectTargetByTaunt(aliveHostiles);
+            if (defT) targets.push(defT);
+            break;
+    }
+
+    if (targets.length === 0) return [];
+
+    // 2. 效果计算
+    for (const target of targets) {
+        // 计算基础数值 (基于攻击、防御或最大生命)
+        let baseValue = 0;
+        if (skill.value_type === 'def') baseValue = caster.defense * skill.value;
+        else if (skill.value_type === 'max_hp') baseValue = caster.max_hp * skill.value;
+        else baseValue = caster.attack * skill.value; // 默认 atk
+
+        // 根据类型产生效果
+        if (skill.type === 'damage') {
+            const res = calculateDamage(caster, target, baseValue);
+            results.push(res);
+        } else if (skill.type === 'heal') {
+            const healed = target.receiveHeal(Math.floor(baseValue));
+            results.push({
+                name: target.name, team: target.team, element: target.element,
+                type: 'heal', value: healed, is_counter: false
+            });
+        } else if (skill.type === 'shield') {
+            target.addShield(Math.floor(baseValue));
+            results.push({
+                name: target.name, team: target.team, element: target.element,
+                type: 'shield', value: Math.floor(baseValue), is_counter: false
+            });
+        }
+    }
+
+    return results;
+}
+
+/**
+ * 伤害计算逻辑 (复用之前的曲线公式)
+ */
+function calculateDamage(attacker, target, rawDamageInput) {
     let elementalBonus = 1.0;
     let isCounter = false;
     if (elementCounterMap[attacker.element] === target.element) {
@@ -125,27 +192,24 @@ function calculateAttack(attacker, target) {
     let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
     let resistanceMultiplier = (1 - target.resistance);
     
-    let baseDmg = attacker.attack * defenseMultiplier * resistanceMultiplier;
-    let finalDmg = Math.floor(baseDmg * elementalBonus * (0.9 + Math.random() * 0.2)); 
+    // 这里 rawDamageInput 已经包含了倍率 (例如 攻击力 * 2.5)
+    let finalBaseDmg = rawDamageInput * defenseMultiplier * resistanceMultiplier;
+    let finalDmg = Math.floor(finalBaseDmg * elementalBonus * (0.9 + Math.random() * 0.2)); 
     finalDmg = Math.max(1, finalDmg);
 
-    // 实际扣血
     target.takeDamage(finalDmg);
 
-    // 返回标准化的结果对象
     return {
         name: target.name,
         team: target.team,
         element: target.element,
-        type: 'damage', // 类型：伤害
-        value: finalDmg, // 数值
-        is_counter: isCounter, // 是否克制
-        is_crit: false // 预留暴击字段
+        type: 'damage',
+        value: finalDmg,
+        is_counter: isCounter
     };
 }
 
-function selectTargetByTaunt(targetTeam) {
-  const aliveTargets = targetTeam.filter(t => t.isAlive());
+function selectTargetByTaunt(aliveTargets) {
   if (aliveTargets.length === 0) return null;
   const totalTaunt = aliveTargets.reduce((sum, target) => sum + target.taunt, 0);
   let randomPoint = Math.random() * totalTaunt;
@@ -160,8 +224,6 @@ const getUnitStatus = (unit) => {
     const max_hp = unit.max_hp > 0 ? unit.max_hp : 1;
     const current_hp = unit.current_hp || 0;
     let hp_percent = (current_hp / max_hp) * 100;
-    
-    // 计算护盾比例 (相对于最大血量，用于UI显示)
     let shield_percent = (unit.shield / max_hp) * 100;
 
     return {
@@ -170,7 +232,7 @@ const getUnitStatus = (unit) => {
       max_hp: unit.max_hp,
       shield: unit.shield,
       hp_percent: Math.max(0, Math.min(hp_percent, 100)),
-      shield_percent: Math.min(shield_percent, 100), // 护盾条限制
+      shield_percent: Math.min(shield_percent, 100),
       av: Math.floor(unit.current_av)
     };
 };
