@@ -40,6 +40,14 @@
           margin-bottom: 10px;
           text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
       }
+      
+      .subtitle {
+          text-align: center;
+          font-size: 24px;
+          color: #666;
+          margin-top: -20px;
+          font-family: "tttgbnumber";
+      }
 
       .soul-card {
           background: rgba(255, 255, 255, 0.7);
@@ -113,6 +121,15 @@
           font-style: italic;
           margin-top: 5px;
       }
+      
+      .lore-text {
+          font-size: 16px;
+          color: #4a3b2a;
+          line-height: 1.5;
+          text-indent: 2em;
+          text-align: justify;
+          margin-top: 5px;
+      }
 
       .mechanic-box {
           margin-top: 5px;
@@ -124,6 +141,15 @@
 
       .skill-name { font-size: 20px; font-weight: bold; color: var(--ink-color); margin-bottom: 4px;}
       .mechanic-text { font-size: 16px; color: var(--fire); }
+      
+      .skill-detail-data {
+          font-size: 14px;
+          color: #888;
+          font-family: "tttgbnumber";
+          margin-top: 4px;
+          border-top: 1px dashed #eee;
+          padding-top: 4px;
+      }
 
   </style>
 </head>
@@ -131,6 +157,9 @@
 
 <div class="container">
   <div class="title">万象天机 · 星魂图鉴</div>
+  {{if isDetail}}
+  <div class="subtitle">【 详 细 记 录 】</div>
+  {{/if}}
   
   {{each souls soul}}
   <div class="soul-card card-{{soul.base_stats.element}}">
@@ -140,7 +169,6 @@
       <div class="soul-info">
           <div class="soul-header">
               <span class="soul-name">{{soul.name}}</span>
-              <!-- 简单的定位判断 -->
               <span class="soul-role">
                   {{if soul.skill.type === 'damage'}}【输出】
                   {{else if soul.skill.type === 'heal'}}【治疗】
@@ -157,11 +185,29 @@
               <div>抗性: {{soul.base_stats.resistance * 100}}%</div>
           </div>
 
-          <div class="desc-text">{{soul.desc}}</div>
+          {{if isDetail}}
+             <div class="lore-text">{{soul.lore}}</div>
+          {{else}}
+             <div class="desc-text">{{soul.desc}}</div>
+          {{/if}}
 
           <div class="mechanic-box">
               <div class="skill-name">绝技 · {{soul.skill.name}}</div>
               <div class="mechanic-text">{{soul.mechanics}}</div>
+              
+              {{if isDetail}}
+              <div class="skill-detail-data">
+                  目标: 
+                  {{if soul.skill.target === 'single_enemy'}}单体敌方
+                  {{else if soul.skill.target === 'all_enemies'}}全体敌方
+                  {{else if soul.skill.target === 'lowest_hp_ally'}}最虚弱队友
+                  {{else if soul.skill.target === 'all_allies'}}全体队友
+                  {{/if}}
+                  | 
+                  倍率: {{soul.skill.value * 100}}% 
+                  ({{if soul.skill.value_type === 'def'}}防御{{else if soul.skill.value_type === 'max_hp'}}生命{{else}}攻击{{/if}})
+              </div>
+              {{/if}}
           </div>
       </div>
   </div>

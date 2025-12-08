@@ -19,6 +19,7 @@ export class astral_combat extends plugin {
       rule: [
         { reg: /^#万象天机$/, fnc: 'showTeamStatus' },
         { reg: /^#星魂图鉴$/, fnc: 'showCodex' },
+        { reg: /^#详细星魂图鉴$/, fnc: 'showDetailCodex' },
         { reg: /^#星魂装备(\d)号\s*(.*)/, fnc: 'equipStarSoul' },
         { reg: /^#测试战斗$/, fnc: 'testCombat' }
       ]
@@ -27,14 +28,28 @@ export class astral_combat extends plugin {
 
   async showCodex(e) {
     if (!await this.checkActivity(e)) return true;
+    await this.renderCodex(e, false);
+  }
 
+  async showDetailCodex(e) {
+    if (!await this.checkActivity(e)) return true;
+    await this.renderCodex(e, true);
+  }
+
+  async renderCodex(e, isDetail) {
     const renderData = {
       souls: allStarSouls,
+      isDetail: isDetail,
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
 
+    // 使用相同的模板 star_soul_codex，但传入不同的 isDetail 参数
+    // 注意：模板文件名还是叫 star_soul_codex，不需要为了详细版单独建一个文件，在HTML里判断即可
+    // 图片名称稍微区分一下，避免缓存问题
+    const imgName = isDetail ? 'star_soul_codex_detail' : 'star_soul_codex';
+    
     const dataForPuppeteer = await new Show(e).get_imgData('star_soul_codex', renderData);
-    const img = await puppeteer.screenshot('star_soul_codex', { ...dataForPuppeteer });
+    const img = await puppeteer.screenshot(imgName, { ...dataForPuppeteer });
     await e.reply(img);
   }
 

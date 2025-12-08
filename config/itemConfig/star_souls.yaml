@@ -1,15 +1,13 @@
 # 星魂定义文件
 # base_stats: 基础属性
 # skill: 战斗技能逻辑配置
-#   type: damage(伤害) / heal(治疗) / shield(护盾)
-#   target: single_enemy(单体敌方) / all_enemies(全体敌方) / lowest_hp_ally(最低血量友方) / all_allies(全体友方)
-#   value_type: atk(攻击力百分比) / def(防御力百分比) / max_hp(最大生命值百分比)
-#   value: 倍率 (如 1.5 代表 150%)
+# lore: 详细图鉴中的背景故事与设定
 
 - name: "剑魂·庚金"
   class: "活动"
   desc: "金之法则凝聚的锐利战魂，主宰杀伐。"
   mechanics: "【锐金】对单体目标造成巨额伤害，是攻坚的主力。"
+  lore: "上古剑修遗留的一缕杀伐剑意，经万载庚金之气孕育而生。它没有实体，唯有一股刺破苍穹的锐气。传闻得此战魂者，剑出无回，无坚不摧。其绝技「太白庚金斩」引动太白星力，瞬息之间可取敌首级，造成 250% 攻击力的毁灭性打击。"
   eventKey: "wanxiang_tianji_2025_10"
   base_stats: { attack: 180, defense: 100, health: 1000, resistance: 0.1, speed: 115, taunt: 100, element: "金" }
   skill:
@@ -23,6 +21,7 @@
   class: "活动"
   desc: "土之法则凝聚的厚重战魂，不动如山。"
   mechanics: "【厚土】为我方全体施加基于自身防御力的护盾，抵御伤害。"
+  lore: "生于极西之地的万年戊土之精，性情温厚沉稳。它象征着大地的宽容与承载，能将脚下的每一寸土地化为坚不可摧的屏障。其绝技「不动明王阵」能沟通大地脉动，为所有队友提供相当于自身防御力 150% 的护盾，任凭风吹雨打，我自岿然不动。"
   eventKey: "wanxiang_tianji_2025_10"
   base_stats: { attack: 80, defense: 220, health: 1500, resistance: 0.25, speed: 70, taunt: 300, element: "土" }
   skill:
@@ -36,6 +35,7 @@
   class: "活动"
   desc: "木之法则凝聚的生机战魂，枯木逢春。"
   mechanics: "【回春】为生命值最低的友方单位恢复大量生命值。"
+  lore: "曾是百草园中一株得道的灵芝，感悟乙木长生之理化形。它所过之处，百花盛开，枯木逢春。它不喜争斗，只愿悬壶济世。其绝技「青帝长生诀」借来东方青帝之生机，能瞬间治愈重伤的队友，恢复量高达攻击力的 180%，由于它是灵体，甚至能修复受损的神魂。"
   eventKey: "wanxiang_tianji_2025_10"
   base_stats: { attack: 100, defense: 120, health: 1200, resistance: 0.15, speed: 100, taunt: 100, element: "木" }
   skill:
@@ -49,6 +49,7 @@
   class: "活动"
   desc: "水之法则凝聚的玄冥战魂，上善若水。"
   mechanics: "【骇浪】召唤滔天巨浪，对敌方全体造成伤害。"
+  lore: "诞生于北冥深海的幽寒之灵，掌握着水的变幻莫测。水可至柔滋养万物，亦可至刚席卷天下。咒师深谙此道，平时静若处子，动则如怒海狂涛。其绝技「弱水三千」能召唤来自九幽的弱水，冲击敌方全体，造成 80% 攻击力的伤害，且弱水沉重，一旦沾染，难以摆脱。"
   eventKey: "wanxiang_tianji_2025_10"
   base_stats: { attack: 140, defense: 100, health: 1100, resistance: 0.1, speed: 105, taunt: 100, element: "水" }
   skill:
@@ -62,6 +63,7 @@
   class: "活动"
   desc: "火之法则凝聚的狂暴战魂，焚天煮海。"
   mechanics: "【爆炎】对单体造成高额火焰伤害，侵略如火。"
+  lore: "采南方离火之精修炼而成的火灵，性格暴烈如火。它崇尚极致的毁灭力量，认为只有灰烬才是万物最终的归宿。其绝技「九龙神火罩」通过召唤九条火龙盘旋而上，将敌人困于火罩之中焚烧，造成 220% 攻击力的毁灭性单体伤害，非大毅力者不可降服。"
   eventKey: "wanxiang_tianji_2025_10"
   base_stats: { attack: 210, defense: 80, health: 900, resistance: 0.05, speed: 125, taunt: 80, element: "火" }
   skill:
