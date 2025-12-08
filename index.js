@@ -1,5 +1,3 @@
-// /index.js (最终修正版 - 解决指令无响应问题)
-
 import fs from 'node:fs';
 import { fork } from 'child_process';
 import path from 'path';
