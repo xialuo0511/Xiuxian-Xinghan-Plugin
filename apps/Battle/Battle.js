@@ -97,44 +97,47 @@ export class Battle extends plugin {
 
   async biwu(e) {
     if (!e.isGroup) return;
-    const atItem = e.message.filter(item => item.type === 'at')[0];
-    if (!atItem) return;
+    const atItems = e.message.filter(item => item.type === 'at');
+    if (atItems.length === 0) return;
 
     const A_id = e.user_id;
-    const B_id = atItem.qq;
-
-    if (A_id == B_id) {
-      e.reply('自己和自己打？');
+    const B_ids = atItems.map(item => item.qq);
+    
+    // 去重并排除自己
+    const uniqueB_ids = [...new Set(B_ids)].filter(id => id != A_id);
+    
+    if (uniqueB_ids.length === 0) {
+      e.reply('不能和自己打！');
       return;
     }
 
-    let A_player = (await DAL.getAllPlayerData(A_id)).player;
-    let B_player = (await DAL.getAllPlayerData(B_id)).player;
-    if (!A_player || !B_player) {
-      e.reply('对方或你尚未踏入仙途。');
-      return;
+    const A_data = await DAL.getAllPlayerData(A_id);
+    if (!A_data || !A_data.player) {
+        e.reply('你尚未踏入仙途。');
+        return;
     }
-    A_player.当前血量 = A_player.血量上限;
-    B_player.当前血量 = B_player.血量上限;
 
-    // 准备战斗数据副本
-    const A_battle_data = {
-      ...A_player,
-      id: A_id,
-      equipment: await DAL.getAllPlayerData(A_id).equipment
-    };
+    const B_data_list = await Promise.all(uniqueB_ids.map(id => DAL.getAllPlayerData(id)));
+    const validB_data = B_data_list.filter(d => d && d.player);
+    
+    if (validB_data.length === 0) {
+        e.reply('对手均未踏入仙途。');
+        return;
+    }
 
-    const B_battle_data = {
-      ...B_player,
-      id: B_id,
-      equipment: await DAL.getAllPlayerData(B_id).equipment
-    };
+    // 准备数据
+    const teamA = [A_data.player];
+    const teamB = validB_data.map(d => d.player);
+    
+    // 切磋前补满状态
+    [...teamA, ...teamB].forEach(p => p.当前血量 = p.血量上限);
 
+    // 准备战斗数据副本 (虽然 battleEngine 现在内部会再次处理，但为了保持逻辑一致，这里不需深拷贝装备，因为 battleEngine 不处理装备逻辑，只处理属性)
+    // 注意：原代码 battleEngine 修改了传入的对象，这里 battleEngine 内部会 createCombatant，但最后 syncBackToPlayer 会修改传入对象
+    
+    e.reply(`【${teamA.map(p => p.名号).join(',')}】向【${teamB.map(p => p.名号).join(',')}】发起了切磋！`);
 
-    e.reply(`【${A_player.名号}】向【${B_player.名号}】发起了切磋！`);
-
-    const battleResult = await battleEngine(A_battle_data, B_battle_data);
-
+    const battleResult = await battleEngine(teamA, teamB);
 
     let img = await this.renderBattle(e, battleResult);
     e.reply(img);

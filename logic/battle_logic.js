@@ -7,12 +7,14 @@ import { applyElementalEffects } from './elemental_logic.js';
  * 2. 曲线伤害公式：Damage = Atk * (Atk / (Atk + Def)) * (1 + 增伤)。
  * 3. 兼容现有的灵根、武器特效逻辑。
  */
-export async function battleEngine(A_player, B_player) {
+export async function battleEngine(TeamA_Input, TeamB_Input) {
   // 1. 初始化战斗单位
-  // 为了支持AV系统，我们需要包装一下玩家对象
+  const teamA = Array.isArray(TeamA_Input) ? TeamA_Input : [TeamA_Input];
+  const teamB = Array.isArray(TeamB_Input) ? TeamB_Input : [TeamB_Input];
+
   const combatants = [
-    createCombatant(A_player, 'A'),
-    createCombatant(B_player, 'B')
+    ...teamA.map(p => createCombatant(p, 'A')),
+    ...teamB.map(p => createCombatant(p, 'B'))
   ];
 
   const messages = []; // 兼容旧版日志（纯文本）
@@ -34,84 +36,75 @@ export async function battleEngine(A_player, B_player) {
     const teamAAlive = combatants.some(c => c.team === 'A' && c.current_hp > 0);
     const teamBAlive = combatants.some(c => c.team === 'B' && c.current_hp > 0);
 
-    if (!teamAAlive) {
-      winner = 'B';
-      break;
-    }
-    if (!teamBAlive) {
-      winner = 'A';
-      break;
-    }
+    if (!teamAAlive) { winner = 'B'; break; }
+    if (!teamBAlive) { winner = 'A'; break; }
 
     // 寻找行动者 (AV最小)
     const aliveUnits = combatants.filter(c => c.current_hp > 0);
     aliveUnits.sort((a, b) => a.current_av - b.current_av);
     const activeUnit = aliveUnits[0];
-
+    
     // 时间流逝
     const elapsedAV = activeUnit.current_av;
     aliveUnits.forEach(u => u.current_av -= elapsedAV);
-
+    
     // 行动
     // 简单AI：攻击对面存活的第一个人（未来可扩展）
     const targets = combatants.filter(c => c.team !== activeUnit.team && c.current_hp > 0);
     if (targets.length > 0) {
-      const target = targets[0]; // 默认打第一个
-
-      // 执行攻击逻辑
-      const result = await executeAttack(activeUnit, target, turnCount);
-
-      // 记录日志
-      messages.push(...result.msgs);
-
-      detailedLog.push({
-        type: 'action',
-        av_cost: Math.floor(elapsedAV),
-        skill: '普通攻击', // 玩家目前只有平A，技能在特效里触发
-        caster: {
-          name: activeUnit.source.名号,
-          team: activeUnit.team === 'A' ? 'player' : 'enemy',
-          element: activeUnit.element,
-          level: activeUnit.source.level_id || 0,
-          id: activeUnit.source.id
-        },
-        targets: [{
-          name: target.source.名号,
-          element: target.element,
-          type: 'damage', // 目前主要是伤害
-          value: result.damage,
-          value_display: formatNumber(result.damage), // 格式化显示
-          is_counter: false // 暂未集成克制判断到这个字段
-        }],
-        details: result.msgs, // 将详细文本放入 details
-        teamStatus: {
-          player: combatants.filter(c => c.team === 'A').map(getUnitStatus),
-          enemy: combatants.filter(c => c.team === 'B').map(getUnitStatus)
-        }
-      });
+        // 简单随机或打第一个
+        const target = targets[0]; 
+        
+        // 执行攻击逻辑
+        const result = await executeAttack(activeUnit, target, turnCount);
+        
+        // 记录日志
+        messages.push(...result.msgs);
+        
+        detailedLog.push({
+            type: 'action',
+            av_cost: Math.floor(elapsedAV),
+            skill: '普通攻击', 
+            caster: { 
+                name: activeUnit.source.名号, 
+                team: activeUnit.team === 'A' ? 'player' : 'enemy', 
+                element: activeUnit.element,
+                level: activeUnit.source.level_id || 0,
+                id: activeUnit.source.id
+            },
+            targets: [{
+                name: target.source.名号,
+                element: target.element,
+                type: 'damage', 
+                value: result.damage,
+                value_display: formatNumber(result.damage), 
+                is_counter: false 
+            }],
+            details: result.msgs, 
+            teamStatus: {
+                player: combatants.filter(c => c.team === 'A').map(getUnitStatus),
+                enemy: combatants.filter(c => c.team === 'B').map(getUnitStatus)
+            }
+        });
     }
 
     activeUnit.resetAV();
     turnCount++;
   }
-
+  
   // 战斗结束
-  if (winner === 'A') messages.push(`${A_player.名号} 获胜！`);
-  else if (winner === 'B') messages.push(`${B_player.名号} 获胜！`);
+  if (winner === 'A') messages.push(`发起方获胜！`);
+  else if (winner === 'B') messages.push(`迎战方获胜！`);
   else messages.push(`双方平手！`);
 
-  // 返回数据结构
-  // 注意：旧代码期望返回 A_win, msg, A_player_final 等
-  // 我们需要把 combatant 的状态同步回 player 对象
-  syncBackToPlayer(A_player, combatants.find(c => c.team === 'A'));
-  syncBackToPlayer(B_player, combatants.find(c => c.team === 'B'));
+  // 同步状态
+  teamA.forEach(p => syncBackToPlayer(p, combatants.find(c => c.id === p.id)));
+  teamB.forEach(p => syncBackToPlayer(p, combatants.find(c => c.id === p.id)));
 
   return {
-    msg: messages, // 旧版文本日志
-    log: detailedLog, // 新版结构化日志
-    A_win: winner === 'A',
-    A_player_final: A_player,
-    B_player_final: B_player
+    msg: messages, 
+    log: detailedLog, 
+    A_win: winner === 'A'
   };
 }
 
@@ -160,8 +153,6 @@ async function executeAttack(attacker, defender, turn) {
   const msgs = [];
 
   // 1. 基础伤害计算 (曲线公式)
-  // Damage = Atk * (Atk / (Atk + Def * 2))
-  // 系数2是为了在同级攻防下，伤害是攻击力的33%，比较合理，否则50%有点疼
   const atk = attacker.attack;
   const def = defender.defense;
 
