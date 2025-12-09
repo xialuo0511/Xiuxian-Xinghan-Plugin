@@ -156,6 +156,14 @@
       .skill-name { font-size: 20px; font-weight: bold; color: var(--ink-color); margin-bottom: 4px;}
       .mechanic-text { font-size: 16px; color: var(--fire); }
       
+      .val-highlight {
+          color: #c53828;
+          font-weight: bold;
+          font-family: "tttgbnumber";
+          font-size: 1.1em;
+          margin: 0 2px;
+      }
+      
       .skill-detail-data {
           font-size: 14px;
           color: #888;
@@ -212,7 +220,7 @@
           <div class="mechanic-box">
               <div class="mechanic-text">
                   {{if isDetail}}
-                      {{soul.skill.detailed_mechanics}}
+                      {{@ soul.skill.detailed_mechanics}}
                   {{else}}
                       <span style="font-weight:bold; color:#2c2c2c;">绝技 · {{soul.skill.name}}</span><br>{{soul.mechanics}}
                   {{/if}}
@@ -256,7 +264,7 @@
           <div class="mechanic-box">
               <div class="mechanic-text">
                   {{if isDetail}}
-                      {{monster.skill.detailed_mechanics}}
+                      {{@ monster.skill.detailed_mechanics}}
                   {{else}}
                       <span style="font-weight:bold; color:#2c2c2c;">天赋 · {{monster.skill.name}}</span><br>{{monster.mechanics}}
                   {{/if}}

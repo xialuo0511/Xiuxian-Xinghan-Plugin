@@ -39,9 +39,37 @@ export class astral_combat extends plugin {
   async renderCodex(e, isDetail) {
     const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
 
+    // 辅助函数：高亮数值
+    const highlightNumbers = (text) => {
+        if (!text) return text;
+        return text.replace(/(\d+(\.\d+)?%?)/g, '<span class="val-highlight">$1</span>');
+    };
+
+    const processedSouls = allStarSouls.map(s => {
+        const copy = { ...s };
+        if (copy.skill) {
+            copy.skill = { ...copy.skill };
+            if (copy.skill.detailed_mechanics) {
+                copy.skill.detailed_mechanics = highlightNumbers(copy.skill.detailed_mechanics);
+            }
+        }
+        return copy;
+    });
+
+    const processedMonsters = allMonsters.map(m => {
+        const copy = { ...m };
+        if (copy.skill) {
+            copy.skill = { ...copy.skill };
+            if (copy.skill.detailed_mechanics) {
+                copy.skill.detailed_mechanics = highlightNumbers(copy.skill.detailed_mechanics);
+            }
+        }
+        return copy;
+    });
+
     const renderData = {
-      souls: allStarSouls,
-      monsters: allMonsters,
+      souls: processedSouls,
+      monsters: processedMonsters,
       isDetail: isDetail,
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
