@@ -105,7 +105,11 @@ export async function battleEngine(TeamA_Input, TeamB_Input) {
   return {
     msg: messages, 
     log: detailedLog, 
-    A_win: winner === 'A'
+    A_win: winner === 'A',
+    A_player_final: teamA[0],
+    B_player_final: teamB[0],
+    TeamA_final: teamA,
+    TeamB_final: teamB
   };
 }
 
