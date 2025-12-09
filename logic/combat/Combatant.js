@@ -25,6 +25,12 @@ export class Combatant {
         this.taunt = source.base_stats.taunt;
         this.element = source.base_stats.element;
         this.level = source.level || 0;
+        
+        // 扩展属性 (Buff支持)
+        this.crit_rate = source.crit_rate || 0;
+        this.crit_dmg = source.crit_dmg || 1.5;
+        this.elemental_buffs = source.elemental_buffs || {};
+        this.passive_skills = source.passive_skills || [];
     } else {
         // 玩家 (适配 xiuxian_player 数据结构)
         this.name = source.名号 || `玩家${id}`;

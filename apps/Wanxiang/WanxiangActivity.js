@@ -37,6 +37,7 @@ export class WanxiangActivity extends plugin {
       rule: [
         { reg: /^#开启试炼$/, fnc: 'startRun' },
         { reg: /^#挑战$/, fnc: 'challengeLayer' },
+        { reg: /^#选择赐福\s*(\d)$/, fnc: 'selectBuff' },
         { reg: /^#试炼状态$/, fnc: 'showStatus' },
         { reg: /^#退出试炼$/, fnc: 'quitRun' }
       ]
@@ -211,10 +212,33 @@ export class WanxiangActivity extends plugin {
                 const battleConfig = { ...originalConfig };
                 // 注入当前血量，这需要 Combatant 能支持
                 battleConfig.current_hp_inherit = soulState.current_hp;
-                // 注入 Buff (暂时略，后续实现)
-                
-                battleSouls.push(battleConfig);
-            }
+                                // 注入 Buff
+                                const activeBuffs = runData.buffs || [];
+                                activeBuffs.forEach(buffId => {
+                                    const buff = BUFFS.find(b => b.id === buffId);
+                                    if (!buff) return;
+                                    
+                                    if (buff.type === 'atk_pct') {
+                                        battleConfig.base_stats.attack = Math.floor(battleConfig.base_stats.attack * (1 + buff.value));
+                                    } else if (buff.type === 'def_pct') {
+                                        battleConfig.base_stats.defense = Math.floor(battleConfig.base_stats.defense * (1 + buff.value));
+                                    } else if (buff.type === 'max_hp_pct') {
+                                         battleConfig.base_stats.health = Math.floor(battleConfig.base_stats.health * (1 + buff.value));
+                                    } else if (buff.type === 'crit_rate') {
+                                        battleConfig.crit_rate = (battleConfig.crit_rate || 0) + buff.value;
+                                    } else if (buff.type === 'crit_dmg') {
+                                        battleConfig.crit_dmg = (battleConfig.crit_dmg || 1.5) + buff.value;
+                                    } else if (buff.type === 'element_dmg') {
+                                         if (!battleConfig.elemental_buffs) battleConfig.elemental_buffs = {};
+                                         if (!battleConfig.elemental_buffs[buff.element]) battleConfig.elemental_buffs[buff.element] = 0;
+                                         battleConfig.elemental_buffs[buff.element] += buff.value;
+                                    } else if (buff.type === 'heal_turn') {
+                                        if (!battleConfig.passive_skills) battleConfig.passive_skills = [];
+                                        battleConfig.passive_skills.push({ type: 'heal_turn', value: buff.value });
+                                    }
+                                });
+                            
+                            battleSouls.push(battleConfig);            }
         }
 
         if (battleSouls.length === 0) {
@@ -260,11 +284,28 @@ export class WanxiangActivity extends plugin {
 
         if (result.playerWon) {
             runData.layer++;
-            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-            await tempClient.disconnect(); // 成功结束时断开
             
-            // TODO: 触发 Buff 选择
-            e.reply(`战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n发送 #挑战 继续前进！`);
+            // 随机抽取 3 个 Buff
+            const choices = [];
+            const pool = [...BUFFS]; 
+            for (let i = 0; i < 3; i++) {
+                if (pool.length === 0) break;
+                const idx = Math.floor(Math.random() * pool.length);
+                choices.push(pool[idx]);
+                pool.splice(idx, 1); 
+            }
+            
+            runData.pending_buffs = choices.map(b => b.id);
+            
+            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+            await tempClient.disconnect(); 
+            
+            let buffMsg = `战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n\n【天机赐福】\n请发送 #选择赐福 [序号] 获取增益：\n`;
+            choices.forEach((b, i) => {
+                buffMsg += `${i+1}. 【${b.name}】${b.desc}\n`;
+            });
+            
+            e.reply(buffMsg);
         } else {
             // 失败更新（记录死亡状态）
             await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
@@ -275,6 +316,72 @@ export class WanxiangActivity extends plugin {
         console.error('[Wanxiang] challengeLayer Error:', err);
         if (tempClient) await tempClient.disconnect(); // 错误时断开
         return e.reply('挑战失败：' + err.message);
+    }
+  }
+
+  async selectBuff(e) {
+    const userId = e.user_id;
+    const match = e.msg.match(/^#选择赐福\s*(\d)$/);
+    const selection = parseInt(match[1]);
+
+    let tempClient = null;
+    try {
+        tempClient = await getTempRedis();
+        const dataStr = await tempClient.get(KEY_PREFIX + userId);
+        
+        if (!dataStr) {
+            await tempClient.disconnect();
+            return e.reply('请先 #开启试炼。');
+        }
+        
+        const runData = JSON.parse(dataStr);
+        if (!runData.pending_buffs || runData.pending_buffs.length === 0) {
+            await tempClient.disconnect();
+            return e.reply('当前没有待选择的赐福。请先 #挑战 获取胜利。');
+        }
+
+        if (selection < 1 || selection > runData.pending_buffs.length) {
+            await tempClient.disconnect();
+            return e.reply(`请选择 1-${runData.pending_buffs.length} 之间的序号。`);
+        }
+
+        const selectedBuffId = runData.pending_buffs[selection - 1];
+        const buffConfig = BUFFS.find(b => b.id === selectedBuffId);
+        
+        // 加入已生效 Buff 列表
+        runData.buffs.push(selectedBuffId);
+        // 清空待选列表
+        runData.pending_buffs = [];
+        
+        // 如果是直接回血类 Buff (max_hp_up)，可能需要立即处理？
+        // 简单起见，所有 Buff 都在战斗时生效。但 max_hp_up 描述说“获得时恢复”，这需要特殊处理。
+        // 这里简单处理：如果 Buff 是 max_hp_pct，立即按比例回血
+        if (buffConfig && buffConfig.type === 'max_hp_pct') {
+            runData.souls.forEach(soul => {
+                if (!soul.is_dead) {
+                    // 提升当前血量，使其比例保持不变？或者直接加血？
+                    // 描述是“恢复等量生命”，意味着 +20% MaxHP, 同时也 +20% CurrentHP (数值上)
+                    // 实际上是在战斗时 max_hp 会变大，这里只要保证 current_hp 看起来合理。
+                    // 简单做法：这里不改 current_hp，战斗时 max_hp 变大了，current_hp 比例自然降低，需要治疗。
+                    // 但为了体验，我们在这里给每个人回一口血
+                    const healAmount = Math.floor(soul.max_hp * buffConfig.value);
+                    soul.current_hp += healAmount; 
+                    // 注意：这里没有 cap，因为 max_hp 还没变（那是战斗时算的）。
+                    // 但没关系，CombatEngine 会处理。或者我们在战斗外暂时不管 cap。
+                }
+            });
+            e.reply(`【${buffConfig.name}】生效！全员恢复了部分生命值。`);
+        }
+
+        await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+        await tempClient.disconnect();
+        
+        e.reply(`成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n发送 #挑战 继续前往下一层。`);
+
+    } catch (err) {
+        console.error('[Wanxiang] selectBuff Error:', err);
+        if (tempClient) await tempClient.disconnect();
+        e.reply('选择失败：' + err.message);
     }
   }
 }
