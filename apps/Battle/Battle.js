@@ -248,19 +248,32 @@ export class Battle extends plugin {
       名号: '木桩',
       攻击: 0,
       防御: A_data.player.攻击 * 0.8, // 木桩的防御是玩家攻击的80%
-      当前血量: 999999999,
-      血量上限: 999999999,
+      当前血量: 9999999999999, // 增加血量防止被打死
+      血量上限: 9999999999999,
       暴击率: 0,
       灵根: { name: '无', 法球倍率: 0 }
     };
 
     e.reply(`你对着一个憨憨的木桩发起了攻击...`);
-    const battleResult = await battleEngine({ ...A_data.player, id: userId, equipment: A_data.equipment }, dummy);
+    // 限制10回合
+    const battleResult = await battleEngine({ ...A_data.player, id: userId, equipment: A_data.equipment }, dummy, 10);
 
-    // 只显示前10回合的战报
-    // battleResult.log = battleResult.log.length > 21 ? battleResult.log.filter((_, index) => index < 21) : battleResult.log;
-    battleResult.B_player_final.当前血量 = Math.max(battleResult.B_player_final.当前血量, 1);
-    battleResult.msg.push('\n...一顿操作后，木桩依旧屹立不倒...');
+    // 统计伤害
+    let totalDamage = 0;
+    battleResult.log.forEach(entry => {
+        if (entry.type === 'action' && entry.caster.id === userId && entry.targets) {
+            entry.targets.forEach(t => {
+                if (t.type === 'damage') {
+                    totalDamage += t.value;
+                }
+            });
+        }
+    });
+    
+    // 格式化输出
+    const damageDisplay = totalDamage >= 10000 ? (totalDamage / 10000).toFixed(2) + '万' : totalDamage;
+    battleResult.msg.push(`\n[伤害统计] 10回合内，你共造成了 ${damageDisplay} 点伤害！`);
+
     let img = await this.renderBattle(e, battleResult);
     e.reply(img);
   }

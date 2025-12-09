@@ -7,7 +7,7 @@ import { applyElementalEffects } from './elemental_logic.js';
  * 2. 曲线伤害公式：Damage = Atk * (Atk / (Atk + Def)) * (1 + 增伤)。
  * 3. 兼容现有的灵根、武器特效逻辑。
  */
-export async function battleEngine(TeamA_Input, TeamB_Input) {
+export async function battleEngine(TeamA_Input, TeamB_Input, maxTurns = 50) {
   // 1. 初始化战斗单位
   const teamA = Array.isArray(TeamA_Input) ? TeamA_Input : [TeamA_Input];
   const teamB = Array.isArray(TeamB_Input) ? TeamB_Input : [TeamB_Input];
@@ -21,7 +21,6 @@ export async function battleEngine(TeamA_Input, TeamB_Input) {
   const detailedLog = []; // 新版结构化日志
 
   let turnCount = 0;
-  const MAX_TURNS = 50; // 防止死循环
 
   // 初始AV
   combatants.forEach(c => c.resetAV());
@@ -31,7 +30,7 @@ export async function battleEngine(TeamA_Input, TeamB_Input) {
 
   let winner = null;
 
-  while (turnCount < MAX_TURNS) {
+  while (turnCount < maxTurns) {
     // 检查存活
     const teamAAlive = combatants.some(c => c.team === 'A' && c.current_hp > 0);
     const teamBAlive = combatants.some(c => c.team === 'B' && c.current_hp > 0);
