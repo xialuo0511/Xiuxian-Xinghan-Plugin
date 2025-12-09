@@ -1,9 +1,9 @@
-import plugin from '../../../lib/plugins/plugin.js';
+import plugin from '../../../../lib/plugins/plugin.js';
 import * as DAL from '../../api/data-access.js';
 import { redisClient } from '../../api/redis.js';
 import { loadItemConfig } from '../../model/ConfigLoader.js';
 import { runCombat } from '../../logic/combat/CombatEngine.js';
-import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 
 const STAGES = loadItemConfig('wanxiang_stages.yaml') || [];
