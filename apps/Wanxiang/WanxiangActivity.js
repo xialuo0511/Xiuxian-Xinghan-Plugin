@@ -129,9 +129,152 @@ export class WanxiangActivity extends plugin {
   // 为了一次性验证，先只修改 startRun。如果 startRun 能用，我们再考虑如何优雅地修复全局 redisClient。
   
   async quitRun(e) {
-      // 占位，避免报错，实际逻辑需要 copy tempClient 逻辑
-      return e.reply('维护中，请稍后。');
+    let tempClient = null;
+    try {
+        tempClient = await getTempRedis();
+        await tempClient.del(KEY_PREFIX + e.user_id);
+        await tempClient.disconnect();
+        e.reply('已放弃当前的试炼进度。');
+    } catch (err) {
+        console.error('[Wanxiang] quitRun Redis Error:', err);
+        if (tempClient) await tempClient.disconnect();
+        e.reply('退出试炼失败：' + err.message);
+    }
   }
-  async showStatus(e) { return e.reply('维护中。'); }
-  async challengeLayer(e) { return e.reply('维护中。'); }
+  async showStatus(e) {
+    const userId = e.user_id;
+    let tempClient = null;
+    let dataStr = null;
+    try {
+        tempClient = await getTempRedis();
+        dataStr = await tempClient.get(KEY_PREFIX + userId);
+        await tempClient.disconnect();
+    } catch (err) {
+        console.error('[Wanxiang] showStatus Redis Error:', err);
+        if (tempClient) await tempClient.disconnect();
+        return e.reply('查询状态失败：' + err.message);
+    }
+
+    if (!dataStr) return e.reply('你当前没有进行中的试炼。发送 #开启试炼 来开始。');
+    
+    const data = JSON.parse(dataStr);
+    
+    let msg = `【万象天机】 第 ${data.layer} 层\n`;
+    msg += `----------------\n`;
+    data.souls.forEach(s => {
+        const status = s.is_dead ? '已阵亡' : `${s.current_hp}/${s.max_hp}`;
+        msg += `${s.name}: ${status}\n`;
+    });
+    msg += `----------------\n`;
+    msg += `已获赐福: ${data.buffs.length > 0 ? data.buffs.map(b => BUFFS.find(cb => cb.id === b)?.name || b).join(', ') : '暂无'}`;
+    
+    e.reply(msg);
+  }
+  async challengeLayer(e) {
+    const userId = e.user_id;
+    let tempClient = null;
+    let runData = null;
+    let dataStr = null;
+
+    try {
+        tempClient = await getTempRedis();
+        dataStr = await tempClient.get(KEY_PREFIX + userId);
+        if (!dataStr) {
+            await tempClient.disconnect();
+            return e.reply('请先 #开启试炼。');
+        }
+        
+        runData = JSON.parse(dataStr);
+        const layerConfig = STAGES.find(s => s.layer === runData.layer);
+        
+        if (!layerConfig) {
+            // 如果找不到配置，说明通关了所有配置的层数
+            await tempClient.del(KEY_PREFIX + userId);
+            await tempClient.disconnect();
+            return e.reply('恭喜你！你已经通关了目前开放的所有试炼层数！');
+        }
+
+        // 1. 准备我方战斗单位 (应用血量继承)
+        const battleSouls = [];
+        const deadSouls = [];
+        
+        for (const soulState of runData.souls) {
+            if (soulState.is_dead) {
+                deadSouls.push(soulState.name);
+                continue;
+            }
+            
+            // 找到原始配置
+            const originalConfig = ALL_SOULS.find(s => s.name === soulState.name);
+            if (originalConfig) {
+                // 浅拷贝配置，以免修改原始数据
+                const battleConfig = { ...originalConfig };
+                // 注入当前血量，这需要 Combatant 能支持
+                battleConfig.current_hp_inherit = soulState.current_hp;
+                // 注入 Buff (暂时略，后续实现)
+                
+                battleSouls.push(battleConfig);
+            }
+        }
+
+        if (battleSouls.length === 0) {
+            // 全员阵亡，试炼结束
+            await tempClient.del(KEY_PREFIX + userId);
+            await tempClient.disconnect();
+            return e.reply('你的队伍已全军覆没，试炼失败！请 #退出试炼 重新开始。');
+        }
+
+        // 2. 准备敌方
+        const enemyNames = layerConfig.monsters;
+
+        e.reply(`第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}`);
+
+        // 3. 运行战斗
+        const result = await runCombat(battleSouls, enemyNames);
+        
+        // 4. 结算逻辑
+        const finalPlayerCombatants = result.playerTeam;
+
+        // 更新 Redis 中的状态
+        for (const soulState of runData.souls) {
+            const combatant = finalPlayerCombatants.find(c => c.name === soulState.name);
+            
+            if (combatant) {
+                soulState.current_hp = combatant.current_hp;
+                if (combatant.current_hp <= 0) {
+                    soulState.is_dead = true;
+                    soulState.current_hp = 0;
+                }
+            }
+        }
+
+        // 渲染日志
+        const renderData = {
+          log: result.log,
+          pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+        };
+
+        const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+        const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+        await e.reply(img);
+
+        if (result.playerWon) {
+            runData.layer++;
+            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+            await tempClient.disconnect(); // 成功结束时断开
+            
+            // TODO: 触发 Buff 选择
+            e.reply(`战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n发送 #挑战 继续前进！`);
+        } else {
+            // 失败更新（记录死亡状态）
+            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+            await tempClient.disconnect(); // 失败结束时断开
+            e.reply('战斗失败！你的队伍遭受重创。发送 #试炼状态 查看剩余战力，或 #退出试炼 重新开始。');
+        }
+    } catch (err) {
+        console.error('[Wanxiang] challengeLayer Error:', err);
+        if (tempClient) await tempClient.disconnect(); // 错误时断开
+        return e.reply('挑战失败：' + err.message);
+    }
+  }
 }
