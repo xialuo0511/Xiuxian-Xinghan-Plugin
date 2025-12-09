@@ -208,9 +208,12 @@ export class WanxiangActivity extends plugin {
             // 找到原始配置
             const originalConfig = ALL_SOULS.find(s => s.name === soulState.name);
             if (originalConfig) {
-                // 浅拷贝配置，以免修改原始数据
+                // 浅拷贝配置
                 const battleConfig = { ...originalConfig };
-                // 注入当前血量，这需要 Combatant 能支持
+                // 【修复】深拷贝 base_stats，防止污染全局配置导致 Buff 无限叠加
+                battleConfig.base_stats = { ...originalConfig.base_stats };
+                
+                // 注入当前血量，这需要 Combatant 类支持
                 battleConfig.current_hp_inherit = soulState.current_hp;
                                 // 注入 Buff
                                 const activeBuffs = runData.buffs || [];
