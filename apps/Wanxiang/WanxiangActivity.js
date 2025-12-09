@@ -33,15 +33,20 @@ export class WanxiangActivity extends plugin {
    * 开启一次新的试炼 run
    */
   async startRun(e) {
+    console.log('[Wanxiang] startRun called for user', e.user_id);
     const userId = e.user_id;
     // 1. 检查是否已有存档
     const existData = await redisClient.get(KEY_PREFIX + userId);
+    console.log('[Wanxiang] existData check done:', existData);
+    
     if (existData) {
         return e.reply('你当前已有正在进行的试炼，请先 #挑战 或 #退出试炼。');
     }
 
     // 2. 获取玩家装备的星魂
     const playerData = (await DAL.getAllPlayerData(userId))?.player;
+    console.log('[Wanxiang] playerData fetched:', !!playerData);
+    
     if (!playerData) return e.reply('你尚未踏入仙途。');
 
     const equipped = playerData.equipped_star_souls || {};
@@ -52,25 +57,24 @@ export class WanxiangActivity extends plugin {
     }
 
     // 3. 构建初始状态快照
-    // 我们将星魂的满状态存入 Redis
     const soulsState = [];
     for (let i = 1; i <= 4; i++) {
         const name = equipped[i];
         if (name) {
             const soulConfig = ALL_SOULS.find(s => s.name === name);
             if (soulConfig) {
-                // 初始满血
                 soulsState.push({
                     slot: i,
                     name: name,
                     max_hp: soulConfig.base_stats.health,
                     current_hp: soulConfig.base_stats.health,
                     is_dead: false,
-                    config: soulConfig // 保存配置快照，或者只存名字后续查
+                    config: soulConfig 
                 });
             }
         }
     }
+    console.log('[Wanxiang] soulsState built, length:', soulsState.length);
 
     if (soulsState.length === 0) return e.reply('数据异常，无法获取星魂数据。');
 
@@ -82,6 +86,7 @@ export class WanxiangActivity extends plugin {
     };
 
     await redisClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+    console.log('[Wanxiang] redis set done');
     
     e.reply([
         '【万象天机·无尽试炼】已开启！',
