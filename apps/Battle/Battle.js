@@ -5,7 +5,7 @@ import data from '../../model/XiuxianData.js';
 import { Read_player, isNotNull, Add_HP, ForwardMsg } from '../Xiuxian/xiuxian.js';
 import { applyElementalEffects } from '../../logic/elemental_logic.js';
 import * as DAL from '../../api/data-access.js';
-import { puppeteer, Show } from '../../api/api.js';
+import { Gulid, puppeteer, Show } from '../../api/api.js';
 import redis from 'redis';
 import { battleEngine } from '../../logic/battle_logic.js'; // 【核心】导入新的逻辑处理器
 
@@ -102,10 +102,10 @@ export class Battle extends plugin {
 
     const A_id = e.user_id;
     const B_ids = atItems.map(item => item.qq);
-    
+
     // 去重并排除自己
     const uniqueB_ids = [...new Set(B_ids)].filter(id => id != A_id);
-    
+
     if (uniqueB_ids.length === 0) {
       e.reply('不能和自己打！');
       return;
@@ -113,28 +113,27 @@ export class Battle extends plugin {
 
     const A_data = await DAL.getAllPlayerData(A_id);
     if (!A_data || !A_data.player) {
-        e.reply('你尚未踏入仙途。');
-        return;
+      e.reply('你尚未踏入仙途。');
+      return;
     }
 
     const B_data_list = await Promise.all(uniqueB_ids.map(id => DAL.getAllPlayerData(id)));
     const validB_data = B_data_list.filter(d => d && d.player);
-    
+
     if (validB_data.length === 0) {
-        e.reply('对手均未踏入仙途。');
-        return;
+      e.reply('对手均未踏入仙途。');
+      return;
     }
 
     // 准备数据
     const teamA = [A_data.player];
     const teamB = validB_data.map(d => d.player);
-    
-    // 切磋前补满状态
-    [...teamA, ...teamB].forEach(p => p.当前血量 = p.血量上限);
 
-    // 准备战斗数据副本 (虽然 battleEngine 现在内部会再次处理，但为了保持逻辑一致，这里不需深拷贝装备，因为 battleEngine 不处理装备逻辑，只处理属性)
-    // 注意：原代码 battleEngine 修改了传入的对象，这里 battleEngine 内部会 createCombatant，但最后 syncBackToPlayer 会修改传入对象
-    
+    // 切磋前补满状态
+    [...teamA,
+      ...teamB].forEach(p => p.当前血量 = p.血量上限);
+
+
     e.reply(`【${teamA.map(p => p.名号).join(',')}】向【${teamB.map(p => p.名号).join(',')}】发起了切磋！`);
 
     const battleResult = await battleEngine(teamA, teamB);
