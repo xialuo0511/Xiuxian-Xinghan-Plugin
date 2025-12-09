@@ -48,6 +48,16 @@
           margin-top: -20px;
           font-family: "tttgbnumber";
       }
+      
+      .section-header {
+          text-align: center;
+          font-size: 32px;
+          margin: 30px 0 10px 0;
+          color: #5a4632;
+          border-bottom: 2px solid #5a4632;
+          padding-bottom: 10px;
+          font-family: "NZBZ";
+      }
 
       .soul-card {
           background: rgba(255, 255, 255, 0.7);
@@ -71,6 +81,7 @@
           border-radius: 50%;
           background: #fff;
           font-family: "NZBZ";
+          flex-shrink: 0;
       }
 
       /* 元素边框色 */
@@ -80,6 +91,9 @@
       .card-火 { border-left: 8px solid var(--fire); }
       .card-土 { border-left: 8px solid var(--earth); }
       
+      /* 怪物特殊样式 */
+      .card-monster { background: rgba(255, 240, 240, 0.6); }
+
       .icon-金 { color: var(--gold); border-color: var(--gold); }
       .icon-木 { color: var(--wood); border-color: var(--wood); }
       .icon-水 { color: var(--water); border-color: var(--water); }
@@ -156,11 +170,13 @@
 <body>
 
 <div class="container">
-  <div class="title">万象天机 · 星魂图鉴</div>
+  <div class="title">万象天机 · 战灵图鉴</div>
   {{if isDetail}}
   <div class="subtitle">【 详 细 记 录 】</div>
   {{/if}}
   
+  <!-- 星魂区域 -->
+  <div class="section-header">✦ 星 魂 ✦</div>
   {{each souls soul}}
   <div class="soul-card card-{{soul.base_stats.element}}">
       <div class="soul-icon icon-{{soul.base_stats.element}}">
@@ -194,24 +210,63 @@
           <div class="mechanic-box">
               <div class="skill-name">绝技 · {{soul.skill.name}}</div>
               <div class="mechanic-text">{{soul.mechanics}}</div>
-              
               {{if isDetail}}
               <div class="skill-detail-data">
-                  目标: 
-                  {{if soul.skill.target === 'single_enemy'}}单体敌方
-                  {{else if soul.skill.target === 'all_enemies'}}全体敌方
-                  {{else if soul.skill.target === 'lowest_hp_ally'}}最虚弱队友
-                  {{else if soul.skill.target === 'all_allies'}}全体队友
-                  {{/if}}
-                  | 
-                  倍率: {{soul.skill.value * 100}}% 
-                  ({{if soul.skill.value_type === 'def'}}防御{{else if soul.skill.value_type === 'max_hp'}}生命{{else}}攻击{{/if}})
+                  倍率: {{soul.skill.value * 100}}% ({{soul.skill.value_type}})
               </div>
               {{/if}}
           </div>
       </div>
   </div>
   {{/each}}
+  
+  <!-- 怪物区域 -->
+  <div class="section-header">✦ 妖 兽 ✦</div>
+  {{each monsters monster}}
+  <div class="soul-card card-{{monster.base_stats.element}} card-monster">
+      <div class="soul-icon icon-{{monster.base_stats.element}}">
+          妖
+      </div>
+      <div class="soul-info">
+          <div class="soul-header">
+              <span class="soul-name">{{monster.name}}</span>
+              <span class="soul-role">
+                  【{{monster.level}}阶】
+                  速度: {{monster.base_stats.speed}}
+              </span>
+          </div>
+          
+          <div class="stats-grid">
+              <div>攻击: {{monster.base_stats.attack}}</div>
+              <div>防御: {{monster.base_stats.defense}}</div>
+              <div>生命: {{monster.base_stats.health}}</div>
+              <div>抗性: {{monster.base_stats.resistance * 100}}%</div>
+          </div>
+
+          {{if isDetail}}
+             <div class="lore-text">{{monster.lore}}</div>
+          {{else}}
+             <div class="desc-text">{{monster.desc}}</div>
+          {{/if}}
+
+          <div class="mechanic-box">
+              <div class="skill-name">天赋 · {{monster.skill.name}}</div>
+              <div class="mechanic-text">{{monster.mechanics}}</div>
+              {{if isDetail}}
+              <div class="skill-detail-data">
+                  目标: 
+                  {{if monster.skill.target === 'all_enemies'}}敌方全体
+                  {{else}}单体
+                  {{/if}}
+                  | 
+                  倍率: {{monster.skill.value * 100}}%
+              </div>
+              {{/if}}
+          </div>
+      </div>
+  </div>
+  {{/each}}
+
 </div>
 
 </body>

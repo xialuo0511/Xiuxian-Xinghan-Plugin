@@ -37,8 +37,10 @@ export class astral_combat extends plugin {
   }
 
   async renderCodex(e, isDetail) {
+    const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
     const renderData = {
       souls: allStarSouls,
+      monsters: allMonsters,
       isDetail: isDetail,
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
@@ -47,7 +49,7 @@ export class astral_combat extends plugin {
     // 注意：模板文件名还是叫 star_soul_codex，不需要为了详细版单独建一个文件，在HTML里判断即可
     // 图片名称稍微区分一下，避免缓存问题
     const imgName = isDetail ? 'star_soul_codex_detail' : 'star_soul_codex';
-    
+
     const dataForPuppeteer = await new Show(e).get_imgData('star_soul_codex', renderData);
     const img = await puppeteer.screenshot(imgName, { ...dataForPuppeteer });
     await e.reply(img);
@@ -75,7 +77,9 @@ export class astral_combat extends plugin {
     ).filter(Boolean); // 再次过滤，以防玩家装备了不存在的星魂
 
     // 敌人队伍可以保持不变，或您也可以根据需要修改
-    const enemyNames = ['石傀儡'];
+    const enemyNames = ['石傀儡',
+      '深寒怨灵',
+      '锐金剑侍'];
 
     // 运行战斗引擎
     const result = await runCombat(playerSouls, enemyNames);

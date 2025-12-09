@@ -1,31 +1,89 @@
 # 怪物定义文件
-# 属性与星魂一致
+# 结构与星魂一致，以便统一处理
 
 # --- 低级怪物 ---
 - name: "石傀儡"
   level: 1
+  class: "妖兽"
+  desc: "由山岩碎石凝聚而成的傀儡，动作迟缓但防御惊人。"
+  mechanics: "【碎石击】对单体目标造成物理伤害，由于身体坚硬，极难被撼动。"
+  lore: "上古战场遗留的残垣断壁，受天地灵气侵染日久，竟生出灵智。它们没有痛觉，不知疲倦，只会忠实地守护着这片废墟。虽然攻击手段单一，但那坚如磐石的身躯往往让修仙者感到头痛不已。"
   base_stats: { attack: 70, defense: 120, health: 800, resistance: 0.15, speed: 50, taunt: 100, element: "土" }
+  skill:
+    name: "碎石击"
+    type: "damage"
+    target: "single_enemy"
+    value_type: "atk"
+    value: 1.0
+
 - name: "藤蔓精"
   level: 1
+  class: "妖兽"
+  desc: "潜伏在丛林深处的变异藤蔓，擅长偷袭。"
+  mechanics: "【缠绕】快速抽打单体目标，造成木属性伤害。"
+  lore: "原本只是普通的野藤，因吸食了过多误入歧途的旅人精血而妖化。它们善于伪装成无害的植物，一旦猎物靠近，便会瞬间暴起，用带刺的藤条将猎物死死缠住。"
   base_stats: { attack: 90, defense: 80, health: 700, resistance: 0.1, speed: 90, taunt: 100, element: "木" }
+  skill:
+    name: "毒刺鞭挞"
+    type: "damage"
+    target: "single_enemy"
+    value_type: "atk"
+    value: 1.2
 
 # --- 中级怪物 ---
 - name: "深寒怨灵"
   level: 3
+  class: "妖兽"
+  desc: "集聚在极阴之地的怨念集合体，散发着刺骨寒意。"
+  mechanics: "【寒霜吐息】喷吐寒气，对敌方全体造成水属性伤害。"
+  lore: "死于极寒之地的修仙者，因执念不散，魂魄与寒冰煞气融合而成的怪物。它们痛恨生者的体温，渴望将世间万物都冻结在永恒的寂静之中。其吐息能穿透灵力护盾，直冻神魂。"
   base_stats: { attack: 150, defense: 90, health: 1000, resistance: 0.1, speed: 100, taunt: 100, element: "水" }
+  skill:
+    name: "寒霜吐息"
+    type: "damage"
+    target: "all_enemies"
+    value_type: "atk"
+    value: 0.7
+
 - name: "烈焰之魂"
   level: 3
+  class: "妖兽"
+  desc: "在地火熔岩中诞生的元素生物，性情狂暴。"
+  mechanics: "【烈火燎原】对单体目标进行猛烈撞击，附带极高的火焰伤害。"
+  lore: "地心熔岩喷发时偶尔诞生的低阶火灵，虽无神智，却有着焚尽一切的本能。它们就像是一团行走的烈火，所过之处焦土一片。普通的修仙者若无避火法宝，根本无法近身。"
   base_stats: { attack: 180, defense: 70, health: 850, resistance: 0.05, speed: 115, taunt: 100, element: "火" }
+  skill:
+    name: "烈火撞击"
+    type: "damage"
+    target: "single_enemy"
+    value_type: "atk"
+    value: 1.5
 
 # --- 高级怪物 ---
 - name: "锐金剑侍"
   level: 5
+  class: "妖兽"
+  desc: "古代剑冢中守护名剑的金属傀儡，剑术高超。"
+  mechanics: "【斩铁】对单体发动致命一击，拥有极高的破甲能力（高倍率）。"
+  lore: "不知是何方大能留下的守墓机关，通体由精金打造，内刻高深剑阵。经过数千年的岁月洗礼，剑阵已生出剑灵，使其能自动演练剑法。它的每一击都蕴含着单纯而极致的杀意，专破护身罡气。"
   base_stats: { attack: 220, defense: 130, health: 1200, resistance: 0.1, speed: 125, taunt: 100, element: "金" }
-- name: "幻惑妖狐"
-  level: 5
-  base_stats: { attack: 180, defense: 100, health: 1100, resistance: 0.1, speed: 140, taunt: 100, element: "幻" } # 特殊属性
+  skill:
+    name: "无情剑气"
+    type: "damage"
+    target: "single_enemy"
+    value_type: "atk"
+    value: 1.8
 
-# --- 首领 ---
 - name: "混元石魔"
   level: 7
+  class: "妖兽"
+  desc: "吸收了日月精华的万年石怪，也是本次试炼的首领。"
+  mechanics: "【地动山摇】作为首领，它能引发大地震颤，对敌方全体造成毁灭性打击。"
+  lore: "它是这片秘境的守护者，沉睡了不知多少岁月。它的身躯便是山脉，它的呼吸便是风雷。只有真正的强者，才能唤醒并战胜它，获得其体内的土之本源。作为首领，它的实力远超寻常妖兽，任何轻视它的人都将被碾为齑粉。"
   base_stats: { attack: 250, defense: 250, health: 5000, resistance: 0.25, speed: 60, taunt: 300, element: "土" }
+  skill:
+    name: "地动山摇"
+    type: "damage"
+    target: "all_enemies"
+    value_type: "atk"
+    value: 1.0

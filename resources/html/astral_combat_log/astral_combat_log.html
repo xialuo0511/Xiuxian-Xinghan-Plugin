@@ -130,6 +130,31 @@
           margin-left: 10px;
           font-style: italic;
       }
+      
+      /* 怪物等级样式 */
+      .rank-elite { font-weight: bold; text-shadow: 0 0 1px rgba(0,0,0,0.1); }
+      .rank-boss { font-weight: bold; font-size: 1.1em; }
+      .boss-tag { 
+          background: #b22c2c; 
+          color: #fff; 
+          padding: 1px 4px; 
+          border-radius: 2px; 
+          font-size: 12px; 
+          margin-right: 5px; 
+          vertical-align: middle;
+          font-family: "Microsoft YaHei";
+          border: 1px solid #8b0000;
+      }
+      .elite-tag {
+          background: #5a4632; 
+          color: #f4f0e6; 
+          padding: 1px 4px; 
+          border-radius: 2px; 
+          font-size: 12px; 
+          margin-right: 5px; 
+          vertical-align: middle;
+          font-family: "Microsoft YaHei";
+      }
 
       /* 五行字色 */
       .ele-金 { color: var(--gold); }
@@ -251,7 +276,9 @@
         <div class="action-header">
             <div class="caster-info">
                 <span class="av-badge">耗时 {{line.av_cost}}</span>
-                <span class="ele-{{line.caster.element}}">{{line.caster.name}}</span>
+                <span class="ele-{{line.caster.element}} {{if line.caster.level >= 5}}rank-boss{{else if line.caster.level >= 3}}rank-elite{{/if}}">
+                    {{if line.caster.level >= 5}}<span class="boss-tag">首领</span>{{else if line.caster.level >= 3}}<span class="elite-tag">精英</span>{{/if}}{{line.caster.name}}
+                </span>
                 <span class="skill-name">「{{line.skill}}」</span>
             </div>
         </div>
@@ -262,7 +289,9 @@
             <div class="target-row">
                 <div class="target-name">
                     <span class="action-arrow">➢</span>
-                    <span class="ele-{{target.element}}">{{target.name}}</span>
+                    <span class="ele-{{target.element}} {{if target.level >= 5}}rank-boss{{else if target.level >= 3}}rank-elite{{/if}}">
+                         {{if target.level >= 5}}<span class="boss-tag">首领</span>{{else if target.level >= 3}}<span class="elite-tag">精英</span>{{/if}}{{target.name}}
+                    </span>
                 </div>
                 
                 <div class="effect-info effect-{{target.type}}">

@@ -90,7 +90,8 @@ export async function runCombat(playerSouls, enemyNames) {
             caster: { 
                 name: activeUnit.name, 
                 team: activeUnit.team, 
-                element: activeUnit.element 
+                element: activeUnit.element,
+                level: activeUnit.source.level || 0
             },
             targets: actionResults,
             teamStatus: {
@@ -162,13 +163,13 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
         } else if (skill.type === 'heal') {
             const healed = target.receiveHeal(Math.floor(baseValue));
             results.push({
-                name: target.name, team: target.team, element: target.element,
+                name: target.name, team: target.team, element: target.element, level: target.source.level || 0,
                 type: 'heal', value: healed, is_counter: false
             });
         } else if (skill.type === 'shield') {
             target.addShield(Math.floor(baseValue));
             results.push({
-                name: target.name, team: target.team, element: target.element,
+                name: target.name, team: target.team, element: target.element, level: target.source.level || 0,
                 type: 'shield', value: Math.floor(baseValue), is_counter: false
             });
         }
@@ -203,6 +204,7 @@ function calculateDamage(attacker, target, rawDamageInput) {
         name: target.name,
         team: target.team,
         element: target.element,
+        level: target.source.level || 0, // 添加等级
         type: 'damage',
         value: finalDmg,
         is_counter: isCounter
