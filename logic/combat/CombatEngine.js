@@ -87,9 +87,35 @@ export async function runCombat(playerSouls, enemyNames) {
 
     const actionResults = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
 
+    // 被动技能触发
+    const passiveDetails = [];
+    if (activeUnit.passive_skills) {
+        activeUnit.passive_skills.forEach(passive => {
+            if (passive.type === 'heal_turn') {
+                const healAmount = Math.floor(activeUnit.max_hp * passive.value);
+                const actualHeal = activeUnit.receiveHeal(healAmount);
+                if (actualHeal > 0) {
+                    actionResults.push({
+                        name: activeUnit.name,
+                        team: activeUnit.team,
+                        element: activeUnit.element,
+                        level: activeUnit.level || 0,
+                        id: activeUnit.id,
+                        type: 'heal',
+                        value: actualHeal,
+                        value_display: formatNumber(actualHeal),
+                        is_counter: false
+                    });
+                    passiveDetails.push(`[生生不息] 恢复了 ${formatNumber(actualHeal)} 生命`);
+                }
+            }
+        });
+    }
+
     // 3.4 记录日志
     if (actionResults.length > 0) {
         combatLog.push({
+            details: passiveDetails,
             type: 'action',
             av_cost: Math.floor(elapsedAV),
             skill: skillConfig.name,
