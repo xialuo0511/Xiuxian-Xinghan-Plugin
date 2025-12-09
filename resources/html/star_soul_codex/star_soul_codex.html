@@ -199,6 +199,8 @@
               <div>防御: {{soul.base_stats.defense}}</div>
               <div>生命: {{soul.base_stats.health}}</div>
               <div>抗性: {{soul.base_stats.resistance * 100}}%</div>
+              <div>暴击率: {{soul.base_stats.crit_rate * 100}}%</div>
+              <div>暴击伤害: {{soul.base_stats.crit_dmg * 100}}%</div>
           </div>
 
           {{if isDetail}}
@@ -241,6 +243,8 @@
               <div>防御: {{monster.base_stats.defense}}</div>
               <div>生命: {{monster.base_stats.health}}</div>
               <div>抗性: {{monster.base_stats.resistance * 100}}%</div>
+              <div>暴击率: {{monster.base_stats.crit_rate * 100}}%</div>
+              <div>暴击伤害: {{monster.base_stats.crit_dmg * 100}}%</div>
           </div>
 
           {{if isDetail}}
