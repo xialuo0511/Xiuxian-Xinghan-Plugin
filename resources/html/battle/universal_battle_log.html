@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+      
+      :root {
+          --bg-paper: #f4f0e6;
+          --ink-color: #2c2c2c;
+          --ink-light: #5a5a5a;
+          --red-seal: #b22c2c;
+          --border-color: #8c7b65;
+          
+          --gold: #b58900; --wood: #598c14; --water: #266b96; --fire: #c53828; --earth: #8f653b;
+          --damage-red: #c53828; --heal-green: #4caf50; --shield-yellow: #f0a500;
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 20px;
+          background: #e6e2d3;
+          background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+          font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+          color: var(--ink-color);
+      }
+
+      .log-container {
+          background: rgba(255, 255, 255, 0.6);
+          padding: 15px;
+          border: 2px solid var(--border-color);
+          position: relative;
+          border-radius: 4px;
+      }
+      
+      .system-text { text-align: center; color: var(--ink-light); margin: 5px 0; }
+      .end-text { text-align: center; font-size: 28px; color: var(--red-seal); margin: 20px 0; font-weight: bold; }
+      
+      .turn-header {
+          text-align: center; font-size: 20px; color: var(--ink-color); margin: 15px 0; font-weight: bold;
+      }
+      .turn-header::before, .turn-header::after { content: "— ✤ —"; color: var(--border-color); margin: 0 10px; font-size: 14px; }
+
+      .action-card {
+          background: #fdfbf7;
+          border: 1px solid #d4cbb8;
+          border-left: 5px solid #5c6370;
+          margin-bottom: 10px;
+          padding: 10px 15px;
+          box-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+      }
+      .action-card.player-action { border-left-color: var(--water); }
+      .action-card.enemy-action { border-left-color: var(--fire); }
+
+      .action-header { display: flex; align-items: center; margin-bottom: 8px; font-size: 16px; border-bottom: 1px dashed #efebe0; padding-bottom: 5px; }
+      .caster-info { display: flex; align-items: center; gap: 8px; flex: 1; }
+      .av-badge { font-size: 12px; background: #eee; padding: 1px 5px; border-radius: 2px; font-family: "tttgbnumber"; color: #666; }
+      .skill-name { font-size: 14px; color: #888; font-style: italic; margin-left: auto; }
+
+      /* 目标列表 */
+      .target-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 15px; }
+      .target-name { display: flex; align-items: center; gap: 4px; }
+      .action-arrow { color: #ccc; font-size: 12px; margin-right: 4px; }
+      
+      .effect-info { font-family: "tttgbnumber"; font-size: 20px; font-weight: bold; }
+      .effect-damage { color: var(--damage-red); }
+      .effect-heal { color: var(--heal-green); }
+      .effect-shield { color: var(--shield-yellow); }
+
+      /* 状态面板 (支持头像) */
+      .status-panel { margin-top: 12px; padding-top: 8px; border-top: 1px solid #e0ddd5; display: flex; gap: 15px; }
+      .team-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+      
+      .unit-status-row { display: flex; align-items: center; font-size: 13px; color: var(--ink-light); height: 24px; }
+      
+      .unit-avatar { 
+          width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ccc; margin-right: 5px; 
+          object-fit: cover;
+      }
+      .unit-icon-text {
+          width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ccc; margin-right: 5px;
+          display: flex; align-items: center; justify-content: center; font-size: 12px; background: #fff;
+      }
+
+      .unit-name { width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      
+      .hp-track { flex: 1; height: 6px; background: #e0ddd5; border-radius: 3px; position: relative; overflow: hidden; margin: 0 5px; }
+      .hp-fill { height: 100%; position: absolute; top:0; left:0; }
+      .hp-fill.player { background: #5c8d9e; }
+      .hp-fill.enemy { background: #b85c5c; }
+      .shield-fill { height: 100%; position: absolute; top:0; left:0; background: rgba(255,255,255,0.7); z-index: 2; border-right: 1px solid #fff; }
+      
+      .hp-val { width: 60px; text-align: right; font-family: "tttgbnumber"; font-size: 12px; }
+      .dead { opacity: 0.5; text-decoration: line-through; }
+      
+      /* 等级标签 */
+      .rank-boss { color: var(--red-seal); font-weight: bold; }
+      .boss-tag { background: var(--red-seal); color: #fff; font-size: 10px; padding: 0 2px; border-radius: 2px; margin-right: 2px; vertical-align: middle; }
+
+      /* 五行色 */
+      .ele-金 { color: var(--gold); } .ele-木 { color: var(--wood); } .ele-水 { color: var(--water); } .ele-火 { color: var(--fire); } .ele-土 { color: var(--earth); }
+
+  </style>
+</head>
+<body>
+
+<div class="log-container">
+  {{each log line}}
+    {{if line.type === 'start' || line.type === 'system'}}
+      <div class="system-text">◈ {{line.text}} ◈</div>
+    {{else if line.type === 'end'}}
+      <div class="end-text">☁ {{line.text}} ☁</div>
+    {{else if line.type === 'turn'}}
+      <div class="turn-header">{{line.text}}</div>
+    {{else if line.type === 'action'}}
+      <div class="action-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
+        <div class="action-header">
+            <div class="caster-info">
+                <span class="av-badge">耗时 {{line.av_cost}}</span>
+                <!-- 头像逻辑: 如果id > 10000 (QQ号) 显示头像，否则显示文字图标 -->
+                <span class="ele-{{line.caster.element}} {{if line.caster.level >= 5}}rank-boss{{/if}}">
+                    {{if line.caster.level >= 5}}<span class="boss-tag">首</span>{{/if}}{{line.caster.name}}
+                </span>
+                <span class="skill-name">「{{line.skill}}」</span>
+            </div>
+        </div>
+
+        <div class="targets-container">
+            {{each line.targets target}}
+            <div class="target-row">
+                <div class="target-name">
+                    <span class="action-arrow">➢</span>
+                    <span class="ele-{{target.element}}">{{target.name}}</span>
+                </div>
+                <div class="effect-info effect-{{target.type}}">
+                    {{if target.is_counter}}⚠{{/if}}
+                    {{if target.type === 'damage'}}-{{target.value}}
+                    {{else if target.type === 'heal'}}+{{target.value}}
+                    {{else if target.type === 'shield'}}🛡{{target.value}}
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="status-panel">
+            <div class="team-col">
+                {{each line.teamStatus.player unit}}
+                <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
+                    {{if unit.id > 10000}}
+                    <img class="unit-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{unit.id}}"/>
+                    {{else}}
+                    <div class="unit-icon-text">友</div>
+                    {{/if}}
+                    <span class="unit-name">{{unit.name}}</span>
+                    <div class="hp-track"><div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div><div class="shield-fill" style="width: {{unit.shield_percent}}%"></div></div>
+                    <span class="hp-val">{{unit.hp}}</span>
+                </div>
+                {{/each}}
+            </div>
+            <div class="team-col">
+                {{each line.teamStatus.enemy unit}}
+                <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
+                    {{if unit.id > 10000}}
+                    <img class="unit-avatar" src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{unit.id}}"/>
+                    {{else}}
+                    <div class="unit-icon-text">敌</div>
+                    {{/if}}
+                    <span class="unit-name">{{unit.name}}</span>
+                    <div class="hp-track"><div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div><div class="shield-fill" style="width: {{unit.shield_percent}}%"></div></div>
+                    <span class="hp-val">{{unit.hp}}</span>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>
+
+</body>
+</html>

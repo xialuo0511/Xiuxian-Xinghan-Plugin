@@ -1,26 +1,46 @@
 export class Combatant {
   constructor(id, source, team) {
     this.id = id;
-    this.name = source.name;
     this.team = team;
     this.source = source;
-
-    this.max_hp = source.base_stats.health;
-    this.current_hp = source.base_stats.health;
-    this.attack = source.base_stats.attack;
-    this.defense = source.base_stats.defense;
-    this.speed = source.base_stats.speed;
-    this.resistance = source.base_stats.resistance;
-    this.taunt = source.base_stats.taunt;
-    this.element = source.base_stats.element;
-
-    // 【核心新增】当前行动值 (Action Value)，越小越先行动
-    // 初始值将在战斗引擎中设置，或者在这里设为标准值
-    this.current_av = 0;
     
-    // 【扩展兼容】Buff列表与护盾值
-    this.buffs = []; 
+    // 初始化扩展属性
+    this.buffs = [];
     this.shield = 0;
+    this.current_av = 0;
+
+    if (source.base_stats) {
+        // 星魂或怪物
+        this.name = source.name;
+        this.max_hp = source.base_stats.health;
+        this.current_hp = source.base_stats.health;
+        this.attack = source.base_stats.attack;
+        this.defense = source.base_stats.defense;
+        this.speed = source.base_stats.speed;
+        this.resistance = source.base_stats.resistance;
+        this.taunt = source.base_stats.taunt;
+        this.element = source.base_stats.element;
+        this.level = source.level || 0;
+    } else {
+        // 玩家 (适配 xiuxian_player 数据结构)
+        this.name = source.名号 || `玩家${id}`;
+        this.max_hp = source.血量上限;
+        this.current_hp = source.当前血量 || source.血量上限;
+        this.attack = source.攻击;
+        this.defense = source.防御;
+        this.speed = 100; // 玩家默认速度
+        this.resistance = 0; 
+        this.taunt = 100;
+        
+        // 尝试从灵根中解析属性
+        this.element = "无";
+        if (source.灵根 && source.灵根.name) {
+            // 如 "仙之心·水" -> "水"
+            const match = source.灵根.name.match(/[金木水火土]/);
+            if (match) this.element = match[0];
+        }
+        this.level = source.level_id || 0;
+    }
   }
 
   /**

@@ -295,38 +295,17 @@ export class Battle extends plugin {
   }
 
   /**
-   * 【核心修正】: 统一的渲染函数
+   * 【核心修正】: 统一的渲染函数 (升级版)
    */
   async renderBattle(e, dataForRender) {
-    const A_player = dataForRender.A_player_final;
-    const B_player = dataForRender.B_player_final;
-
-    console.log('Aplayer:' + A_player);
-    console.log('Aplayer:' + A_player.血量上限);
-
-    // 在这里预先计算好血量百分比
-    let A_player_percent_hp = A_player.血量上限 > 0 ? (A_player.当前血量 / A_player.血量上限 * 100) : 0;
-    let B_player_percent_hp = B_player.血量上限 > 0 ? (B_player.当前血量 / B_player.血量上限 * 100) : 0;
-    A_player_percent_hp = Math.min(A_player_percent_hp, 100);
-    B_player_percent_hp = Math.min(B_player_percent_hp, 100);
-
+    // 渲染通用战斗日志模板
     const renderData = {
-      ...dataForRender,
-      pluResPath: `../../../../../plugins/xiuxian-emulator-plugin/resources`,
-      A_player_percent_hp: Math.max(0, A_player_percent_hp).toFixed(0),
-      B_player_percent_hp: Math.max(0, B_player_percent_hp).toFixed(0),
-      A_player: {
-        ...A_player,
-        level_name: data.Level_list.find(item => item.level_id == A_player.level_id)?.level || '未知境界'
-      },
-      B_player: {
-        ...B_player,
-        level_name: data.Level_list.find(item => item.level_id == B_player.level_id)?.level || '未知境界'
-      }
+      log: dataForRender.log, // 使用结构化日志
+      pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
 
-    const dataForPuppeteer = await new Show(e).get_battleData(renderData);
-    return await puppeteer.screenshot('battle', { ...dataForPuppeteer });
+    const dataForPuppeteer = await new Show(e).get_imgData('universal_battle_log', renderData);
+    return await puppeteer.screenshot('universal_battle_log', { ...dataForPuppeteer });
   }
 }
 

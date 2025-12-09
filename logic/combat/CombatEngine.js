@@ -15,18 +15,33 @@ const COUNTER_BONUS = 1.5; // 克制伤害提升
 
 /**
  * 战斗引擎 (Action Value System / 跑条制)
- * v3.0: 技能驱动的动态战斗系统
+ * v4.0: 全面适配玩家PVP与星魂PVE
  */
 export async function runCombat(playerSouls, enemyNames) {
   const combatLog = [];
   
   // 1. 初始化战斗单位
-  const playerTeam = playerSouls.map((soul, i) => new Combatant(`player_${i + 1}`, soul, 'player'));
-  const enemyTeam = enemyNames.map((name, i) => new Combatant(`enemy_${i + 1}`, allMonsters.find(m => m.name === name), 'enemy')).filter(Boolean);
+  // 支持传入已经是 Player 对象的数据，或者星魂配置对象
+  const playerTeam = playerSouls.map((soul, i) => new Combatant(soul.id || `player_${i + 1}`, soul, 'player'));
+  
+  // 敌人同理，如果是字符串则查表，如果是对象则直接用
+  const enemyTeam = enemyNames.map((item, i) => {
+      if (typeof item === 'string') {
+          return new Combatant(`enemy_${i + 1}`, allMonsters.find(m => m.name === item), 'enemy');
+      } else {
+          return new Combatant(item.id || `enemy_${i + 1}`, item, 'enemy');
+      }
+  }).filter(Boolean);
+
   const allCombatants = [...playerTeam, ...enemyTeam];
 
-  // 2. 初始化行动值
-  allCombatants.forEach(c => c.resetAV());
+  // 2. 初始化行动值 & 技能
+  allCombatants.forEach(c => {
+      c.resetAV();
+      if (!c.source.skill) {
+          c.source.skill = generateDefaultSkill(c);
+      }
+  });
 
   combatLog.push({ type: 'start', text: '战斗开始！' });
   
@@ -65,20 +80,11 @@ export async function runCombat(playerSouls, enemyNames) {
       combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
     }
 
-    // --- 行动逻辑开始 ---
-    // 获取单位的技能配置，如果没有(如怪物)，则使用默认普攻逻辑
-    const skillConfig = activeUnit.source.skill || {
-        name: "普通攻击",
-        type: "damage",
-        target: "single_enemy",
-        value_type: "atk",
-        value: 1.0
-    };
-
+    // --- 行动逻辑 ---
+    const skillConfig = activeUnit.source.skill;
     const friendlyTeam = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
     const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
 
-    // 执行技能
     const actionResults = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
 
     // 3.4 记录日志
@@ -91,7 +97,8 @@ export async function runCombat(playerSouls, enemyNames) {
                 name: activeUnit.name, 
                 team: activeUnit.team, 
                 element: activeUnit.element,
-                level: activeUnit.source.level || 0
+                level: activeUnit.level || 0,
+                id: activeUnit.id // 传递ID用于头像显示
             },
             targets: actionResults,
             teamStatus: {
@@ -101,7 +108,6 @@ export async function runCombat(playerSouls, enemyNames) {
         });
     }
 
-    // 3.5 行动结束
     activeUnit.resetAV();
   }
 
@@ -117,12 +123,10 @@ export async function runCombat(playerSouls, enemyNames) {
 function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
     let targets = [];
     const results = [];
-
-    // 1. 目标选择
     const aliveHostiles = hostileTeam.filter(u => u.isAlive());
     const aliveFriendlies = friendlyTeam.filter(u => u.isAlive());
 
-    if (aliveHostiles.length === 0 && skill.type === 'damage') return []; // 敌全灭，无目标
+    if (aliveHostiles.length === 0 && skill.type === 'damage') return [];
 
     switch (skill.target) {
         case 'single_enemy':
@@ -133,14 +137,12 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
             targets = aliveHostiles;
             break;
         case 'lowest_hp_ally':
-            // 找血量百分比最低的
             targets = aliveFriendlies.sort((a, b) => (a.current_hp/a.max_hp) - (b.current_hp/b.max_hp)).slice(0, 1);
             break;
         case 'all_allies':
             targets = aliveFriendlies;
             break;
         default:
-            // 默认单体
             const defT = selectTargetByTaunt(aliveHostiles);
             if (defT) targets.push(defT);
             break;
@@ -148,28 +150,27 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
 
     if (targets.length === 0) return [];
 
-    // 2. 效果计算
     for (const target of targets) {
-        // 计算基础数值 (基于攻击、防御或最大生命)
         let baseValue = 0;
         if (skill.value_type === 'def') baseValue = caster.defense * skill.value;
         else if (skill.value_type === 'max_hp') baseValue = caster.max_hp * skill.value;
-        else baseValue = caster.attack * skill.value; // 默认 atk
+        else baseValue = caster.attack * skill.value;
 
-        // 根据类型产生效果
         if (skill.type === 'damage') {
             const res = calculateDamage(caster, target, baseValue);
             results.push(res);
         } else if (skill.type === 'heal') {
             const healed = target.receiveHeal(Math.floor(baseValue));
             results.push({
-                name: target.name, team: target.team, element: target.element, level: target.source.level || 0,
+                name: target.name, team: target.team, element: target.element, level: target.level || 0,
+                id: target.id,
                 type: 'heal', value: healed, is_counter: false
             });
         } else if (skill.type === 'shield') {
             target.addShield(Math.floor(baseValue));
             results.push({
-                name: target.name, team: target.team, element: target.element, level: target.source.level || 0,
+                name: target.name, team: target.team, element: target.element, level: target.level || 0,
+                id: target.id,
                 type: 'shield', value: Math.floor(baseValue), is_counter: false
             });
         }
@@ -179,7 +180,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
 }
 
 /**
- * 伤害计算逻辑 (复用之前的曲线公式)
+ * 伤害计算逻辑 (自适应公式)
  */
 function calculateDamage(attacker, target, rawDamageInput) {
     let elementalBonus = 1.0;
@@ -189,22 +190,39 @@ function calculateDamage(attacker, target, rawDamageInput) {
         isCounter = true;
     }
 
-    const DEF_CONSTANT = 280;
-    let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
-    let resistanceMultiplier = (1 - target.resistance);
-    
-    // 这里 rawDamageInput 已经包含了倍率 (例如 攻击力 * 2.5)
-    let finalBaseDmg = rawDamageInput * defenseMultiplier * resistanceMultiplier;
-    let finalDmg = Math.floor(finalBaseDmg * elementalBonus * (0.9 + Math.random() * 0.2)); 
-    finalDmg = Math.max(1, finalDmg);
+    let finalDmg = 0;
 
+    // 【核心优化】自适应伤害公式
+    // 如果攻击力 > 10000 (修仙玩家级)，使用减法+强力保底
+    if (attacker.attack > 10000) {
+        let def = target.defense * (1 - target.resistance);
+        let baseDiff = rawDamageInput - def;
+        
+        // 玩家PVP保底：攻击力的 5% 也能造成伤害 (防止不破防)
+        let minDmg = rawDamageInput * 0.05;
+        
+        let baseDmg = Math.max(baseDiff, minDmg);
+        finalDmg = Math.floor(baseDmg * elementalBonus * (0.9 + Math.random() * 0.2));
+    } 
+    // 否则 (星魂/低级怪)，使用经典的 RPG 乘法曲线公式
+    else {
+        const DEF_CONSTANT = 280;
+        let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
+        let resistanceMultiplier = (1 - target.resistance);
+        
+        let baseDmg = rawDamageInput * defenseMultiplier * resistanceMultiplier;
+        finalDmg = Math.floor(baseDmg * elementalBonus * (0.9 + Math.random() * 0.2)); 
+    }
+
+    finalDmg = Math.max(1, finalDmg);
     target.takeDamage(finalDmg);
 
     return {
         name: target.name,
         team: target.team,
         element: target.element,
-        level: target.source.level || 0, // 添加等级
+        level: target.level || 0,
+        id: target.id,
         type: 'damage',
         value: finalDmg,
         is_counter: isCounter
@@ -235,6 +253,33 @@ const getUnitStatus = (unit) => {
       shield: unit.shield,
       hp_percent: Math.max(0, Math.min(hp_percent, 100)),
       shield_percent: Math.min(shield_percent, 100),
-      av: Math.floor(unit.current_av)
+      av: Math.floor(unit.current_av),
+      id: unit.id // 用于前端显示头像
     };
 };
+
+/**
+ * 默认技能生成 (适配玩家)
+ */
+function generateDefaultSkill(unit) {
+    const element = unit.element;
+    const nameMap = {
+        '金': '万剑归宗',
+        '木': '枯木逢春', // 注意：下面逻辑暂未适配治疗，默认全是 damage
+        '水': '惊涛骇浪',
+        '火': '烈焰焚天',
+        '土': '泰山压顶',
+        '无': '普通攻击'
+    };
+    
+    // 如果是木系，我们给一个特殊逻辑？
+    // 暂时全部输出，因为PVP主要是对打
+    
+    return {
+        name: nameMap[element] || '普通攻击',
+        type: 'damage',
+        target: 'single_enemy',
+        value_type: 'atk',
+        value: 1.2 
+    };
+}
