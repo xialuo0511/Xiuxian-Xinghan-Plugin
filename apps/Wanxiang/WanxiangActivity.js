@@ -18,7 +18,7 @@ const KEY_PREFIX = 'xiuxian:wanxiang:play:';
 
 // 临时辅助函数：创建连接
 async function getTempRedis() {
-    const redisConfigPath = `${process.cwd()}/plugins/xiuxian-emulator-plugin/config/config/redis.yaml`;
+    const redisConfigPath = `${process.cwd()}/config/config/redis.yaml`;
     const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
     const client = createClient({
         url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`
