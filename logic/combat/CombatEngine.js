@@ -90,6 +90,7 @@ export async function runCombat(playerSouls, enemyNames) {
     // 被动技能触发
     const passiveDetails = [];
     if (activeUnit.passive_skills) {
+        console.log('Checking passives for', activeUnit.name, activeUnit.passive_skills);
         activeUnit.passive_skills.forEach(passive => {
             if (passive.type === 'heal_turn') {
                 const healAmount = Math.floor(activeUnit.max_hp * passive.value);
