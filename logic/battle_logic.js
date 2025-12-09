@@ -74,6 +74,7 @@ export async function battleEngine(A_player, B_player) {
                 element: target.element,
                 type: 'damage', // 目前主要是伤害
                 value: result.damage,
+                value_display: formatNumber(result.damage), // 格式化显示
                 is_counter: false // 暂未集成克制判断到这个字段
             }],
             details: result.msgs, // 将详细文本放入 details
@@ -195,7 +196,7 @@ async function executeAttack(attacker, defender, turn) {
     damage = Math.max(1, damage);
     defender.current_hp = Math.max(0, defender.current_hp - damage);
     
-    msgs.push(`${attacker.source.名号} 对 ${defender.source.名号} 造成了 ${damage} 点伤害。`);
+    // msgs.push(`${attacker.source.名号} 对 ${defender.source.名号} 造成了 ${damage} 点伤害。`); // 已不需要，前端有结构化日志
 
     return {
         damage: damage,
@@ -208,8 +209,16 @@ const getUnitStatus = (unit) => {
         name: unit.source.名号,
         hp: unit.current_hp,
         max_hp: unit.max_hp,
+        hp_display: formatNumber(unit.current_hp),
+        max_hp_display: formatNumber(unit.max_hp),
         hp_percent: (unit.current_hp / unit.max_hp * 100).toFixed(0),
         shield_percent: 0, // 暂无护盾逻辑
         id: unit.id
     };
 };
+
+function formatNumber(num) {
+    if (num >= 100000000) return (num / 100000000).toFixed(1) + '亿';
+    if (num >= 10000) return (num / 10000).toFixed(1) + '万';
+    return Math.floor(num).toString();
+}

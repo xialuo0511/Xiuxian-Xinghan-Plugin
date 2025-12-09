@@ -164,14 +164,14 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
             results.push({
                 name: target.name, team: target.team, element: target.element, level: target.level || 0,
                 id: target.id,
-                type: 'heal', value: healed, is_counter: false
+                type: 'heal', value: healed, value_display: formatNumber(healed), is_counter: false
             });
         } else if (skill.type === 'shield') {
             target.addShield(Math.floor(baseValue));
             results.push({
                 name: target.name, team: target.team, element: target.element, level: target.level || 0,
                 id: target.id,
-                type: 'shield', value: Math.floor(baseValue), is_counter: false
+                type: 'shield', value: Math.floor(baseValue), value_display: formatNumber(Math.floor(baseValue)), is_counter: false
             });
         }
     }
@@ -225,6 +225,7 @@ function calculateDamage(attacker, target, rawDamageInput) {
         id: target.id,
         type: 'damage',
         value: finalDmg,
+        value_display: formatNumber(finalDmg),
         is_counter: isCounter
     };
 }
@@ -250,6 +251,8 @@ const getUnitStatus = (unit) => {
       name: unit.name,
       hp: current_hp,
       max_hp: unit.max_hp,
+      hp_display: formatNumber(current_hp),
+      max_hp_display: formatNumber(unit.max_hp),
       shield: unit.shield,
       hp_percent: Math.max(0, Math.min(hp_percent, 100)),
       shield_percent: Math.min(shield_percent, 100),
@@ -257,6 +260,12 @@ const getUnitStatus = (unit) => {
       id: unit.id // 用于前端显示头像
     };
 };
+
+function formatNumber(num) {
+    if (num >= 100000000) return (num / 100000000).toFixed(1) + '亿';
+    if (num >= 10000) return (num / 10000).toFixed(1) + '万';
+    return Math.floor(num).toString();
+}
 
 /**
  * 默认技能生成 (适配玩家)

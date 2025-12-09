@@ -148,9 +148,9 @@
                 </div>
                 <div class="effect-info effect-{{target.type}}">
                     {{if target.is_counter}}⚠{{/if}}
-                    {{if target.type === 'damage'}}-{{target.value}}
-                    {{else if target.type === 'heal'}}+{{target.value}}
-                    {{else if target.type === 'shield'}}🛡{{target.value}}
+                    {{if target.type === 'damage'}}-{{target.value_display}}
+                    {{else if target.type === 'heal'}}+{{target.value_display}}
+                    {{else if target.type === 'shield'}}🛡{{target.value_display}}
                     {{/if}}
                 </div>
             </div>
@@ -168,7 +168,7 @@
                     {{/if}}
                     <span class="unit-name">{{unit.name}}</span>
                     <div class="hp-track"><div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div><div class="shield-fill" style="width: {{unit.shield_percent}}%"></div></div>
-                    <span class="hp-val">{{unit.hp}}</span>
+                    <span class="hp-val">{{unit.hp_display}}</span>
                 </div>
                 {{/each}}
             </div>
@@ -182,7 +182,7 @@
                     {{/if}}
                     <span class="unit-name">{{unit.name}}</span>
                     <div class="hp-track"><div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div><div class="shield-fill" style="width: {{unit.shield_percent}}%"></div></div>
-                    <span class="hp-val">{{unit.hp}}</span>
+                    <span class="hp-val">{{unit.hp_display}}</span>
                 </div>
                 {{/each}}
             </div>
