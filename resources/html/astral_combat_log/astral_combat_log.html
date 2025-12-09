@@ -201,6 +201,18 @@
           border-radius: 4px;
           vertical-align: middle;
       }
+      
+      /* 战斗细节文本 */
+      .action-details { 
+          margin-top: 8px; 
+          border-top: 1px dashed #d4cbb8; 
+          padding-top: 6px; 
+          font-size: 13px; 
+          color: #777; 
+          font-family: "Microsoft YaHei", sans-serif;
+          line-height: 1.5;
+      }
+      .detail-line { margin-bottom: 2px; }
 
       /* 状态条区域 */
       .status-panel {
@@ -325,7 +337,7 @@
                         <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
                         {{if unit.shield > 0}}
                         <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
-                        {{/if}
+                        {{/if}}
                     </div>
                     <span class="hp-val">{{unit.hp_display}}</span>
                 </div>
