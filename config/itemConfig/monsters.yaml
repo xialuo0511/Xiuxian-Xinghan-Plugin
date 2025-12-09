@@ -87,3 +87,32 @@
     target: "all_enemies"
     value_type: "atk"
     value: 1.0
+
+# --- 万象天机活动新增 ---
+- name: "炽火妖莲"
+  level: 5
+  class: "妖兽"
+  desc: "生长在熔岩湖畔的妖异莲花，花瓣如火焰般跳动。"
+  mechanics: "【业火红莲】对敌方单体造成巨额火属性伤害，并引爆周围热浪。"
+  lore: "原本是吸食地火之力的灵植，因吞噬了过多的妖兽精血而堕落。它扎根于虚空，每一片花瓣都蕴含着足以融金化铁的高温。它的美丽是致命的诱惑，靠近它的人往往会在不知不觉中化为灰烬。"
+  base_stats: { attack: 280, defense: 100, health: 2500, resistance: 0.2, speed: 90, taunt: 100, element: "火" }
+  skill:
+    name: "业火红莲"
+    type: "damage"
+    target: "single_enemy"
+    value_type: "atk"
+    value: 1.8
+
+- name: "吞天巨蟒"
+  level: 8
+  class: "妖兽"
+  desc: "体型遮天蔽日的远古巨蟒，相传有一丝龙族血脉。"
+  mechanics: "【毒雾弥漫】喷吐剧毒烟雾，对全体敌人造成持续腐蚀（目前简化为全体伤害）。"
+  lore: "它是这片秘境的霸主之一，存活了数千年的老怪物。它的鳞片坚硬如铁，毒牙能轻易洞穿最坚固的铠甲。传说它张开巨口时，能将天空都吞下一角，故得名吞天。它极度贪婪，守护着无数珍宝，任何敢于觊觎的人都将成为它的腹中餐。"
+  base_stats: { attack: 350, defense: 200, health: 8000, resistance: 0.3, speed: 80, taunt: 300, element: "木" }
+  skill:
+    name: "毒雾弥漫"
+    type: "damage"
+    target: "all_enemies"
+    value_type: "atk"
+    value: 1.2
