@@ -32,37 +32,44 @@ export async function battleEngine(TeamA_Input, TeamB_Input, maxTurns = 50) {
   detailedLog.push({ type: 'turn', text: `--- 第 ${currentCycle} 轮 ---` });
 
   let winner = null;
+  let turnCount = 0; // 声明 turnCount
 
   while (currentCycle <= maxTurns) {
     // 检查存活
     const teamAAlive = combatants.some(c => c.team === 'A' && c.current_hp > 0);
     const teamBAlive = combatants.some(c => c.team === 'B' && c.current_hp > 0);
 
-    if (!teamAAlive) { winner = 'B'; break; }
-    if (!teamBAlive) { winner = 'A'; break; }
+    if (!teamAAlive) {
+      winner = 'B';
+      break;
+    }
+    if (!teamBAlive) {
+      winner = 'A';
+      break;
+    }
 
     // 寻找行动者 (AV最小)
     const aliveUnits = combatants.filter(c => c.current_hp > 0);
     aliveUnits.sort((a, b) => a.current_av - b.current_av);
     const activeUnit = aliveUnits[0];
-    
+
     // 时间流逝
     const elapsedAV = activeUnit.current_av;
     aliveUnits.forEach(u => u.current_av -= elapsedAV);
-    
+
     // HSR 轮次计算逻辑
     elapsedTimeInCycle += elapsedAV;
     while (elapsedTimeInCycle >= cycleLength && currentCycle <= maxTurns) {
-        elapsedTimeInCycle -= cycleLength;
-        currentCycle++;
-        cycleLength = 100; // 后续每轮固定 100 AV
-        
-        if (currentCycle <= maxTurns) {
-            detailedLog.push({ type: 'turn', text: `--- 第 ${currentCycle} 轮 ---` });
-            messages.push(`\n==第${currentCycle}轮==`);
-        }
+      elapsedTimeInCycle -= cycleLength;
+      currentCycle++;
+      cycleLength = 100; // 后续每轮固定 100 AV
+
+      if (currentCycle <= maxTurns) {
+        detailedLog.push({ type: 'turn', text: `--- 第 ${currentCycle} 轮 ---` });
+        messages.push(`\n==第${currentCycle}轮==`);
+      }
     }
-    
+
     // 如果轮次超限，跳出
     if (currentCycle > maxTurns) break;
 
@@ -70,47 +77,47 @@ export async function battleEngine(TeamA_Input, TeamB_Input, maxTurns = 50) {
     // 简单AI：攻击对面存活的第一个人（未来可扩展）
     const targets = combatants.filter(c => c.team !== activeUnit.team && c.current_hp > 0);
     if (targets.length > 0) {
-        // 简单随机或打第一个
-        const target = targets[0]; 
-        
-        // 执行攻击逻辑
-        const result = await executeAttack(activeUnit, target, turnCount);
-        
-        // 记录日志
-        messages.push(...result.msgs);
-        
-        detailedLog.push({
-            type: 'action',
-            av_cost: Math.floor(elapsedAV),
-            skill: '普通攻击', 
-            caster: { 
-                name: activeUnit.source.名号, 
-                team: activeUnit.team === 'A' ? 'player' : 'enemy', 
-                element: activeUnit.element,
-                level: activeUnit.source.level_id || 0,
-                id: activeUnit.source.id
-            },
-            targets: [{
-                name: target.source.名号,
-                element: target.element,
-                type: 'damage', 
-                value: result.damage,
-                value_display: formatNumber(result.damage), 
-                is_counter: false, 
-                is_crit: result.isCrit
-            }],
-            details: result.msgs, 
-            teamStatus: {
-                player: combatants.filter(c => c.team === 'A').map(getUnitStatus),
-                enemy: combatants.filter(c => c.team === 'B').map(getUnitStatus)
-            }
-        });
+      // 简单随机或打第一个
+      const target = targets[0];
+
+      // 执行攻击逻辑
+      const result = await executeAttack(activeUnit, target, turnCount);
+
+      // 记录日志
+      messages.push(...result.msgs);
+
+      detailedLog.push({
+        type: 'action',
+        av_cost: Math.floor(elapsedAV),
+        skill: '普通攻击',
+        caster: {
+          name: activeUnit.source.名号,
+          team: activeUnit.team === 'A' ? 'player' : 'enemy',
+          element: activeUnit.element,
+          level: activeUnit.source.level_id || 0,
+          id: activeUnit.source.id
+        },
+        targets: [{
+          name: target.source.名号,
+          element: target.element,
+          type: 'damage',
+          value: result.damage,
+          value_display: formatNumber(result.damage),
+          is_counter: false,
+          is_crit: result.isCrit
+        }],
+        details: result.msgs,
+        teamStatus: {
+          player: combatants.filter(c => c.team === 'A').map(getUnitStatus),
+          enemy: combatants.filter(c => c.team === 'B').map(getUnitStatus)
+        }
+      });
     }
 
     activeUnit.resetAV();
     turnCount++;
   }
-  
+
   // 战斗结束
   if (winner === 'A') messages.push(`发起方获胜！`);
   else if (winner === 'B') messages.push(`迎战方获胜！`);
@@ -121,8 +128,8 @@ export async function battleEngine(TeamA_Input, TeamB_Input, maxTurns = 50) {
   teamB.forEach(p => syncBackToPlayer(p, combatants.find(c => c.id === p.id)));
 
   return {
-    msg: messages, 
-    log: detailedLog, 
+    msg: messages,
+    log: detailedLog,
     A_win: winner === 'A',
     A_player_final: teamA[0],
     B_player_final: teamB[0],
@@ -216,12 +223,13 @@ async function executeAttack(attacker, defender, turn) {
   defender.current_hp = Math.max(0, defender.current_hp - damage);
 
 
-      return {
-          damage: damage,
-          msgs: msgs,
-          isCrit: isCrit
-      };
-  }
+  return {
+    damage: damage,
+    msgs: msgs,
+    isCrit: isCrit
+  };
+}
+
 const getUnitStatus = (unit) => {
   return {
     name: unit.source.名号,
