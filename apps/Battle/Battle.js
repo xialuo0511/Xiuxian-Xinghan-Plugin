@@ -6,7 +6,7 @@ import { Read_player, isNotNull, Add_HP, ForwardMsg } from '../Xiuxian/xiuxian.j
 import { applyElementalEffects } from '../../logic/elemental_logic.js';
 import * as DAL from '../../api/data-access.js';
 import { Gulid, puppeteer, Show } from '../../api/api.js';
-import redis from 'redis';
+import { redisClient } from '../../api/redis.js';
 import { battleEngine } from '../../logic/battle_logic.js'; // 【核心】导入新的逻辑处理器
 
 /**
@@ -164,7 +164,7 @@ export class Battle extends plugin {
     }
 
     const nowTime = Date.now();
-    const lastRobTime = parseInt(await redis.get(`xiuxian:player:${A_id}:last_dajie_time`)) || 0;
+    const lastRobTime = parseInt(await redisClient.get(`xiuxian:player:${A_id}:last_dajie_time`)) || 0;
     const robTimeout = this.xiuxianConfigData.CD.rob * 60000;
 
     if (nowTime < lastRobTime + robTimeout) {
@@ -188,7 +188,7 @@ export class Battle extends plugin {
     }
 
     e.reply(`【${A_data.player.名号}】向【${B_data.player.名号}】发起了打劫！`);
-    await redis.set(`xiuxian:player:${A_id}:last_dajie_time`, nowTime);
+    await redisClient.set(`xiuxian:player:${A_id}:last_dajie_time`, nowTime);
 
     const battleResult = await battleEngine({
       ...A_data.player,
@@ -219,7 +219,7 @@ export class Battle extends plugin {
     } else {
       if (A_data.player.灵石 < 30002) {
         const actionDetails = { action: '禁闭', endTime: Date.now() + 60 * 60 * 1000 };
-        await redis.set(`XinghanXiuxian:Player:${A_id}:action`, JSON.stringify(actionDetails));
+        await redisClient.set(`XinghanXiuxian:Player:${A_id}:action`, JSON.stringify(actionDetails));
         finalMessage = '偷鸡不成蚀把米, 你被抓去关了60分钟禁闭！';
       } else {
         const penalty = Math.trunc(A_data.player.灵石 / 4);
