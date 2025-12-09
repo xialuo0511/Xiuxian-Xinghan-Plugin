@@ -20,25 +20,20 @@ export async function battleEngine(TeamA_Input, TeamB_Input, maxTurns = 50) {
   const messages = []; // 兼容旧版日志（纯文本）
   const detailedLog = []; // 新版结构化日志
 
-  let turnCount = 0;
+  let currentCycle = 1;
+  let elapsedTimeInCycle = 0;
+  let cycleLength = 150; // 第一轮 150 AV，后续 100 AV
 
   // 初始AV
   combatants.forEach(c => c.resetAV());
 
   messages.push(`战斗开始！`);
   detailedLog.push({ type: 'start', text: '战斗开始！' });
+  detailedLog.push({ type: 'turn', text: `--- 第 ${currentCycle} 轮 ---` });
 
   let winner = null;
-  const totalActionsLimit = maxTurns * combatants.length; // 将回合数转换为总行动数限制
 
-  while (turnCount < totalActionsLimit) {
-    // 回合分割日志
-    if (turnCount % combatants.length === 0) {
-        const round = Math.floor(turnCount / combatants.length) + 1;
-        detailedLog.push({ type: 'turn', text: `--- 第 ${round} 回合 ---` });
-        messages.push(`\n==第${round}回合==`);
-    }
-
+  while (currentCycle <= maxTurns) {
     // 检查存活
     const teamAAlive = combatants.some(c => c.team === 'A' && c.current_hp > 0);
     const teamBAlive = combatants.some(c => c.team === 'B' && c.current_hp > 0);
@@ -55,6 +50,22 @@ export async function battleEngine(TeamA_Input, TeamB_Input, maxTurns = 50) {
     const elapsedAV = activeUnit.current_av;
     aliveUnits.forEach(u => u.current_av -= elapsedAV);
     
+    // HSR 轮次计算逻辑
+    elapsedTimeInCycle += elapsedAV;
+    while (elapsedTimeInCycle >= cycleLength && currentCycle <= maxTurns) {
+        elapsedTimeInCycle -= cycleLength;
+        currentCycle++;
+        cycleLength = 100; // 后续每轮固定 100 AV
+        
+        if (currentCycle <= maxTurns) {
+            detailedLog.push({ type: 'turn', text: `--- 第 ${currentCycle} 轮 ---` });
+            messages.push(`\n==第${currentCycle}轮==`);
+        }
+    }
+    
+    // 如果轮次超限，跳出
+    if (currentCycle > maxTurns) break;
+
     // 行动
     // 简单AI：攻击对面存活的第一个人（未来可扩展）
     const targets = combatants.filter(c => c.team !== activeUnit.team && c.current_hp > 0);
