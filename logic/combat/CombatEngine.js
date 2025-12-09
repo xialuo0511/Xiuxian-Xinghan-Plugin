@@ -216,15 +216,22 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
  * 伤害计算逻辑 (自适应公式)
  */
 function calculateDamage(attacker, target, rawDamageInput) {
-  let elementalBonus = 1.0;
-  let isCounter = false;
-  if (elementCounterMap[attacker.element] === target.element) {
-    elementalBonus = COUNTER_BONUS;
-    isCounter = true;
-  }
+    let elementalBonus = 1.0;
+    let isCounter = false;
+    
+    // 克制判断
+    if (elementCounterMap[attacker.element] === target.element) {
+        elementalBonus = COUNTER_BONUS; // 1.5
+        isCounter = true;
+    }
+    
+    // 元素增伤 Buff (e.g. 火伤+25%)
+    // 逻辑：在当前倍率基础上直接叠加 (1.5 + 0.25 = 1.75倍)
+    if (attacker.elemental_buffs && attacker.elemental_buffs[attacker.element]) {
+        elementalBonus += attacker.elemental_buffs[attacker.element];
+    }
 
-  let finalDmg = 0;
-
+    let finalDmg = 0;
   // 【核心优化】自适应伤害公式
   // 如果攻击力 > 10000 (修仙玩家级)，使用减法+强力保底
   if (attacker.attack > 10000) {

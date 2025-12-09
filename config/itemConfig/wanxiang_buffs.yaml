@@ -3,21 +3,21 @@
 # value: 数值 (小数表示百分比)
 
 # --- 进攻类 ---
-- id: atk_up_small
+- id: atk_up_small_1
   name: "锋锐之印·一"
   desc: "全队攻击力提升 5%"
   type: atk_pct
   value: 0.05
   rarity: 1
 
-- id: atk_up_small
+- id: atk_up_small_2
   name: "锋锐之印·二"
   desc: "全队攻击力提升 10%"
   type: atk_pct
   value: 0.1
   rarity: 2
 
-- id: atk_up_small
+- id: atk_up_small_3
   name: "锋锐之印·三"
   desc: "全队攻击力提升 25%"
   type: atk_pct
@@ -54,8 +54,22 @@
   rarity: 2
 
 # --- 续航类 (Roguelike核心) ---
-- id: heal_after_turn
-  name: "生生不息"
+- id: heal_after_turn_1
+  name: "生生不息·一"
+  desc: "每次行动后，恢复 2% 最大生命值"
+  type: heal_turn
+  value: 0.02
+  rarity: 1
+
+- id: heal_after_turn_2
+  name: "生生不息·二"
+  desc: "每次行动后，恢复 5% 最大生命值"
+  type: heal_turn
+  value: 0.05
+  rarity: 2
+
+- id: heal_after_turn_3
+  name: "生生不息·三"
   desc: "每次行动后，恢复 10% 最大生命值"
   type: heal_turn
   value: 0.1
@@ -75,5 +89,29 @@
   desc: "水属性伤害提升 25%"
   type: element_dmg
   element: "水"
+  value: 0.25
+  rarity: 2
+
+- id: metal_mastery
+  name: "白虎锐气"
+  desc: "金属性伤害提升 25%"
+  type: element_dmg
+  element: "金"
+  value: 0.25
+  rarity: 2
+
+- id: wood_mastery
+  name: "青龙生机"
+  desc: "木属性伤害提升 25%"
+  type: element_dmg
+  element: "木"
+  value: 0.25
+  rarity: 2
+
+- id: earth_mastery
+  name: "麒麟厚德"
+  desc: "土属性伤害提升 25%"
+  type: element_dmg
+  element: "土"
   value: 0.25
   rarity: 2

@@ -237,7 +237,11 @@ export class WanxiangActivity extends plugin {
                                     } else if (buff.type === 'def_pct') {
                                         battleConfig.base_stats.defense = Math.floor(battleConfig.base_stats.defense * (1 + buff.value));
                                     } else if (buff.type === 'max_hp_pct') {
-                                         battleConfig.base_stats.health = Math.floor(battleConfig.base_stats.health * (1 + buff.value));
+                                         const hpAdd = Math.floor(battleConfig.base_stats.health * buff.value);
+                                         battleConfig.base_stats.health += hpAdd;
+                                         if (battleConfig.current_hp_inherit !== undefined) {
+                                             battleConfig.current_hp_inherit += hpAdd;
+                                         }
                                     } else if (buff.type === 'crit_rate') {
                                         battleConfig.crit_rate = (battleConfig.crit_rate || 0) + buff.value;
                                     } else if (buff.type === 'crit_dmg') {
