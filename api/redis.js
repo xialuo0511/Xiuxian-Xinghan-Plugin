@@ -4,6 +4,7 @@ import YAML from 'yaml';
 import path from 'path';
 
 function initializeClient() {
+
   const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
   const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
 
