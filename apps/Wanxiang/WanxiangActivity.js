@@ -299,14 +299,28 @@ export class WanxiangActivity extends plugin {
         if (result.playerWon) {
             runData.layer++;
             
-            // 随机抽取 3 个 Buff
+            // 随机抽取 3 个 Buff (加权)
             const choices = [];
             const pool = [...BUFFS]; 
+            const RARITY_WEIGHTS = { 1: 100, 2: 30, 3: 5 };
+            
+            const getWeightedRandom = (candidates) => {
+                let totalWeight = 0;
+                candidates.forEach(b => totalWeight += (RARITY_WEIGHTS[b.rarity] || 100));
+                let r = Math.random() * totalWeight;
+                for (const b of candidates) {
+                    r -= (RARITY_WEIGHTS[b.rarity] || 100);
+                    if (r <= 0) return b;
+                }
+                return candidates[0];
+            };
+
             for (let i = 0; i < 3; i++) {
                 if (pool.length === 0) break;
-                const idx = Math.floor(Math.random() * pool.length);
-                choices.push(pool[idx]);
-                pool.splice(idx, 1); 
+                const selected = getWeightedRandom(pool);
+                choices.push(selected);
+                const idx = pool.indexOf(selected);
+                if (idx > -1) pool.splice(idx, 1);
             }
             
             runData.pending_buffs = choices.map(b => b.id);
@@ -316,7 +330,8 @@ export class WanxiangActivity extends plugin {
             
             let buffMsg = `战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n\n【天机赐福】\n请发送 #选择赐福 [序号] 获取增益：\n`;
             choices.forEach((b, i) => {
-                buffMsg += `${i+1}. 【${b.name}】${b.desc}\n`;
+                const stars = '★'.repeat(b.rarity || 1);
+                buffMsg += `${i+1}. [${stars}] 【${b.name}】\n   ${b.desc}\n`;
             });
             
             e.reply(buffMsg);

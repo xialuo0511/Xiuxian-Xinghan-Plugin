@@ -2,198 +2,198 @@
 <html>
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
-  <link href="#" rel="shortcut icon" />
-  <style type="text/css">
-      @font-face {
-          font-family: "tttgbnumber";
-          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
-      }
-
-      @font-face {
-          font-family: "NZBZ";
-          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+  <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+      
+      :root {
+          --bg: #222;
+          --panel: rgba(255,255,255,0.9);
+          --gold: #d4af37;
+          --text: #333;
       }
 
       body {
-          width: 800px;
+          width: 900px;
           margin: 0;
-          padding: 20px;
-          background: #f7f8fa;
-          font-family: "tttgbnumber", sans-serif;
-          color: #4a2c1a;
+          padding: 0;
+          background: #333;
+          font-family: "NZBZ", sans-serif;
+      }
+      
+      .main-container {
+          background-color: #e6e2d3;
+          background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+          min-height: 600px;
+          padding: 40px;
           box-sizing: border-box;
           display: flex;
-          justify-content: center;
+          flex-direction: column;
           align-items: center;
-          min-height: 100vh;
-      }
-
-      .panel-container {
-          width: 100%;
-          background: rgba(253, 250, 245, 0.88);
-          backdrop-filter: blur(10px);
-          border: 2px solid #a88763;
-          border-radius: 15px;
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-          padding: 20px;
       }
 
       .header {
-          text-align: center;
-          padding-bottom: 15px;
-          border-bottom: 2px dashed #d2b48c;
+          font-size: 48px;
+          color: #2c2c2c;
+          text-shadow: 0 0 5px rgba(255,255,255,0.8);
+          margin-bottom: 40px;
+          padding: 10px 40px;
+          border-bottom: 3px solid #8c7b65;
+          letter-spacing: 5px;
       }
 
-      .title {
-          font-family: "NZBZ", sans-serif;
-          font-size: 32px;
-          color: #6a3906;
-      }
-
-      .command-hint {
-          font-size: 14px;
-          color: #a88763;
-          margin-top: 5px;
-      }
-
-      .team-grid {
+      .slots-container {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 15px;
-          margin-top: 20px;
+          gap: 25px;
+          width: 100%;
       }
 
-      .item-card {
-          background: rgba(255, 255, 255, 0.4);
-          border: 1px solid #d2b48c;
+      .slot-card {
+          background: var(--panel);
+          border: 2px solid #8c7b65;
           border-radius: 8px;
           padding: 15px;
-      }
-
-      .item-card.unequipped {
-          opacity: 0.6;
-      }
-
-      .item-header {
-          border-bottom: 1px solid #d2b48c;
-          padding-bottom: 8px;
-          margin-bottom: 8px;
-      }
-
-      .item-name {
-          font-family: "NZBZ", sans-serif;
-          font-size: 20px;
-          color: #6a3906;
-      }
-
-      .unequipped-text {
-          text-align: center;
-          padding: 20px 0;
-          color: #999;
-          font-size: 18px;
-      }
-
-      /* --- 【核心修改】全新的属性展示样式 --- */
-      .item-details {
-          font-size: 15px; /* 稍微增大字号 */
-          color: #4a2c1a;
-          line-height: 1.8;
-          display: grid; /* 使用grid布局 */
-          grid-template-columns: 1fr 1fr; /* 两列 */
-          gap: 8px; /* 间距 */
-      }
-
-      .stat-line {
+          position: relative;
+          min-height: 180px;
           display: flex;
-          align-items: center;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+      
+      .slot-number {
+          position: absolute;
+          top: -15px;
+          left: -15px;
+          width: 40px; height: 40px;
+          background: #8c7b65;
+          color: #fff;
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 24px;
+          border: 2px solid #fff;
+          z-index: 2;
       }
 
-      .stat-line svg {
-          width: 16px;
-          height: 16px;
-          margin-right: 6px;
-          fill: #7a5533; /* 图标颜色 */
+      /* 空槽位样式 */
+      .slot-empty {
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          color: #999;
+          border-style: dashed;
       }
+      .empty-icon { font-size: 48px; opacity: 0.5; margin-bottom: 10px; }
+      .empty-tip { font-size: 16px; font-family: "tttgbnumber"; }
+
+      /* 已装备样式 */
+      .soul-content {
+          display: flex;
+          width: 100%;
+          gap: 20px;
+      }
+      
+      .soul-left {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100px;
+          flex-shrink: 0;
+      }
+      
+      .soul-icon {
+          width: 80px; height: 80px;
+          border-radius: 50%;
+          border: 3px solid #d4af37;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 36px;
+          background: #fff;
+          margin-bottom: 10px;
+          color: #333;
+          font-family: "NZBZ";
+      }
+      
+      .soul-element {
+          font-size: 18px;
+          padding: 2px 10px;
+          border-radius: 10px;
+          color: #fff;
+          font-family: "NZBZ";
+      }
+      .ele-金 { background: #b58900; }
+      .ele-木 { background: #598c14; }
+      .ele-水 { background: #266b96; }
+      .ele-火 { background: #c53828; }
+      .ele-土 { background: #8f653b; }
+
+      .soul-details {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+      }
+      
+      .soul-name { font-size: 28px; font-weight: bold; margin-bottom: 5px; color: #2c2c2c; }
+      .soul-desc { font-size: 14px; color: #666; margin-bottom: 10px; font-style: italic; }
+      
+      .stats-box {
+          background: rgba(0,0,0,0.05);
+          border-radius: 4px;
+          padding: 8px;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 5px;
+          font-size: 14px;
+          font-family: "tttgbnumber";
+      }
+      
+      .stat-row { display: flex; justify-content: space-between; }
+      .stat-label { color: #555; }
+      .stat-val { font-weight: bold; color: #000; }
+
   </style>
 </head>
 <body>
-<div class="panel-container" id="capture">
-  <div class="header">
-    <h1 class="title">我的星魂队伍</h1>
-    <p class="command-hint">指令: #星魂装备[1-4]号 [星魂名称]</p>
-  </div>
 
-  <div class="team-grid">
-    {{each team soul}}
-    <div class="item-card {{if !soul.equipped}}unequipped{{/if}}">
-      <div class="item-header">
-        <span class="item-name">{{soul.slot}}号位: {{soul.name}}</span>
+<div class="main-container">
+  <div class="header">万象天机 · 星魂整备</div>
+  
+  <div class="slots-container">
+      {{each team slot}}
+      
+      {{if slot.equipped}}
+      <div class="slot-card">
+          <div class="slot-number">{{slot.slot}}</div>
+          <div class="soul-content">
+              <div class="soul-left">
+                  <div class="soul-icon">{{slot.base_stats.element}}</div>
+                  <div class="soul-element ele-{{slot.base_stats.element}}">{{slot.base_stats.element}}系</div>
+              </div>
+              <div class="soul-details">
+                  <div class="soul-name">{{slot.name}}</div>
+                  <div class="soul-desc">{{slot.desc}}</div>
+                  <div class="stats-box">
+                      <div class="stat-row"><span class="stat-label">生命</span><span class="stat-val">{{slot.base_stats.health}}</span></div>
+                      <div class="stat-row"><span class="stat-label">攻击</span><span class="stat-val">{{slot.base_stats.attack}}</span></div>
+                      <div class="stat-row"><span class="stat-label">防御</span><span class="stat-val">{{slot.base_stats.defense}}</span></div>
+                      <div class="stat-row"><span class="stat-label">速度</span><span class="stat-val">{{slot.base_stats.speed}}</span></div>
+                      <div class="stat-row"><span class="stat-label">暴击</span><span class="stat-val">{{slot.base_stats.crit_rate * 100}}%</span></div>
+                      <div class="stat-row"><span class="stat-label">爆伤</span><span class="stat-val">{{slot.base_stats.crit_dmg * 100}}%</span></div>
+                  </div>
+              </div>
+          </div>
       </div>
-      <div class="item-details">
-        {{if soul.equipped}}
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V7h2v10z" />
-          </svg>
-          <span>等级: {{soul.等级 || 1}}</span>
-        </div>
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-          </svg>
-          <span>属性: {{soul.base_stats.element}}</span>
-        </div>
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M19.7 3.3C17.5 1 14.5 0 11.5 0S5.5 1 3.3 3.3C1 5.5 0 8.5 0 11.5S1 17.5 3.3 19.7c2.2 2.2 5.2 3.3 8.2 3.3s6-1 8.2-3.3c2.2-2.2 3.3-5.2 3.3-8.2S22 5.5 19.7 3.3z M17.4 17.4c-1.8 1.8-4.2 2.8-6.9 2.8s-5.1-1-6.9-2.8C1.8 15.6 0.8 13.2 0.8 10.5S1.8 5.4 3.6 3.6c1.8-1.8 4.2-2.8 6.9-2.8s5.1 1 6.9 2.8c1.8 1.8 2.8 4.2 2.8 6.9S19.2 15.6 17.4 17.4z M10.4 14.2h3.2v-3H16L11.5 6 7 11.2h3.4V14.2z" />
-          </svg>
-          <span>攻击: {{soul.base_stats.attack}}</span>
-        </div>
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5L12 1zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.79z" />
-          </svg>
-          <span>防御: {{soul.base_stats.defense}}</span>
-        </div>
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
-          <span>生命: {{soul.base_stats.health}}</span>
-        </div>
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h2v-4h2v-2h-8.35zM7 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
-          </svg>
-          <span>速度: {{soul.base_stats.speed}}</span>
-        </div>
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
-          </svg>
-          <span>抗性: {{soul.base_stats.resistance_percent}}</span>
-        </div>
-        <div class="stat-line">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z" />
-          </svg>
-          <span>嘲讽: {{soul.base_stats.taunt}}</span>
-        </div>
-        {{else}}
-        <p class="unequipped-text">【空】</p>
-        {{/if}}
+      {{else}}
+      <div class="slot-card slot-empty">
+          <div class="slot-number">{{slot.slot}}</div>
+          <div class="empty-icon">➕</div>
+          <div class="empty-tip">暂无星魂</div>
+          <div class="empty-tip" style="font-size: 12px; margin-top:5px; color:#aaa;">#星魂装备{{slot.slot}}号 [名称]</div>
       </div>
-    </div>
-    {{/each}}
-  </div>
+      {{/if}}
 
+      {{/each}}
+  </div>
 </div>
+
 </body>
 </html>
