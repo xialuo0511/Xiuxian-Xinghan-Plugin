@@ -78,7 +78,8 @@ export async function battleEngine(TeamA_Input, TeamB_Input) {
                 type: 'damage', 
                 value: result.damage,
                 value_display: formatNumber(result.damage), 
-                is_counter: false 
+                is_counter: false, 
+                is_crit: result.isCrit
             }],
             details: result.msgs, 
             teamStatus: {
@@ -193,12 +194,12 @@ async function executeAttack(attacker, defender, turn) {
   defender.current_hp = Math.max(0, defender.current_hp - damage);
 
 
-  return {
-    damage: damage,
-    msgs: msgs
-  };
-}
-
+      return {
+          damage: damage,
+          msgs: msgs,
+          isCrit: isCrit
+      };
+  }
 const getUnitStatus = (unit) => {
   return {
     name: unit.source.名号,

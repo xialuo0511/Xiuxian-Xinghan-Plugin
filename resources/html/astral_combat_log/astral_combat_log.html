@@ -202,6 +202,17 @@
           vertical-align: middle;
       }
       
+      .crit-tag {
+          font-size: 14px;
+          color: #ff9800;
+          margin-right: 5px;
+          font-family: "NZBZ";
+          border: 1px solid #ff9800;
+          padding: 0 4px;
+          border-radius: 4px;
+          vertical-align: middle;
+      }
+      
       /* 战斗细节文本 */
       .action-details { 
           margin-top: 8px; 
@@ -307,6 +318,7 @@
                 </div>
                 
                 <div class="effect-info effect-{{target.type}}">
+                    {{if target.is_crit}}<span class="crit-tag">暴击</span>{{/if}}
                     {{if target.is_counter}}<span class="counter-tag">克制</span>{{/if}}
                     {{if target.type === 'damage'}}-{{target.value_display}}
                     {{else if target.type === 'heal'}}+{{target.value_display}}
