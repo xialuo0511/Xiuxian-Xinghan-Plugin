@@ -29,8 +29,16 @@ export async function battleEngine(TeamA_Input, TeamB_Input, maxTurns = 50) {
   detailedLog.push({ type: 'start', text: '战斗开始！' });
 
   let winner = null;
+  const totalActionsLimit = maxTurns * combatants.length; // 将回合数转换为总行动数限制
 
-  while (turnCount < maxTurns) {
+  while (turnCount < totalActionsLimit) {
+    // 回合分割日志
+    if (turnCount % combatants.length === 0) {
+        const round = Math.floor(turnCount / combatants.length) + 1;
+        detailedLog.push({ type: 'turn', text: `--- 第 ${round} 回合 ---` });
+        messages.push(`\n==第${round}回合==`);
+    }
+
     // 检查存活
     const teamAAlive = combatants.some(c => c.team === 'A' && c.current_hp > 0);
     const teamBAlive = combatants.some(c => c.team === 'B' && c.current_hp > 0);

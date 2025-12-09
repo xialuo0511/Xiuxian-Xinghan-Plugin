@@ -272,7 +272,11 @@ export class Battle extends plugin {
     
     // 格式化输出
     const damageDisplay = totalDamage >= 10000 ? (totalDamage / 10000).toFixed(2) + '万' : totalDamage;
-    battleResult.msg.push(`\n[伤害统计] 10回合内，你共造成了 ${damageDisplay} 点伤害！`);
+    const statMsg = `[伤害统计] 10回合内，你共造成了 ${damageDisplay} 点伤害！`;
+    
+    battleResult.msg.push('\n' + statMsg);
+    // 推送至结构化日志以便在图片中显示
+    battleResult.log.push({ type: 'end', text: statMsg });
 
     let img = await this.renderBattle(e, battleResult);
     e.reply(img);
