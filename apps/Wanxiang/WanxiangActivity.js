@@ -160,16 +160,27 @@ export class WanxiangActivity extends plugin {
     
     const data = JSON.parse(dataStr);
     
-    let msg = `【万象天机】 第 ${data.layer} 层\n`;
-    msg += `----------------\n`;
-    data.souls.forEach(s => {
-        const status = s.is_dead ? '已阵亡' : `${s.current_hp}/${s.max_hp}`;
-        msg += `${s.name}: ${status}\n`;
-    });
-    msg += `----------------\n`;
-    msg += `已获赐福: ${data.buffs.length > 0 ? data.buffs.map(b => BUFFS.find(cb => cb.id === b)?.name || b).join(', ') : '暂无'}`;
+    // 准备渲染数据
+    const soulsData = data.souls.map(s => ({
+        ...s,
+        hp_percent: s.max_hp > 0 ? (s.current_hp / s.max_hp * 100).toFixed(1) : 0
+    }));
     
-    e.reply(msg);
+    const buffsData = (data.buffs || []).map(buffId => {
+        const config = BUFFS.find(b => b.id === buffId);
+        return config || { name: buffId, desc: '未知效果', rarity: 1 };
+    });
+
+    const renderData = {
+        layer: data.layer,
+        souls: soulsData,
+        buffs: buffsData,
+        pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+
+    const dataForPuppeteer = await new Show(e).get_imgData('wanxiang_status', renderData);
+    const img = await puppeteer.screenshot('wanxiang_status', { ...dataForPuppeteer });
+    await e.reply(img);
   }
   async challengeLayer(e) {
     const userId = e.user_id;

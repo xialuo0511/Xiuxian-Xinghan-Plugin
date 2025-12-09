@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+      
+      :root {
+          --bg-paper: #f4f0e6;
+          --ink-color: #2c2c2c;
+          --border-brown: #8c7b65;
+          --gold: #b58900;
+          --red: #c53828;
+      }
+
+      body {
+          width: 800px;
+          margin: 0;
+          padding: 30px;
+          background: #e6e2d3;
+          background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+          font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+          color: var(--ink-color);
+      }
+
+      .container {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+
+      .header {
+          text-align: center;
+          padding-bottom: 10px;
+          border-bottom: 2px solid var(--border-brown);
+      }
+      .title { font-size: 48px; font-weight: bold; text-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
+      .layer-info { font-size: 32px; color: var(--red); font-family: "tttgbnumber"; margin-top: 5px; }
+
+      .team-section {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+      }
+      
+      .soul-card {
+          background: rgba(255, 255, 255, 0.6);
+          border: 1px solid var(--border-brown);
+          padding: 10px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+      .soul-card.dead { filter: grayscale(100%); opacity: 0.7; }
+      
+      .soul-avatar {
+          width: 60px; height: 60px;
+          border-radius: 50%;
+          background: #fff;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 32px;
+          border: 2px solid #d4cbb8;
+          font-family: "NZBZ";
+          color: var(--ink-color);
+      }
+      
+      .soul-info { flex: 1; }
+      .soul-name { font-size: 20px; font-weight: bold; }
+      .soul-hp-text { font-size: 14px; font-family: "tttgbnumber"; float: right; color: #555; }
+      
+      .hp-bar-bg {
+          height: 10px;
+          background: #ccc;
+          border-radius: 5px;
+          overflow: hidden;
+          margin-top: 5px;
+      }
+      .hp-bar-fill { height: 100%; background: #4caf50; transition: width 0.3s; }
+      .dead .hp-bar-fill { background: #555; }
+
+      .buff-section {
+          margin-top: 10px;
+      }
+      .section-title { font-size: 24px; border-bottom: 1px dashed var(--border-brown); margin-bottom: 10px; }
+      
+      .buff-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+      
+      .buff-item {
+          background: #fdfbf7;
+          border: 1px solid #d4cbb8;
+          padding: 10px;
+          border-left: 4px solid var(--gold);
+      }
+      .buff-header { font-size: 18px; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
+      .buff-desc { font-size: 14px; color: #666; font-family: "Microsoft YaHei"; }
+      .buff-rarity { font-size: 12px; color: var(--gold); font-family: "tttgbnumber"; }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+      <div class="title">万象天机 · 试炼记录</div>
+      <div class="layer-info">当前层数：第 {{layer}} 层</div>
+  </div>
+
+  <div class="section-title">✦ 出 战 星 魂 ✦</div>
+  <div class="team-section">
+      {{each souls soul}}
+      <div class="soul-card {{if soul.is_dead}}dead{{/if}}">
+          <div class="soul-avatar">{{soul.name[0]}}</div>
+          <div class="soul-info">
+              <div>
+                  <span class="soul-name">{{soul.name}}</span>
+                  <span class="soul-hp-text">{{soul.current_hp}}/{{soul.max_hp}}</span>
+              </div>
+              <div class="hp-bar-bg">
+                  <div class="hp-bar-fill" style="width: {{soul.hp_percent}}%"></div>
+              </div>
+          </div>
+      </div>
+      {{/each}}
+  </div>
+
+  <div class="section-title" style="margin-top: 20px;">✦ 天 机 赐 福 ✦</div>
+  <div class="buff-section">
+      {{if buffs.length === 0}}
+      <div style="text-align:center; color:#999; padding: 20px;">暂未获得任何赐福</div>
+      {{/if}}
+      <div class="buff-list">
+          {{each buffs buff}}
+          <div class="buff-item">
+              <div class="buff-header">
+                  <span>{{buff.name}}</span>
+                  <span class="buff-rarity">{{if buff.rarity === 3}}★★★{{else if buff.rarity === 2}}★★{{else}}★{{/if}}</span>
+              </div>
+              <div class="buff-desc">{{buff.desc}}</div>
+          </div>
+          {{/each}}
+      </div>
+  </div>
+</div>
+
+</body>
+</html>
