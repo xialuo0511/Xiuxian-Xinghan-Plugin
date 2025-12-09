@@ -212,7 +212,7 @@
           <div class="mechanic-box">
               <div class="mechanic-text">
                   {{if isDetail}}
-                      {{soul.detail_mechanics}}
+                      {{soul.skill.detailed_mechanics}}
                   {{else}}
                       <span style="font-weight:bold; color:#2c2c2c;">绝技 · {{soul.skill.name}}</span><br>{{soul.mechanics}}
                   {{/if}}
@@ -256,7 +256,7 @@
           <div class="mechanic-box">
               <div class="mechanic-text">
                   {{if isDetail}}
-                      {{monster.detail_mechanics}}
+                      {{monster.skill.detailed_mechanics}}
                   {{else}}
                       <span style="font-weight:bold; color:#2c2c2c;">天赋 · {{monster.skill.name}}</span><br>{{monster.mechanics}}
                   {{/if}}

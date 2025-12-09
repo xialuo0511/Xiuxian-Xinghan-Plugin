@@ -38,41 +38,10 @@ export class astral_combat extends plugin {
 
   async renderCodex(e, isDetail) {
     const allMonsters = Object.values(loadItemConfig('monsters.yaml') || {});
-    
-    // 辅助函数：生成详细技能描述
-    const generateDetailDesc = (item) => {
-        const s = item.skill;
-        if (!s) return item.mechanics;
-        
-        let targetStr = '';
-        if (s.target === 'single_enemy') targetStr = '敌方单体';
-        else if (s.target === 'all_enemies') targetStr = '敌方全体';
-        else if (s.target === 'lowest_hp_ally') targetStr = '生命值最低的友方单位';
-        else if (s.target === 'all_allies') targetStr = '我方全体';
-        
-        let effectStr = '';
-        const val = Math.floor(s.value * 100);
-        
-        // 稍微调整语序以符合自然语言
-        // 治疗/护盾类：为...恢复/施加...
-        // 伤害类：对...造成...
-        
-        if (s.type === 'damage') {
-             return `【${s.name}】对${targetStr}造成 ${val}% 攻击力的伤害。`;
-        } else if (s.type === 'heal') {
-             return `【${s.name}】为${targetStr}恢复 ${val}% 攻击力的生命值。`;
-        } else if (s.type === 'shield') {
-             return `【${s.name}】为${targetStr}施加 ${val}% 防御力的护盾。`;
-        }
-        return item.mechanics;
-    };
-
-    const processedSouls = allStarSouls.map(s => ({ ...s, detail_mechanics: generateDetailDesc(s) }));
-    const processedMonsters = allMonsters.map(m => ({ ...m, detail_mechanics: generateDetailDesc(m) }));
 
     const renderData = {
-      souls: processedSouls,
-      monsters: processedMonsters,
+      souls: allStarSouls,
+      monsters: allMonsters,
       isDetail: isDetail,
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };

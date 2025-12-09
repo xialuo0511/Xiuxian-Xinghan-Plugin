@@ -15,6 +15,7 @@
     target: "single_enemy"
     value_type: "atk"
     value: 1.0
+    detailed_mechanics: "【碎石击】对敌方单体造成 100% 攻击力的伤害。"
 
 - name: "藤蔓精"
   level: 1
@@ -29,6 +30,7 @@
     target: "single_enemy"
     value_type: "atk"
     value: 1.2
+    detailed_mechanics: "【毒刺鞭挞】对敌方单体造成 120% 攻击力的伤害。"
 
 # --- 中级怪物 ---
 - name: "深寒怨灵"
@@ -44,6 +46,7 @@
     target: "all_enemies"
     value_type: "atk"
     value: 0.7
+    detailed_mechanics: "【寒霜吐息】对敌方全体造成 70% 攻击力的伤害。"
 
 - name: "烈焰之魂"
   level: 3
@@ -58,6 +61,7 @@
     target: "single_enemy"
     value_type: "atk"
     value: 1.5
+    detailed_mechanics: "【烈火撞击】对敌方单体造成 150% 攻击力的伤害。"
 
 # --- 高级怪物 ---
 - name: "锐金剑侍"
@@ -73,6 +77,7 @@
     target: "single_enemy"
     value_type: "atk"
     value: 1.8
+    detailed_mechanics: "【无情剑气】对敌方单体造成 180% 攻击力的伤害。"
 
 - name: "混元石魔"
   level: 7
@@ -87,6 +92,7 @@
     target: "all_enemies"
     value_type: "atk"
     value: 1.0
+    detailed_mechanics: "【地动山摇】对敌方全体造成 100% 攻击力的伤害。"
 
 # --- 万象天机活动新增 ---
 - name: "炽火妖莲"
@@ -102,6 +108,7 @@
     target: "single_enemy"
     value_type: "atk"
     value: 1.8
+    detailed_mechanics: "【业火红莲】对敌方单体造成 180% 攻击力的伤害。"
 
 - name: "吞天巨蟒"
   level: 8
@@ -116,3 +123,4 @@
     target: "all_enemies"
     value_type: "atk"
     value: 1.2
+    detailed_mechanics: "【毒雾弥漫】对敌方全体造成 120% 攻击力的伤害。"
