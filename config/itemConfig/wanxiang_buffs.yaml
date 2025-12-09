@@ -22,7 +22,7 @@
   desc: "全队攻击力提升 25%"
   type: atk_pct
   value: 0.25
-  rarity: 1
+  rarity: 3
 
 - id: crit_rate_up
   name: "鹰眼"
