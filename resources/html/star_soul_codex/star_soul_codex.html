@@ -210,13 +210,13 @@
           {{/if}}
 
           <div class="mechanic-box">
-              <div class="skill-name">绝技 · {{soul.skill.name}}</div>
-              <div class="mechanic-text">{{soul.mechanics}}</div>
-              {{if isDetail}}
-              <div class="skill-detail-data">
-                  倍率: {{soul.skill.value * 100}}% ({{soul.skill.value_type}})
+              <div class="mechanic-text">
+                  {{if isDetail}}
+                      {{soul.detail_mechanics}}
+                  {{else}}
+                      <span style="font-weight:bold; color:#2c2c2c;">绝技 · {{soul.skill.name}}</span><br>{{soul.mechanics}}
+                  {{/if}}
               </div>
-              {{/if}}
           </div>
       </div>
   </div>
@@ -254,18 +254,13 @@
           {{/if}}
 
           <div class="mechanic-box">
-              <div class="skill-name">天赋 · {{monster.skill.name}}</div>
-              <div class="mechanic-text">{{monster.mechanics}}</div>
-              {{if isDetail}}
-              <div class="skill-detail-data">
-                  目标: 
-                  {{if monster.skill.target === 'all_enemies'}}敌方全体
-                  {{else}}单体
+              <div class="mechanic-text">
+                  {{if isDetail}}
+                      {{monster.detail_mechanics}}
+                  {{else}}
+                      <span style="font-weight:bold; color:#2c2c2c;">天赋 · {{monster.skill.name}}</span><br>{{monster.mechanics}}
                   {{/if}}
-                  | 
-                  倍率: {{monster.skill.value * 100}}%
               </div>
-              {{/if}}
           </div>
       </div>
   </div>
