@@ -4,10 +4,24 @@
 
 # --- 进攻类 ---
 - id: atk_up_small
-  name: "锋锐之印"
-  desc: "全队攻击力提升 15%"
+  name: "锋锐之印·一"
+  desc: "全队攻击力提升 5%"
   type: atk_pct
-  value: 0.15
+  value: 0.05
+  rarity: 1
+
+- id: atk_up_small
+  name: "锋锐之印·二"
+  desc: "全队攻击力提升 10%"
+  type: atk_pct
+  value: 0.1
+  rarity: 2
+
+- id: atk_up_small
+  name: "锋锐之印·三"
+  desc: "全队攻击力提升 25%"
+  type: atk_pct
+  value: 0.25
   rarity: 1
 
 - id: crit_rate_up
@@ -42,9 +56,9 @@
 # --- 续航类 (Roguelike核心) ---
 - id: heal_after_turn
   name: "生生不息"
-  desc: "每次行动后，恢复 5% 最大生命值"
+  desc: "每次行动后，恢复 10% 最大生命值"
   type: heal_turn
-  value: 0.05
+  value: 0.1
   rarity: 3
 
 # --- 元素强化类 ---
