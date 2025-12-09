@@ -13,7 +13,11 @@ export class Combatant {
         // 星魂或怪物
         this.name = source.name;
         this.max_hp = source.base_stats.health;
-        this.current_hp = source.base_stats.health;
+        // 支持血量继承 (活动模式)
+        this.current_hp = (source.current_hp_inherit !== undefined) 
+            ? source.current_hp_inherit 
+            : source.base_stats.health;
+            
         this.attack = source.base_stats.attack;
         this.defense = source.base_stats.defense;
         this.speed = source.base_stats.speed;

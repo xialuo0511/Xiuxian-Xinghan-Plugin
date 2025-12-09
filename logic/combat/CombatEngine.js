@@ -114,7 +114,7 @@ export async function runCombat(playerSouls, enemyNames) {
   const playerWon = playerTeam.some(p => p.isAlive());
   combatLog.push({ type: 'end', text: playerWon ? '恭喜你，获得了胜利！' : '很遗憾，你失败了。' });
 
-  return { playerWon, log: combatLog };
+  return { playerWon, log: combatLog, playerTeam, enemyTeam };
 }
 
 /**

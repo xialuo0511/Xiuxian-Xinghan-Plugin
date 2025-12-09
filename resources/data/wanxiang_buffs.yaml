@@ -1,0 +1,65 @@
+# 万象天机 - 赐福配置
+# type: buff类型 (atk_pct, def_pct, crit_rate, crit_dmg, element_dmg, heal_turn)
+# value: 数值 (小数表示百分比)
+
+# --- 进攻类 ---
+- id: atk_up_small
+  name: "锋锐之印"
+  desc: "全队攻击力提升 15%"
+  type: atk_pct
+  value: 0.15
+  rarity: 1
+
+- id: crit_rate_up
+  name: "鹰眼"
+  desc: "全队暴击率提升 10%"
+  type: crit_rate
+  value: 0.10
+  rarity: 2
+
+- id: crit_dmg_up
+  name: "致命一击"
+  desc: "全队暴击伤害提升 30%"
+  type: crit_dmg
+  value: 0.30
+  rarity: 2
+
+# --- 生存类 ---
+- id: def_up_small
+  name: "岩石护甲"
+  desc: "全队防御力提升 20%"
+  type: def_pct
+  value: 0.20
+  rarity: 1
+
+- id: hp_max_up
+  name: "生命源泉"
+  desc: "全队生命上限提升 20% (并在获得时恢复等量生命)"
+  type: max_hp_pct
+  value: 0.20
+  rarity: 2
+
+# --- 续航类 (Roguelike核心) ---
+- id: heal_after_turn
+  name: "生生不息"
+  desc: "每次行动后，恢复 5% 最大生命值"
+  type: heal_turn
+  value: 0.05
+  rarity: 3
+
+# --- 元素强化类 ---
+- id: fire_mastery
+  name: "烈焰主宰"
+  desc: "火属性伤害提升 25%"
+  type: element_dmg
+  element: "火"
+  value: 0.25
+  rarity: 2
+
+- id: water_mastery
+  name: "深海恩赐"
+  desc: "水属性伤害提升 25%"
+  type: element_dmg
+  element: "水"
+  value: 0.25
+  rarity: 2

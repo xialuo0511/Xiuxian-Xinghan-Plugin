@@ -1,0 +1,30 @@
+# 万象天机 - 关卡配置
+# levels: 每一层的配置
+# monsters: 怪物名称列表 (需在 monsters.yaml 中存在)
+
+- layer: 1
+  monsters: ["石傀儡", "石傀儡"]
+  desc: "初入秘境，几尊石像拦住了去路。"
+
+- layer: 2
+  monsters: ["锐金剑侍", "石傀儡"]
+  desc: "更加锋利的敌人出现了。"
+
+- layer: 3
+  monsters: ["锐金剑侍", "锐金剑侍", "深寒怨灵"]
+  desc: "敌人的数量变多了。"
+
+- layer: 4
+  monsters: ["深寒怨灵", "深寒怨灵", "炽火妖莲"]
+  desc: "小心那朵燃烧的莲花。"
+
+- layer: 5
+  is_boss: true
+  monsters: ["炽火妖莲", "炽火妖莲", "吞天巨蟒"]
+  desc: "【BOSS】一只巨大的蟒蛇盘踞在此！"
+
+- layer: 6
+  monsters: ["吞天巨蟒", "锐金剑侍"]
+  desc: "通过了考验，但危险并未解除。"
+
+# ... 后续可继续扩展
