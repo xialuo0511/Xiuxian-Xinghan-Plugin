@@ -35,9 +35,26 @@ export class WanxiangActivity extends plugin {
   async startRun(e) {
     console.log('[Wanxiang] startRun called for user', e.user_id);
     const userId = e.user_id;
-    // 1. 检查是否已有存档
-    const existData = await redisClient.get(KEY_PREFIX + userId);
-    console.log('[Wanxiang] existData check done:', existData);
+
+    console.log('[Wanxiang] Checking redis client...');
+    if (!redisClient) {
+        console.error('[Wanxiang] redisClient is undefined!');
+        return e.reply('系统错误：数据库未连接');
+    }
+    // Node Redis v4 use .isOpen property
+    console.log('[Wanxiang] redisClient.isOpen:', redisClient.isOpen);
+
+    let existData = null;
+    try {
+        const getPromise = redisClient.get(KEY_PREFIX + userId);
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Redis timeout')), 5000));
+        
+        existData = await Promise.race([getPromise, timeoutPromise]);
+        console.log('[Wanxiang] existData check done:', existData);
+    } catch (err) {
+        console.error('[Wanxiang] Redis Error:', err);
+        return e.reply('数据库读取失败：' + err.message);
+    }
     
     if (existData) {
         return e.reply('你当前已有正在进行的试炼，请先 #挑战 或 #退出试炼。');
