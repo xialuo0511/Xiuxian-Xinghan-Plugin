@@ -266,13 +266,30 @@ export class WanxiangActivity extends plugin {
             return e.reply('你的队伍已全军覆没，试炼失败！请 #退出试炼 重新开始。');
         }
 
-        // 2. 准备敌方
+        // 2. 准备敌方 (应用动态难度缩放)
         const enemyNames = layerConfig.monsters;
-
         e.reply(`第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}`);
 
+        const enemyTeamConfig = enemyNames.map(name => {
+            const original = ALL_MONSTERS.find(m => m.name === name);
+            if (!original) return null;
+            
+            // 深拷贝以应用修改
+            const mob = JSON.parse(JSON.stringify(original));
+            
+            // 难度系数：基础成长 (每层12%) + Boss层修正
+            let multiplier = 1 + (runData.layer - 1) * 0.12; 
+            if (runData.layer % 5 === 0) multiplier *= 1.2; // Boss层额外增强 20%
+            
+            mob.base_stats.health = Math.floor(mob.base_stats.health * multiplier);
+            mob.base_stats.attack = Math.floor(mob.base_stats.attack * multiplier);
+            mob.base_stats.defense = Math.floor(mob.base_stats.defense * multiplier);
+            
+            return mob;
+        }).filter(Boolean);
+
         // 3. 运行战斗
-        const result = await runCombat(battleSouls, enemyNames);
+        const result = await runCombat(battleSouls, enemyTeamConfig);
         
         // 4. 结算逻辑
         const finalPlayerCombatants = result.playerTeam;

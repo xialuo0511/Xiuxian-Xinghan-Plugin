@@ -1,30 +1,50 @@
 # 万象天机 - 关卡配置
-# levels: 每一层的配置
-# monsters: 怪物名称列表 (需在 monsters.yaml 中存在)
+# monsters: 怪物名称列表 (从 monsters.yaml 加载)
 
+# --- 第一阶段：初入试炼 ---
 - layer: 1
-  monsters: ["石傀儡", "石傀儡"]
-  desc: "初入秘境，几尊石像拦住了去路。"
-
+  monsters: ["石傀儡", "藤蔓精"]
 - layer: 2
-  monsters: ["锐金剑侍", "石傀儡"]
-  desc: "更加锋利的敌人出现了。"
-
+  monsters: ["石傀儡", "石傀儡", "藤蔓精"]
 - layer: 3
-  monsters: ["锐金剑侍", "锐金剑侍", "深寒怨灵"]
-  desc: "敌人的数量变多了。"
-
+  monsters: ["深寒怨灵", "烈焰之魂"]
 - layer: 4
-  monsters: ["深寒怨灵", "深寒怨灵", "炽火妖莲"]
-  desc: "小心那朵燃烧的莲花。"
-
+  monsters: ["深寒怨灵", "烈焰之魂", "石傀儡"]
 - layer: 5
-  is_boss: true
-  monsters: ["炽火妖莲", "炽火妖莲", "吞天巨蟒"]
-  desc: "【BOSS】一只巨大的蟒蛇盘踞在此！"
+  monsters: ["炽火妖莲"] # Boss
 
+# --- 第二阶段：元素试炼 ---
 - layer: 6
-  monsters: ["吞天巨蟒", "锐金剑侍"]
-  desc: "通过了考验，但危险并未解除。"
+  monsters: ["雷灵鸟", "暗影刺客"]
+- layer: 7
+  monsters: ["雷灵鸟", "雷灵鸟", "藤蔓精"]
+- layer: 8
+  monsters: ["暗影刺客", "深寒怨灵", "深寒怨灵"]
+- layer: 9
+  monsters: ["狂暴猿猴", "烈焰之魂", "烈焰之魂"]
+- layer: 10
+  monsters: ["吞天巨蟒"] # Boss
 
-# ... 后续可继续扩展
+# --- 第三阶段：机制高压 ---
+- layer: 11
+  monsters: ["铁甲巨龟", "暗影刺客"] # 经典 战+刺 组合
+- layer: 12
+  monsters: ["铁甲巨龟", "锐金剑侍", "锐金剑侍"]
+- layer: 13
+  monsters: ["雷灵鸟", "狂暴猿猴", "狂暴猿猴"]
+- layer: 14
+  monsters: ["暗影刺客", "暗影刺客", "铁甲巨龟"]
+- layer: 15
+  monsters: ["混元石魔"] # Boss
+
+# --- 第四阶段：无尽深渊 ---
+- layer: 16
+  monsters: ["炽火妖莲", "烈焰之魂", "烈焰之魂"] # 旧 Boss 沦为精英怪
+- layer: 17
+  monsters: ["吞天巨蟒", "藤蔓精", "藤蔓精"]
+- layer: 18
+  monsters: ["混元石魔", "石傀儡", "石傀儡"]
+- layer: 19
+  monsters: ["铁甲巨龟", "暗影刺客", "雷灵鸟", "狂暴猿猴"] # 四大金刚
+- layer: 20
+  monsters: ["混沌魔眼"] # Final Boss

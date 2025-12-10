@@ -123,4 +123,82 @@
     target: "all_enemies"
     value_type: "atk"
     value: 1.2
-    detailed_mechanics: "【毒雾弥漫】对敌方全体造成 120% 攻击力的伤害。"
+    debuff: { type: "poison_dot", target: "all_enemies", duration: 3, value: 0.05 } # 施加毒Debuff (每回合5%最大生命伤害，持续3回合)
+    detailed_mechanics: "【毒雾弥漫】对敌方全体造成 120% 攻击力的伤害，并施加持续 3 回合的毒素，每回合造成 5% 最大生命值的伤害。"
+
+# --- 20层扩充新增 ---
+- name: "雷灵鸟"
+  level: 6
+  class: "妖兽"
+  desc: "沐浴雷电而生的灵鸟，速度极快，常伴有雷鸣。"
+  mechanics: "对全体敌人释放雷电，造成伤害并有概率麻痹。"
+  lore: "生于九天之上的雷云之中，以雷电为食。它的羽毛如同闪电般耀眼，飞行时会发出震耳欲聋的雷鸣声。它的速度极快，寻常修士根本无法捕捉到它的身影。它性格暴躁，一旦被激怒，便会引来漫天雷霆，将敌人化为焦炭。"
+  base_stats: { attack: 200, defense: 80, health: 1500, resistance: 0.1, speed: 140, taunt: 100, element: "金", crit_rate: 0.25, crit_dmg: 1.5 }
+  skill:
+    name: "千鸟齐鸣"
+    type: "damage"
+    target: "all_enemies"
+    value_type: "atk"
+    value: 0.9
+    detailed_mechanics: "【千鸟齐鸣】对敌方全体造成 90% 攻击力的伤害。"
+
+- name: "暗影刺客"
+  level: 6
+  class: "妖兽"
+  desc: "隐藏在阴影中的杀手，出手必见血。"
+  mechanics: "锁定生命值最低的目标，造成极高的单体爆发伤害。"
+  lore: "曾是某个古老杀手组织的成员，死后化为怨灵，继续执行着生前的任务。它没有实体，能自由穿梭于阴影之中。它最喜欢在敌人最虚弱的时候发动致命一击，让人防不胜防。它的匕首涂有剧毒，见血封喉。"
+  base_stats: { attack: 300, defense: 60, health: 1200, resistance: 0.05, speed: 130, taunt: 50, element: "水", crit_rate: 0.4, crit_dmg: 2.0 }
+  skill:
+    name: "影杀"
+    type: "damage"
+    target: "lowest_hp_ally" # 借用逻辑，攻击血最少的
+    value_type: "atk"
+    value: 2.5
+    detailed_mechanics: "【影杀】对生命值最低的目标造成 250% 攻击力的伤害。"
+
+- name: "铁甲巨龟"
+  level: 6
+  class: "妖兽"
+  desc: "背负厚重甲壳的巨龟，防御力堪比城墙。"
+  mechanics: "为自己施加巨额护盾，并吸引所有敌人的仇恨。"
+  lore: "活了万年的老龟，其甲壳经过岁月的沉淀，已变得坚不可摧。它行动缓慢，但只要缩入壳中，便能抵御世间绝大多数的攻击。它性格温和，但若有人侵犯它的领地，它也会展现出惊人的力量，用沉重的身躯碾碎敌人。"
+  base_stats: { attack: 100, defense: 400, health: 3000, resistance: 0.4, speed: 40, taunt: 500, element: "土", crit_rate: 0, crit_dmg: 1.0 }
+  skill:
+    name: "不动如山"
+    type: "shield"
+    target: "self" # 技能目标是自己
+    value_type: "def"
+    value: 2.0
+    debuff: { type: "taunt", target: "all_enemies", duration: 2 } # 附加嘲讽Debuff
+    detailed_mechanics: "【不动如山】为自身施加 200% 防御力的护盾，并嘲讽所有敌人 2 回合。"
+
+- name: "狂暴猿猴"
+  level: 7
+  class: "妖兽"
+  desc: "力大无穷的猿猴，越战越勇。"
+  mechanics: "对单体造成伤害，血量越低伤害越高（目前简化为高倍率单体）。"
+  lore: "生活在深山老林中的猿猴首领，力大无穷，能生裂虎豹。它性格暴躁好战，一旦进入战斗状态，便会失去理智，不死不休。它受了伤反而会激发体内的凶性，变得更加危险。"
+  base_stats: { attack: 240, defense: 100, health: 2000, resistance: 0.15, speed: 110, taunt: 100, element: "火", crit_rate: 0.2, crit_dmg: 1.6 }
+  skill:
+    name: "碎颅击"
+    type: "damage"
+    target: "single_enemy"
+    value_type: "atk"
+    value: 2.0
+    detailed_mechanics: "【碎颅击】对敌方单体造成 200% 攻击力的伤害。"
+
+- name: "混沌魔眼"
+  level: 9
+  class: "妖兽"
+  desc: "来自虚空的邪眼，凝视着万物的终结。"
+  mechanics: "释放混乱射线，对全体造成伤害并随机造成高额波动。"
+  lore: "不知从何处而来的邪恶生物，据说它连接着另一个充满混乱与疯狂的世界。它的眼睛能看透人心最深处的恐惧，并将其具象化。凡是与它对视的人，都会陷入无尽的噩梦之中，最终精神崩溃而亡。"
+  base_stats: { attack: 320, defense: 150, health: 6000, resistance: 0.2, speed: 95, taunt: 100, element: "土", crit_rate: 0.15, crit_dmg: 1.8 }
+  skill:
+    name: "虚空凝视"
+    type: "damage"
+    target: "all_enemies"
+    value_type: "atk"
+    value: 1.1
+    detailed_mechanics: "【虚空凝视】对敌方全体造成 110% 攻击力的伤害。"

@@ -101,6 +101,22 @@
       .action-card.player-action { border-left-color: var(--water); }
       .action-card.enemy-action { border-left-color: var(--fire); }
 
+      .skipped-card {
+          background: #f0f4f8;
+          border-left: 6px solid #89cff0;
+          opacity: 0.8;
+      }
+      .skipped-reason {
+          text-align: center;
+          font-size: 24px;
+          color: #266b96;
+          font-weight: bold;
+          padding: 20px 0;
+          text-shadow: 1px 1px 0 #fff;
+          font-family: "NZBZ";
+          letter-spacing: 2px;
+      }
+
       /* 卡片头部：施法者信息 */
       .action-header {
           display: flex;
@@ -290,6 +306,20 @@
     <!-- 回合分割 -->
     {{else if line.type === 'turn'}}
       <div class="turn-header">{{line.text}}</div>
+
+    <!-- 跳过行动 (被控制) -->
+    {{else if line.type === 'skipped'}}
+      <div class="action-card skipped-card">
+          <div class="action-header">
+              <div class="caster-info">
+                  <span class="av-badge">耗时 {{line.av_cost}}</span>
+                  <span class="ele-{{line.caster.element}}">{{line.caster.name}}</span>
+              </div>
+          </div>
+          <div class="skipped-reason">
+              ❄ {{line.reason}} ❄
+          </div>
+      </div>
 
     <!-- 战斗行动卡片 -->
     {{else if line.type === 'action'}}

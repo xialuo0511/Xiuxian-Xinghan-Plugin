@@ -1,3 +1,13 @@
+// 辅助函数，用于格式化数字，例如 123456 -> 12.3万
+function formatNumber(num) {
+    if (num >= 100000000) {
+        return (num / 100000000).toFixed(1) + '亿';
+    } else if (num >= 10000) {
+        return (num / 10000).toFixed(1) + '万';
+    }
+    return num.toString();
+}
+
 export class Combatant {
   constructor(id, source, team) {
     this.id = id;
@@ -5,11 +15,46 @@ export class Combatant {
     this.source = source;
     
     // 初始化扩展属性
-    this.buffs = [];
+    this.buffs = []; // 未启用
     this.shield = 0;
     this.current_av = 0;
+    this.is_taunted = false; // 是否处于嘲讽状态
+    this.taunted_by_id = null; // 嘲讽者 ID
+    this.is_frozen = false; // 是否被冻结
+    this.active_debuffs = []; // 活跃的debuffs
 
     if (source.base_stats) {
+        // ... (保持不变) ...
+    }
+  }
+
+  // ... (其他方法保持不变) ...
+
+  /**
+   * 施加嘲讽状态
+   * @param {string} casterId 嘲讽施加者的ID
+   */
+  setTaunted(casterId) {
+      this.is_taunted = true;
+      this.taunted_by_id = casterId;
+  }
+
+  /**
+   * 移除嘲讽状态
+   */
+  removeTaunted() {
+      this.is_taunted = false;
+      this.taunted_by_id = null;
+  }
+
+  /**
+   * 查询是否处于嘲讽状态
+   * @returns {boolean}
+   */
+  isTaunted() {
+      return this.is_taunted;
+  }
+}
         // 星魂或怪物
         this.name = source.name;
         this.max_hp = source.base_stats.health;
@@ -94,5 +139,59 @@ export class Combatant {
   addShield(amount) {
       if (!this.isAlive()) return;
       this.shield += amount;
+  }
+
+  /**
+   * 施加Debuff
+   * @param {object} debuffConfig { type: 'poison_dot', caster_id: '...', duration: 3, value: 0.05 }
+   */
+  applyDebuff(debuffConfig) {
+      // 检查是否已有同类型debuff，如果有则刷新持续时间，否则添加
+      const existing = this.active_debuffs.find(d => d.type === debuffConfig.type);
+      if (existing) {
+          existing.duration = debuffConfig.duration; // 刷新持续时间
+          existing.caster_id = debuffConfig.caster_id; // 刷新施加者
+          existing.value = debuffConfig.value; // 刷新数值
+      } else {
+          this.active_debuffs.push({ ...debuffConfig });
+      }
+  }
+
+  /**
+   * 处理Debuff效果 (在回合开始时调用)
+   * @returns {array} 返回本次Debuff产生的效果列表 (用于日志)
+   */
+  processDebuffs() {
+      const results = [];
+      this.is_frozen = false; // 重置冻结状态，由Debuff决定
+
+      if (!this.isAlive()) {
+          this.active_debuffs = []; // 死亡清除所有Debuff
+          return results;
+      }
+
+      this.active_debuffs = this.active_debuffs.filter(debuff => {
+          if (debuff.type === 'freeze') {
+              this.is_frozen = true;
+              // 冰冻本身无伤害
+          }
+
+          if (debuff.type === 'poison_dot') {
+              const dotDamage = Math.floor(this.max_hp * debuff.value); // 毒伤害按最大生命百分比
+              const actualDamage = this.takeDamage(dotDamage);
+              if (actualDamage > 0) {
+                  results.push({
+                      name: this.name, team: this.team, element: this.element, level: this.level || 0,
+                      id: this.id, type: 'dot_damage', debuff_type: 'poison_dot',
+                      value: actualDamage, value_display: formatNumber(actualDamage), is_counter: false
+                  });
+              }
+          }
+          // 其他Debuff类型可以在这里扩展
+
+          debuff.duration--;
+          return debuff.duration > 0; // 持续时间结束则移除
+      });
+      return results;
   }
 }

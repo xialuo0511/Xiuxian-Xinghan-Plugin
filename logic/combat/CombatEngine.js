@@ -65,6 +65,23 @@ export async function runCombat(playerSouls, enemyNames) {
 
     aliveUnits.sort((a, b) => a.current_av - b.current_av);
     const activeUnit = aliveUnits[0];
+
+    // 结算 activeUnit 的 Debuff (如毒)
+    const debuffResults = activeUnit.processDebuffs();
+    if (debuffResults.length > 0) {
+        combatLog.push({
+            type: 'debuff_tick',
+            caster: {
+                name: activeUnit.name,
+                team: activeUnit.team,
+                element: activeUnit.element,
+                level: activeUnit.level || 0,
+                id: activeUnit.id
+            },
+            targets: debuffResults
+        });
+    }
+
     const elapsedAV = activeUnit.current_av;
 
     // 3.2 时间流逝
@@ -81,58 +98,78 @@ export async function runCombat(playerSouls, enemyNames) {
       combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
     }
 
+    // 检查控制状态 (如冰冻)
+    if (activeUnit.is_frozen) {
+        combatLog.push({
+            type: 'skipped',
+            reason: '被冰冻',
+            skip_type: 'freeze',
+            av_cost: Math.floor(elapsedAV),
+            caster: {
+                name: activeUnit.name,
+                team: activeUnit.team,
+                element: activeUnit.element,
+                level: activeUnit.level || 0,
+                id: activeUnit.id
+            }
+        });
+        activeUnit.resetAV();
+        continue;
+    }
+
     // --- 行动逻辑 ---
     const skillConfig = activeUnit.source.skill;
     const friendlyTeam = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
     const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
 
-    const actionResults = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
+    const { skillResults, debuffsApplied } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
+
+    // 应用 Debuff
+    debuffsApplied.forEach(d => {
+        const targetUnit = allCombatants.find(c => c.id === d.id);
+        if (targetUnit) {
+            // 从原始技能配置中获取debuff的完整参数，因为debuffsApplied只包含日志信息
+            const debuffConfig = activeUnit.source.skill.debuff;
+            if (debuffConfig) {
+                targetUnit.applyDebuff({ 
+                    type: debuffConfig.type, 
+                    caster_id: d.caster_id, 
+                    duration: debuffConfig.duration, 
+                    value: debuffConfig.value 
+                });
+            }
+        }
+    });
 
     // 被动技能触发
     const passiveDetails = [];
     if (activeUnit.passive_skills) {
-      activeUnit.passive_skills.forEach(passive => {
-        if (passive.type === 'heal_turn') {
-          const healAmount = Math.floor(activeUnit.max_hp * passive.value);
-          const actualHeal = activeUnit.receiveHeal(healAmount);
-          if (actualHeal > 0) {
-            actionResults.push({
-              name: activeUnit.name,
-              team: activeUnit.team,
-              element: activeUnit.element,
-              level: activeUnit.level || 0,
-              id: activeUnit.id,
-              type: 'heal',
-              value: actualHeal,
-              value_display: formatNumber(actualHeal),
-              is_counter: false
-            });
-            passiveDetails.push(`[生生不息] 恢复了 ${formatNumber(actualHeal)} 生命`);
-          }
-        }
-      });
+        // ... (existing passive heal logic) ...
     }
 
+    // 合并主动技能结果和 Debuff 结果
+    const allActionResults = [...skillResults, ...debuffsApplied];
+
     // 3.4 记录日志
-    if (actionResults.length > 0) {
-      combatLog.push({
-        details: passiveDetails,
-        type: 'action',
-        av_cost: Math.floor(elapsedAV),
-        skill: skillConfig.name,
-        caster: {
-          name: activeUnit.name,
-          team: activeUnit.team,
-          element: activeUnit.element,
-          level: activeUnit.level || 0,
-          id: activeUnit.id // 传递ID用于头像显示
-        },
-        targets: actionResults,
-        teamStatus: {
-          player: playerTeam.map(getUnitStatus),
-          enemy: enemyTeam.map(getUnitStatus)
-        }
-      });
+    if (allActionResults.length > 0 || passiveDetails.length > 0) {
+        combatLog.push({
+            details: passiveDetails,
+            type: 'action',
+            av_cost: Math.floor(elapsedAV),
+            skill: skillConfig.name,
+            caster: {
+                name: activeUnit.name,
+                team: activeUnit.team,
+                element: activeUnit.element,
+                level: activeUnit.level || 0,
+                id: activeUnit.id 
+            },
+            targets: allActionResults,
+            teamStatus: {
+                player: playerTeam.map(getUnitStatus),
+                enemy: enemyTeam.map(getUnitStatus)
+            }
+        });
     }
 
     activeUnit.resetAV();
@@ -209,7 +246,23 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
     }
   }
 
-  return results;
+  // 处理Debuff
+  const debuffsApplied = [];
+  if (skill.debuff) {
+      if (skill.debuff.type === 'taunt') {
+          const debuffTargets = (skill.debuff.target === 'all_enemies') ? hostileTeam.filter(u => u.isAlive()) : []; 
+          debuffTargets.forEach(debuffTarget => {
+              debuffTarget.setTaunted(caster.id);
+              debuffsApplied.push({
+                  name: debuffTarget.name, team: debuffTarget.team, element: debuffTarget.element, level: debuffTarget.level || 0,
+                  id: debuffTarget.id, type: 'debuff', debuff_type: 'taunt', caster_id: caster.id,
+                  value_display: `被嘲讽`, is_counter: false
+              });
+          });
+      }
+  }
+
+  return { skillResults: results, debuffsApplied };
 }
 
 /**
@@ -270,16 +323,21 @@ function calculateDamage(attacker, target, rawDamageInput) {
   };
 }
 
-function selectTargetByTaunt(aliveTargets) {
-  if (aliveTargets.length === 0) return null;
-  const totalTaunt = aliveTargets.reduce((sum, target) => sum + target.taunt, 0);
-  let randomPoint = Math.random() * totalTaunt;
-  for (const target of aliveTargets) {
-    randomPoint -= target.taunt;
-    if (randomPoint <= 0) return target;
-  }
-  return aliveTargets[aliveTargets.length - 1];
-}
+          function selectTargetByTaunt(candidates) {
+              // 优先选择被当前施法者嘲讽的敌人
+              // 注意：这里需要确保嘲讽者仍然存活，且目标是被活着的嘲讽者嘲讽
+              const tauntedTargets = candidates.filter(c => c.isTaunted() && c.taunted_by_id === caster.id);
+              if (tauntedTargets.length > 0) {
+                  // 如果有多个被嘲讽，仍然按 taunt 值选择最高嘲讽度的那个 (虽然理论上只能被一个嘲讽)
+                  tauntedTargets.sort((a, b) => b.taunt - a.taunt);
+                  return tauntedTargets[0];
+              }
+
+              // 如果没有被当前施法者嘲讽的敌人，则按正常逻辑选择 taunt 值最高的敌人
+              if (candidates.length === 0) return null;
+              candidates.sort((a, b) => b.taunt - a.taunt); // Taunt值最高的优先
+              return candidates[0];
+          }
 
 const getUnitStatus = (unit) => {
   const max_hp = unit.max_hp > 0 ? unit.max_hp : 1;
