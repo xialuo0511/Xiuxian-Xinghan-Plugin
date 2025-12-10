@@ -2,7 +2,7 @@
   purchaseLimit: 1
   price:
     - name: "寒江鲤"
-      amount: 20
+      amount: 10
     - name: "赤尾鲢"
       amount: 5
 

@@ -265,7 +265,7 @@ export async function goFishing(userId) {
 
   const baitAmount = await DAL.getNajieItemAmount(userId, bait.name, '活动');
   if (baitAmount < 1) {
-    return { success: false, message: `你的【${bait.name}】已经用完了，去渔友商行补充一些吧。` };
+    return { success: false, message: `你的【${bait.name}】已经用完了，可通过【修仙签到】或【秘境探索】获取。` };
   }
 
   // 消耗一个鱼饵
