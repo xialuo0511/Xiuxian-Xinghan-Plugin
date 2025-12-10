@@ -13,6 +13,19 @@ const elementCounterMap = {
 };
 const COUNTER_BONUS = 1.5; // 克制伤害提升
 
+const EFFECT_CONFIG = {
+  'poison_dot': { name: '剧毒', is_debuff: true, icon: '☠️' },
+  'burn_dot': { name: '灼烧', is_debuff: true, icon: '🔥' },
+  'freeze': { name: '冰冻', is_debuff: true, icon: '❄️' },
+  'curse_water': { name: '诅咒', is_debuff: true, icon: '💧' },
+  'taunt': { name: '嘲讽', is_debuff: true, icon: '💢' },
+  'stun': { name: '晕眩', is_debuff: true, icon: '💫' },
+  'shield': { name: '护盾', is_debuff: false, icon: '🛡️' },
+  'atk_up': { name: '攻击↑', is_debuff: false, icon: '⚔️' },
+  'def_up': { name: '防御↑', is_debuff: false, icon: '🛡️' },
+  'heal_over_time': { name: '再生', is_debuff: false, icon: '🌿' }
+};
+
 /**
  * 战斗引擎 (Action Value System / 跑条制)
  * v4.0: 全面适配玩家PVP与星魂PVE
@@ -251,28 +264,81 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
     }
   }
 
-  // 处理Debuff
-  const debuffsApplied = [];
-  if (skill.debuff) {
-    if (skill.debuff.type === 'taunt') {
-      const debuffTargets = (skill.debuff.target === 'all_enemies') ? hostileTeam.filter(u => u.isAlive()) : [];
-      debuffTargets.forEach(debuffTarget => {
-        debuffTarget.setTaunted(caster.id);
-        debuffsApplied.push({
-          name: debuffTarget.name,
-          team: debuffTarget.team,
-          element: debuffTarget.element,
-          level: debuffTarget.level || 0,
-          id: debuffTarget.id,
-          type: 'debuff',
-          debuff_type: 'taunt',
-          caster_id: caster.id,
-          value_display: `被嘲讽`,
-          is_counter: false
+    // 处理Debuff
+
+    const debuffsApplied = [];
+
+    if (skill.debuff) {
+
+        // 确定Debuff目标
+
+        let debuffTargets = [];
+
+        // 如果配置显式指定了目标类型，则按配置选
+
+        if (skill.debuff.target === 'all_enemies') {
+
+            debuffTargets = hostileTeam.filter(u => u.isAlive());
+
+        } 
+
+        // 否则默认跟随技能的主要目标
+
+        else {
+
+            debuffTargets = targets;
+
+        }
+
+  
+
+        debuffTargets.forEach(debuffTarget => {
+
+            // 嘲讽特殊处理 (直接生效，不走applyDebuff通用流程？或者通用流程也处理？)
+
+            // 为了统一，我们在 runCombat 的循环里统一 applyDebuff
+
+            // 这里只负责生成“意图”
+
+            if (skill.debuff.type === 'taunt') {
+
+                debuffTarget.setTaunted(caster.id);
+
+            }
+
+  
+
+            const effectConfig = EFFECT_CONFIG[skill.debuff.type] || { name: skill.debuff.type, is_debuff: true };
+
+            
+
+            debuffsApplied.push({
+
+                name: debuffTarget.name, team: debuffTarget.team, element: debuffTarget.element, level: debuffTarget.level || 0,
+
+                id: debuffTarget.id, 
+
+                type: 'debuff_application', // 标记为状态施加
+
+                debuff_type: skill.debuff.type, 
+
+                caster_id: caster.id,
+
+                value: 0,
+
+                value_display: `${effectConfig.is_debuff ? '😈' : '✨'} ${effectConfig.name} (${skill.debuff.duration}回合)`,
+
+                duration: skill.debuff.duration,
+
+                is_counter: false,
+
+                is_debuff: effectConfig.is_debuff
+
+            });
+
         });
-      });
+
     }
-  }
 
   return { skillResults: results, debuffsApplied };
 }
@@ -357,6 +423,23 @@ const getUnitStatus = (unit) => {
   let hp_percent = (current_hp / max_hp) * 100;
   let shield_percent = (unit.shield / max_hp) * 100;
 
+  // 映射 Buff/Debuff
+  const effects = (unit.active_debuffs || []).map(d => {
+      const config = EFFECT_CONFIG[d.type] || { name: d.type, is_debuff: true, icon: '❓' };
+      return {
+          type: d.type,
+          name: config.name,
+          icon: config.icon,
+          duration: d.duration,
+          is_debuff: config.is_debuff
+      };
+  });
+
+  // 如果有护盾，也视为一种状态
+  if (unit.shield > 0) {
+      effects.push({ type: 'shield', name: '护盾', icon: '🛡️', duration: '∞', is_debuff: false });
+  }
+
   return {
     name: unit.name,
     hp: current_hp,
@@ -367,7 +450,8 @@ const getUnitStatus = (unit) => {
     hp_percent: Math.max(0, Math.min(hp_percent, 100)),
     shield_percent: Math.min(shield_percent, 100),
     av: Math.floor(unit.current_av),
-    id: unit.id // 用于前端显示头像
+    id: unit.id, // 用于前端显示头像
+    effects: effects // 新增：状态列表
   };
 };
 

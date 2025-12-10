@@ -298,6 +298,51 @@
       .dead { opacity: 0.6; text-decoration: line-through; color: #999; }
       .dead .hp-track { opacity: 0.3; }
 
+      .hp-text {
+          position: absolute;
+          width: 100%;
+          text-align: center;
+          font-size: 12px;
+          color: #fff;
+          text-shadow: 1px 1px 2px #000;
+          z-index: 2;
+      }
+
+      .status-effects {
+          display: flex;
+          gap: 4px;
+          margin-top: 4px;
+          flex-wrap: wrap;
+          justify-content: center;
+      }
+      .effect-badge {
+          font-size: 12px;
+          padding: 2px 4px;
+          border-radius: 4px;
+          color: #fff;
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+          box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      }
+      .effect-badge.debuff {
+          background: rgba(192, 57, 43, 0.9);
+          border: 1px solid #e74c3c;
+      }
+      .effect-badge.buff {
+          background: rgba(39, 174, 96, 0.9);
+          border: 1px solid #2ecc71;
+      }
+      .effect-duration {
+          margin-left: 3px;
+          font-size: 10px;
+          background: rgba(0,0,0,0.2);
+          padding: 0 3px;
+          border-radius: 50%;
+      }
+
+      .footer {
+
   </style>
 </head>
 <body>
@@ -361,6 +406,8 @@
                     {{if target.type === 'damage'}}-{{target.value_display}}
                     {{else if target.type === 'heal'}}+{{target.value_display}}
                     {{else if target.type === 'shield'}}🛡{{target.value_display}}
+                    {{else if target.type === 'debuff_application'}}
+                        <span style="font-size: 18px; color: #8e44ad;">{{target.value_display}}</span>
                     {{/if}}
                 </div>
             </div>
@@ -381,30 +428,52 @@
             <!-- 我方状态 -->
             <div class="team-col">
                 {{each line.teamStatus.player unit}}
-                <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
-                    <span class="unit-name">{{unit.name}}</span>
-                    <div class="hp-track">
-                        <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
-                        {{if unit.shield > 0}}
-                        <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
-                        {{/if}}
+                <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
+                    <div class="unit-status-row">
+                        <span class="unit-name">{{unit.name}}</span>
+                        <div class="hp-track">
+                            <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
+                            {{if unit.shield > 0}}
+                            <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                            {{/if}}
+                        </div>
+                        <span class="hp-val">{{unit.hp_display}}</span>
                     </div>
-                    <span class="hp-val">{{unit.hp_display}}</span>
+                    {{if unit.effects && unit.effects.length > 0}}
+                    <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
+                      {{each unit.effects eff}}
+                      <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
+                        {{eff.icon}} {{if eff.duration !== '∞'}}<span class="effect-duration">{{eff.duration}}</span>{{/if}}
+                      </div>
+                      {{/each}}
+                    </div>
+                    {{/if}}
                 </div>
                 {{/each}}
             </div>
             <!-- 敌方状态 -->
             <div class="team-col">
                 {{each line.teamStatus.enemy unit}}
-                <div class="unit-status-row {{if unit.hp <= 0}}dead{{/if}}">
-                    <span class="unit-name">{{unit.name}}</span>
-                    <div class="hp-track">
-                        <div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div>
-                        {{if unit.shield > 0}}
-                        <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
-                        {{/if}}
+                <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
+                    <div class="unit-status-row">
+                        <span class="unit-name">{{unit.name}}</span>
+                        <div class="hp-track">
+                            <div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div>
+                            {{if unit.shield > 0}}
+                            <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                            {{/if}}
+                        </div>
+                        <span class="hp-val">{{unit.hp_display}}</span>
                     </div>
-                    <span class="hp-val">{{unit.hp_display}}</span>
+                    {{if unit.effects && unit.effects.length > 0}}
+                    <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
+                      {{each unit.effects eff}}
+                      <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
+                        {{eff.icon}} {{if eff.duration !== '∞'}}<span class="effect-duration">{{eff.duration}}</span>{{/if}}
+                      </div>
+                      {{/each}}
+                    </div>
+                    {{/if}}
                 </div>
                 {{/each}}
             </div>
