@@ -51,7 +51,7 @@
 - name: "咒师·壬水"
   class: "活动"
   desc: "水之法则凝聚的玄冥战魂，上善若水。"
-  mechanics: "召唤滔天巨浪，对敌方全体造成伤害。"
+  mechanics: "召唤滔天巨浪，对敌方全体造成伤害，并为敌人施加负面效果。"
   lore: "诞生于北冥深海的幽寒之灵，掌握着水的变幻莫测。水可至柔滋养万物，亦可至刚席卷天下。咒师深谙此道，平时静若处子，动则如怒海狂涛。其绝技「弱水三千」能召唤来自九幽的弱水，冲击敌方全体，且弱水沉重，一旦沾染，难以摆脱。"
   eventKey: "wanxiang_tianji_2025_10"
   base_stats: { attack: 140, defense: 100, health: 1100, resistance: 0.1, speed: 105, taunt: 100, element: "水", crit_rate: 0.1, crit_dmg: 1.5 }
