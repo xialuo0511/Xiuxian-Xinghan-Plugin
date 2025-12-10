@@ -68,7 +68,30 @@ export class NotifierTask extends plugin {
           finalMsg.push(img);
         } else {
           // 普通文本
-          finalMsg.push(messageContent);
+          let textToSend = messageContent;
+          
+          // 修复：处理异常的消息对象格式，防止 "converter is not a function"
+          if (typeof messageContent === 'object' && messageContent !== null) {
+              // 如果不是标准Segment（即没有 type 字段）
+              if (!messageContent.type) {
+                  // 尝试从常见结构中提取文本
+                  if (messageContent.data && messageContent.data.message) {
+                      textToSend = messageContent.data.message;
+                  } else if (messageContent.text) {
+                      textToSend = messageContent.text;
+                  } else if (messageContent.content) {
+                      textToSend = messageContent.content;
+                  } else {
+                      // 实在无法识别结构，转为字符串以确保能发出且不报错
+                      try {
+                          textToSend = JSON.stringify(messageContent);
+                      } catch (e) {
+                          textToSend = String(messageContent);
+                      }
+                  }
+              }
+          }
+          finalMsg.push(textToSend);
         }
 
         // 3. 统一发送
