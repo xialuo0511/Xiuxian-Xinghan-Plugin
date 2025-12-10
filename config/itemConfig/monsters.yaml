@@ -152,7 +152,7 @@
   skill:
     name: "影杀"
     type: "damage"
-    target: "lowest_hp_ally" # 借用逻辑，攻击血最少的
+    target: "lowest_hp_enemy" # 修正：攻击血量最低的敌人
     value_type: "atk"
     value: 2.5
     detailed_mechanics: "【影杀】对生命值最低的目标造成 250% 攻击力的伤害。"
