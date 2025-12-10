@@ -103,7 +103,6 @@
 
       .skipped-card {
           background: #f0f4f8;
-          border-left: 6px solid #89cff0;
           opacity: 0.8;
       }
       .skipped-reason {
@@ -362,7 +361,7 @@
 
     <!-- 跳过行动 (被控制) -->
     {{else if line.type === 'skipped'}}
-      <div class="action-card skipped-card">
+      <div class="action-card skipped-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
           <div class="action-header">
               <div class="caster-info">
                   <span class="av-badge">耗时 {{line.av_cost}}</span>

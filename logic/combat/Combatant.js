@@ -162,7 +162,7 @@ export class Combatant {
           existing.caster_id = debuffConfig.caster_id;
           existing.value = debuffConfig.value;
       } else {
-          this.active_debuffs.push({ ...debuffConfig });
+          this.active_debuffs.push({ ...debuffConfig, just_applied: true });
       }
   }
 
@@ -187,8 +187,10 @@ export class Combatant {
           if (debuff.type === 'freeze') {
               this.is_frozen = true;
           } else if (debuff.type === 'curse_water') {
-              // 50% 概率晕眩
-              if (Math.random() < 0.5) {
+              // 50% 概率晕眩 (跳过刚施加的当回合)
+              if (debuff.just_applied) {
+                  debuff.just_applied = false;
+              } else if (Math.random() < 0.5) {
                   this.is_stunned = true;
                   results.push({
                       name: this.name, team: this.team, element: this.element, level: this.level || 0,
