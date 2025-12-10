@@ -319,9 +319,10 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
         is_counter: false
       });
       
-      // ★ 春风化雨
-      if (caster.global_buffs && caster.global_buffs.includes('shield_heal')) {
-          const healAmt = Math.floor(baseValue * 0.15);
+      // ★ 春风化雨 (可叠加)
+      const healCount = (caster.global_buffs || []).filter(b => b === 'shield_heal').length;
+      if (healCount > 0) {
+          const healAmt = Math.floor(baseValue * 0.15 * healCount);
           const healed = target.receiveHeal(healAmt);
           results.push({
               name: target.name, team: target.team, element: target.element, level: target.level || 0,
@@ -335,8 +336,9 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
     // 处理Debuff
     const debuffsApplied = [];
 
-    // ★★★ 破势重压 (攻击施加虚弱)
-    if (skill.type === 'damage' && caster.global_buffs && caster.global_buffs.includes('weakness_on_hit')) {
+    // ★★★ 破势重压 (攻击施加虚弱 - 可叠加持续时间)
+    const weaknessCount = (caster.global_buffs || []).filter(b => b === 'weakness_on_hit').length;
+    if (skill.type === 'damage' && weaknessCount > 0) {
         targets.forEach(t => {
             if (!t.isAlive()) return;
             debuffsApplied.push({
@@ -346,8 +348,8 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
                 debuff_type: 'weakness',
                 caster_id: caster.id,
                 value: 0,
-                value_display: `📉 虚弱 (1回合)`,
-                duration: 1,
+                value_display: `📉 虚弱 (${weaknessCount}回合)`,
+                duration: 1 * weaknessCount,
                 is_counter: false,
                 is_debuff: true
             });
@@ -451,17 +453,22 @@ function calculateDamage(attacker, target, rawDamageInput) {
   // --- 全局 Buff/Debuff 处理 ---
   const attackerBuffs = attacker.global_buffs || [];
   
-  // ★ 锋锐之气
-  if (attackerBuffs.includes('damage_up_5')) {
-      globalMultiplier += 0.05;
+  // ★ 锋锐之气 (可叠加)
+  const dmgUpCount = attackerBuffs.filter(b => b === 'damage_up_5').length;
+  if (dmgUpCount > 0) {
+      globalMultiplier += 0.05 * dmgUpCount;
   }
   
-  // ★★★ 绝境爆发
-  if (attackerBuffs.includes('low_hp_burst')) {
+  // ★★★ 绝境爆发 (可叠加)
+  const burstCount = attackerBuffs.filter(b => b === 'low_hp_burst').length;
+  if (burstCount > 0) {
       const hpPct = attacker.current_hp / attacker.max_hp;
-      if (hpPct < 0.3) globalMultiplier += 1.5;
-      else if (hpPct < 0.5) globalMultiplier += 1.0;
-      else if (hpPct < 0.7) globalMultiplier += 0.5;
+      let burstBonus = 0;
+      if (hpPct < 0.3) burstBonus = 1.5;
+      else if (hpPct < 0.5) burstBonus = 1.0;
+      else if (hpPct < 0.7) burstBonus = 0.5;
+      
+      globalMultiplier += burstBonus * burstCount;
   }
   
   // Debuff: 虚弱 (输出降低)
@@ -508,11 +515,12 @@ function calculateDamage(attacker, target, rawDamageInput) {
 
   // --- 受击触发类 Buff ---
   const targetBuffs = target.global_buffs || [];
-  if (targetBuffs.includes('speed_up_on_hit')) {
+  const speedUpCount = targetBuffs.filter(b => b === 'speed_up_on_hit').length;
+  
+  if (speedUpCount > 0) {
       // 激流勇进：受击加速 (叠加)
-      // 需要在 Combatant 中实现 addSpeedStack
       if (target.addSpeedStack) {
-          target.addSpeedStack(0.05); 
+          target.addSpeedStack(0.05 * speedUpCount); 
       }
   }
 
