@@ -265,7 +265,27 @@ export async function goFishing(userId) {
 
   const baitAmount = await DAL.getNajieItemAmount(userId, bait.name, '活动');
   if (baitAmount < 1) {
-    return { success: false, message: `你的【${bait.name}】已经用完了，可通过【修仙签到】或【秘境探索】获取。` };
+    // 检查是否有其他鱼饵
+    const playerData = await DAL.getAllPlayerData(userId);
+    const activityItems = playerData?.najie?.['活动'] || [];
+    
+    const otherBaits = [];
+    for (const b of allBaits) {
+        if (b.name === bait.name) continue; // 跳过当前
+        const item = activityItems.find(i => i.name === b.name);
+        if (item && item.数量 > 0) {
+            otherBaits.push(`${b.name}x${item.数量}`);
+        }
+    }
+
+    if (otherBaits.length > 0) {
+        return { 
+            success: false, 
+            message: `你的【${bait.name}】已用尽。背包中尚有：${otherBaits.join('，')}。\n请发送【#鱼饵装备+名称】切换。` 
+        };
+    } else {
+        return { success: false, message: `你的【${bait.name}】已经用完了，可通过【修仙签到】或【秘境探索】获取。` };
+    }
   }
 
   // 消耗一个鱼饵
