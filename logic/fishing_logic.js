@@ -48,9 +48,9 @@ export async function getFishShopData(userId) {
 
   const shopItems = fishShopConfig.map(item => {
     const enhancedPrice = item.price.map(cost => {
-       const found = activityItems.find(i => i.name === cost.name);
-       const owned = found ? found.数量 : 0;
-       return { ...cost, owned };
+      const found = activityItems.find(i => i.name === cost.name);
+      const owned = found ? found.数量 : 0;
+      return { ...cost, owned };
     });
 
     return {
@@ -210,8 +210,8 @@ export async function getFishingStatus(userId) {
   ];
 
   for (const baitItem of dropsConfig) {
-      const current = parseInt(await redisClient.hGet(dropLimitKey, baitItem.name) || '0');
-      dailyDrops.push({ name: baitItem.name, current, max: baitItem.dailyCap });
+    const current = parseInt(await redisClient.hGet(dropLimitKey, baitItem.name) || '0');
+    dailyDrops.push({ name: baitItem.name, current, max: baitItem.dailyCap });
   }
 
   return {
@@ -319,9 +319,9 @@ export async function checkSecretPlaceBaitDrops(userId, eventKey) {
   }
 
   const drops = [
-    { name: '极寒冰蚕', chance: 0.25, dailyCap: 5 },
-    { name: '妖兽内丹碎片', chance: 0.15, dailyCap: 5 },
-    { name: '万灵诱引散', chance: 0.05, dailyCap: 5 }
+    { name: '极寒冰蚕', chance: 0.85, dailyCap: 5 },
+    { name: '妖兽内丹碎片', chance: 0.75, dailyCap: 5 },
+    { name: '万灵诱引散', chance: 0.65, dailyCap: 5 }
   ];
 
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
