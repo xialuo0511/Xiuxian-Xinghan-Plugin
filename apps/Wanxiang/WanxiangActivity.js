@@ -363,6 +363,12 @@ export class WanxiangActivity extends plugin {
         await tempClient.disconnect();
 
         let buffMsg = `战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n\n【天机赐福】${pickCount > 1 ? ` (本层可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
+        
+        choices.forEach((b, i) => {
+          const stars = '★'.repeat(b.rarity || 1);
+          buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n   ${b.desc}\n`;
+        });
+
         if (runData.refresh_count > 0) {
             buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
         }
