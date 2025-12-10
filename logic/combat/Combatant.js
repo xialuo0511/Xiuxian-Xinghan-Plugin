@@ -15,46 +15,17 @@ export class Combatant {
     this.source = source;
     
     // 初始化扩展属性
-    this.buffs = []; // 未启用
+    this.buffs = []; // 暂未启用
     this.shield = 0;
     this.current_av = 0;
+    
+    // 控制状态
     this.is_taunted = false; // 是否处于嘲讽状态
     this.taunted_by_id = null; // 嘲讽者 ID
     this.is_frozen = false; // 是否被冻结
     this.active_debuffs = []; // 活跃的debuffs
 
     if (source.base_stats) {
-        // ... (保持不变) ...
-    }
-  }
-
-  // ... (其他方法保持不变) ...
-
-  /**
-   * 施加嘲讽状态
-   * @param {string} casterId 嘲讽施加者的ID
-   */
-  setTaunted(casterId) {
-      this.is_taunted = true;
-      this.taunted_by_id = casterId;
-  }
-
-  /**
-   * 移除嘲讽状态
-   */
-  removeTaunted() {
-      this.is_taunted = false;
-      this.taunted_by_id = null;
-  }
-
-  /**
-   * 查询是否处于嘲讽状态
-   * @returns {boolean}
-   */
-  isTaunted() {
-      return this.is_taunted;
-  }
-}
         // 星魂或怪物
         this.name = source.name;
         this.max_hp = source.base_stats.health;
@@ -140,6 +111,35 @@ export class Combatant {
       if (!this.isAlive()) return;
       this.shield += amount;
   }
+
+  // --- 嘲讽机制 ---
+
+  /**
+   * 施加嘲讽状态
+   * @param {string} casterId 嘲讽施加者的ID
+   */
+  setTaunted(casterId) {
+      this.is_taunted = true;
+      this.taunted_by_id = casterId;
+  }
+
+  /**
+   * 移除嘲讽状态
+   */
+  removeTaunted() {
+      this.is_taunted = false;
+      this.taunted_by_id = null;
+  }
+
+  /**
+   * 查询是否处于嘲讽状态
+   * @returns {boolean}
+   */
+  isTaunted() {
+      return this.is_taunted;
+  }
+
+  // --- Debuff 机制 ---
 
   /**
    * 施加Debuff
