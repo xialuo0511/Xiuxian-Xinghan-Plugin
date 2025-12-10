@@ -106,6 +106,37 @@
           font-size: 14px;
           color: #a88763;
       }
+
+      .info-section {
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid #d2b48c;
+          border-radius: 8px;
+          padding: 15px;
+          margin-top: 20px;
+      }
+      .limit-title {
+          font-weight: bold;
+          margin-top: 10px;
+          margin-bottom: 5px;
+          color: #6a3906;
+          font-size: 15px;
+      }
+      .drop-limits {
+          background: rgba(0,0,0,0.03);
+          padding: 10px;
+          border-radius: 6px;
+      }
+      .limit-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 14px;
+          margin-bottom: 4px;
+          color: #555;
+      }
+      .limit-reached {
+          color: #c0392b;
+          font-weight: bold;
+      }
   </style>
 </head>
 <body>
@@ -143,8 +174,32 @@
       {{/if}}
     </div>
   </div>
-  <div class="footer-hint">
-    <p>发送【#钓鱼】开始垂钓 | 发送【#钓鱼图鉴】查看所有渔获</p>
+
+  <div class="info-section">
+      <h2 class="gear-title">资源获取指引</h2>
+      <p class="gear-desc"><b>鱼饵获取：</b>可通过【修仙签到】或【秘境探索】获得。</p>
+      
+      <div class="drop-limits">
+          <p class="limit-title">今日秘境掉落进度 (每日上限)：</p>
+          {{each daily_drops item}}
+          <div class="limit-row">
+              <span>{{item.name}}</span>
+              <span class="{{if item.current >= item.max}}limit-reached{{/if}}">{{item.current}} / {{item.max}}</span>
+          </div>
+          {{/each}}
+      </div>
+  </div>
+
+  <div class="info-section">
+      <h2 class="gear-title">活动指令</h2>
+      <div class="command-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top:10px;">
+          <div class="cmd-item"><span class="cmd-code" style="color:#c0392b; font-weight:bold;">#钓鱼</span> <span class="cmd-desc" style="color:#666; font-size:13px;">消耗鱼饵垂钓</span></div>
+          <div class="cmd-item"><span class="cmd-code" style="color:#c0392b; font-weight:bold;">#渔友商行</span> <span class="cmd-desc" style="color:#666; font-size:13px;">打开商店兑换</span></div>
+          <div class="cmd-item"><span class="cmd-code" style="color:#c0392b; font-weight:bold;">#钓鱼图鉴</span> <span class="cmd-desc" style="color:#666; font-size:13px;">查看渔获记录</span></div>
+          <div class="cmd-item"><span class="cmd-code" style="color:#c0392b; font-weight:bold;">#钓鱼竿装备 [名]</span> <span class="cmd-desc" style="color:#666; font-size:13px;">更换鱼竿</span></div>
+          <div class="cmd-item"><span class="cmd-code" style="color:#c0392b; font-weight:bold;">#鱼饵装备 [名]</span> <span class="cmd-desc" style="color:#666; font-size:13px;">更换鱼饵</span></div>
+          <div class="cmd-item"><span class="cmd-code" style="color:#c0392b; font-weight:bold;">#渔获兑换 [物品]</span> <span class="cmd-desc" style="color:#666; font-size:13px;">快捷兑换</span></div>
+      </div>
   </div>
 </div>
 </body>

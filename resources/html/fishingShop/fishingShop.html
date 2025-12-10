@@ -136,9 +136,12 @@
       <p class="item-name">{{item.name}}</p>
       <p class="item-desc">{{item.desc || '一种珍稀的宝物。'}}</p>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
-        <div class="item-price">
+        <div class="item-price" style="flex: 1; margin-right: 10px;">
           {{each item.price cost}}
-          <span>{{cost.name}} x{{cost.amount}}</span>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 2px;">
+            <span>{{cost.name}} x{{cost.amount}}</span>
+            <span style="font-weight: normal; color: {{if cost.owned < cost.amount}}#c0392b{{else}}#95a5a6{{/if}};">(有:{{cost.owned}})</span>
+          </div>
           {{/each}}
         </div>
         <div class="item-limit">

@@ -45,10 +45,19 @@ export async function getFishShopData(userId) {
   const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
   const purchaseHistory = await redis.hGetAll(purchaseHistoryKey);
 
-  const shopItems = fishShopConfig.map(item => ({
-    ...item,
-    purchased: parseInt(purchaseHistory[item.name] || '0')
-  }));
+  const shopItems = fishShopConfig.map(item => {
+    const enhancedPrice = item.price.map(cost => {
+       const found = activityItems.find(i => i.name === cost.name);
+       const owned = found ? found.数量 : 0;
+       return { ...cost, owned };
+    });
+
+    return {
+      ...item,
+      price: enhancedPrice,
+      purchased: parseInt(purchaseHistory[item.name] || '0')
+    };
+  });
 
   return {
     ownedFish: ownedFish,
@@ -189,10 +198,26 @@ export async function getFishingStatus(userId) {
     baitAmount = await DAL.getNajieItemAmount(userId, bait.name, '活动');
   }
 
+  // 获取今日秘境鱼饵掉落情况
+  const today = new Date().toISOString().slice(0, 10);
+  const dropLimitKey = `XinghanXiuxian:secret_place_bait_drops:${userId}:${today}`;
+  const dailyDrops = [];
+  const dropsConfig = [
+    { name: '极寒冰蚕', dailyCap: 5 },
+    { name: '妖兽内丹碎片', dailyCap: 5 },
+    { name: '万灵诱引散', dailyCap: 5 }
+  ];
+
+  for (const baitItem of dropsConfig) {
+      const current = parseInt(await redis.hGet(dropLimitKey, baitItem.name) || '0');
+      dailyDrops.push({ name: baitItem.name, current, max: baitItem.dailyCap });
+  }
+
   return {
     rod,
     bait,
-    bait_amount: baitAmount // 将数量也一并返回
+    bait_amount: baitAmount, // 将数量也一并返回
+    daily_drops: dailyDrops
   };
 }
 
