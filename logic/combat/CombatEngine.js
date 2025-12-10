@@ -132,6 +132,10 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = []) {
                     element: activeUnit.element,
                     level: activeUnit.level || 0,
                     id: activeUnit.id
+                },
+                teamStatus: {
+                  player: playerTeam.map(getUnitStatus),
+                  enemy: enemyTeam.map(getUnitStatus)
                 }
             });
             activeUnit.resetAV();

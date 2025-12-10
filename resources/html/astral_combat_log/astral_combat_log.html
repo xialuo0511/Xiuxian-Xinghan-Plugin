@@ -371,6 +371,61 @@
           <div class="skipped-reason">
               ❄ {{line.reason}} ❄
           </div>
+
+        <div class="status-panel">
+            <!-- 我方状态 -->
+            <div class="team-col">
+                {{each line.teamStatus.player unit}}
+                <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
+                    <div class="unit-status-row">
+                        <span class="unit-name">{{unit.name}}</span>
+                        <div class="hp-track">
+                            <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
+                            {{if unit.shield > 0}}
+                            <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                            {{/if}}
+                        </div>
+                        <span class="hp-val">{{unit.hp_display}}</span>
+                    </div>
+                    {{if unit.effects && unit.effects.length > 0}}
+                    <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
+                      {{each unit.effects eff}}
+                      <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
+                        {{eff.icon}} {{if eff.duration !== '∞'}}<span class="effect-duration">{{eff.duration}}</span>{{/if}}
+                      </div>
+                      {{/each}}
+                    </div>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+            <!-- 敌方状态 -->
+            <div class="team-col">
+                {{each line.teamStatus.enemy unit}}
+                <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
+                    <div class="unit-status-row">
+                        <span class="unit-name">{{unit.name}}</span>
+                        <div class="hp-track">
+                            <div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div>
+                            {{if unit.shield > 0}}
+                            <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                            {{/if}}
+                        </div>
+                        <span class="hp-val">{{unit.hp_display}}</span>
+                    </div>
+                    {{if unit.effects && unit.effects.length > 0}}
+                    <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
+                      {{each unit.effects eff}}
+                      <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
+                        {{eff.icon}} {{if eff.duration !== '∞'}}<span class="effect-duration">{{eff.duration}}</span>{{/if}}
+                      </div>
+                      {{/each}}
+                    </div>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
       </div>
 
     <!-- 战斗行动卡片 -->
