@@ -98,25 +98,26 @@ export async function runCombat(playerSouls, enemyNames) {
       combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
     }
 
-    // 检查控制状态 (如冰冻)
-    if (activeUnit.is_frozen) {
-      combatLog.push({
-        type: 'skipped',
-        reason: '被冰冻',
-        skip_type: 'freeze',
-        av_cost: Math.floor(elapsedAV),
-        caster: {
-          name: activeUnit.name,
-          team: activeUnit.team,
-          element: activeUnit.element,
-          level: activeUnit.level || 0,
-          id: activeUnit.id
+        // 检查控制状态 (如冰冻/晕眩)
+        if (activeUnit.is_frozen || activeUnit.is_stunned) {
+            const reason = activeUnit.is_frozen ? '被冰冻' : '被晕眩';
+            const type = activeUnit.is_frozen ? 'freeze' : 'stun';
+            combatLog.push({
+                type: 'skipped',
+                reason: reason,
+                skip_type: type,
+                av_cost: Math.floor(elapsedAV),
+                caster: {
+                    name: activeUnit.name,
+                    team: activeUnit.team,
+                    element: activeUnit.element,
+                    level: activeUnit.level || 0,
+                    id: activeUnit.id
+                }
+            });
+            activeUnit.resetAV();
+            continue;
         }
-      });
-      activeUnit.resetAV();
-      continue;
-    }
-
     // --- 行动逻辑 ---
     const skillConfig = activeUnit.source.skill;
     const friendlyTeam = (activeUnit.team === 'player') ? playerTeam : enemyTeam;

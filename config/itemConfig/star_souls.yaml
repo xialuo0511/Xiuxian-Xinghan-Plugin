@@ -61,7 +61,8 @@
     target: "all_enemies"
     value_type: "atk"
     value: 0.8
-    detailed_mechanics: "【弱水三千】对敌方全体造成 80% 攻击力的伤害。"
+    debuff: { type: "curse_water", target: "all_enemies", duration: 2, value: 0 }
+    detailed_mechanics: "【弱水三千】对敌方全体造成 80% 攻击力的伤害，并施加持续2回合的【诅咒之水】（减速15%，回合结束50%概率晕眩）。"
 
 - name: "炎君·丙火"
   class: "活动"

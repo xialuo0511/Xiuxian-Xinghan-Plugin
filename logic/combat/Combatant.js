@@ -23,6 +23,7 @@ export class Combatant {
     this.is_taunted = false; // 是否处于嘲讽状态
     this.taunted_by_id = null; // 嘲讽者 ID
     this.is_frozen = false; // 是否被冻结
+    this.is_stunned = false; // 是否被晕眩
     this.active_debuffs = []; // 活跃的debuffs
 
     if (source.base_stats) {
@@ -146,12 +147,20 @@ export class Combatant {
    * @param {object} debuffConfig { type: 'poison_dot', caster_id: '...', duration: 3, value: 0.05 }
    */
   applyDebuff(debuffConfig) {
-      // 检查是否已有同类型debuff，如果有则刷新持续时间，否则添加
       const existing = this.active_debuffs.find(d => d.type === debuffConfig.type);
+      
+      // 特殊处理：诅咒之水 (减速)
+      if (debuffConfig.type === 'curse_water') {
+          if (!existing) {
+              if (!this._original_speed) this._original_speed = this.speed;
+              this.speed = Math.floor(this.speed * 0.85);
+          }
+      }
+
       if (existing) {
-          existing.duration = debuffConfig.duration; // 刷新持续时间
-          existing.caster_id = debuffConfig.caster_id; // 刷新施加者
-          existing.value = debuffConfig.value; // 刷新数值
+          existing.duration = debuffConfig.duration; 
+          existing.caster_id = debuffConfig.caster_id;
+          existing.value = debuffConfig.value;
       } else {
           this.active_debuffs.push({ ...debuffConfig });
       }
@@ -163,21 +172,32 @@ export class Combatant {
    */
   processDebuffs() {
       const results = [];
-      this.is_frozen = false; // 重置冻结状态，由Debuff决定
+      this.is_frozen = false;
+      this.is_stunned = false;
 
       if (!this.isAlive()) {
-          this.active_debuffs = []; // 死亡清除所有Debuff
+          this.active_debuffs = [];
           return results;
       }
 
-      this.active_debuffs = this.active_debuffs.filter(debuff => {
+      // 使用 reduce 重新构建 active_debuffs，同时处理移除逻辑
+      this.active_debuffs = this.active_debuffs.reduce((acc, debuff) => {
+          let keep = true;
+
           if (debuff.type === 'freeze') {
               this.is_frozen = true;
-              // 冰冻本身无伤害
-          }
-
-          if (debuff.type === 'poison_dot') {
-              const dotDamage = Math.floor(this.max_hp * debuff.value); // 毒伤害按最大生命百分比
+          } else if (debuff.type === 'curse_water') {
+              // 50% 概率晕眩
+              if (Math.random() < 0.5) {
+                  this.is_stunned = true;
+                  results.push({
+                      name: this.name, team: this.team, element: this.element, level: this.level || 0,
+                      id: this.id, type: 'debuff_trigger', debuff_type: 'curse_water',
+                      value: 0, value_display: '晕眩', is_counter: false
+                  });
+              }
+          } else if (debuff.type === 'poison_dot') {
+              const dotDamage = Math.floor(this.max_hp * debuff.value);
               const actualDamage = this.takeDamage(dotDamage);
               if (actualDamage > 0) {
                   results.push({
@@ -187,11 +207,22 @@ export class Combatant {
                   });
               }
           }
-          // 其他Debuff类型可以在这里扩展
 
           debuff.duration--;
-          return debuff.duration > 0; // 持续时间结束则移除
-      });
+          
+          if (debuff.duration <= 0) {
+              keep = false;
+              // 移除时的副作用
+              if (debuff.type === 'curse_water' && this._original_speed) {
+                  this.speed = this._original_speed;
+                  this._original_speed = null;
+              }
+          }
+
+          if (keep) acc.push(debuff);
+          return acc;
+      }, []);
+
       return results;
   }
 }
