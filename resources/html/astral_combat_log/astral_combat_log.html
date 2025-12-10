@@ -407,6 +407,8 @@
                     {{else if target.type === 'shield'}}🛡{{target.value_display}}
                     {{else if target.type === 'debuff_application'}}
                         <span style="font-size: 18px; color: #8e44ad;">{{target.value_display}}</span>
+                    {{else if target.type === 'dot_damage'}}
+                        <span style="color: #e74c3c;">-{{target.value_display}}</span>
                     {{/if}}
                 </div>
             </div>
