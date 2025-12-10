@@ -91,7 +91,9 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     const debuffResults = activeUnit.processDebuffs();
     if (debuffResults.length > 0) {
       combatLog.push({
-        type: 'debuff_tick',
+        type: 'action',
+        skill: '状态结算', // 复用 action 模板，显示技能名为“状态结算”
+        av_cost: 0, // 状态结算不消耗 AV
         caster: {
           name: activeUnit.name,
           team: activeUnit.team,
@@ -99,7 +101,11 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
           level: activeUnit.level || 0,
           id: activeUnit.id
         },
-        targets: debuffResults
+        targets: debuffResults,
+        teamStatus: { // 需要补充状态快照，否则模板渲染可能会报错或显示空白
+            player: playerTeam.map(getUnitStatus),
+            enemy: enemyTeam.map(getUnitStatus)
+        }
       });
     }
 
