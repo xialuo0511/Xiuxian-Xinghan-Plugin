@@ -227,12 +227,18 @@ export class Combatant {
               }
           } else if (debuff.type === 'poison_dot') {
               const dotDamage = Math.floor(this.max_hp * debuff.value);
-              const actualDamage = this.takeDamage(dotDamage);
-              if (actualDamage > 0) {
+              const oldShield = this.shield;
+              const hpDamage = this.takeDamage(dotDamage);
+              const shieldDamage = oldShield - this.shield;
+              const totalDamage = hpDamage + shieldDamage;
+
+              if (totalDamage > 0) {
                   results.push({
                       name: this.name, team: this.team, element: this.element, level: this.level || 0,
                       id: this.id, type: 'dot_damage', debuff_type: 'poison_dot',
-                      value: actualDamage, value_display: formatNumber(actualDamage), is_counter: false
+                      value: hpDamage, // 逻辑上HP减少量
+                      value_display: formatNumber(totalDamage), // 显示总伤害
+                      is_counter: false
                   });
               }
           }
