@@ -228,7 +228,7 @@ export async function equip(userId, itemType, itemName) {
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function goFishing(userId) {
-  const { rod, bait } = await getFishingGear(userId);
+  const { rod, bait } = await getFishingStatus(userId);
 
   if (!rod || !bait) {
     const missing = [];
