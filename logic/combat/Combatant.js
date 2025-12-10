@@ -18,6 +18,7 @@ export class Combatant {
     this.buffs = []; // 暂未启用
     this.shield = 0;
     this.current_av = 0;
+    this.speed_multiplier = 1.0; // 速度倍率
     
     // 控制状态
     this.is_taunted = false; // 是否处于嘲讽状态
@@ -72,10 +73,36 @@ export class Combatant {
 
   /**
    * 重置行动值 (跑圈)
-   * 公式: AV = 10000 / Speed
+   * 公式: AV = 10000 / (Speed * Multiplier)
    */
   resetAV() {
-    this.current_av = 10000 / Math.max(1, this.speed);
+    const effectiveSpeed = Math.max(1, this.speed * this.speed_multiplier);
+    this.current_av = 10000 / effectiveSpeed;
+  }
+
+  /**
+   * 增加速度倍率 (叠加)
+   * @param {number} percent 增加的百分比 (0.05)
+   */
+  addSpeedStack(percent) {
+      this.speed_multiplier += percent;
+      
+      // 更新UI显示的Buff状态
+      const existing = this.active_debuffs.find(d => d.type === 'speed_up_stack');
+      const stackCount = Math.round((this.speed_multiplier - 1.0) / 0.05); // 计算层数
+      
+      if (existing) {
+          existing.duration = 99; // 刷新持续时间
+          existing.value = stackCount; // 借用value存层数
+      } else {
+          this.active_debuffs.push({
+              type: 'speed_up_stack',
+              caster_id: 'self',
+              duration: 99,
+              value: stackCount,
+              just_applied: true
+          });
+      }
   }
 
   isAlive() {

@@ -20,6 +20,8 @@ const EFFECT_CONFIG = {
   'curse_water': { name: '诅咒', is_debuff: true, icon: '💧' },
   'taunt': { name: '嘲讽', is_debuff: true, icon: '💢' },
   'stun': { name: '晕眩', is_debuff: true, icon: '💫' },
+  'weakness': { name: '虚弱', is_debuff: true, icon: '📉' },
+  'speed_up_stack': { name: '战意', is_debuff: false, icon: '⚡' },
   'shield': { name: '护盾', is_debuff: false, icon: '🛡️' },
   'atk_up': { name: '攻击↑', is_debuff: false, icon: '⚔️' },
   'def_up': { name: '防御↑', is_debuff: false, icon: '🛡️' },
@@ -30,12 +32,16 @@ const EFFECT_CONFIG = {
  * 战斗引擎 (Action Value System / 跑条制)
  * v4.0: 全面适配玩家PVP与星魂PVE
  */
-export async function runCombat(playerSouls, enemyNames) {
+export async function runCombat(playerSouls, enemyNames, globalBuffs = []) {
   const combatLog = [];
 
   // 1. 初始化战斗单位
   // 支持传入已经是 Player 对象的数据，或者星魂配置对象
-  const playerTeam = playerSouls.map((soul, i) => new Combatant(soul.id || `player_${i + 1}`, soul, 'player'));
+  const playerTeam = playerSouls.map((soul, i) => {
+      const c = new Combatant(soul.id || `player_${i + 1}`, soul, 'player');
+      c.global_buffs = globalBuffs; 
+      return c;
+  });
 
   // 敌人同理，如果是字符串则查表，如果是对象则直接用
   const enemyTeam = enemyNames.map((item, i) => {
@@ -188,6 +194,17 @@ export async function runCombat(playerSouls, enemyNames) {
     }
 
     activeUnit.resetAV();
+
+    // ★★ 风驰电掣 (首轮再动)
+    if (activeUnit.global_buffs && activeUnit.global_buffs.includes('double_act_first_turn')) {
+        if (!activeUnit.has_acted_once) {
+            activeUnit.has_acted_once = true;
+            activeUnit.current_av = 0; // 立即再次行动
+            combatLog.push({ type: 'system', text: `${activeUnit.name} 触发【风驰电掣】，迅捷如风，再次行动！` });
+        }
+    } else {
+        activeUnit.has_acted_once = true;
+    }
   }
 
   const playerWon = playerTeam.some(p => p.isAlive());
@@ -232,11 +249,21 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
 
   if (targets.length === 0) return [];
 
+  // ★★★ 孤注一掷 (少敌增伤)
+  let focusBonus = 1.0;
+  if (caster.global_buffs && caster.global_buffs.includes('aoe_focus_damage')) {
+      if (skill.target === 'all_enemies' && targets.length <= 2) {
+          focusBonus = 2.0;
+      }
+  }
+
   for (const target of targets) {
     let baseValue = 0;
     if (skill.value_type === 'def') baseValue = caster.defense * skill.value;
     else if (skill.value_type === 'max_hp') baseValue = caster.max_hp * skill.value;
     else baseValue = caster.attack * skill.value;
+    
+    baseValue *= focusBonus; // 应用增伤
 
     if (skill.type === 'damage') {
       const res = calculateDamage(caster, target, baseValue);
@@ -261,12 +288,41 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
         value_display: formatNumber(Math.floor(baseValue)),
         is_counter: false
       });
+      
+      // ★ 春风化雨
+      if (caster.global_buffs && caster.global_buffs.includes('shield_heal')) {
+          const healAmt = Math.floor(baseValue * 0.15);
+          const healed = target.receiveHeal(healAmt);
+          results.push({
+              name: target.name, team: target.team, element: target.element, level: target.level || 0,
+              id: target.id,
+              type: 'heal', value: healed, value_display: `(盾愈)${formatNumber(healed)}`, is_counter: false
+          });
+      }
     }
   }
 
     // 处理Debuff
-
     const debuffsApplied = [];
+
+    // ★★★ 破势重压 (攻击施加虚弱)
+    if (skill.type === 'damage' && caster.global_buffs && caster.global_buffs.includes('weakness_on_hit')) {
+        targets.forEach(t => {
+            if (!t.isAlive()) return;
+            debuffsApplied.push({
+                name: t.name, team: t.team, element: t.element, level: t.level || 0,
+                id: t.id,
+                type: 'debuff_application',
+                debuff_type: 'weakness',
+                caster_id: caster.id,
+                value: 0,
+                value_display: `📉 虚弱 (1回合)`,
+                duration: 1,
+                is_counter: false,
+                is_debuff: true
+            });
+        });
+    }
 
     if (skill.debuff) {
 
@@ -349,6 +405,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
 function calculateDamage(attacker, target, rawDamageInput) {
   let elementalBonus = 1.0;
   let isCounter = false;
+  let globalMultiplier = 1.0;
 
   // 克制判断
   if (elementCounterMap[attacker.element] === target.element) {
@@ -356,37 +413,70 @@ function calculateDamage(attacker, target, rawDamageInput) {
     isCounter = true;
   }
 
-  // 元素增伤 Buff (e.g. 火伤+25%)
-  // 逻辑：在当前倍率基础上直接叠加 (1.5 + 0.25 = 1.75倍)
+  // 元素增伤 Buff
   if (attacker.elemental_buffs && attacker.elemental_buffs[attacker.element]) {
     elementalBonus += attacker.elemental_buffs[attacker.element];
   }
 
+  // --- 全局 Buff/Debuff 处理 ---
+  const attackerBuffs = attacker.global_buffs || [];
+  
+  // ★ 锋锐之气
+  if (attackerBuffs.includes('damage_up_5')) {
+      globalMultiplier += 0.05;
+  }
+  
+  // ★★★ 绝境爆发
+  if (attackerBuffs.includes('low_hp_burst')) {
+      const hpPct = attacker.current_hp / attacker.max_hp;
+      if (hpPct < 0.3) globalMultiplier += 1.5;
+      else if (hpPct < 0.5) globalMultiplier += 1.0;
+      else if (hpPct < 0.7) globalMultiplier += 0.5;
+  }
+  
+  // Debuff: 虚弱 (输出降低)
+  if (attacker.active_debuffs && attacker.active_debuffs.some(d => d.type === 'weakness')) {
+      globalMultiplier *= 0.5;
+  }
+  
+  // Debuff: 虚弱 (承伤增加)
+  if (target.active_debuffs && target.active_debuffs.some(d => d.type === 'weakness')) {
+      globalMultiplier *= 1.2;
+  }
+
   let finalDmg = 0;
   // 【核心优化】自适应伤害公式
-  // 如果攻击力 > 10000 (修仙玩家级)，使用减法+强力保底
   if (attacker.attack > 10000) {
     let def = target.defense * (1 - target.resistance);
     let baseDiff = rawDamageInput - def;
-
-    // 玩家PVP保底：攻击力的 5% 也能造成伤害 (防止不破防)
     let minDmg = rawDamageInput * 0.05;
-
     let baseDmg = Math.max(baseDiff, minDmg);
-    finalDmg = Math.floor(baseDmg * elementalBonus * (0.9 + Math.random() * 0.2));
+    
+    // 应用全局倍率
+    finalDmg = Math.floor(baseDmg * elementalBonus * globalMultiplier * (0.9 + Math.random() * 0.2));
   }
-  // 否则 (星魂/低级怪)，使用经典的 RPG 乘法曲线公式
   else {
     const DEF_CONSTANT = 280;
     let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
     let resistanceMultiplier = (1 - target.resistance);
-
     let baseDmg = rawDamageInput * defenseMultiplier * resistanceMultiplier;
-    finalDmg = Math.floor(baseDmg * elementalBonus * (0.9 + Math.random() * 0.2));
+    
+    // 应用全局倍率
+    finalDmg = Math.floor(baseDmg * elementalBonus * globalMultiplier * (0.9 + Math.random() * 0.2));
   }
 
   finalDmg = Math.max(1, finalDmg);
   target.takeDamage(finalDmg);
+
+  // --- 受击触发类 Buff ---
+  const targetBuffs = target.global_buffs || [];
+  if (targetBuffs.includes('speed_up_on_hit')) {
+      // 激流勇进：受击加速 (叠加)
+      // 需要在 Combatant 中实现 addSpeedStack
+      if (target.addSpeedStack) {
+          target.addSpeedStack(0.05); 
+      }
+  }
 
   return {
     name: target.name,
