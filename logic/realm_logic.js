@@ -150,15 +150,32 @@ export async function settleRealm(task) {
         rewards.xiuwei = 800;
     }
 
-    await DAL.transaction_update(userId, async (p) => {
-        p.修为 += rewards.xiuwei;
-        p.血气 += rewards.xueqi;
-        p.当前血量 = battleResult.A_player_final.当前血量;
-        for (const item of rewards.items) {
-            await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+    let updateSuccess = false;
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            await DAL.transaction_update(userId, async (p) => {
+                p.修为 += rewards.xiuwei;
+                p.血气 += rewards.xueqi;
+                p.当前血量 = battleResult.A_player_final.当前血量;
+                for (const item of rewards.items) {
+                    await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+                }
+                return true;
+            });
+            updateSuccess = true;
+            break; 
+        } catch (err) {
+            if (err.message && (err.message.includes('WatchError') || err.message.includes('Please close the client'))) {
+                console.warn(`[settleRealm] 事务冲突 (用户: ${userId}), 正在重试 (${attempt + 1}/3)...`);
+                await new Promise(r => setTimeout(r, 100 + Math.random() * 200)); 
+            } else {
+                throw err; 
+            }
         }
-        return true;
-    });
+    }
+    if (!updateSuccess) {
+         throw new Error('Settlement transaction failed after 3 retries due to concurrency.');
+    }
 
     // Only drop baits if player wins the battle
     if (battleResult.A_win) {

@@ -1,5 +1,6 @@
 import * as DAL from '../api/data-access.js';
 import { loadItemConfig } from '../model/ConfigLoader.js';
+import { redisClient } from '../api/redis.js';
 import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs';
@@ -43,7 +44,7 @@ export async function getFishShopData(userId) {
   });
 
   const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
-  const purchaseHistory = await redis.hGetAll(purchaseHistoryKey);
+  const purchaseHistory = await redisClient.hGetAll(purchaseHistoryKey);
 
   const shopItems = fishShopConfig.map(item => {
     const enhancedPrice = item.price.map(cost => {
@@ -81,7 +82,7 @@ export async function buyFromFishShop(userId, itemName) {
   const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
 
   // 1. 检查限购
-  const purchasedAmount = parseInt(await redis.hGet(purchaseHistoryKey, itemName) || '0');
+  const purchasedAmount = parseInt(await redisClient.hGet(purchaseHistoryKey, itemName) || '0');
   if (purchasedAmount >= shopItem.purchaseLimit) {
     return { success: false, message: `[${itemName}] 每人限购 ${shopItem.purchaseLimit} 个，你已达到上限。` };
   }
@@ -115,7 +116,7 @@ export async function buyFromFishShop(userId, itemName) {
   await DAL.updateNajieItem(userId, itemName, itemDef.class, 1, itemDef);
 
   // 5. 更新购买记录
-  await redis.hIncrBy(purchaseHistoryKey, itemName, 1);
+  await redisClient.hIncrBy(purchaseHistoryKey, itemName, 1);
 
   return { success: true, message: `恭喜！你成功兑换了 [${itemName}] x 1！` };
 }
@@ -187,7 +188,7 @@ export function getActivityStatus(eventKey) {
  */
 export async function getFishingStatus(userId) {
   const gearKey = `XinghanXiuxian:player_fishing_gear:${userId}`;
-  const equipped = await redis.hGetAll(gearKey);
+  const equipped = await redisClient.hGetAll(gearKey);
 
   const rod = allRods.find(r => r.name === equipped.rod);
   const bait = allBaits.find(b => b.name === equipped.bait);
@@ -209,7 +210,7 @@ export async function getFishingStatus(userId) {
   ];
 
   for (const baitItem of dropsConfig) {
-      const current = parseInt(await redis.hGet(dropLimitKey, baitItem.name) || '0');
+      const current = parseInt(await redisClient.hGet(dropLimitKey, baitItem.name) || '0');
       dailyDrops.push({ name: baitItem.name, current, max: baitItem.dailyCap });
   }
 
@@ -242,7 +243,7 @@ export async function equip(userId, itemType, itemName) {
   }
 
   const gearKey = `XinghanXiuxian:player_fishing_gear:${userId}`;
-  await redis.hSet(gearKey, itemType, itemName);
+  await redisClient.hSet(gearKey, itemType, itemName);
 
   return { success: true, message: `已成功装备【${itemName}】。` };
 }
@@ -330,14 +331,14 @@ export async function checkSecretPlaceBaitDrops(userId, eventKey) {
 
   for (const bait of drops) {
     // 获取玩家今日已获得该鱼饵的数量
-    const currentDrops = parseInt(await redis.hGet(dropLimitKey, bait.name) || '0');
+    const currentDrops = parseInt(await redisClient.hGet(dropLimitKey, bait.name) || '0');
 
     if (currentDrops < bait.dailyCap && Math.random() < bait.chance) {
       // 达到上限前，且概率命中
       const itemDef = await foundthing(bait.name);
       if (itemDef) {
         await DAL.updateNajieItem(userId, bait.name, itemDef.class, 1, itemDef);
-        await redis.hIncrBy(dropLimitKey, bait.name, 1);
+        await redisClient.hIncrBy(dropLimitKey, bait.name, 1);
         dropMessages.push(`你意外获得了【${bait.name}】x1！(今日已获得${currentDrops + 1}/${bait.dailyCap})`);
       } else {
         logger.error(`[秘境鱼饵掉落] 致命错误：鱼饵 [${bait.name}] 在物品库中不存在！`);
@@ -358,7 +359,7 @@ export async function grantFirstTimeBonus(userId, eventKey) {
   const bonusKey = `XinghanXiuxian:fishing_bonus:${eventKey}:${userId}`;
 
   // 使用 redis.set 的 NX 模式，这是一个原子操作，能保证只成功设置一次
-  const wasSet = await redis.set(bonusKey, 'true', { NX: true });
+  const wasSet = await redisClient.set(bonusKey, 'true', { NX: true });
 
   if (wasSet) {
     // 如果设置成功，说明是第一次
