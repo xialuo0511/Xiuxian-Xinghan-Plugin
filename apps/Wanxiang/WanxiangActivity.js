@@ -363,11 +363,9 @@ export class WanxiangActivity extends plugin {
         await tempClient.disconnect();
 
         let buffMsg = `战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n\n【天机赐福】${pickCount > 1 ? ` (本层可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
-        choices.forEach((b, i) => {
-          const stars = '★'.repeat(b.rarity || 1);
-          buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n   ${b.desc}\n`;
-        });
-
+        if (runData.refresh_count > 0) {
+            buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+        }
         e.reply(buffMsg);
       } else {
         // 失败更新（记录死亡状态）
@@ -509,20 +507,22 @@ export class WanxiangActivity extends plugin {
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
 
-      if (runData.remaining_picks > 0) {
-          let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
-          runData.pending_buffs.forEach((bid, i) => {
-             const b = BUFFS.find(bf => bf.id === bid);
-             if(b) {
-                const stars = '★'.repeat(b.rarity || 1);
-                buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n`;
-             }
-          });
-          e.reply(buffMsg);
-      } else {
-          e.reply(`成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n发送 #挑战 继续前往下一层。`);
-      }
-
+                  if (runData.remaining_picks > 0) {
+                      let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
+                      runData.pending_buffs.forEach((bid, i) => {
+                         const b = BUFFS.find(bf => bf.id === bid);
+                         if(b) {
+                            const stars = '★'.repeat(b.rarity || 1);
+                            buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n`;
+                         }
+                      });
+                      if (runData.refresh_count > 0) {
+                          buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+                      }
+                      e.reply(buffMsg);
+                  } else {
+                      e.reply(`成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n发送 #挑战 继续前往下一层。`);
+                  }
     } catch (err) {
       console.error('[Wanxiang] selectBuff Error:', err);
       if (tempClient) await tempClient.disconnect();
