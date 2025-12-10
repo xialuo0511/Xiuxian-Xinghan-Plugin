@@ -115,3 +115,46 @@
   element: "土"
   value: 0.25
   rarity: 2
+
+# --- 特殊机制类 (新增) ---
+- id: double_act_first_turn
+  name: "风驰电掣"
+  desc: "我方单位首次行动后可以额外再行动一次"
+  type: special
+  rarity: 2
+
+- id: shield_heal
+  name: "春风化雨"
+  desc: "我方单位施加护盾后会为被施加护盾的单位回复15%护盾量的生命值"
+  type: special
+  rarity: 1
+
+- id: weakness_on_hit
+  name: "破势重压"
+  desc: "我方单位的攻击会使敌人进入【虚弱】状态（伤害-50%，受伤害+20%），持续1回合"
+  type: special
+  rarity: 3
+
+- id: speed_up_on_hit
+  name: "激流勇进"
+  desc: "敌方单位攻击我方单位后，使受到伤害的我方单位速度提高5%，该效果可叠加"
+  type: special
+  rarity: 2
+
+- id: damage_up_5
+  name: "锋锐之气"
+  desc: "我方造成的伤害提高5%"
+  type: special
+  rarity: 1
+
+- id: aoe_focus_damage
+  name: "孤注一掷"
+  desc: "若我方具有群体攻击单位，该单位造成伤害的个体小于等于2时，使本次攻击造成的伤害提高100%"
+  type: special
+  rarity: 3
+
+- id: low_hp_burst
+  name: "绝境爆发"
+  desc: "我方单位血量分别低于70%/50%/30%时，造成的伤害提高50%/100%/150%"
+  type: special
+  rarity: 3
