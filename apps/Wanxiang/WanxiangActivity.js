@@ -38,6 +38,7 @@ export class WanxiangActivity extends plugin {
         { reg: /^#开启试炼$/, fnc: 'startRun' },
         { reg: /^#挑战$/, fnc: 'challengeLayer' },
         { reg: /^#选择赐福\s*(\d)$/, fnc: 'selectBuff' },
+        { reg: /^#刷新赐福$/, fnc: 'refreshBuffChoices' }, // 新增
         { reg: /^#试炼状态$/, fnc: 'showStatus' },
         { reg: /^#退出试炼$/, fnc: 'quitRun' }
       ]
@@ -107,7 +108,8 @@ export class WanxiangActivity extends plugin {
         layer: 1,
         souls: soulsState,
         buffs: [],
-        start_time: Date.now()
+        start_time: Date.now(),
+        refresh_count: 3 // 初始化刷新次数
       };
 
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
@@ -176,6 +178,7 @@ export class WanxiangActivity extends plugin {
       layer: data.layer,
       souls: soulsData,
       buffs: buffsData,
+      refreshCount: data.refresh_count, // 传递刷新次数给模板
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
 
@@ -279,8 +282,8 @@ export class WanxiangActivity extends plugin {
         // 深拷贝以应用修改
         const mob = JSON.parse(JSON.stringify(original));
 
-        // 难度系数：基础成长 (每层12%) + Boss层修正
-        let multiplier = 1 + (runData.layer - 1) * 0.12;
+        // 难度系数：基础成长 (每层8%) + Boss层修正
+        let multiplier = 1 + (runData.layer - 1) * 0.08;
         if (runData.layer % 5 === 0) multiplier *= 1.2; // Boss层额外增强 20%
 
         mob.base_stats.health = Math.floor(mob.base_stats.health * multiplier);
@@ -320,7 +323,15 @@ export class WanxiangActivity extends plugin {
       await e.reply(img);
 
       if (result.playerWon) {
+        const justClearedLayer = runData.layer;
         runData.layer++;
+        
+        // Boss层 (5的倍数) 奖励双倍选择次数
+        let pickCount = 1;
+        if (justClearedLayer % 5 === 0) {
+            pickCount = 2;
+        }
+        runData.remaining_picks = pickCount;
 
         // 随机抽取 3 个 Buff (加权)
         const choices = [];
@@ -351,7 +362,7 @@ export class WanxiangActivity extends plugin {
         await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
         await tempClient.disconnect();
 
-        let buffMsg = `战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n\n【天机赐福】\n请发送 #选择赐福 [序号] 获取增益：\n`;
+        let buffMsg = `战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n\n【天机赐福】${pickCount > 1 ? ` (本层可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
         choices.forEach((b, i) => {
           const stars = '★'.repeat(b.rarity || 1);
           buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n   ${b.desc}\n`;
@@ -368,6 +379,76 @@ export class WanxiangActivity extends plugin {
       console.error('[Wanxiang] challengeLayer Error:', err);
       if (tempClient) await tempClient.disconnect(); // 错误时断开
       return e.reply('挑战失败：' + err.message);
+    }
+  }
+
+  async refreshBuffChoices(e) {
+    const userId = e.user_id;
+    let tempClient = null;
+    let dataStr = null;
+
+    try {
+      tempClient = await getTempRedis();
+      dataStr = await tempClient.get(KEY_PREFIX + userId);
+      if (!dataStr) {
+        await tempClient.disconnect();
+        return e.reply('请先 #开启试炼。');
+      }
+
+      const runData = JSON.parse(dataStr);
+
+      if (!runData.pending_buffs || runData.pending_buffs.length === 0) {
+        await tempClient.disconnect();
+        return e.reply('当前没有待选择的赐福，无法刷新。请先 #挑战。');
+      }
+
+      if (runData.refresh_count <= 0) {
+        await tempClient.disconnect();
+        return e.reply('刷新赐福的机会已用尽！');
+      }
+
+      runData.refresh_count--; // 消耗一次刷新机会
+
+      // 重新生成 3 个赐福选项 (复用 challengeLayer 中的逻辑)
+      const choices = [];
+      const pool = [...BUFFS]; // 确保这里是全局 BUFFS
+      const RARITY_WEIGHTS = { 1: 100, 2: 30, 3: 5 };
+
+      const getWeightedRandom = (candidates) => {
+        let totalWeight = 0;
+        candidates.forEach(b => totalWeight += (RARITY_WEIGHTS[b.rarity] || 100));
+        let r = Math.random() * totalWeight;
+        for (const b of candidates) {
+          r -= (RARITY_WEIGHTS[b.rarity] || 100);
+          if (r <= 0) return b;
+        }
+        return candidates[0];
+      };
+
+      for (let i = 0; i < 3; i++) {
+        if (pool.length === 0) break;
+        const selected = getWeightedRandom(pool);
+        choices.push(selected);
+        const idx = pool.indexOf(selected);
+        if (idx > -1) pool.splice(idx, 1);
+      }
+
+      runData.pending_buffs = choices.map(b => b.id); // 更新待选赐福列表
+
+      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+      await tempClient.disconnect();
+
+      let buffMsg = `赐福已刷新！剩余刷新机会：${runData.refresh_count} 次。\n\n【天机赐福】\n请发送 #选择赐福 [序号] 获取增益：\n`;
+      choices.forEach((b, i) => {
+        const stars = '★'.repeat(b.rarity || 1);
+        buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n   ${b.desc}\n`;
+      });
+      e.reply(buffMsg);
+
+    } catch (err) {
+      console.error('[Wanxiang] refreshBuffChoices Error:', err);
+      if (tempClient) await tempClient.disconnect();
+      e.reply('刷新赐福失败：' + err.message);
     }
   }
 
@@ -402,33 +483,45 @@ export class WanxiangActivity extends plugin {
 
       // 加入已生效 Buff 列表
       runData.buffs.push(selectedBuffId);
-      // 清空待选列表
-      runData.pending_buffs = [];
 
-      // 如果是直接回血类 Buff (max_hp_up)，可能需要立即处理？
-      // 简单起见，所有 Buff 都在战斗时生效。但 max_hp_up 描述说“获得时恢复”，这需要特殊处理。
-      // 这里简单处理：如果 Buff 是 max_hp_pct，立即按比例回血
+      // 移除已选 (防止重复)
+      const idxToRemove = selection - 1;
+      runData.pending_buffs.splice(idxToRemove, 1);
+      
+      // 扣除次数
+      runData.remaining_picks = (runData.remaining_picks || 1) - 1;
+
+      // max_hp_pct 逻辑
       if (buffConfig && buffConfig.type === 'max_hp_pct') {
         runData.souls.forEach(soul => {
           if (!soul.is_dead) {
-            // 提升当前血量，使其比例保持不变？或者直接加血？
-            // 描述是“恢复等量生命”，意味着 +20% MaxHP, 同时也 +20% CurrentHP (数值上)
-            // 实际上是在战斗时 max_hp 会变大，这里只要保证 current_hp 看起来合理。
-            // 简单做法：这里不改 current_hp，战斗时 max_hp 变大了，current_hp 比例自然降低，需要治疗。
-            // 但为了体验，我们在这里给每个人回一口血
             const healAmount = Math.floor(soul.max_hp * buffConfig.value);
             soul.current_hp += healAmount;
-            // 注意：这里没有 cap，因为 max_hp 还没变（那是战斗时算的）。
-            // 但没关系，CombatEngine 会处理。或者我们在战斗外暂时不管 cap。
           }
         });
         e.reply(`【${buffConfig.name}】生效！全员恢复了部分生命值。`);
       }
 
+      if (runData.remaining_picks <= 0) {
+          runData.pending_buffs = []; // 次数用尽，清空
+      }
+
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
 
-      e.reply(`成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n发送 #挑战 继续前往下一层。`);
+      if (runData.remaining_picks > 0) {
+          let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
+          runData.pending_buffs.forEach((bid, i) => {
+             const b = BUFFS.find(bf => bf.id === bid);
+             if(b) {
+                const stars = '★'.repeat(b.rarity || 1);
+                buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n`;
+             }
+          });
+          e.reply(buffMsg);
+      } else {
+          e.reply(`成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n发送 #挑战 继续前往下一层。`);
+      }
 
     } catch (err) {
       console.error('[Wanxiang] selectBuff Error:', err);

@@ -17,11 +17,11 @@
 - layer: 6
   monsters: ["雷灵鸟", "暗影刺客"]
 - layer: 7
-  monsters: ["雷灵鸟", "雷灵鸟", "藤蔓精"]
+  monsters: ["雷灵鸟", "藤蔓精"]
 - layer: 8
-  monsters: ["暗影刺客", "深寒怨灵", "深寒怨灵"]
+  monsters: ["暗影刺客", "深寒怨灵"]
 - layer: 9
-  monsters: ["狂暴猿猴", "烈焰之魂", "烈焰之魂"]
+  monsters: ["狂暴猿猴", "烈焰之魂"]
 - layer: 10
   monsters: ["吞天巨蟒"] # Boss
 
