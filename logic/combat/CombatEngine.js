@@ -32,7 +32,7 @@ const EFFECT_CONFIG = {
  * 战斗引擎 (Action Value System / 跑条制)
  * v4.0: 全面适配玩家PVP与星魂PVE
  */
-export async function runCombat(playerSouls, enemyNames, globalBuffs = []) {
+export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRounds = 100) {
   const combatLog = [];
 
   // 1. 初始化战斗单位
@@ -123,10 +123,25 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = []) {
                 currentRoundByAV = 1 + Math.ceil((totalElapsedAV - 150) / 100);
             }
         
-            if (currentRoundByAV > roundCount) {
-              roundCount = currentRoundByAV;
-              combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
-            }    }
+                if (currentRoundByAV > roundCount) {
+        
+                  roundCount = currentRoundByAV;
+        
+                  
+        
+                  if (roundCount > maxRounds) {
+        
+                      combatLog.push({ type: 'system', text: `已超过最大回合数 (${maxRounds})，判定失败！` });
+        
+                      break;
+        
+                  }
+        
+            
+        
+                  combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
+        
+                }    }
 
         // 检查控制状态 (如冰冻/晕眩)
         if (activeUnit.is_frozen || activeUnit.is_stunned) {
@@ -222,7 +237,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = []) {
     }
   }
 
-  const playerWon = playerTeam.some(p => p.isAlive());
+  const playerWon = playerTeam.some(p => p.isAlive()) && roundCount <= maxRounds;
   combatLog.push({ type: 'end', text: playerWon ? '恭喜你，获得了胜利！' : '很遗憾，你失败了。' });
 
   return { playerWon, log: combatLog, playerTeam, enemyTeam };

@@ -290,8 +290,8 @@ export class WanxiangActivity extends plugin {
         return mob;
       }).filter(Boolean);
 
-      // 3. 运行战斗
-      const result = await runCombat(battleSouls, enemyTeamConfig, runData.buffs);
+      // 3. 运行战斗 (限制 10 回合)
+      const result = await runCombat(battleSouls, enemyTeamConfig, runData.buffs, 10);
 
       // 4. 结算逻辑
       const finalPlayerCombatants = result.playerTeam;
