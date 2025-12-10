@@ -469,13 +469,21 @@ function calculateDamage(attacker, target, rawDamageInput) {
       globalMultiplier *= 0.5;
   }
   
-  // Debuff: 虚弱 (承伤增加)
-  if (target.active_debuffs && target.active_debuffs.some(d => d.type === 'weakness')) {
-      globalMultiplier *= 1.2;
-  }
-
-  let finalDmg = 0;
-  // 【核心优化】自适应伤害公式
+            // Debuff: 虚弱 (承伤增加)
+            if (target.active_debuffs && target.active_debuffs.some(d => d.type === 'weakness')) {
+                globalMultiplier *= 1.2;
+            }
+  
+            // --- 暴击判定 ---
+            let isCrit = false;
+            // 基础暴击率 + Buff修正(如果有)
+            const critRate = attacker.crit_rate || 0; 
+            if (Math.random() < critRate) {
+                isCrit = true;
+                globalMultiplier *= (attacker.crit_dmg || 1.5);
+            }
+  
+            let finalDmg = 0;  // 【核心优化】自适应伤害公式
   if (attacker.attack > 10000) {
     let def = target.defense * (1 - target.resistance);
     let baseDiff = rawDamageInput - def;
@@ -517,7 +525,8 @@ function calculateDamage(attacker, target, rawDamageInput) {
     type: 'damage',
     value: finalDmg,
     value_display: formatNumber(finalDmg),
-    is_counter: isCounter
+    is_counter: isCounter,
+    is_crit: isCrit
   };
 }
 
