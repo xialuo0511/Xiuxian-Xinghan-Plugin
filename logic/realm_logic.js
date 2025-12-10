@@ -153,12 +153,12 @@ export async function settleRealm(task) {
     let updateSuccess = false;
     for (let attempt = 0; attempt < 3; attempt++) {
         try {
-            await DAL.transaction_update(userId, async (p) => {
-                p.修为 += rewards.xiuwei;
-                p.血气 += rewards.xueqi;
-                p.当前血量 = battleResult.A_player_final.当前血量;
+            await DAL.transaction_update(userId, async (player, equipment, najie) => {
+                player.修为 += rewards.xiuwei;
+                player.血气 += rewards.xueqi;
+                player.当前血量 = battleResult.A_player_final.当前血量;
                 for (const item of rewards.items) {
-                    await DAL.updateNajieItem(userId, item.name, item.class, item.amount, item.pinji);
+                    DAL.updateNajieSync(najie, item.name, item.class, item.amount, item.pinji);
                 }
                 return true;
             });

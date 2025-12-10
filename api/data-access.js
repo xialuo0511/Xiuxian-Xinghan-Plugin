@@ -223,21 +223,14 @@ export async function saveAssociation(sectName, sectData) {
 }
 
 /**
- * 更新纳戒物品（增加/减少），这是一个可以在任何地方安全调用的函数
- * @param {string} userId 玩家ID
- * @param {string} itemName 物品名称
- * @param {string} itemClass 物品类别
- * @param {number} quantity 数量 (正数增加, 负数减少)
- * @param {number|null} pinji 品级 (数字0-6), 仅对装备有效
- * @returns {Promise<boolean>} 操作是否成功
+ * [同步辅助函数] 在内存中更新纳戒数据（不涉及Redis操作）
+ * 可用于 transaction_update 的回调中
  */
-export async function updateNajieItem(userId, itemName, itemClass, quantity, pinji = null) {
+export function updateNajieSync(najie, itemName, itemClass, quantity, pinji = null) {
   if (quantity === 0) return true;
   quantity = Number(quantity);
 
-  // 辅助函数，用于查找物品模板，使代码更清晰
   const findItemTemplate = (name, className) => {
-
     const listMap = XiuxianData.itemListMap;
     const listsToSearch = listMap[className] || listMap['默认'];
     for (const listName of listsToSearch) {
@@ -247,108 +240,113 @@ export async function updateNajieItem(userId, itemName, itemClass, quantity, pin
     return null;
   };
 
-  const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
+  if (!najie[itemClass]) {
+    najie[itemClass] = [];
+  }
 
-    if (!najie[itemClass]) {
-      najie[itemClass] = [];
-      logger.info(`[数据操作] 玩家 ${userId} 的纳戒中尚无 [${itemClass}] 分类，已自动创建。`);
-    }
+  if (itemClass === '装备') {
+    let targetPinji = pinji;
+    if (quantity > 0) { // 增加装备
+      if (targetPinji === null) {
+        const random = Math.random();
+        if (random > 0.99) targetPinji = 6;
+        else if (random > 0.95) targetPinji = 5;
+        else if (random > 0.60) targetPinji = 4;
+        else if (random > 0.20) targetPinji = 3;
+        else targetPinji = Math.floor(Math.random() * 3);
+      }
 
-    if (itemClass === '装备') {
-      let targetPinji = pinji;
-      if (quantity > 0) { // 增加装备
-        if (targetPinji === null) {
-          const random = Math.random();
-          if (random > 0.99) targetPinji = 6;
-          else if (random > 0.95) targetPinji = 5;
-          else if (random > 0.60) targetPinji = 4;
-          else if (random > 0.20) targetPinji = 3;
-          else targetPinji = Math.floor(Math.random() * 3);
-        }
-
-        const existingItem = najie.装备.find(item => item.name === itemName && item.pinji === targetPinji);
-        if (existingItem) {
-          existingItem.数量 = Number(existingItem.数量 || 0) + numQuantity;
-        } else {
-          const baseItem = findItemTemplate(itemName, '装备');
-          if (!baseItem) {
-            log('warn', `找不到装备模板: ${itemName}`);
-            return false;
-          }
-          const newItem = JSON.parse(JSON.stringify(baseItem));
-          newItem.pinji = targetPinji;
-          const z = [0.8,
-            1,
-            1.1,
-            1.2,
-            1.3,
-            1.5,
-            2.0][targetPinji];
-          if (newItem.加成) {
-            newItem.加成 = Number((baseItem.加成 * z).toFixed(2));
-          } else {
-            newItem.atk = Math.floor(baseItem.atk * z);
-            newItem.def = Math.floor(baseItem.def * z);
-            newItem.HP = Math.floor(baseItem.HP * z);
-          }
-          newItem.数量 = quantity;
-          newItem.islockd = 0;
-          najie.装备.push(newItem);
-        }
-      } else { // 减少装备
-        if (pinji === null) {
-          console.warn(`减少装备 [${itemName}] 时必须指定品级`);
+      const existingItem = najie.装备.find(item => item.name === itemName && item.pinji === targetPinji);
+      if (existingItem) {
+        existingItem.数量 = Number(existingItem.数量 || 0) + quantity;
+      } else {
+        const baseItem = findItemTemplate(itemName, '装备');
+        if (!baseItem) {
+          console.warn(`找不到装备模板: ${itemName}`);
           return false;
         }
-        const itemIndex = najie.装备.findIndex(item => item.name === itemName && item.pinji === pinji);
-        if (itemIndex !== -1) {
-          if (najie.装备[itemIndex].数量 < -quantity) {
-            console.warn(`玩家没有足够的 [${itemName}] 进行扣除`);
-            return false;
-          }
-          najie.装备[itemIndex].数量 += quantity;
-          if (najie.装备[itemIndex].数量 <= 0) {
-            najie.装备.splice(itemIndex, 1);
-          }
+        const newItem = JSON.parse(JSON.stringify(baseItem));
+        newItem.pinji = targetPinji;
+        const z = [0.8, 1, 1.1, 1.2, 1.3, 1.5, 2.0][targetPinji];
+        if (newItem.加成) {
+          newItem.加成 = Number((baseItem.加成 * z).toFixed(2));
         } else {
-          console.warn(`玩家没有 [${itemName}] (品级: ${pinji}) 无法扣除`);
+          newItem.atk = Math.floor(baseItem.atk * z);
+          newItem.def = Math.floor(baseItem.def * z);
+          newItem.HP = Math.floor(baseItem.HP * z);
+        }
+        newItem.数量 = quantity;
+        newItem.islockd = 0;
+        najie.装备.push(newItem);
+      }
+    } else { // 减少装备
+      if (pinji === null) {
+        console.warn(`减少装备 [${itemName}] 时必须指定品级`);
+        return false;
+      }
+      const itemIndex = najie.装备.findIndex(item => item.name === itemName && item.pinji === pinji);
+      if (itemIndex !== -1) {
+        if (najie.装备[itemIndex].数量 < -quantity) {
+          console.warn(`玩家没有足够的 [${itemName}] 进行扣除`);
           return false;
         }
-      }
-      return true;
-    }
-
-    // --- 所有其他可堆叠物品的通用逻辑 ---
-    const categoryMap = { '仙米': '仙宠口粮' };
-    const najieKey = categoryMap[itemClass] || itemClass;
-    if (!najie[najieKey]) {
-      console.warn(`纳戒中不存在类别: ${najieKey}`);
-      return false;
-    }
-
-    const itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
-    if (itemIndex !== -1) { // 物品已存在
-      if (quantity < 0 && najie[najieKey][itemIndex].数量 < -quantity) {
-        console.warn(`玩家没有足够的 [${itemName}] 进行扣除`);
+        najie.装备[itemIndex].数量 += quantity;
+        if (najie.装备[itemIndex].数量 <= 0) {
+          najie.装备.splice(itemIndex, 1);
+        }
+      } else {
+        console.warn(`玩家没有 [${itemName}] (品级: ${pinji}) 无法扣除`);
         return false;
       }
-      najie[najieKey][itemIndex].数量 += quantity;
-      if (najie[najieKey][itemIndex].数量 <= 0) {
-        najie[najieKey].splice(itemIndex, 1);
-      }
-    } else if (quantity > 0) { // 物品不存在，且是增加操作
-      const itemTemplate = findItemTemplate(itemName, itemClass);
-      if (!itemTemplate) {
-        console.warn(`找不到物品模板: [${itemName}] 在类别 [${itemClass}] 中`);
-        return false;
-      }
-      const newItem = { ...itemTemplate, 数量: quantity, islockd: 0 };
-      najie[najieKey].push(newItem);
-    } else {
-      console.warn(`玩家没有 [${itemName}] 无法扣除`);
-      return false; // 物品不存在，无法减少
     }
     return true;
+  }
+
+  // --- 所有其他可堆叠物品的通用逻辑 ---
+  const categoryMap = { '仙米': '仙宠口粮' };
+  const najieKey = categoryMap[itemClass] || itemClass;
+  if (!najie[najieKey]) {
+    // 自动创建分类
+    najie[najieKey] = [];
+  }
+
+  const itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
+  if (itemIndex !== -1) { // 物品已存在
+    if (quantity < 0 && najie[najieKey][itemIndex].数量 < -quantity) {
+      console.warn(`玩家没有足够的 [${itemName}] 进行扣除`);
+      return false;
+    }
+    najie[najieKey][itemIndex].数量 += quantity;
+    if (najie[najieKey][itemIndex].数量 <= 0) {
+      najie[najieKey].splice(itemIndex, 1);
+    }
+  } else if (quantity > 0) { // 物品不存在，且是增加操作
+    const itemTemplate = findItemTemplate(itemName, itemClass);
+    if (!itemTemplate) {
+      console.warn(`找不到物品模板: [${itemName}] 在类别 [${itemClass}] 中`);
+      return false;
+    }
+    const newItem = { ...itemTemplate, 数量: quantity, islockd: 0 };
+    najie[najieKey].push(newItem);
+  } else {
+    console.warn(`玩家没有 [${itemName}] 无法扣除`);
+    return false; // 物品不存在，无法减少
+  }
+  return true;
+}
+
+/**
+ * 更新纳戒物品（增加/减少），这是一个可以在任何地方安全调用的函数
+ * @param {string} userId 玩家ID
+ * @param {string} itemName 物品名称
+ * @param {string} itemClass 物品类别
+ * @param {number} quantity 数量 (正数增加, 负数减少)
+ * @param {number|null} pinji 品级 (数字0-6), 仅对装备有效
+ * @returns {Promise<boolean>} 操作是否成功
+ */
+export async function updateNajieItem(userId, itemName, itemClass, quantity, pinji = null) {
+  const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
+    return updateNajieSync(najie, itemName, itemClass, quantity, pinji);
   });
 
   if (!transactionSuccess) {
