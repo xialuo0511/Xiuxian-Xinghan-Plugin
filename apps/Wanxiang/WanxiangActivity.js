@@ -291,7 +291,7 @@ export class WanxiangActivity extends plugin {
       }).filter(Boolean);
 
       // 3. 运行战斗
-      const result = await runCombat(battleSouls, enemyTeamConfig);
+      const result = await runCombat(battleSouls, enemyTeamConfig, runData.buffs);
 
       // 4. 结算逻辑
       const finalPlayerCombatants = result.playerTeam;
