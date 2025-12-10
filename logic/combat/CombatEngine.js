@@ -67,13 +67,15 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = []) {
 
   let totalElapsedAV = 0;
   let actionCount = 0;
+  let loopCount = 0; // 防止死循环
   let roundCount = 1;
 
   combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
 
   // 3. 战斗循环
   while (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
-    if (actionCount > 300) {
+    loopCount++;
+    if (loopCount > 1000) {
       combatLog.push({ type: 'system', text: '战斗僵持过久，强制结束。' });
       break;
     }
@@ -110,12 +112,21 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = []) {
     });
 
     totalElapsedAV += elapsedAV;
-    actionCount++;
-
-    if (actionCount % 10 === 0) {
-      roundCount++;
-      combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
-    }
+    
+    // 只有当时间真正流逝时，才计入行动轮次
+    if (elapsedAV > 0) {
+        actionCount++;
+    
+            // 基于 HSR 机制的回合计数: 首轮 150 AV，后续每轮 100 AV
+            let currentRoundByAV = 1;
+            if (totalElapsedAV > 150) {
+                currentRoundByAV = 1 + Math.ceil((totalElapsedAV - 150) / 100);
+            }
+        
+            if (currentRoundByAV > roundCount) {
+              roundCount = currentRoundByAV;
+              combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
+            }    }
 
         // 检查控制状态 (如冰冻/晕眩)
         if (activeUnit.is_frozen || activeUnit.is_stunned) {
