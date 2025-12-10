@@ -45,8 +45,8 @@ export class Combatant {
         this.level = source.level || 0;
         
         // 扩展属性 (Buff支持)
-        this.crit_rate = source.crit_rate || 0;
-        this.crit_dmg = source.crit_dmg || 1.5;
+        this.crit_rate = source.base_stats.crit_rate || source.crit_rate || 0;
+        this.crit_dmg = source.base_stats.crit_dmg || source.crit_dmg || 1.5;
         this.elemental_buffs = source.elemental_buffs || {};
         this.passive_skills = source.passive_skills || [];
     } else {
