@@ -200,7 +200,15 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     // 被动技能触发
     const passiveDetails = [];
     if (activeUnit.passive_skills) {
-      // ... (existing passive heal logic) ...
+      activeUnit.passive_skills.forEach(skill => {
+        if (skill.type === 'heal_turn') {
+           const healAmt = Math.floor(activeUnit.max_hp * skill.value);
+           if (healAmt > 0) {
+             const actualHeal = activeUnit.receiveHeal(healAmt);
+             passiveDetails.push(`【${activeUnit.name}】触发被动回复，生命值+${actualHeal}`);
+           }
+        }
+      });
     }
 
     // 合并主动技能结果和 Debuff 结果

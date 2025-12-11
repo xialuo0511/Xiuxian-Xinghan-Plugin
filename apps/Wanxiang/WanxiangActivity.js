@@ -335,7 +335,11 @@ export class WanxiangActivity extends plugin {
 
         // 随机抽取 3 个 Buff (加权)
         const choices = [];
-        const pool = [...BUFFS];
+        // 过滤掉不可重复获取的赐福
+        const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
+        const acquiredBuffs = runData.buffs || [];
+        const pool = BUFFS.filter(b => !UNIQUE_BUFFS.includes(b.id) || !acquiredBuffs.includes(b.id));
+        
         const RARITY_WEIGHTS = { 1: 100, 2: 30, 3: 5 };
 
         const getWeightedRandom = (candidates) => {
@@ -415,7 +419,11 @@ export class WanxiangActivity extends plugin {
 
       // 重新生成 3 个赐福选项 (复用 challengeLayer 中的逻辑)
       const choices = [];
-      const pool = [...BUFFS]; // 确保这里是全局 BUFFS
+      
+      const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
+      const acquiredBuffs = runData.buffs || [];
+      const pool = BUFFS.filter(b => !UNIQUE_BUFFS.includes(b.id) || !acquiredBuffs.includes(b.id));
+
       const RARITY_WEIGHTS = { 1: 100, 2: 30, 3: 5 };
 
       const getWeightedRandom = (candidates) => {
