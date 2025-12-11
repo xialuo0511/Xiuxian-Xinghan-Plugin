@@ -266,6 +266,14 @@ export class WanxiangActivity extends plugin {
             } else if (buff.type === 'heal_turn') {
               if (!battleConfig.passive_skills) battleConfig.passive_skills = [];
               battleConfig.passive_skills.push({ type: 'heal_turn', value: buff.value, name: buff.name });
+            } else if (buff.type === 'energy_regen_pct') {
+              // 充能效率
+              if (!battleConfig.base_stats.energy_regen) battleConfig.base_stats.energy_regen = 20;
+              battleConfig.base_stats.energy_regen = Math.floor(battleConfig.base_stats.energy_regen * (1 + buff.value));
+            } else {
+              // 其他类型Buff (如 rainbow_vampire, speed_up_on_hit 等) 存入 global_buffs 供 CombatEngine 处理
+              if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
+              battleConfig.global_buffs.push(buff.type);
             }
           });
           battleSouls.push(battleConfig);

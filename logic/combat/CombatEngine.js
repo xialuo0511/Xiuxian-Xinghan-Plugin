@@ -23,6 +23,7 @@ const EFFECT_CONFIG = {
   'weakness': { name: '虚弱', is_debuff: true, icon: '📉' },
   'speed_up_stack': { name: '战意', is_debuff: false, icon: '⚡' },
   'speed_up_talent': { name: '疾风', is_debuff: false, icon: '💨' },
+  'damage_up_stack': { name: '锋锐', is_debuff: false, icon: '⚔️' },
   'shield': { name: '护盾', is_debuff: false, icon: '🛡️' },
   'atk_up': { name: '攻击↑', is_debuff: false, icon: '⚔️' },
   'def_up': { name: '防御↑', is_debuff: false, icon: '🛡️' },
@@ -56,11 +57,17 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
   const allCombatants = [...playerTeam,
     ...enemyTeam];
 
-  // 2. 初始化行动值 & 技能
+  // 2. 初始化行动值 & 技能 & 战斗开始Buff
   allCombatants.forEach(c => {
     c.resetAV();
     if (!c.source.skill) {
       c.source.skill = generateDefaultSkill(c);
+    }
+    
+    // ★★★ 存护壁垒 (战斗开始护盾)
+    if (c.global_buffs && c.global_buffs.includes('shield_start')) {
+        const shieldAmt = Math.floor(c.max_hp * 0.30);
+        c.addShield(shieldAmt);
     }
   });
 
@@ -123,6 +130,16 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
 
     aliveUnits.sort((a, b) => a.current_av - b.current_av);
     const activeUnit = aliveUnits[0];
+
+    // ★★★ 锋锐之气 (回合开始增伤 - 叠加)
+    if (activeUnit.global_buffs && activeUnit.global_buffs.includes('damage_up_turn')) {
+        activeUnit.applyDebuff({
+            type: 'damage_up_stack', 
+            caster_id: activeUnit.id,
+            duration: 99,
+            value: 1 
+        });
+    }
 
     // 结算 activeUnit 的 Debuff (如毒)
     const debuffResults = activeUnit.processDebuffs();
@@ -411,6 +428,17 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
     if (skill.type === 'damage') {
       const res = calculateDamage(caster, target, baseValue);
       results.push(res);
+      
+      // ★★★ 杀意沸腾 (击杀增伤)
+      if (res.hp_remaining <= 0 && caster.global_buffs && caster.global_buffs.includes('damage_up_on_kill')) {
+          // 20% = 4层 damage_up_stack (每层5%)
+          caster.applyDebuff({
+              type: 'damage_up_stack',
+              caster_id: caster.id,
+              duration: 99,
+              value: 4 
+          });
+      }
     } else if (skill.type === 'heal') {
       const healed = target.receiveHeal(Math.floor(baseValue));
       results.push({
@@ -566,10 +594,21 @@ function calculateDamage(attacker, target, rawDamageInput) {
   // --- 全局 Buff/Debuff 处理 ---
   const attackerBuffs = attacker.global_buffs || [];
   
-  // ★ 锋锐之气 (可叠加)
-  const dmgUpCount = attackerBuffs.filter(b => b === 'damage_up_5').length;
-  if (dmgUpCount > 0) {
-      globalMultiplier += 0.05 * dmgUpCount;
+  // ★ 锋锐之气 (回合叠加)
+  if (attacker.active_debuffs) {
+      const sharpStacks = attacker.active_debuffs.filter(d => d.type === 'damage_up_stack').reduce((acc, d) => acc + d.value, 0);
+      if (sharpStacks > 0) {
+          globalMultiplier += 0.05 * sharpStacks;
+      }
+  }
+  
+  // ★ 击破特攻 (克制增伤)
+  if (isCounter && attackerBuffs.includes('break_effect')) {
+      globalMultiplier += 0.20;
+  }
+  // 击破特攻 (基础增伤)
+  if (attackerBuffs.includes('break_effect')) {
+      globalMultiplier += 0.10;
   }
   
   // ★★★ 绝境爆发 (可叠加)
