@@ -1,80 +1,161 @@
 # 星魂定义文件
 # base_stats: 基础属性
-# skill: 战斗技能逻辑配置
+# skills: 技能组 (basic, talent, ultimate)
 # lore: 详细图鉴中的背景故事与设定
 
 - name: "剑魂·庚金"
   class: "活动"
   desc: "金之法则凝聚的锐利战魂，主宰杀伐。"
-  mechanics: "对单体目标造成巨额伤害，是攻坚的主力。"
+  mechanics: "高爆发单体输出，终结技可造成毁灭性打击。"
   lore: "上古剑修遗留的一缕杀伐剑意，经万载庚金之气孕育而生。它没有实体，唯有一股刺破苍穹的锐气。传闻得此战魂者，剑出无回，无坚不摧。其绝技「太白庚金斩」引动太白星力，瞬息之间可取敌首级，造成毁灭性打击。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 180, defense: 100, health: 1000, resistance: 0.1, speed: 115, taunt: 100, element: "金", crit_rate: 0.2, crit_dmg: 1.6 }
-  skill:
-    name: "太白庚金斩"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 2.5
-    detailed_mechanics: "【太白庚金斩】对敌方单体造成 250% 攻击力的伤害。"
+  base_stats: { attack: 180, defense: 100, health: 1000, resistance: 0.1, speed: 115, taunt: 100, element: "金", crit_rate: 0.2, crit_dmg: 1.6, max_energy: 120 }
+  skills:
+    basic:
+      name: "锐金指"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的金属性伤害。"
+    talent:
+      name: "无坚不摧"
+      type: "passive"
+      target: "self"
+      effect: "penetrate"
+      value: 0.2
+      detailed_mechanics: "攻击时无视目标 20% 防御力。"
+    ultimate:
+      name: "太白庚金斩"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 2.8
+      energy_cost: 120
+      detailed_mechanics: "消耗120点能量，对敌方单体造成 280% 攻击力的巨额金属性伤害。"
 
 - name: "盾灵·戊土"
   class: "活动"
   desc: "土之法则凝聚的厚重战魂，不动如山。"
-  mechanics: "为我方全体施加基于自身防御力的护盾，抵御伤害。"
+  mechanics: "强力护盾辅助，天赋提供全队减伤。"
   lore: "生于极西之地的万年戊土之精，性情温厚沉稳。它象征着大地的宽容与承载，能将脚下的每一寸土地化为坚不可摧的屏障。其绝技「不动明王阵」能沟通大地脉动，为所有队友提供坚实的护盾，任凭风吹雨打，我自岿然不动。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 80, defense: 220, health: 1500, resistance: 0.25, speed: 70, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5 }
-  skill:
-    name: "不动明王阵"
-    type: "shield"
-    target: "all_allies"
-    value_type: "def"
-    value: 1.5
-    detailed_mechanics: "【不动明王阵】为我方全体施加 150% 防御力的护盾。"
+  base_stats: { attack: 80, defense: 220, health: 1500, resistance: 0.25, speed: 70, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5, max_energy: 100 }
+  skills:
+    basic:
+      name: "碎石拳"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "def"
+      value: 0.8
+      detailed_mechanics: "对敌方单体造成基于防御力 80% 的土属性伤害。"
+    talent:
+      name: "大地庇护"
+      type: "passive"
+      target: "all_allies"
+      effect: "damage_reduce"
+      value: 0.1
+      detailed_mechanics: "使我方全体受到的伤害降低 10%。"
+    ultimate:
+      name: "不动明王阵"
+      type: "shield"
+      target: "all_allies"
+      value_type: "def"
+      value: 1.8
+      energy_cost: 100
+      detailed_mechanics: "消耗100点能量，为我方全体施加 180% 防御力的护盾，持续2回合。"
 
 - name: "药仙·乙木"
   class: "活动"
   desc: "木之法则凝聚的生机战魂，枯木逢春。"
-  mechanics: "为生命值百分比最低的友方单位恢复大量生命值。" # 描述也更新一下
+  mechanics: "群体治疗专家，天赋能持续滋养队友。"
   lore: "曾是百草园中一株得道的灵芝，感悟乙木长生之理化形。它所过之处，百花盛开，枯木逢春。它不喜争斗，只愿悬壶济世。其绝技「青帝长生诀」借来东方青帝之生机，能瞬间治愈重伤的队友，由于它是灵体，甚至能修复受损的神魂。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 100, defense: 120, health: 1200, resistance: 0.15, speed: 100, taunt: 100, element: "木", crit_rate: 0.1, crit_dmg: 1.5 }
-  skill:
-    name: "青帝长生诀"
-    type: "heal"
-    target: "lowest_hp_ally" # 保持不变
-    value_type: "atk"
-    value: 2.2 # 治疗量变为 220%
-    detailed_mechanics: "【青帝长生诀】为生命值百分比最低的友方单位恢复 220% 攻击力的生命值。"
+  base_stats: { attack: 100, defense: 120, health: 1200, resistance: 0.15, speed: 100, taunt: 100, element: "木", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 110 }
+  skills:
+    basic:
+      name: "飞叶"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 0.8
+      detailed_mechanics: "对敌方单体造成 80% 攻击力的木属性伤害。"
+    talent:
+      name: "生生不息"
+      type: "passive"
+      target: "lowest_hp_ally"
+      effect: "heal_turn_end"
+      value_type: "atk"
+      value: 0.5
+      detailed_mechanics: "回合结束时，为生命值最低的友方单位恢复 50% 攻击力的生命值。"
+    ultimate:
+      name: "青帝长生诀"
+      type: "heal"
+      target: "all_allies"
+      value_type: "atk"
+      value: 1.8
+      energy_cost: 110
+      detailed_mechanics: "消耗110点能量，为我方全体恢复 180% 攻击力的生命值。"
 
 - name: "咒师·壬水"
   class: "活动"
   desc: "水之法则凝聚的玄冥战魂，上善若水。"
-  mechanics: "召唤滔天巨浪，对敌方全体造成伤害，并为敌人施加负面效果。"
+  mechanics: "群体控制与削弱，终结技可冻结敌人。"
   lore: "诞生于北冥深海的幽寒之灵，掌握着水的变幻莫测。水可至柔滋养万物，亦可至刚席卷天下。咒师深谙此道，平时静若处子，动则如怒海狂涛。其绝技「弱水三千」能召唤来自九幽的弱水，冲击敌方全体，且弱水沉重，一旦沾染，难以摆脱。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 140, defense: 100, health: 1100, resistance: 0.1, speed: 105, taunt: 100, element: "水", crit_rate: 0.1, crit_dmg: 1.5 }
-  skill:
-    name: "弱水三千"
-    type: "damage"
-    target: "all_enemies"
-    value_type: "atk"
-    value: 0.8
-    debuff: { type: "curse_water", target: "all_enemies", duration: 2, value: 0 }
-    detailed_mechanics: "【弱水三千】对敌方全体造成 80% 攻击力的伤害，并施加持续2回合的【诅咒之水】（减速15%，回合结束50%概率晕眩）。"
+  base_stats: { attack: 140, defense: 100, health: 1100, resistance: 0.1, speed: 105, taunt: 100, element: "水", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 120 }
+  skills:
+    basic:
+      name: "凝冰刺"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的水属性伤害。"
+    talent:
+      name: "寒气侵袭"
+      type: "passive"
+      target: "attacker"
+      effect: "speed_down"
+      value: 0.1
+      detailed_mechanics: "受到攻击时，有 50% 概率使攻击者速度降低 10%，持续 2 回合。"
+    ultimate:
+      name: "弱水三千"
+      type: "damage"
+      target: "all_enemies"
+      value_type: "atk"
+      value: 1.2
+      energy_cost: 120
+      debuff: { type: "curse_water", target: "all_enemies", duration: 2, value: 0 }
+      detailed_mechanics: "消耗120点能量，对敌方全体造成 120% 攻击力的伤害，并施加【诅咒之水】（减速15%，回合结束50%概率晕眩）。"
 
 - name: "炎君·丙火"
   class: "活动"
   desc: "火之法则凝聚的狂暴战魂，焚天煮海。"
-  mechanics: "对单体造成高额火焰伤害，侵略如火。"
+  mechanics: "极致的单体爆发，暴击率越高伤害越高。"
   lore: "采南方离火之精修炼而成的火灵，性格暴烈如火。它崇尚极致的毁灭力量，认为只有灰烬才是万物最终的归宿。其绝技「九龙神火罩」通过召唤九条火龙盘旋而上，将敌人困于火罩之中焚烧，造成毁灭性单体伤害，非大毅力者不可降服。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 210, defense: 80, health: 900, resistance: 0.05, speed: 125, taunt: 80, element: "火", crit_rate: 0.25, crit_dmg: 1.6 }
-  skill:
-    name: "九龙神火罩"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 2.2
-    detailed_mechanics: "【九龙神火罩】对敌方单体造成 220% 攻击力的伤害。"
+  base_stats: { attack: 210, defense: 80, health: 900, resistance: 0.05, speed: 125, taunt: 80, element: "火", crit_rate: 0.25, crit_dmg: 1.6, max_energy: 130 }
+  skills:
+    basic:
+      name: "烈焰掌"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.2
+      detailed_mechanics: "对敌方单体造成 120% 攻击力的火属性伤害。"
+    talent:
+      name: "焚天之怒"
+      type: "passive"
+      target: "self"
+      effect: "crit_dmg_up"
+      value: 0.3
+      detailed_mechanics: "暴击伤害提升 30%。"
+    ultimate:
+      name: "九龙神火罩"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 3.5
+      energy_cost: 130
+      detailed_mechanics: "消耗130点能量，召唤九龙神火，对敌方单体造成 350% 攻击力的毁灭性伤害。"

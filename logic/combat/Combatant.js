@@ -49,6 +49,30 @@ export class Combatant {
         this.crit_dmg = source.base_stats.crit_dmg || source.crit_dmg || 1.5;
         this.elemental_buffs = source.elemental_buffs || {};
         this.passive_skills = source.passive_skills || [];
+        
+        // 能量系统
+        this.energy = 0;
+        this.max_energy = source.base_stats.max_energy || 100;
+        
+        // 技能组初始化
+        if (source.skills) {
+            this.skills = source.skills;
+            // 将天赋自动注册为被动技能
+            if (this.skills.talent) {
+                // 适配 passive_skills 结构
+                this.passive_skills.push({
+                    type: this.skills.talent.effect || 'custom', // 适配 YAML 中的 effect 字段
+                    value: this.skills.talent.value,
+                    target: this.skills.talent.target,
+                    name: this.skills.talent.name
+                });
+            }
+        } else if (source.skill) {
+             // 兼容旧格式
+            this.skills = { basic: source.skill };
+        } else {
+            this.skills = {};
+        }
     } else {
         // 玩家 (适配 xiuxian_player 数据结构)
         this.name = source.名号 || `玩家${id}`;
@@ -68,7 +92,27 @@ export class Combatant {
             if (match) this.element = match[0];
         }
         this.level = source.level_id || 0;
+        
+        this.energy = 0;
+        this.max_energy = 100;
+        this.skills = {}; // 玩家目前没有配置技能
     }
+  }
+
+  /**
+   * 增加能量
+   * @param {number} amount
+   */
+  addEnergy(amount) {
+      if (!this.isAlive()) return;
+      this.energy = Math.min(this.max_energy, this.energy + amount);
+  }
+
+  /**
+   * 检查是否可以释放终结技
+   */
+  canCastUltimate() {
+      return this.isAlive() && this.skills.ultimate && this.energy >= this.skills.ultimate.energy_cost;
   }
 
   /**

@@ -1,204 +1,311 @@
 # 怪物定义文件
 # 结构与星魂一致，以便统一处理
+# skills: 技能组 (basic, talent, ultimate)
 
 # --- 低级怪物 ---
 - name: "石傀儡"
   level: 1
   class: "妖兽"
   desc: "由山岩碎石凝聚而成的傀儡，动作迟缓但防御惊人。"
-  mechanics: "对单体目标造成物理伤害，极难被撼动。"
+  mechanics: "只会进行简单的普通攻击。"
   lore: "上古战场遗留的残垣断壁，受天地灵气侵染日久，竟生出灵智。它们没有痛觉，不知疲倦，只会忠实地守护着这片废墟。虽然攻击手段单一，但那坚如磐石的身躯往往让修仙者感到头痛不已。"
   base_stats: { attack: 70, defense: 120, health: 800, resistance: 0.15, speed: 50, taunt: 100, element: "土", crit_rate: 0, crit_dmg: 1.5 }
-  skill:
-    name: "碎石击"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 1.0
-    detailed_mechanics: "【碎石击】对敌方单体造成 100% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "碎石击"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的伤害。"
 
 - name: "藤蔓精"
   level: 1
   class: "妖兽"
   desc: "潜伏在丛林深处的变异藤蔓，擅长偷袭。"
-  mechanics: "快速抽打单体目标，造成木属性伤害。"
+  mechanics: "只会进行简单的普通攻击。"
   lore: "原本只是普通的野藤，因吸食了过多误入歧途的旅人精血而妖化。它们善于伪装成无害的植物，一旦猎物靠近，便会瞬间暴起，用带刺的藤条将猎物死死缠住。"
   base_stats: { attack: 90, defense: 80, health: 700, resistance: 0.1, speed: 90, taunt: 100, element: "木", crit_rate: 0.05, crit_dmg: 1.5 }
-  skill:
-    name: "毒刺鞭挞"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 1.2
-    detailed_mechanics: "【毒刺鞭挞】对敌方单体造成 120% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "毒刺鞭挞"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.2
+      detailed_mechanics: "对敌方单体造成 120% 攻击力的伤害。"
 
 # --- 中级怪物 ---
 - name: "深寒怨灵"
   level: 3
   class: "妖兽"
   desc: "集聚在极阴之地的怨念集合体，散发着刺骨寒意。"
-  mechanics: "喷吐寒气，对敌方全体造成水属性伤害。"
+  mechanics: "只会进行简单的普通攻击。"
   lore: "死于极寒之地的修仙者，因执念不散，魂魄与寒冰煞气融合而成的怪物。它们痛恨生者的体温，渴望将世间万物都冻结在永恒的寂静之中。其吐息能穿透灵力护盾，直冻神魂。"
   base_stats: { attack: 150, defense: 90, health: 1000, resistance: 0.1, speed: 100, taunt: 100, element: "水", crit_rate: 0.1, crit_dmg: 1.5 }
-  skill:
-    name: "寒霜吐息"
-    type: "damage"
-    target: "all_enemies"
-    value_type: "atk"
-    value: 0.7
-    detailed_mechanics: "【寒霜吐息】对敌方全体造成 70% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "寒霜吐息"
+      type: "damage"
+      target: "all_enemies"
+      value_type: "atk"
+      value: 0.7
+      detailed_mechanics: "对敌方全体造成 70% 攻击力的伤害。"
 
 - name: "烈焰之魂"
   level: 3
   class: "妖兽"
   desc: "在地火熔岩中诞生的元素生物，性情狂暴。"
-  mechanics: "对单体目标进行猛烈撞击，附带极高的火焰伤害。"
+  mechanics: "只会进行简单的普通攻击。"
   lore: "地心熔岩喷发时偶尔诞生的低阶火灵，虽无神智，却有着焚尽一切的本能。它们就像是一团行走的烈火，所过之处焦土一片。普通的修仙者若无避火法宝，根本无法近身。"
   base_stats: { attack: 180, defense: 70, health: 850, resistance: 0.05, speed: 115, taunt: 100, element: "火", crit_rate: 0.15, crit_dmg: 1.5 }
-  skill:
-    name: "烈火撞击"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 1.5
-    detailed_mechanics: "【烈火撞击】对敌方单体造成 150% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "烈火撞击"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.5
+      detailed_mechanics: "对敌方单体造成 150% 攻击力的伤害。"
 
-# --- 高级怪物 ---
+# --- 高级怪物 (精英) ---
 - name: "锐金剑侍"
   level: 5
   class: "妖兽"
   desc: "古代剑冢中守护名剑的金属傀儡，剑术高超。"
-  mechanics: "对单体发动致命一击，拥有极高的破甲能力。"
+  mechanics: "普攻附带破甲效果。"
   lore: "不知是何方大能留下的守墓机关，通体由精金打造，内刻高深剑阵。经过数千年的岁月洗礼，剑阵已生出剑灵，使其能自动演练剑法。它的每一击都蕴含着单纯而极致的杀意，专破护身罡气。"
   base_stats: { attack: 220, defense: 130, health: 1200, resistance: 0.1, speed: 125, taunt: 100, element: "金", crit_rate: 0.2, crit_dmg: 1.7 }
-  skill:
-    name: "无情剑气"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 1.8
-    detailed_mechanics: "【无情剑气】对敌方单体造成 180% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "无情剑气"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的伤害。"
+    talent:
+      name: "剑心通明"
+      type: "passive"
+      target: "self"
+      effect: "penetrate"
+      value: 0.3
+      detailed_mechanics: "攻击无视目标 30% 防御。"
 
-- name: "混元石魔"
-  level: 7
-  class: "妖兽"
-  desc: "吸收了日月精华的万年石怪，也是本次试炼的首领。"
-  mechanics: "引发大地震颤，对敌方全体造成毁灭性打击。"
-  lore: "它是这片秘境的守护者，沉睡了不知多少岁月。它的身躯便是山脉，它的呼吸便是风雷。只有真正的强者，才能唤醒并战胜它，获得其体内的土之本源。作为首领，它的实力远超寻常妖兽，任何轻视它的人都将被碾为齑粉。"
-  base_stats: { attack: 250, defense: 250, health: 5000, resistance: 0.25, speed: 60, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5 }
-  skill:
-    name: "地动山摇"
-    type: "damage"
-    target: "all_enemies"
-    value_type: "atk"
-    value: 1.0
-    detailed_mechanics: "【地动山摇】对敌方全体造成 100% 攻击力的伤害。"
-
-# --- 万象天机活动新增 ---
 - name: "炽火妖莲"
   level: 5
   class: "妖兽"
   desc: "生长在熔岩湖畔的妖异莲花，花瓣如火焰般跳动。"
-  mechanics: "对敌方单体造成巨额火属性伤害，并引爆周围热浪。"
+  mechanics: "攻击附带灼烧效果。"
   lore: "原本是吸食地火之力的灵植，因吞噬了过多的妖兽精血而堕落。它扎根于虚空，每一片花瓣都蕴含着足以融金化铁的高温。它的美丽是致命的诱惑，靠近它的人往往会在不知不觉中化为灰烬。"
   base_stats: { attack: 280, defense: 100, health: 2500, resistance: 0.2, speed: 90, taunt: 100, element: "火", crit_rate: 0.2, crit_dmg: 1.6 }
-  skill:
-    name: "业火红莲"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 1.8
-    detailed_mechanics: "【业火红莲】对敌方单体造成 180% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "火莲弹"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的伤害。"
+    talent:
+      name: "热浪滚滚"
+      type: "passive"
+      target: "all_enemies"
+      effect: "burn_aura"
+      value: 0.05
+      detailed_mechanics: "回合开始时，对所有敌人造成 5% 攻击力的微量火焰伤害。"
 
-- name: "吞天巨蟒"
-  level: 8
-  class: "妖兽"
-  desc: "体型遮天蔽日的远古巨蟒，相传有一丝龙族血脉。"
-  mechanics: "喷吐剧毒烟雾，对全体敌人造成持续腐蚀伤害。"
-  lore: "它是这片秘境的霸主之一，存活了数千年的老怪物。它的鳞片坚硬如铁，毒牙能轻易洞穿最坚固的铠甲。传说它张开巨口时，能将天空都吞下一角，故得名吞天。它极度贪婪，守护着无数珍宝，任何敢于觊觎的人都将成为它的腹中餐。"
-  base_stats: { attack: 350, defense: 200, health: 8000, resistance: 0.3, speed: 80, taunt: 300, element: "木", crit_rate: 0.1, crit_dmg: 1.5 }
-  skill:
-    name: "毒雾弥漫"
-    type: "damage"
-    target: "all_enemies"
-    value_type: "atk"
-    value: 1.2
-    debuff: { type: "poison_dot", target: "all_enemies", duration: 3, value: 0.05 } # 施加毒Debuff (每回合5%最大生命伤害，持续3回合)
-    detailed_mechanics: "【毒雾弥漫】对敌方全体造成 120% 攻击力的伤害，并施加持续 3 回合的毒素，每回合造成 5% 最大生命值的伤害。"
-
-# --- 20层扩充新增 ---
 - name: "雷灵鸟"
   level: 6
   class: "妖兽"
   desc: "沐浴雷电而生的灵鸟，速度极快，常伴有雷鸣。"
-  mechanics: "对全体敌人释放雷电，造成伤害并有概率麻痹。"
+  mechanics: "速度越快，伤害越高。"
   lore: "生于九天之上的雷云之中，以雷电为食。它的羽毛如同闪电般耀眼，飞行时会发出震耳欲聋的雷鸣声。它的速度极快，寻常修士根本无法捕捉到它的身影。它性格暴躁，一旦被激怒，便会引来漫天雷霆，将敌人化为焦炭。"
   base_stats: { attack: 200, defense: 80, health: 1500, resistance: 0.1, speed: 140, taunt: 100, element: "金", crit_rate: 0.25, crit_dmg: 1.5 }
-  skill:
-    name: "千鸟齐鸣"
-    type: "damage"
-    target: "all_enemies"
-    value_type: "atk"
-    value: 0.9
-    detailed_mechanics: "【千鸟齐鸣】对敌方全体造成 90% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "千鸟齐鸣"
+      type: "damage"
+      target: "all_enemies"
+      value_type: "atk"
+      value: 0.6
+      detailed_mechanics: "对敌方全体造成 60% 攻击力的伤害。"
+    talent:
+      name: "雷霆急速"
+      type: "passive"
+      target: "self"
+      effect: "speed_dmg_up"
+      value: 0.01
+      detailed_mechanics: "每 1 点速度提升 1% 造成的伤害。"
 
 - name: "暗影刺客"
   level: 6
   class: "妖兽"
   desc: "隐藏在阴影中的杀手，出手必见血。"
-  mechanics: "锁定生命值最低的目标，造成极高的单体爆发伤害。"
+  mechanics: "对低血量目标造成额外伤害。"
   lore: "曾是某个古老杀手组织的成员，死后化为怨灵，继续执行着生前的任务。它没有实体，能自由穿梭于阴影之中。它最喜欢在敌人最虚弱的时候发动致命一击，让人防不胜防。它的匕首涂有剧毒，见血封喉。"
   base_stats: { attack: 300, defense: 60, health: 1200, resistance: 0.05, speed: 130, taunt: 50, element: "水", crit_rate: 0.4, crit_dmg: 2.0 }
-  skill:
-    name: "影杀"
-    type: "damage"
-    target: "lowest_hp_enemy" # 修正：攻击血量最低的敌人
-    value_type: "atk"
-    value: 2.5
-    detailed_mechanics: "【影杀】对生命值最低的目标造成 250% 攻击力的伤害。"
+  skills:
+    basic:
+      name: "影杀"
+      type: "damage"
+      target: "lowest_hp_enemy"
+      value_type: "atk"
+      value: 1.5
+      detailed_mechanics: "对生命值最低的目标造成 150% 攻击力的伤害。"
+    talent:
+      name: "处决"
+      type: "passive"
+      target: "self"
+      effect: "execute_bonus"
+      value: 0.5
+      detailed_mechanics: "攻击生命值低于 50% 的目标时，暴击率提升 50%。"
 
 - name: "铁甲巨龟"
   level: 6
   class: "妖兽"
   desc: "背负厚重甲壳的巨龟，防御力堪比城墙。"
-  mechanics: "为自己施加巨额护盾，并吸引所有敌人的仇恨。"
+  mechanics: "受到攻击时反弹伤害。"
   lore: "活了万年的老龟，其甲壳经过岁月的沉淀，已变得坚不可摧。它行动缓慢，但只要缩入壳中，便能抵御世间绝大多数的攻击。它性格温和，但若有人侵犯它的领地，它也会展现出惊人的力量，用沉重的身躯碾碎敌人。"
   base_stats: { attack: 100, defense: 400, health: 3000, resistance: 0.4, speed: 40, taunt: 500, element: "土", crit_rate: 0, crit_dmg: 1.0 }
-  skill:
-    name: "不动如山"
-    type: "shield"
-    target: "self" # 技能目标是自己
-    value_type: "def"
-    value: 2.0
-    debuff: { type: "taunt", target: "all_enemies", duration: 2 } # 附加嘲讽Debuff
-    detailed_mechanics: "【不动如山】为自身施加 200% 防御力的护盾，并嘲讽所有敌人 2 回合。"
+  skills:
+    basic:
+      name: "泰山压顶"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "def"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成防御力 100% 的伤害。"
+    talent:
+      name: "荆棘甲壳"
+      type: "passive"
+      target: "attacker"
+      effect: "reflect"
+      value: 0.2
+      detailed_mechanics: "受到攻击时，反弹 20% 原始伤害给攻击者。"
+
+# --- 首领怪物 (Boss) ---
+- name: "混元石魔"
+  level: 7
+  class: "妖兽"
+  desc: "吸收了日月精华的万年石怪，也是本次试炼的首领。"
+  mechanics: "具备毁灭性的群体打击能力。"
+  lore: "它是这片秘境的守护者，沉睡了不知多少岁月。它的身躯便是山脉，它的呼吸便是风雷。只有真正的强者，才能唤醒并战胜它，获得其体内的土之本源。作为首领，它的实力远超寻常妖兽，任何轻视它的人都将被碾为齑粉。"
+  base_stats: { attack: 250, defense: 250, health: 5000, resistance: 0.25, speed: 60, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5, max_energy: 150 }
+  skills:
+    basic:
+      name: "巨石投掷"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的伤害。"
+    talent:
+      name: "石化皮肤"
+      type: "passive"
+      target: "self"
+      effect: "damage_reduce"
+      value: 0.15
+      detailed_mechanics: "受到的伤害降低 15%。"
+    ultimate:
+      name: "地动山摇"
+      type: "damage"
+      target: "all_enemies"
+      value_type: "atk"
+      value: 1.5
+      energy_cost: 150
+      detailed_mechanics: "消耗150点能量，对敌方全体造成 150% 攻击力的伤害。"
+
+- name: "吞天巨蟒"
+  level: 8
+  class: "妖兽"
+  desc: "体型遮天蔽日的远古巨蟒，相传有一丝龙族血脉。"
+  mechanics: "剧毒与缠绕，让敌人窒息而亡。"
+  lore: "它是这片秘境的霸主之一，存活了数千年的老怪物。它的鳞片坚硬如铁，毒牙能轻易洞穿最坚固的铠甲。传说它张开巨口时，能将天空都吞下一角，故得名吞天。它极度贪婪，守护着无数珍宝，任何敢于觊觎的人都将成为它的腹中餐。"
+  base_stats: { attack: 350, defense: 200, health: 8000, resistance: 0.3, speed: 80, taunt: 300, element: "木", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 140 }
+  skills:
+    basic:
+      name: "毒牙撕咬"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.2
+      detailed_mechanics: "对敌方单体造成 120% 攻击力的伤害。"
+    talent:
+      name: "剧毒体质"
+      type: "passive"
+      target: "attacker"
+      effect: "poison_contact"
+      value: 0.02
+      detailed_mechanics: "接触（攻击）巨蟒者会受到 2% 最大生命值的毒素伤害。"
+    ultimate:
+      name: "毒雾弥漫"
+      type: "damage"
+      target: "all_enemies"
+      value_type: "atk"
+      value: 1.2
+      energy_cost: 140
+      debuff: { type: "poison_dot", target: "all_enemies", duration: 3, value: 0.05 }
+      detailed_mechanics: "消耗140点能量，对敌方全体造成 120% 攻击力的伤害，并施加毒素（每回合5%最大生命伤害）。"
 
 - name: "狂暴猿猴"
   level: 7
   class: "妖兽"
   desc: "力大无穷的猿猴，越战越勇。"
-  mechanics: "对单体造成伤害，血量越低伤害越高（目前简化为高倍率单体）。"
+  mechanics: "血量越低，破坏力越强。"
   lore: "生活在深山老林中的猿猴首领，力大无穷，能生裂虎豹。它性格暴躁好战，一旦进入战斗状态，便会失去理智，不死不休。它受了伤反而会激发体内的凶性，变得更加危险。"
-  base_stats: { attack: 240, defense: 100, health: 2000, resistance: 0.15, speed: 110, taunt: 100, element: "火", crit_rate: 0.2, crit_dmg: 1.6 }
-  skill:
-    name: "碎颅击"
-    type: "damage"
-    target: "single_enemy"
-    value_type: "atk"
-    value: 2.0
-    detailed_mechanics: "【碎颅击】对敌方单体造成 200% 攻击力的伤害。"
+  base_stats: { attack: 240, defense: 100, health: 2000, resistance: 0.15, speed: 110, taunt: 100, element: "火", crit_rate: 0.2, crit_dmg: 1.6, max_energy: 120 }
+  skills:
+    basic:
+      name: "重拳"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的伤害。"
+    talent:
+      name: "怒意沸腾"
+      type: "passive"
+      target: "self"
+      effect: "berserk"
+      value: 0.01
+      detailed_mechanics: "每损失 1% 生命值，伤害提升 1%。"
+    ultimate:
+      name: "碎颅击"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 3.0
+      energy_cost: 120
+      detailed_mechanics: "消耗120点能量，对敌方单体造成 300% 攻击力的毁灭性伤害。"
 
 - name: "混沌魔眼"
   level: 9
   class: "妖兽"
   desc: "来自虚空的邪眼，凝视着万物的终结。"
-  mechanics: "释放混乱射线，对全体造成伤害并随机造成高额波动。"
+  mechanics: "混乱与虚空之力。"
   lore: "不知从何处而来的邪恶生物，据说它连接着另一个充满混乱与疯狂的世界。它的眼睛能看透人心最深处的恐惧，并将其具象化。凡是与它对视的人，都会陷入无尽的噩梦之中，最终精神崩溃而亡。"
-  base_stats: { attack: 320, defense: 150, health: 6000, resistance: 0.2, speed: 95, taunt: 100, element: "土", crit_rate: 0.15, crit_dmg: 1.8 }
-  skill:
-    name: "虚空凝视"
-    type: "damage"
-    target: "all_enemies"
-    value_type: "atk"
-    value: 1.1
-    detailed_mechanics: "【虚空凝视】对敌方全体造成 110% 攻击力的伤害。"
+  base_stats: { attack: 320, defense: 150, health: 6000, resistance: 0.2, speed: 95, taunt: 100, element: "土", crit_rate: 0.15, crit_dmg: 1.8, max_energy: 160 }
+  skills:
+    basic:
+      name: "精神冲击"
+      type: "damage"
+      target: "single_enemy"
+      value_type: "atk"
+      value: 1.0
+      detailed_mechanics: "对敌方单体造成 100% 攻击力的伤害。"
+    talent:
+      name: "混乱力场"
+      type: "passive"
+      target: "all_enemies"
+      effect: "random_debuff_turn"
+      value: 0.3
+      detailed_mechanics: "回合开始时，有 30% 概率给随机敌人施加负面状态。"
+    ultimate:
+      name: "虚空凝视"
+      type: "damage"
+      target: "all_enemies"
+      value_type: "atk"
+      value: 1.5
+      energy_cost: 160
+      detailed_mechanics: "消耗160点能量，对敌方全体造成 150% 攻击力的伤害。"

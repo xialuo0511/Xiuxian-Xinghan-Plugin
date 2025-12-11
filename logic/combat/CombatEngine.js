@@ -73,8 +73,44 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
   combatLog.push({ type: 'turn', text: `--- 第 ${roundCount} 回合 ---` });
 
   // 3. 战斗循环
-  while (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
-    loopCount++;
+      while (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
+        // --- 0. 终结技检测 (插队) ---
+        const potentialUlters = allCombatants.filter(u => u.isAlive() && u.canCastUltimate());
+        if (potentialUlters.length > 0) {
+            potentialUlters.sort((a, b) => b.speed - a.speed);
+            const ultingUnit = potentialUlters[0];
+            const skillConfig = ultingUnit.skills.ultimate;
+            const friendlyTeam = (ultingUnit.team === 'player') ? playerTeam : enemyTeam;
+            const hostileTeam = (ultingUnit.team === 'player') ? enemyTeam : playerTeam;
+
+            combatLog.push({ type: 'system', text: `★ 【${ultingUnit.name}】 能量满溢，释放终结技：${skillConfig.name}！` });
+
+            const { skillResults, debuffsApplied } = executeSkill(ultingUnit, skillConfig, friendlyTeam, hostileTeam);
+            ultingUnit.energy -= skillConfig.energy_cost;
+
+            debuffsApplied.forEach(d => {
+                const targetUnit = allCombatants.find(c => c.id === d.id);
+                if (targetUnit && skillConfig.debuff) {
+                    targetUnit.applyDebuff({
+                        type: skillConfig.debuff.type,
+                        caster_id: d.caster_id,
+                        duration: skillConfig.debuff.duration,
+                        value: skillConfig.debuff.value
+                    });
+                }
+            });
+
+            combatLog.push({
+                type: 'ultimate',
+                skill: skillConfig.name,
+                caster: { name: ultingUnit.name, team: ultingUnit.team, element: ultingUnit.element, level: ultingUnit.level || 0, id: ultingUnit.id },
+                targets: skillResults,
+                teamStatus: { player: playerTeam.map(getUnitStatus), enemy: enemyTeam.map(getUnitStatus) }
+            });
+            continue;
+        }
+
+        loopCount++;
     if (loopCount > 1000) {
       combatLog.push({ type: 'system', text: '战斗僵持过久，强制结束。' });
       break;
@@ -174,18 +210,32 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             continue;
         }
     // --- 行动逻辑 ---
-    const skillConfig = activeUnit.source.skill;
+    let skillConfig = activeUnit.skills.basic;
+    if (!skillConfig) {
+         // 容错：如果没有配置普通攻击，尝试使用旧格式
+         skillConfig = activeUnit.source.skill;
+    }
+    
+    if (!skillConfig) {
+         // 再次容错：跳过
+         activeUnit.resetAV();
+         continue;
+    }
+
     const friendlyTeam = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
     const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
 
     const { skillResults, debuffsApplied } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
+    
+    // 行动回复能量
+    activeUnit.addEnergy(20);
 
     // 应用 Debuff
     debuffsApplied.forEach(d => {
       const targetUnit = allCombatants.find(c => c.id === d.id);
       if (targetUnit) {
         // 从原始技能配置中获取debuff的完整参数，因为debuffsApplied只包含日志信息
-        const debuffConfig = activeUnit.source.skill.debuff;
+        const debuffConfig = skillConfig.debuff;
         if (debuffConfig) {
           targetUnit.applyDebuff({
             type: debuffConfig.type,
@@ -585,6 +635,11 @@ const getUnitStatus = (unit) => {
           is_debuff: config.is_debuff
       };
   });
+  
+  // 能量状态
+  const energy = unit.energy || 0;
+  const max_energy = unit.max_energy || 100;
+  const energy_percent = (energy / max_energy) * 100;
 
   // 如果有护盾，也视为一种状态
   if (unit.shield > 0) {
@@ -598,11 +653,12 @@ const getUnitStatus = (unit) => {
     hp_display: formatNumber(current_hp),
     max_hp_display: formatNumber(unit.max_hp),
     shield: unit.shield,
-    hp_percent: Math.max(0, Math.min(hp_percent, 100)),
-    shield_percent: Math.min(shield_percent, 100),
-    av: Math.floor(unit.current_av),
-    id: unit.id, // 用于前端显示头像
-    effects: effects // 新增：状态列表
+    hp_percent: parseFloat(hp_percent.toFixed(1)),
+    shield_percent: parseFloat(shield_percent.toFixed(1)),
+    energy,
+    max_energy,
+    energy_percent: parseFloat(energy_percent.toFixed(1)),
+    effects: effects
   };
 };
 
