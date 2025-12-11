@@ -260,7 +260,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
            }
         } else if (skill.type === 'speed_up_on_action') {
             if (activeUnit.addSpeedStack) {
-                activeUnit.addSpeedStack(skill.value);
+                activeUnit.addSpeedStack(skill.value, 1);
                 const pName = skill.name || '被动';
                 const speedIncrease = (skill.value * 100).toFixed(0);
                 passiveDetails.push(`触发【${pName}】，速度提高${speedIncrease}%`);
@@ -601,7 +601,7 @@ function calculateDamage(attacker, target, rawDamageInput) {
   if (speedUpCount > 0) {
       // 激流勇进：受击加速 (叠加)
       if (target.addSpeedStack) {
-          target.addSpeedStack(0.05 * speedUpCount); 
+          target.addSpeedStack(0.05 * speedUpCount, speedUpCount); 
       }
   }
 

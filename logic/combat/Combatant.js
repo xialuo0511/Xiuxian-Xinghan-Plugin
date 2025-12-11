@@ -135,23 +135,23 @@ export class Combatant {
   /**
    * 增加速度倍率 (叠加)
    * @param {number} percent 增加的百分比 (0.05)
+   * @param {number} stackIncrement 增加的层数 (默认为1)
    */
-  addSpeedStack(percent) {
+  addSpeedStack(percent, stackIncrement = 1) {
       this.speed_multiplier += percent;
       
       // 更新UI显示的Buff状态
       const existing = this.active_debuffs.find(d => d.type === 'speed_up_stack');
-      const stackCount = Math.round((this.speed_multiplier - 1.0) / 0.05); // 计算层数
       
       if (existing) {
           existing.duration = 99; // 刷新持续时间
-          existing.value = stackCount; // 借用value存层数
+          existing.value += stackIncrement; // 累加层数
       } else {
           this.active_debuffs.push({
               type: 'speed_up_stack',
               caster_id: 'self',
               duration: 99,
-              value: stackCount,
+              value: stackIncrement, // 初始层数
               just_applied: true
           });
       }
