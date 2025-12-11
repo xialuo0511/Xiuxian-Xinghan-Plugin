@@ -451,7 +451,14 @@
                 <div class="effect-info effect-{{target.type}}">
                     {{if target.is_crit}}<span class="crit-tag">暴击</span>{{/if}}
                     {{if target.is_counter}}<span class="counter-tag">克制</span>{{/if}}
-                    {{if target.type === 'damage'}}-{{target.value_display}}
+                    {{if target.type === 'damage'}}
+                        -{{target.value_display}}
+                        {{if target.vampire_heal > 0}}
+                             <span class="effect-heal" style="font-size: 0.8em; margin-left: 5px;">(+{{target.vampire_heal}} 吸血)</span>
+                        {{/if}}
+                        {{if target.reflected_damage > 0}}
+                             <span class="effect-damage" style="font-size: 0.8em; margin-left: 5px;">(反弹 {{target.reflected_damage}})</span>
+                        {{/if}}
                     {{else if target.type === 'heal'}}+{{target.value_display}}
                     {{else if target.type === 'shield'}}🛡{{target.value_display}}
                     {{else if target.type === 'debuff_application'}}
