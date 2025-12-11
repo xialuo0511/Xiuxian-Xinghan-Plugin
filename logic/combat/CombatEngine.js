@@ -270,6 +270,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
       combatLog.push({
         details: passiveDetails,
         type: 'action',
+        is_extra_turn: activeUnit.is_extra_turn_pending,
         av_cost: Math.floor(elapsedAV),
         skill: skillConfig.name,
         caster: {
@@ -285,6 +286,8 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
           enemy: enemyTeam.map(getUnitStatus)
         }
       });
+      
+      if (activeUnit.is_extra_turn_pending) activeUnit.is_extra_turn_pending = false;
     }
 
     activeUnit.resetAV();
@@ -294,6 +297,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
         if (!activeUnit.has_acted_once) {
             activeUnit.has_acted_once = true;
             activeUnit.current_av = 0; // 立即再次行动
+            activeUnit.is_extra_turn_pending = true;
             combatLog.push({ type: 'system', text: `${activeUnit.name} 触发【风驰电掣】，迅捷如风，再次行动！` });
         }
     } else {

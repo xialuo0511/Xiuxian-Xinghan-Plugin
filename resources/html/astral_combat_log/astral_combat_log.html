@@ -414,7 +414,9 @@
         <div class="action-header">
             <div class="caster-info">
                 {{if line.type === 'ultimate'}}<span class="ultimate-tag">终结技</span>{{/if}}
+                {{if !line.is_extra_turn && line.type !== 'ultimate'}}
                 <span class="av-badge">耗时 {{if line.av_cost !== undefined}}{{line.av_cost}}{{else}}0{{/if}}</span>
+                {{/if}}
                 <span class="ele-{{line.caster.element}} {{if line.caster.level >= 5}}rank-boss{{else if line.caster.level >= 3}}rank-elite{{/if}}">
                     {{if line.caster.level >= 5}}<span class="boss-tag">首领</span>{{else if line.caster.level >= 3}}<span class="elite-tag">精英</span>{{/if}}{{line.caster.name}}
                 </span>
