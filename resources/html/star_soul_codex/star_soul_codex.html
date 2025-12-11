@@ -156,21 +156,29 @@
       .skill-name { font-size: 20px; font-weight: bold; color: var(--ink-color); margin-bottom: 4px;}
       .mechanic-text { font-size: 16px; color: var(--fire); }
       
+      .skill-entry {
+          margin-bottom: 6px;
+          line-height: 1.4;
+      }
+      
+      .skill-tag {
+          display: inline-block;
+          background: #e6e2d3;
+          border: 1px solid #ccc;
+          padding: 0 4px;
+          border-radius: 3px;
+          font-size: 12px;
+          margin-right: 4px;
+          color: #555;
+          vertical-align: middle;
+      }
+      
       .val-highlight {
           color: #c53828;
           font-weight: bold;
           font-family: "tttgbnumber";
           font-size: 1.1em;
           margin: 0 2px;
-      }
-      
-      .skill-detail-data {
-          font-size: 14px;
-          color: #888;
-          font-family: "tttgbnumber";
-          margin-top: 4px;
-          border-top: 1px dashed #eee;
-          padding-top: 4px;
       }
 
   </style>
@@ -194,9 +202,10 @@
           <div class="soul-header">
               <span class="soul-name">{{soul.name}}</span>
               <span class="soul-role">
-                  {{if soul.skill.type === 'damage'}}【输出】
-                  {{else if soul.skill.type === 'heal'}}【治疗】
-                  {{else if soul.skill.type === 'shield'}}【生存】
+                  {{if soul.skills.ultimate && soul.skills.ultimate.type === 'damage'}}【输出】
+                  {{else if soul.skills.ultimate && soul.skills.ultimate.type === 'heal'}}【治疗】
+                  {{else if soul.skills.ultimate && soul.skills.ultimate.type === 'shield'}}【生存】
+                  {{else if soul.skills.basic && soul.skills.basic.type === 'damage'}}【输出】
                   {{/if}}
                   速度: {{soul.base_stats.speed}}
               </span>
@@ -220,9 +229,25 @@
           <div class="mechanic-box">
               <div class="mechanic-text">
                   {{if isDetail}}
-                      {{@ soul.skill.detailed_mechanics}}
+                      {{if soul.skills.basic}}
+                      <div class="skill-entry">
+                          <span class="skill-tag">普攻</span> <b>{{soul.skills.basic.name}}</b>: {{@ soul.skills.basic.detailed_mechanics}}
+                      </div>
+                      {{/if}}
+                      
+                      {{if soul.skills.talent}}
+                      <div class="skill-entry">
+                          <span class="skill-tag">天赋</span> <b>{{soul.skills.talent.name}}</b>: {{@ soul.skills.talent.detailed_mechanics}}
+                      </div>
+                      {{/if}}
+                      
+                      {{if soul.skills.ultimate}}
+                      <div class="skill-entry">
+                          <span class="skill-tag">终结技</span> <b>{{soul.skills.ultimate.name}}</b>: {{@ soul.skills.ultimate.detailed_mechanics}}
+                      </div>
+                      {{/if}}
                   {{else}}
-                      <span style="font-weight:bold; color:#2c2c2c;">绝技 · {{soul.skill.name}}</span><br>{{soul.mechanics}}
+                      <span style="font-weight:bold; color:#2c2c2c;">特性：</span>{{soul.mechanics}}
                   {{/if}}
               </div>
           </div>
@@ -264,9 +289,25 @@
           <div class="mechanic-box">
               <div class="mechanic-text">
                   {{if isDetail}}
-                      {{@ monster.skill.detailed_mechanics}}
+                      {{if monster.skills.basic}}
+                      <div class="skill-entry">
+                          <span class="skill-tag">普攻</span> <b>{{monster.skills.basic.name}}</b>: {{@ monster.skills.basic.detailed_mechanics}}
+                      </div>
+                      {{/if}}
+                      
+                      {{if monster.skills.talent}}
+                      <div class="skill-entry">
+                          <span class="skill-tag">天赋</span> <b>{{monster.skills.talent.name}}</b>: {{@ monster.skills.talent.detailed_mechanics}}
+                      </div>
+                      {{/if}}
+                      
+                      {{if monster.skills.ultimate}}
+                      <div class="skill-entry">
+                          <span class="skill-tag">终结技</span> <b>{{monster.skills.ultimate.name}}</b>: {{@ monster.skills.ultimate.detailed_mechanics}}
+                      </div>
+                      {{/if}}
                   {{else}}
-                      <span style="font-weight:bold; color:#2c2c2c;">天赋 · {{monster.skill.name}}</span><br>{{monster.mechanics}}
+                      <span style="font-weight:bold; color:#2c2c2c;">特性：</span>{{monster.mechanics}}
                   {{/if}}
               </div>
           </div>
