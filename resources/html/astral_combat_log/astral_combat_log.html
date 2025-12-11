@@ -375,6 +375,17 @@
           border-radius: 50%;
       }
 
+      .effect-stack {
+          margin-left: 3px;
+          font-size: 10px;
+          background: #fff;
+          color: #333;
+          padding: 0 3px;
+          border-radius: 4px;
+          font-family: "tttgbnumber", serif;
+          font-weight: bold;
+      }
+
       .footer {
 
   </style>
@@ -494,7 +505,12 @@
                     <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
                       {{each unit.effects eff}}
                       <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
-                        {{eff.icon}} {{if eff.duration !== '∞'}}<span class="effect-duration">{{eff.duration}}</span>{{/if}}
+                        {{eff.icon}} 
+                        {{if eff.is_stackable}}
+                            <span class="effect-stack">x{{eff.stack_count}}</span>
+                        {{else if eff.duration !== '∞'}}
+                            <span class="effect-duration">{{eff.duration}}</span>
+                        {{/if}}
                       </div>
                       {{/each}}
                     </div>
@@ -532,7 +548,12 @@
                     <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
                       {{each unit.effects eff}}
                       <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
-                        {{eff.icon}} {{if eff.duration !== '∞'}}<span class="effect-duration">{{eff.duration}}</span>{{/if}}
+                        {{eff.icon}} 
+                        {{if eff.is_stackable}}
+                            <span class="effect-stack">x{{eff.stack_count}}</span>
+                        {{else if eff.duration !== '∞'}}
+                            <span class="effect-duration">{{eff.duration}}</span>
+                        {{/if}}
                       </div>
                       {{/each}}
                     </div>

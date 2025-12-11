@@ -644,12 +644,24 @@ const getUnitStatus = (unit) => {
   // 映射 Buff/Debuff
   const effects = (unit.active_debuffs || []).map(d => {
       const config = EFFECT_CONFIG[d.type] || { name: d.type, is_debuff: true, icon: '❓' };
+      
+      let isStackable = false;
+      let stackCount = 0;
+      
+      // 标记可叠加的 Buff 类型
+      if (d.type === 'speed_up_stack') {
+          isStackable = true;
+          stackCount = d.value;
+      }
+      
       return {
           type: d.type,
           name: config.name,
           icon: config.icon,
           duration: d.duration,
-          is_debuff: config.is_debuff
+          is_debuff: config.is_debuff,
+          is_stackable: isStackable,
+          stack_count: stackCount
       };
   });
   
