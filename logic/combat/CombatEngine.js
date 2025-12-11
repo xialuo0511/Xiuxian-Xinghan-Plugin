@@ -75,8 +75,8 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
 
   // 3. 战斗循环
       while (playerTeam.some(p => p.isAlive()) && enemyTeam.some(e => e.isAlive())) {
-        // --- 0. 终结技检测 (插队) ---
-        const potentialUlters = allCombatants.filter(u => u.isAlive() && u.canCastUltimate());
+        // --- 0. 终结技检测 (插队) - 仅限玩家 ---
+        const potentialUlters = allCombatants.filter(u => u.isAlive() && u.canCastUltimate() && u.team === 'player');
         if (potentialUlters.length > 0) {
             potentialUlters.sort((a, b) => b.speed - a.speed);
             const ultingUnit = potentialUlters[0];
@@ -211,7 +211,19 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             continue;
         }
     // --- 行动逻辑 ---
-    let skillConfig = activeUnit.skills.basic;
+    let skillConfig = null;
+    let isUltimate = false;
+
+    // 敌方AI：优先释放终结技
+    if (activeUnit.team === 'enemy' && activeUnit.canCastUltimate()) {
+        skillConfig = activeUnit.skills.ultimate;
+        activeUnit.energy -= skillConfig.energy_cost;
+        isUltimate = true;
+        combatLog.push({ type: 'system', text: `★ 【${activeUnit.name}】 积蓄已久，释放终结技：${skillConfig.name}！` });
+    } else {
+        skillConfig = activeUnit.skills.basic;
+    }
+
     if (!skillConfig) {
          // 容错：如果没有配置普通攻击，尝试使用旧格式
          skillConfig = activeUnit.source.skill;
@@ -278,7 +290,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     if (allActionResults.length > 0 || passiveDetails.length > 0) {
       combatLog.push({
         details: passiveDetails,
-        type: 'action',
+        type: isUltimate ? 'ultimate' : 'action',
         is_extra_turn: activeUnit.is_extra_turn_pending,
         av_cost: Math.floor(elapsedAV),
         skill: skillConfig.name,
@@ -590,8 +602,8 @@ function calculateDamage(attacker, target, rawDamageInput) {
   finalDmg = Math.max(1, finalDmg);
   target.takeDamage(finalDmg);
   
-  // 受击回能
-  if (target.addEnergy) {
+  // 受击回能 (仅限玩家)
+  if (target.addEnergy && target.team === 'player') {
       target.addEnergy(10);
   }
 
