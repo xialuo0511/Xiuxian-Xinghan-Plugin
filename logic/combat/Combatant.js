@@ -59,6 +59,7 @@ export class Combatant {
                 this.passive_skills.push({
                     type: this.skills.talent.effect || 'custom', // 适配 YAML 中的 effect 字段
                     value: this.skills.talent.value,
+                    value_type: this.skills.talent.value_type, // 复制数值类型 (atk/hp)
                     target: this.skills.talent.target,
                     name: this.skills.talent.name
                 });

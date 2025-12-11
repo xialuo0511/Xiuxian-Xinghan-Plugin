@@ -278,6 +278,30 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
                 const speedIncrease = (skill.value * 100).toFixed(0);
                 passiveDetails.push(`触发【${pName}】，速度提高${speedIncrease}%`);
             }
+        } else if (skill.type === 'heal_turn_end') {
+             // 寻找目标：生命值最低的友方 (target='lowest_hp_ally')
+             // 注意：这里简单实现，假设 target 总是 lowest_hp_ally，如果需要支持更多 target 类型，需扩展
+             const team = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
+             const allies = team.filter(u => u.isAlive());
+             if (allies.length > 0) {
+                 // 按血量百分比排序 (升序)
+                 allies.sort((a, b) => (a.current_hp / a.max_hp) - (b.current_hp / b.max_hp));
+                 const target = allies[0];
+                 
+                 let baseHeal = 0;
+                 if (skill.value_type === 'atk') {
+                     baseHeal = activeUnit.attack * skill.value;
+                 } else {
+                     baseHeal = activeUnit.max_hp * skill.value; // 默认按最大生命值
+                 }
+                 
+                 const healAmt = Math.floor(baseHeal);
+                 if (healAmt > 0) {
+                     const actualHeal = target.receiveHeal(healAmt);
+                     const pName = skill.name || '被动';
+                     passiveDetails.push(`触发【${pName}】，${target.name} 回复 ${actualHeal}`);
+                 }
+             }
         }
       });
     }
