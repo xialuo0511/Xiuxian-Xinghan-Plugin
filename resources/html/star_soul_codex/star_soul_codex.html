@@ -219,6 +219,7 @@
               <div>暴击率: {{soul.base_stats.crit_rate * 100}}%</div>
               <div>暴击伤害: {{soul.base_stats.crit_dmg * 100}}%</div>
               <div>能量上限: {{soul.base_stats.max_energy || 100}}</div>
+              <div>攻击回能: {{soul.base_stats.energy_regen || 20}}</div>
           </div>
 
           {{if isDetail}}
@@ -280,6 +281,7 @@
               <div>暴击率: {{monster.base_stats.crit_rate * 100}}%</div>
               <div>暴击伤害: {{monster.base_stats.crit_dmg * 100}}%</div>
               <div>能量上限: {{monster.base_stats.max_energy || 100}}</div>
+              <div>攻击回能: {{monster.base_stats.energy_regen || 20}}</div>
           </div>
 
           {{if isDetail}}

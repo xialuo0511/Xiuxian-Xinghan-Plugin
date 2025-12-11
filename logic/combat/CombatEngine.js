@@ -228,7 +228,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     const { skillResults, debuffsApplied } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
     
     // 行动回复能量
-    activeUnit.addEnergy(20);
+    activeUnit.addEnergy(activeUnit.energy_regen || 20);
 
     // 应用 Debuff
     debuffsApplied.forEach(d => {

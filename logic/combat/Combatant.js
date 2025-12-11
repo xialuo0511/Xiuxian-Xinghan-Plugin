@@ -50,10 +50,6 @@ export class Combatant {
         this.elemental_buffs = source.elemental_buffs || {};
         this.passive_skills = source.passive_skills || [];
         
-        // 能量系统
-        this.energy = 0;
-        this.max_energy = source.base_stats.max_energy || 100;
-        
         // 技能组初始化
         if (source.skills) {
             this.skills = source.skills;
@@ -72,6 +68,17 @@ export class Combatant {
             this.skills = { basic: source.skill };
         } else {
             this.skills = {};
+        }
+        
+        // 能量系统
+        this.energy = 0;
+        this.energy_regen = source.base_stats.energy_regen || 20;
+        
+        if (source.base_stats.max_energy !== undefined) {
+            this.max_energy = source.base_stats.max_energy;
+        } else {
+            // 如果有终结技，默认100能量上限；否则为0 (不显示能量条)
+            this.max_energy = (this.skills.ultimate) ? 100 : 0;
         }
     } else {
         // 玩家 (适配 xiuxian_player 数据结构)
@@ -95,6 +102,7 @@ export class Combatant {
         
         this.energy = 0;
         this.max_energy = 100;
+        this.energy_regen = 20;
         this.skills = {}; // 玩家目前没有配置技能
     }
   }

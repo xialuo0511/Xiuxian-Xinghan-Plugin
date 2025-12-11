@@ -9,7 +9,7 @@
   mechanics: "高爆发单体输出，终结技可造成毁灭性打击。"
   lore: "上古剑修遗留的一缕杀伐剑意，经万载庚金之气孕育而生。它没有实体，唯有一股刺破苍穹的锐气。传闻得此战魂者，剑出无回，无坚不摧。其绝技「太白庚金斩」引动太白星力，瞬息之间可取敌首级，造成毁灭性打击。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 180, defense: 100, health: 1000, resistance: 0.1, speed: 115, taunt: 100, element: "金", crit_rate: 0.2, crit_dmg: 1.6, max_energy: 120 }
+  base_stats: { attack: 180, defense: 100, health: 1000, resistance: 0.1, speed: 115, taunt: 100, element: "金", crit_rate: 0.2, crit_dmg: 1.6, max_energy: 120, energy_regen: 25 }
   skills:
     basic:
       name: "锐金指"
