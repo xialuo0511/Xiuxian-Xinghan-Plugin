@@ -253,7 +253,7 @@ export async function equip(userId, itemType, itemName) {
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function goFishing(userId) {
-  const { rod, bait } = await getFishingStatus(userId);
+  let { rod, bait, bait_amount } = await getFishingStatus(userId);
 
   if (!rod || !bait) {
     const missing = [];
@@ -263,28 +263,35 @@ export async function goFishing(userId) {
     return { success: false, message: `工欲善其事，必先利其器。你尚未装备${missing.join('和')}，对着江面徒然发呆。` };
   }
 
-  const baitAmount = await DAL.getNajieItemAmount(userId, bait.name, '活动');
-  if (baitAmount < 1) {
-    // 检查是否有其他鱼饵
+  // Loop to handle bait consumption and auto-equip
+  let autoEquipMessage = '';
+  while (bait_amount < 1) { // While current bait is 0
     const playerData = await DAL.getAllPlayerData(userId);
     const activityItems = playerData?.najie?.['活动'] || [];
-    
-    const otherBaits = [];
-    for (const b of allBaits) {
-        if (b.name === bait.name) continue; // 跳过当前
-        const item = activityItems.find(i => i.name === b.name);
-        if (item && item.数量 > 0) {
-            otherBaits.push(`${b.name}x${item.数量}`);
-        }
-    }
 
-    if (otherBaits.length > 0) {
-        return { 
-            success: false, 
-            message: `你的【${bait.name}】已用尽。背包中尚有：${otherBaits.join('，')}。\n请发送【#鱼饵装备+名称】切换。` 
-        };
+    const availableBaitsInInventory = allBaits
+        .map(b => {
+            const item = activityItems.find(i => i.name === b.name);
+            return { bait: b, amount: item?.数量 || 0 };
+        })
+        .filter(entry => entry.amount > 0 && entry.bait.name !== bait.name);
+
+    if (availableBaitsInInventory.length > 0) {
+        const nextBaitToEquip = availableBaitsInInventory[0].bait;
+        await equip(userId, 'bait', nextBaitToEquip.name);
+        autoEquipMessage += `你的【${bait.name}】已用尽，已为你自动装备【${nextBaitToEquip.name}】。\n`;
+
+        // Re-get fishing status with the new bait
+        const newStatus = await getFishingStatus(userId);
+        rod = newStatus.rod; // Re-assign rod in case it was needed, though not expected to change here
+        bait = newStatus.bait;
+        bait_amount = newStatus.bait_amount;
+        if (!bait) { // Should not happen if availableBaitsInInventory was not empty
+             return { success: false, message: `${autoEquipMessage}然而，自动装备的鱼饵也未能成功识别，请联系管理员。` };
+        }
     } else {
-        return { success: false, message: `你的【${bait.name}】已经用完了，可通过【修仙签到】或【秘境探索】获取。` };
+        // No other baits available, break loop and return final message
+        return { success: false, message: `${autoEquipMessage}你的【${bait.name}】已经用完了，可通过【修仙签到】或【秘境探索】获取。` };
     }
   }
 
@@ -300,7 +307,7 @@ export async function goFishing(userId) {
       `一条大鱼上钩了！你与之搏斗了半天，结果线断鱼跑，空欢喜一场。`
     ];
     const randomReply = failReplies[Math.floor(Math.random() * failReplies.length)];
-    return { success: false, message: randomReply };
+    return { success: false, message: `${autoEquipMessage}${randomReply}` };
   }
 
   // --- 钓鱼成功 ---
@@ -312,7 +319,7 @@ export async function goFishing(userId) {
   }
 
   // 发放物品
-  let lootMessage = '收获颇丰！你钓上了：';
+  let lootMessage = `${autoEquipMessage}收获颇丰！你钓上了：`;
   for (const itemName of loot) {
     const itemDef = await foundthing(itemName);
     if (itemDef) {
