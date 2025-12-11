@@ -258,6 +258,13 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
              const pName = skill.name || '被动';
              passiveDetails.push(`触发【${pName}】，生命值+${actualHeal}`);
            }
+        } else if (skill.type === 'speed_up_on_action') {
+            if (activeUnit.addSpeedStack) {
+                activeUnit.addSpeedStack(skill.value);
+                const pName = skill.name || '被动';
+                const speedIncrease = (skill.value * 100).toFixed(0);
+                passiveDetails.push(`触发【${pName}】，速度提高${speedIncrease}%`);
+            }
         }
       });
     }
