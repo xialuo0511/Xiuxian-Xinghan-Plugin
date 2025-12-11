@@ -100,6 +100,23 @@
 
       .action-card.player-action { border-left-color: var(--water); }
       .action-card.enemy-action { border-left-color: var(--fire); }
+      
+      .action-card.ultimate-action {
+          border: 2px solid #f1c40f;
+          background: #fffcf0;
+          box-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+      }
+      .ultimate-tag {
+          background: linear-gradient(135deg, #f1c40f, #e67e22);
+          color: #fff;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 12px;
+          margin-right: 6px;
+          font-weight: bold;
+          vertical-align: middle;
+          text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+      }
 
       .skipped-card {
           background: #f0f4f8;
@@ -390,13 +407,14 @@
       </div>
 
     <!-- 战斗行动卡片 -->
-    {{else if line.type === 'action'}}
-      <div class="action-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
+    {{else if line.type === 'action' || line.type === 'ultimate'}}
+      <div class="action-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}} {{if line.type === 'ultimate'}}ultimate-action{{/if}}">
         
         <!-- 头部: 施法者 + 技能名 -->
         <div class="action-header">
             <div class="caster-info">
-                <span class="av-badge">耗时 {{line.av_cost}}</span>
+                {{if line.type === 'ultimate'}}<span class="ultimate-tag">终结技</span>{{/if}}
+                <span class="av-badge">耗时 {{if line.av_cost !== undefined}}{{line.av_cost}}{{else}}0{{/if}}</span>
                 <span class="ele-{{line.caster.element}} {{if line.caster.level >= 5}}rank-boss{{else if line.caster.level >= 3}}rank-elite{{/if}}">
                     {{if line.caster.level >= 5}}<span class="boss-tag">首领</span>{{else if line.caster.level >= 3}}<span class="elite-tag">精英</span>{{/if}}{{line.caster.name}}
                 </span>
