@@ -136,19 +136,20 @@ export class Combatant {
    * 增加速度倍率 (叠加)
    * @param {number} percent 增加的百分比 (0.05)
    * @param {number} stackIncrement 增加的层数 (默认为1)
+   * @param {string} buffType Buff类型名称 (默认为 'speed_up_stack')
    */
-  addSpeedStack(percent, stackIncrement = 1) {
+  addSpeedStack(percent, stackIncrement = 1, buffType = 'speed_up_stack') {
       this.speed_multiplier += percent;
       
       // 更新UI显示的Buff状态
-      const existing = this.active_debuffs.find(d => d.type === 'speed_up_stack');
+      const existing = this.active_debuffs.find(d => d.type === buffType);
       
       if (existing) {
           existing.duration = 99; // 刷新持续时间
           existing.value += stackIncrement; // 累加层数
       } else {
           this.active_debuffs.push({
-              type: 'speed_up_stack',
+              type: buffType,
               caster_id: 'self',
               duration: 99,
               value: stackIncrement, // 初始层数
@@ -181,9 +182,10 @@ export class Combatant {
   // 【扩展接口】添加治疗
   receiveHeal(amount) {
       if (!this.isAlive()) return 0;
+      if (this.current_hp >= this.max_hp) return 0;
       let oldHp = this.current_hp;
       this.current_hp = Math.min(this.max_hp, this.current_hp + amount);
-      return this.current_hp - oldHp;
+      return Math.max(0, this.current_hp - oldHp);
   }
   
   // 【扩展接口】添加护盾

@@ -22,6 +22,7 @@ const EFFECT_CONFIG = {
   'stun': { name: '晕眩', is_debuff: true, icon: '💫' },
   'weakness': { name: '虚弱', is_debuff: true, icon: '📉' },
   'speed_up_stack': { name: '战意', is_debuff: false, icon: '⚡' },
+  'speed_up_talent': { name: '疾风', is_debuff: false, icon: '💨' },
   'shield': { name: '护盾', is_debuff: false, icon: '🛡️' },
   'atk_up': { name: '攻击↑', is_debuff: false, icon: '⚔️' },
   'def_up': { name: '防御↑', is_debuff: false, icon: '🛡️' },
@@ -260,7 +261,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
            }
         } else if (skill.type === 'speed_up_on_action') {
             if (activeUnit.addSpeedStack) {
-                activeUnit.addSpeedStack(skill.value, 1);
+                activeUnit.addSpeedStack(skill.value, 1, 'speed_up_talent');
                 const pName = skill.name || '被动';
                 const speedIncrease = (skill.value * 100).toFixed(0);
                 passiveDetails.push(`触发【${pName}】，速度提高${speedIncrease}%`);
@@ -649,7 +650,7 @@ const getUnitStatus = (unit) => {
       let stackCount = 0;
       
       // 标记可叠加的 Buff 类型
-      if (d.type === 'speed_up_stack') {
+      if (d.type === 'speed_up_stack' || d.type === 'speed_up_talent') {
           isStackable = true;
           stackCount = d.value;
       }
