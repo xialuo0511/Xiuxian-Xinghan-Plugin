@@ -576,6 +576,11 @@ function calculateDamage(attacker, target, rawDamageInput) {
 
   finalDmg = Math.max(1, finalDmg);
   target.takeDamage(finalDmg);
+  
+  // 受击回能
+  if (target.addEnergy) {
+      target.addEnergy(10);
+  }
 
   // --- 受击触发类 Buff ---
   const targetBuffs = target.global_buffs || [];
