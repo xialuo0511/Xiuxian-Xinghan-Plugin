@@ -257,7 +257,7 @@ export class WanxiangActivity extends plugin {
               battleConfig.elemental_buffs[buff.element] += buff.value;
             } else if (buff.type === 'heal_turn') {
               if (!battleConfig.passive_skills) battleConfig.passive_skills = [];
-              battleConfig.passive_skills.push({ type: 'heal_turn', value: buff.value });
+              battleConfig.passive_skills.push({ type: 'heal_turn', value: buff.value, name: buff.name });
             }
           });
           battleSouls.push(battleConfig);

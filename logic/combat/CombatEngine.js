@@ -255,7 +255,8 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
            const healAmt = Math.floor(activeUnit.max_hp * skill.value);
            if (healAmt > 0) {
              const actualHeal = activeUnit.receiveHeal(healAmt);
-             passiveDetails.push(`【${activeUnit.name}】触发被动回复，生命值+${actualHeal}`);
+             const pName = skill.name || '被动';
+             passiveDetails.push(`触发【${pName}】，生命值+${actualHeal}`);
            }
         }
       });
