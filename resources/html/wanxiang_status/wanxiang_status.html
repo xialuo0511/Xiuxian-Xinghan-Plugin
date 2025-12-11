@@ -102,9 +102,22 @@
       .rarity-2 { border-left-color: #3498db; }
       .rarity-3 { border-left-color: #f1c40f; background: #fffcf5; }
       
+      .rarity-4 { 
+          border-left-width: 6px; 
+          border-left-style: solid;
+          border-image: linear-gradient(to bottom, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3) 1;
+          background: #fff8fc;
+      }
+      
       .rarity-1 .buff-rarity { color: #7f8c8d; }
       .rarity-2 .buff-rarity { color: #3498db; }
       .rarity-3 .buff-rarity { color: #f39c12; font-weight: bold; }
+      .rarity-4 .buff-rarity { 
+          background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+          -webkit-background-clip: text;
+          color: transparent;
+          font-weight: bold;
+      }
 
       .buff-header { font-size: 18px; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
       .buff-desc { font-size: 14px; color: #666; font-family: "Microsoft YaHei"; }
@@ -147,7 +160,7 @@
           <div class="buff-item rarity-{{buff.rarity}}">
               <div class="buff-header">
                   <span>{{buff.name}}</span>
-                  <span class="buff-rarity">{{if buff.rarity === 3}}★★★{{else if buff.rarity === 2}}★★{{else}}★{{/if}}</span>
+                  <span class="buff-rarity">{{if buff.rarity === 4}}★★★★{{else if buff.rarity === 3}}★★★{{else if buff.rarity === 2}}★★{{else}}★{{/if}}</span>
               </div>
               <div class="buff-desc">{{buff.desc}}</div>
           </div>

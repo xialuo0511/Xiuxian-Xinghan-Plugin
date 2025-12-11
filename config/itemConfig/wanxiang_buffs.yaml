@@ -14,37 +14,59 @@
   name: "锋锐之印·二"
   desc: "全队攻击力提升 10%"
   type: atk_pct
-  value: 0.1
+  value: 0.10
   rarity: 2
 
 - id: atk_up_small_3
   name: "锋锐之印·三"
-  desc: "全队攻击力提升 25%"
+  desc: "全队攻击力提升 15%"
   type: atk_pct
-  value: 0.25
+  value: 0.15
   rarity: 3
 
-- id: crit_rate_up
-  name: "鹰眼"
-  desc: "全队暴击率提升 10%"
-  type: crit_rate
+# --- 防御类 ---
+- id: def_up_small_1
+  name: "坚韧之印·一"
+  desc: "全队防御力提升 5%"
+  type: def_pct
+  value: 0.05
+  rarity: 1
+
+- id: def_up_small_2
+  name: "坚韧之印·二"
+  desc: "全队防御力提升 10%"
+  type: def_pct
   value: 0.10
   rarity: 2
 
-- id: crit_dmg_up
-  name: "致命一击"
-  desc: "全队暴击伤害提升 30%"
-  type: crit_dmg
-  value: 0.30
+- id: def_up_small_3
+  name: "坚韧之印·三"
+  desc: "全队防御力提升 15%"
+  type: def_pct
+  value: 0.15
+  rarity: 3
+
+# --- 生命类 ---
+- id: hp_up_small_1
+  name: "生命之印·一"
+  desc: "全队生命上限提升 5% (并在获得时恢复等量生命)"
+  type: max_hp_pct
+  value: 0.05
+  rarity: 1
+
+- id: hp_up_small_2
+  name: "生命之印·二"
+  desc: "全队生命上限提升 10% (并在获得时恢复等量生命)"
+  type: max_hp_pct
+  value: 0.10
   rarity: 2
 
-# --- 生存类 ---
-- id: def_up_small
-  name: "岩石护甲"
-  desc: "全队防御力提升 20%"
-  type: def_pct
-  value: 0.20
-  rarity: 1
+- id: hp_up_small_3
+  name: "生命之印·三"
+  desc: "全队生命上限提升 15% (并在获得时恢复等量生命)"
+  type: max_hp_pct
+  value: 0.15
+  rarity: 3
 
 - id: hp_max_up
   name: "生命源泉"
@@ -63,98 +85,149 @@
 
 - id: heal_after_turn_2
   name: "生生不息·二"
-  desc: "每次行动后，恢复 5% 最大生命值"
+  desc: "每次行动后，恢复 3% 最大生命值"
   type: heal_turn
-  value: 0.05
+  value: 0.03
   rarity: 2
 
 - id: heal_after_turn_3
   name: "生生不息·三"
-  desc: "每次行动后，恢复 10% 最大生命值"
+  desc: "每次行动后，恢复 5% 最大生命值"
   type: heal_turn
-  value: 0.1
+  value: 0.05
   rarity: 3
-
-# --- 元素强化类 ---
-- id: fire_mastery
-  name: "烈焰主宰"
-  desc: "火属性伤害提升 25%"
-  type: element_dmg
-  element: "火"
-  value: 0.25
-  rarity: 2
-
-- id: water_mastery
-  name: "深海恩赐"
-  desc: "水属性伤害提升 25%"
-  type: element_dmg
-  element: "水"
-  value: 0.25
-  rarity: 2
-
-- id: metal_mastery
-  name: "白虎锐气"
-  desc: "金属性伤害提升 25%"
-  type: element_dmg
-  element: "金"
-  value: 0.25
-  rarity: 2
-
-- id: wood_mastery
-  name: "青龙生机"
-  desc: "木属性伤害提升 25%"
-  type: element_dmg
-  element: "木"
-  value: 0.25
-  rarity: 2
-
-- id: earth_mastery
-  name: "麒麟厚德"
-  desc: "土属性伤害提升 25%"
-  type: element_dmg
-  element: "土"
-  value: 0.25
-  rarity: 2
-
-# --- 特殊机制类 (新增) ---
-- id: double_act_first_turn
-  name: "风驰电掣"
-  desc: "我方单位首次行动后可以额外再行动一次"
-  type: special
-  rarity: 2
 
 - id: shield_heal
-  name: "春风化雨"
-  desc: "我方单位施加护盾后会为被施加护盾的单位回复15%护盾量的生命值"
-  type: special
-  rarity: 1
-
-- id: weakness_on_hit
-  name: "破势重压"
-  desc: "我方单位的攻击会使敌人进入【虚弱】状态（伤害-50%，受伤害+20%），持续1回合"
-  type: special
+  name: "护盾转化"
+  desc: "回合结束时，将剩余护盾值的 20% 转化为生命值"
+  type: shield_heal
+  value: 0.2
   rarity: 3
 
-- id: speed_up_on_hit
-  name: "激流勇进"
-  desc: "敌方单位攻击我方单位后，使受到伤害的我方单位速度提高5%，该效果可叠加"
-  type: special
+# --- 元素伤害类 ---
+- id: ele_dmg_gold
+  name: "金之法则"
+  desc: "全队金属性伤害提升 20%"
+  type: element_dmg
+  element: "金"
+  value: 0.2
   rarity: 2
 
-- id: damage_up_5
+- id: ele_dmg_wood
+  name: "木之法则"
+  desc: "全队木属性伤害提升 20%"
+  type: element_dmg
+  element: "木"
+  value: 0.2
+  rarity: 2
+
+- id: ele_dmg_water
+  name: "水之法则"
+  desc: "全队水属性伤害提升 20%"
+  type: element_dmg
+  element: "水"
+  value: 0.2
+  rarity: 2
+
+- id: ele_dmg_fire
+  name: "火之法则"
+  desc: "全队火属性伤害提升 20%"
+  type: element_dmg
+  element: "火"
+  value: 0.2
+  rarity: 2
+
+- id: ele_dmg_earth
+  name: "土之法则"
+  desc: "全队土属性伤害提升 20%"
+  type: element_dmg
+  element: "土"
+  value: 0.2
+  rarity: 2
+
+# --- 特殊机制类 ---
+- id: crit_rate_up
+  name: "弱点洞察"
+  desc: "全队暴击率提升 15%"
+  type: crit_rate
+  value: 0.15
+  rarity: 2
+
+- id: crit_dmg_up
+  name: "致命一击"
+  desc: "全队暴击伤害提升 50%"
+  type: crit_dmg
+  value: 0.50
+  rarity: 3
+
+- id: double_act_first_turn
+  name: "风驰电掣"
+  desc: "战斗首轮，所有角色可额外行动一次"
+  type: double_act
+  value: 1
+  rarity: 3
+
+# --- 扩展Buff (HSR风格) ---
+- id: speed_up_on_hit
+  name: "激流勇进"
+  desc: "受到攻击后，速度提高 5% (可叠加，持续整场战斗)"
+  type: speed_up_on_hit
+  value: 0.05
+  rarity: 2
+
+- id: damage_up_on_kill
+  name: "杀意沸腾"
+  desc: "消灭敌人后，造成的伤害提高 20% (可叠加)"
+  type: damage_up_on_kill
+  value: 0.20
+  rarity: 2
+
+- id: energy_regen_up
+  name: "充能绳"
+  desc: "能量恢复效率提高 20%"
+  type: energy_regen_pct
+  value: 0.20
+  rarity: 2
+
+- id: break_effect_up
+  name: "击破特攻"
+  desc: "造成的伤害提高 10%，对被克制目标额外提高 20%"
+  type: break_effect
+  value: 0.10
+  rarity: 2
+
+- id: shield_on_start
+  name: "存护壁垒"
+  desc: "进入战斗时，获得 30% 生命上限的护盾"
+  type: shield_start
+  value: 0.30
+  rarity: 2
+
+- id: damage_up_stack_turn
   name: "锋锐之气"
-  desc: "我方造成的伤害提高5%"
-  type: special
-  rarity: 1
-
-- id: aoe_focus_damage
-  name: "孤注一掷"
-  desc: "若我方具有群体攻击单位，该单位造成伤害的个体小于等于2时，使本次攻击造成的伤害提高100%"
-  type: special
+  desc: "每回合开始时，伤害提高 5% (可叠加)"
+  type: damage_up_turn
+  value: 0.05
   rarity: 3
 
-- id: low_hp_burst
+- id: low_hp_dmg_up
   name: "绝境爆发"
-  desc: "我方单位血量分别低于70%/50%/30%时，造成的伤害提高50%/100%/150%"
-  type: special
+  desc: "生命值越低伤害越高，最高提高 50% (30%血以下)"
+  type: low_hp_burst
+  value: 0.50
   rarity: 3
+
+# --- 四星传说 (仅首领层) ---
+- id: rainbow_vampire
+  name: "修罗·血海魔躯"
+  desc: "造成的伤害提高60%，并回复伤害值100%的生命值"
+  type: rainbow_vampire
+  value: 0.60
+  rarity: 4
+
+- id: rainbow_thorns
+  name: "天道·因果报应"
+  desc: "敌方造成伤害时受到120%反弹伤害(不致死)"
+  type: rainbow_thorns
+  value: 1.20
+  rarity: 4

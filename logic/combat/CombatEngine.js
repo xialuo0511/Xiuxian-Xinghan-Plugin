@@ -583,6 +583,11 @@ function calculateDamage(attacker, target, rawDamageInput) {
       
       globalMultiplier += burstBonus * burstCount;
   }
+
+  // ★★★★ 修罗·血海魔躯
+  if (attackerBuffs.includes('rainbow_vampire')) {
+      globalMultiplier += 0.60;
+  }
   
   // Debuff: 虚弱 (输出降低)
   if (attacker.active_debuffs && attacker.active_debuffs.some(d => d.type === 'weakness')) {
@@ -642,17 +647,38 @@ function calculateDamage(attacker, target, rawDamageInput) {
       }
   }
 
+  // ★★★★ 修罗·血海魔躯 (吸血)
+  let vampHeal = 0;
+  if (attackerBuffs.includes('rainbow_vampire')) {
+      vampHeal = attacker.receiveHeal(finalDmg);
+  }
+
+  // ★★★★ 天道·因果报应 (反伤)
+  let reflectedDmg = 0;
+  if (targetBuffs.includes('rainbow_thorns')) {
+      let dmg = Math.floor(finalDmg * 1.2);
+      // 确保不致死 (保留1点生命)
+      if (attacker.current_hp - dmg < 1) {
+          dmg = Math.max(0, attacker.current_hp - 1);
+      }
+      if (dmg > 0) {
+          attacker.takeDamage(dmg);
+          reflectedDmg = dmg;
+      }
+  }
+
   return {
     name: target.name,
     team: target.team,
     element: target.element,
     level: target.level || 0,
     id: target.id,
-    type: 'damage',
-    value: finalDmg,
-    value_display: formatNumber(finalDmg),
+    damage: finalDmg,
+    is_crit: isCrit,
     is_counter: isCounter,
-    is_crit: isCrit
+    hp_remaining: target.current_hp,
+    vampire_heal: vampHeal,
+    reflected_damage: reflectedDmg
   };
 }
 
