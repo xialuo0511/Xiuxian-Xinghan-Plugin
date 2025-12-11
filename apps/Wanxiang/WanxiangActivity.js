@@ -375,19 +375,44 @@ export class WanxiangActivity extends plugin {
 
         // 随机抽取 3 个 Buff (加权)
         const choices = [];
-        // 过滤掉不可重复获取的赐福
         const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
         const acquiredBuffs = runData.buffs || [];
-        const pool = BUFFS.filter(b => !UNIQUE_BUFFS.includes(b.id) || !acquiredBuffs.includes(b.id));
         
-        const RARITY_WEIGHTS = { 1: 100, 2: 30, 3: 5 };
+        // 动态调整权重
+        // 普通层：1星(80), 2星(40), 3星(10)
+        // 首领层：2星(50), 3星(30), 4星(2)
+        // 注意：这里的 layer 已经是下一层了 (justClearedLayer + 1)
+        // 如果我们希望在“进入首领层前”给好Buff，那就是 layer % 5 == 0
+        // 如果是“击败首领后”给好Buff，那就是 (layer-1) % 5 == 0
+        // 假设意图是“在首领层这一关的备战阶段”：layer % 5 == 0
+        
+        const isBossLayer = (runData.layer % 5 === 0);
+        let currentWeights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+        if (isBossLayer) {
+            currentWeights = { 1: 0, 2: 80, 3: 15, 4: 5 };
+        }
+
+        const pool = BUFFS.filter(b => {
+             // 唯一性检查
+             if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+             // 四星唯一性
+             if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
+
+             // 层级过滤
+             if (isBossLayer) {
+                 if (b.rarity === 1) return false;
+             } else {
+                 if (b.rarity === 4) return false;
+             }
+             return true;
+        });
 
         const getWeightedRandom = (candidates) => {
           let totalWeight = 0;
-          candidates.forEach(b => totalWeight += (RARITY_WEIGHTS[b.rarity] || 100));
+          candidates.forEach(b => totalWeight += (currentWeights[b.rarity] || 0));
           let r = Math.random() * totalWeight;
           for (const b of candidates) {
-            r -= (RARITY_WEIGHTS[b.rarity] || 100);
+            r -= (currentWeights[b.rarity] || 0);
             if (r <= 0) return b;
           }
           return candidates[0];
@@ -466,18 +491,20 @@ export class WanxiangActivity extends plugin {
 
       // 动态调整权重：适当提高3星概率
       // 普通层：1星(80), 2星(40), 3星(10)
-      // 首领层：2星(50), 3星(30), 4星(5) (不出现1星)
+      // 首领层：2星(80), 3星(15), 4星(5) (不出现1星)
       let currentWeights = { 1: 80, 2: 40, 3: 10, 4: 0 };
       
       const isBossLayer = (runData.layer % 5 === 0);
       if (isBossLayer) {
-          currentWeights = { 1: 0, 2: 50, 3: 30, 4: 5 }; // 首领层权重
+          currentWeights = { 1: 0, 2: 80, 3: 15, 4: 5 }; // 首领层权重
       }
 
       // 过滤赐福池
       const pool = BUFFS.filter(b => {
           // 已拥有或唯一性检查
           if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+          // 四星唯一性
+          if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
           
           // 首领层过滤掉1星，允许4星
           if (isBossLayer) {
