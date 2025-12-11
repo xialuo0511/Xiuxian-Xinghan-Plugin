@@ -231,6 +231,14 @@ export class WanxiangActivity extends plugin {
 
           // 注入当前血量，这需要 Combatant 类支持
           battleConfig.current_hp_inherit = soulState.current_hp;
+
+          // 记录原始属性，用于计算百分比加成 (防止指数级膨胀)
+          const originalStats = {
+              health: battleConfig.base_stats.health,
+              attack: battleConfig.base_stats.attack,
+              defense: battleConfig.base_stats.defense
+          };
+
           // 注入 Buff
           const activeBuffs = runData.buffs || [];
           activeBuffs.forEach(buffId => {
@@ -238,11 +246,11 @@ export class WanxiangActivity extends plugin {
             if (!buff) return;
 
             if (buff.type === 'atk_pct') {
-              battleConfig.base_stats.attack = Math.floor(battleConfig.base_stats.attack * (1 + buff.value));
+              battleConfig.base_stats.attack += Math.floor(originalStats.attack * buff.value);
             } else if (buff.type === 'def_pct') {
-              battleConfig.base_stats.defense = Math.floor(battleConfig.base_stats.defense * (1 + buff.value));
+              battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
             } else if (buff.type === 'max_hp_pct') {
-              const hpAdd = Math.floor(battleConfig.base_stats.health * buff.value);
+              const hpAdd = Math.floor(originalStats.health * buff.value);
               battleConfig.base_stats.health += hpAdd;
               if (battleConfig.current_hp_inherit !== undefined) {
                 battleConfig.current_hp_inherit += hpAdd;
@@ -503,7 +511,8 @@ export class WanxiangActivity extends plugin {
       // 扣除次数
       runData.remaining_picks = (runData.remaining_picks || 1) - 1;
 
-      // max_hp_pct 逻辑
+      // max_hp_pct 逻辑 (移除：已在战斗准备阶段通过动态计算实现血量上限提升与当前血量同步增加)
+      /*
       if (buffConfig && buffConfig.type === 'max_hp_pct') {
         runData.souls.forEach(soul => {
           if (!soul.is_dead) {
@@ -513,6 +522,7 @@ export class WanxiangActivity extends plugin {
         });
         e.reply(`【${buffConfig.name}】生效！全员恢复了部分生命值。`);
       }
+      */
 
       if (runData.remaining_picks <= 0) {
           runData.pending_buffs = []; // 次数用尽，清空
