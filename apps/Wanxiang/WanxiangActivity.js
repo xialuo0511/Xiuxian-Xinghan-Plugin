@@ -320,15 +320,47 @@ export class WanxiangActivity extends plugin {
         }
       }
 
-      // 渲染日志
-      const renderData = {
-        log: result.log,
-        pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
-      };
+      // 渲染日志 (分片输出，每8回合一张图)
+      const fullLog = result.log;
+      const slices = [];
+      let currentSlice = [];
+      let roundCountInSlice = 0;
 
-      const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-      const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-      await e.reply(img);
+      for (const entry of fullLog) {
+        if (entry.type === 'turn') {
+          roundCountInSlice++;
+          // 如果当前切片已经积累了8个回合，且遇到第9个回合的开始，则切分
+          if (roundCountInSlice > 8) {
+             if (currentSlice.length > 0) {
+                 slices.push(currentSlice);
+             }
+             currentSlice = [];
+             roundCountInSlice = 1; // 新切片的第一回合
+          }
+        }
+        currentSlice.push(entry);
+      }
+      if (currentSlice.length > 0) {
+        slices.push(currentSlice);
+      }
+
+      // 逐张发送图片
+      for (let i = 0; i < slices.length; i++) {
+        const sliceLog = slices[i];
+        const renderData = {
+            log: sliceLog,
+            pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+        };
+
+        const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+        const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+        await e.reply(img);
+        
+        // 简单防刷屏/乱序延时
+        if (slices.length > 1 && i < slices.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
 
       if (result.playerWon) {
         const justClearedLayer = runData.layer;
