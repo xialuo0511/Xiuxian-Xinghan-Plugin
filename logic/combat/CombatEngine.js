@@ -429,6 +429,18 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
       const res = calculateDamage(caster, target, baseValue);
       results.push(res);
       
+      // 处理受击回血反馈
+      if (res.heal_back > 0) {
+          results.push({
+              name: res.name, team: res.team, element: res.element, level: res.level || 0,
+              id: res.id,
+              type: 'heal', 
+              value: res.heal_back, 
+              value_display: `(守护)${formatNumber(res.heal_back)}`, 
+              is_counter: false
+          });
+      }
+      
       // ★★★ 杀意沸腾 (击杀增伤)
       if (res.hp_remaining <= 0 && caster.global_buffs && caster.global_buffs.includes('damage_up_on_kill')) {
           // 20% = 4层 damage_up_stack (每层5%)
@@ -459,6 +471,20 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
         value_display: formatNumber(Math.floor(baseValue)),
         is_counter: false
       });
+      
+      // ★ 自身额外护盾 (盾灵·戊土)
+      if (skill.self_extra_shield_ratio && target.id === caster.id) {
+          const extraShield = Math.floor(baseValue * skill.self_extra_shield_ratio);
+          caster.addShield(extraShield);
+          results.push({
+              name: caster.name, team: caster.team, element: caster.element, level: caster.level || 0,
+              id: caster.id,
+              type: 'shield',
+              value: extraShield,
+              value_display: `(加固)${formatNumber(extraShield)}`,
+              is_counter: false
+          });
+      }
       
       // ★ 春风化雨 (可叠加)
       const healCount = (caster.global_buffs || []).filter(b => b === 'shield_heal').length;
@@ -668,42 +694,24 @@ function calculateDamage(attacker, target, rawDamageInput) {
   }
 
   finalDmg = Math.max(1, finalDmg);
-  target.takeDamage(finalDmg);
+  const hpDamage = target.takeDamage(finalDmg);
   
-  // 受击回能 (仅限玩家)
-  if (target.addEnergy && target.team === 'player') {
-      target.addEnergy(10);
+  // ★ 盾灵天赋 (受击回血)
+  let healBack = 0;
+  if (target.source?.skill?.talent?.effect === 'taunt_up_heal') {
+      const ratio = target.source.skill.talent.heal_ratio || 0.05;
+      healBack = Math.floor(hpDamage * ratio);
+      if (healBack > 0) target.receiveHeal(healBack);
   }
-
-  // --- 受击触发类 Buff ---
-  const targetBuffs = target.global_buffs || [];
-  const speedUpCount = targetBuffs.filter(b => b === 'speed_up_on_hit').length;
   
-  if (speedUpCount > 0) {
-      // 激流勇进：受击加速 (叠加)
-      if (target.addSpeedStack) {
-          target.addSpeedStack(0.05 * speedUpCount, speedUpCount); 
-      }
-  }
-
   // ★★★★ 修罗·血海魔躯 (吸血)
-  let vampHeal = 0;
   if (attackerBuffs.includes('rainbow_vampire')) {
-      vampHeal = attacker.receiveHeal(finalDmg);
+      attacker.receiveHeal(Math.floor(finalDmg));
   }
-
+  
   // ★★★★ 天道·因果报应 (反伤)
-  let reflectedDmg = 0;
-  if (targetBuffs.includes('rainbow_thorns')) {
-      let dmg = Math.floor(finalDmg * 1.2);
-      // 确保不致死 (保留1点生命)
-      if (attacker.current_hp - dmg < 1) {
-          dmg = Math.max(0, attacker.current_hp - 1);
-      }
-      if (dmg > 0) {
-          attacker.takeDamage(dmg);
-          reflectedDmg = dmg;
-      }
+  if (target.global_buffs && target.global_buffs.includes('rainbow_thorns')) {
+      attacker.takeDamage(Math.floor(finalDmg * 1.2));
   }
 
   return {
@@ -713,14 +721,15 @@ function calculateDamage(attacker, target, rawDamageInput) {
     level: target.level || 0,
     id: target.id,
     type: 'damage',
-    value: finalDmg,
-    value_display: formatNumber(finalDmg),
-    damage: finalDmg,
-    is_crit: isCrit,
+    value: hpDamage,
+    value_display: formatNumber(hpDamage),
     is_counter: isCounter,
+    is_crit: isCrit,
     hp_remaining: target.current_hp,
-    vampire_heal: vampHeal,
-    reflected_damage: reflectedDmg
+    hp_max: target.max_hp,
+    shield_remaining: target.shield,
+    is_dead: !target.isAlive(),
+    heal_back: healBack // 返回回血量供日志显示
   };
 }
 

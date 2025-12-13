@@ -40,30 +40,32 @@
   mechanics: "强力护盾辅助，天赋提供全队减伤。"
   lore: "生于极西之地的万年戊土之精，性情温厚沉稳。它象征着大地的宽容与承载，能将脚下的每一寸土地化为坚不可摧的屏障。其绝技「不动明王阵」能沟通大地脉动，为所有队友提供坚实的护盾，任凭风吹雨打，我自岿然不动。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 80, defense: 220, health: 1500, resistance: 0.25, speed: 70, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5, max_energy: 100 }
+  base_stats: { attack: 80, defense: 220, health: 1500, resistance: 0.25, speed: 70, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5, max_energy: 100, energy_regen: 15 }
   skills:
     basic:
-      name: "碎石拳"
+      name: "地裂波"
       type: "damage"
-      target: "single_enemy"
+      target: "all_enemies"
       value_type: "def"
-      value: 0.8
-      detailed_mechanics: "对敌方单体造成基于防御力 80% 的土属性伤害。"
+      value: 0.7
+      detailed_mechanics: "对敌方全体造成基于防御力 70% 的土属性伤害。"
     talent:
-      name: "大地庇护"
+      name: "大地守护"
       type: "passive"
-      target: "all_allies"
-      effect: "damage_reduce"
-      value: 0.1
-      detailed_mechanics: "使我方全体受到的伤害降低 10%。"
+      target: "self"
+      effect: "taunt_up_heal"
+      value: 2.0 # 嘲讽倍率
+      heal_ratio: 0.05
+      detailed_mechanics: "大幅提高受到攻击的概率，受到攻击后恢复本次受到伤害5%的生命值。"
     ultimate:
-      name: "不动明王阵"
+      name: "不动如山"
       type: "shield"
       target: "all_allies"
       value_type: "def"
       value: 1.8
-      energy_cost: 100
-      detailed_mechanics: "消耗100点能量，为我方全体施加 180% 防御力的护盾，持续2回合。"
+      energy_cost: 70
+      self_extra_shield_ratio: 0.5
+      detailed_mechanics: "消耗70点能量，为我方全体施加 180% 防御力的护盾，自身额外获得该护盾值的 50%。"
 
 - name: "药仙·乙木"
   class: "活动"
