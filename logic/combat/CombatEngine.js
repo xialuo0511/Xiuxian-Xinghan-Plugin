@@ -139,6 +139,34 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             duration: 99,
             value: 1 
         });
+        
+        // 增加触发日志
+        combatLog.push({
+            type: 'action',
+            skill: '锋锐之气',
+            av_cost: 0,
+            caster: {
+                name: activeUnit.name,
+                team: activeUnit.team,
+                element: activeUnit.element,
+                level: activeUnit.level || 0,
+                id: activeUnit.id
+            },
+            targets: [{
+                name: activeUnit.name,
+                team: activeUnit.team,
+                element: activeUnit.element,
+                id: activeUnit.id,
+                type: 'buff_trigger',
+                value: 0,
+                value_display: '伤害+5%',
+                is_counter: false
+            }],
+            teamStatus: {
+                player: playerTeam.map(getUnitStatus),
+                enemy: enemyTeam.map(getUnitStatus)
+            }
+        });
     }
 
     // 结算 activeUnit 的 Debuff (如毒)
