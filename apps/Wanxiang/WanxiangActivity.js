@@ -842,45 +842,44 @@ export class WanxiangActivity extends plugin {
 
       if (runData.remaining_picks <= 0) {
           runData.pending_buffs = []; // 次数用尽，清空
+          
+          // --- 所有赐福选择完毕，生成下一层的路线 ---
+          const nextRoutes = this.generateRoutes(runData.layer);
+          runData.routes = nextRoutes;
+          runData.current_node = null; // 确保清空当前节点
       }
 
+      // 统一保存状态
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
 
-                  if (runData.remaining_picks > 0) {
-                      let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
-                      runData.pending_buffs.forEach((bid, i) => {
-                         const b = BUFFS.find(bf => bf.id === bid);
-                         if(b) {
-                            const stars = '★'.repeat(b.rarity || 1);
-                            buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n`;
-                         }
-                      });
-                      if (runData.refresh_count > 0) {
-                          buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
-                      }
-                      e.reply(buffMsg);
-                  } else {
-                      // 所有赐福选择完毕，生成下一层的路线
-                      runData.pending_buffs = []; // 清理
-                      
-                      // 生成路线
-                      const nextRoutes = this.generateRoutes(runData.layer);
-                      runData.routes = nextRoutes;
-                      runData.current_node = null; // 确保清空当前节点
+      // --- 发送反馈 ---
+      if (runData.remaining_picks > 0) {
+          let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
+          runData.pending_buffs.forEach((bid, i) => {
+             const b = BUFFS.find(bf => bf.id === bid);
+             if(b) {
+                const stars = '★'.repeat(b.rarity || 1);
+                buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n`;
+             }
+          });
+          if (runData.refresh_count > 0) {
+              buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+          }
+          e.reply(buffMsg);
+      } else {
+          // 显示路线选择
+          let routeMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
+          
+          runData.routes.forEach((r, i) => {
+              const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
+              routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
+          });
+          
+          routeMsg += '发送 #选择路线 [序号] 确认。';
+          e.reply(routeMsg);
+      }
 
-                      let routeMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
-                      
-                      nextRoutes.forEach((r, i) => {
-                          const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
-                          routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
-                      });
-                      
-                      routeMsg += '发送 #选择路线 [序号] 确认。';
-                      
-                      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-                      e.reply(routeMsg);
-                  }
     } catch (err) {
       console.error('[Wanxiang] selectBuff Error:', err);
       if (tempClient) await tempClient.disconnect();
