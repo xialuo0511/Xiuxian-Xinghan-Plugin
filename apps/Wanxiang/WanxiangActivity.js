@@ -604,6 +604,7 @@ export class WanxiangActivity extends plugin {
 
       if (result.playerWon) {
         // 胜利后逻辑
+        runData.layer++; // 晋升下一层
         
         let pickCount = 1;
         // 精英和Boss节点奖励更多选择次数
