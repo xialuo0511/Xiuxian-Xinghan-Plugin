@@ -176,6 +176,40 @@ export class WanxiangActivity extends plugin {
     return options;
   }
 
+  // --- 辅助：处理路线生成与反馈 ---
+  async processRouteGeneration(e, runData, tempClient, prefixMsg = '') {
+      const userId = e.user_id;
+      
+      // 1. 生成路线
+      const nextRoutes = this.generateRoutes(runData.layer);
+      runData.routes = nextRoutes;
+      runData.current_node = null;
+
+      // 2. 检查是否需要自动锁定 (单条路线，通常是BOSS层)
+      if (nextRoutes.length === 1) {
+          const autoNode = nextRoutes[0];
+          runData.current_node = autoNode;
+          runData.routes = []; // 清空待选
+          
+          // 保存状态
+          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+          
+          const icon = autoNode.type === 'BOSS' ? '👹' : '⚔️';
+          e.reply(`${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n⚠️ 前方感应到强大的气息！\n${icon} 已自动锁定路线：【${autoNode.name}】\n发送 #挑战 开始对决！`);
+      } else {
+          // 3. 多条路线，让用户选
+          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+          
+          let routeMsg = `${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
+          nextRoutes.forEach((r, i) => {
+              const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
+              routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
+          });
+          routeMsg += '发送 #选择路线 [序号] 确认。';
+          e.reply(routeMsg);
+      }
+  }
+
   // --- 选择路线 ---
   async selectRoute(e) {
     const userId = e.user_id;
@@ -325,23 +359,15 @@ export class WanxiangActivity extends plugin {
       if (isDone) {
           // 事件结束，层数+1，生成新路线
           runData.layer++;
-          runData.routes = this.generateRoutes(runData.layer);
-          runData.current_node = null; // 清空当前节点，等待选择
-
-          let routeMsg = `\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
-          runData.routes.forEach((r, i) => {
-              const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
-              routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
-          });
-          routeMsg += '发送 #选择路线 [序号] 确认。';
           
-          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-          e.reply(replyMsg + routeMsg); // Combine messages here
+          // 使用通用逻辑 (支持单路线自动锁定)
+          await this.processRouteGeneration(e, runData, tempClient, replyMsg);
       } else {
           e.reply('无效的选项。');
       }
 
       await tempClient.disconnect();
+
 
     } catch (err) {
       console.error(err);
@@ -853,17 +879,19 @@ export class WanxiangActivity extends plugin {
       if (runData.remaining_picks <= 0) {
           runData.pending_buffs = []; // 次数用尽，清空
           
-          // --- 所有赐福选择完毕，生成下一层的路线 ---
-          const nextRoutes = this.generateRoutes(runData.layer);
-          runData.routes = nextRoutes;
-          runData.current_node = null; // 确保清空当前节点
+          // 使用通用逻辑生成下一层路线 (支持单路线自动锁定)
+          const msg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！`;
+          await this.processRouteGeneration(e, runData, tempClient, msg);
+          
+          await tempClient.disconnect();
+          return;
       }
 
-      // 统一保存状态
+      // 还有剩余选择次数，保存状态
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
 
-      // --- 发送反馈 ---
+      // --- 发送反馈 (多选情况) ---
       if (runData.remaining_picks > 0) {
           let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
           runData.pending_buffs.forEach((bid, i) => {
@@ -877,18 +905,8 @@ export class WanxiangActivity extends plugin {
               buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
           }
           e.reply(buffMsg);
-      } else {
-          // 显示路线选择
-          let routeMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
-          
-          runData.routes.forEach((r, i) => {
-              const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
-              routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
-          });
-          
-          routeMsg += '发送 #选择路线 [序号] 确认。';
-          e.reply(routeMsg);
       }
+
 
     } catch (err) {
       console.error('[Wanxiang] selectBuff Error:', err);
