@@ -132,6 +132,13 @@
       <div class="title">万象天机 · 试炼记录</div>
                 <div class="layer-info">当前层数：第 {{layer}} 层 (刷新机会：{{refreshCount}} 次)</div>  </div>
 
+  {{if currentNode}}
+  <div class="node-info" style="margin: 15px 0; padding: 15px; background: #fffcf0; border: 2px dashed var(--border-brown); border-radius: 8px; text-align: center;">
+      <div style="font-size: 28px; font-weight: bold; color: var(--gold); margin-bottom: 5px;">📍 当前区域：{{currentNode.name}}</div>
+      <div style="font-size: 16px; color: #666; font-style: italic;">“{{currentNode.desc}}”</div>
+  </div>
+  {{/if}}
+
   <div class="section-title">✦ 出 战 星 魂 ✦</div>
   <div class="team-section">
       {{each souls soul}}

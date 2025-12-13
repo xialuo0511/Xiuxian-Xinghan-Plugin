@@ -38,12 +38,16 @@ export class WanxiangActivity extends plugin {
         { reg: /^#开启试炼$/, fnc: 'startRun' },
         { reg: /^#挑战$/, fnc: 'challengeLayer' },
         { reg: /^#选择赐福\s*(\d)$/, fnc: 'selectBuff' },
-        { reg: /^#刷新赐福$/, fnc: 'refreshBuffChoices' }, // 新增
+        { reg: /^#刷新赐福$/, fnc: 'refreshBuffChoices' },
+        { reg: /^#选择路线\s*(\d)$/, fnc: 'selectRoute' }, // 新增
+        { reg: /^#事件选择\s*(\d)$/, fnc: 'handleEventChoice' }, // 新增
         { reg: /^#试炼状态$/, fnc: 'showStatus' },
         { reg: /^#退出试炼$/, fnc: 'quitRun' }
       ]
     });
   }
+
+  // --- 核心流程 ---
 
   async startRun(e) {
     console.log('[Wanxiang] startRun called for user', e.user_id);
@@ -53,19 +57,15 @@ export class WanxiangActivity extends plugin {
     let existData = null;
 
     try {
-      console.log('[Wanxiang] Connecting temp redis...');
       tempClient = await getTempRedis();
-      console.log('[Wanxiang] Temp redis connected.');
-
       existData = await tempClient.get(KEY_PREFIX + userId);
-      console.log('[Wanxiang] existData check done:', existData);
 
       if (existData) {
         await tempClient.disconnect();
         return e.reply('你当前已有正在进行的试炼，请先 #挑战 或 #退出试炼。');
       }
 
-      // 2. 获取玩家装备的星魂
+      // 获取玩家数据
       const playerData = (await DAL.getAllPlayerData(userId))?.player;
       if (!playerData) {
         await tempClient.disconnect();
@@ -80,7 +80,7 @@ export class WanxiangActivity extends plugin {
         return e.reply('你没有装备任何星魂，无法参加试炼。请先去 #星魂装备。');
       }
 
-      // 3. 构建初始状态快照
+      // 构建星魂状态
       const soulsState = [];
       for (let i = 1; i <= 4; i++) {
         const name = equipped[i];
@@ -92,24 +92,22 @@ export class WanxiangActivity extends plugin {
               name: name,
               max_hp: soulConfig.base_stats.health,
               current_hp: soulConfig.base_stats.health,
-              is_dead: false,
-              config: soulConfig
+              is_dead: false
             });
           }
         }
       }
 
-      if (soulsState.length === 0) {
-        await tempClient.disconnect();
-        return e.reply('数据异常，无法获取星魂数据。');
-      }
-
+      // 初始 RunData
       const runData = {
         layer: 1,
         souls: soulsState,
         buffs: [],
         start_time: Date.now(),
-        refresh_count: 3 // 初始化刷新次数
+        refresh_count: 3,
+        // 第一层默认为战斗
+        current_node: { type: 'COMBAT', name: '激战', desc: '普通的战斗试炼。' },
+        routes: [] // 待选路线
       };
 
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
@@ -118,7 +116,7 @@ export class WanxiangActivity extends plugin {
       e.reply([
         '【万象天机·无尽试炼】已开启！',
         `当前出战星魂：${soulsState.map(s => s.name).join('、')}`,
-        '发送 #挑战 即可开始第 1 层的战斗。'
+        '第 1 层为【激战】节点，发送 #挑战 即可开始。'
       ]);
 
     } catch (err) {
@@ -127,6 +125,222 @@ export class WanxiangActivity extends plugin {
       return e.reply('系统错误：' + err.message);
     }
   }
+
+  // --- 路线生成逻辑 ---
+  generateRoutes(layer) {
+    // Boss层 (5, 10...) 强制单一Boss节点
+    if (layer % 5 === 0) {
+        return [{ type: 'BOSS', name: '首领降临', desc: '极为危险的强敌，击败后可获得双倍赐福。', rarity: 5 }];
+    }
+
+    // 随机生成 2-3 个选项
+    const options = [];
+    const count = 2 + (Math.random() > 0.5 ? 1 : 0); // 2 or 3 options
+    
+    // 节点池定义
+    const types = [
+        { type: 'COMBAT', name: '激战', desc: '普通的战斗，胜利获得赐福。', weight: 50 },
+        { type: 'ELITE', name: '精英', desc: '强敌出没！属性提升30%，必掉高级赐福。', weight: 20 },
+        { type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 15 },
+        { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 15 }
+    ];
+
+    // 简单的权重随机
+    const getWeightedType = () => {
+        let total = types.reduce((acc, t) => acc + t.weight, 0);
+        let r = Math.random() * total;
+        for (let t of types) {
+            r -= t.weight;
+            if (r <= 0) return t;
+        }
+        return types[0];
+    };
+
+    for(let i=0; i<count; i++) {
+        // 避免完全重复的类型 (可选优化，目前暂允许重复)
+        const t = getWeightedType();
+        options.push({ ...t }); // Clone
+    }
+    
+    // 每一层至少要有一个战斗选项，防止连续修整导致无聊? 
+    // 不强制，因为几率低。
+    return options;
+  }
+
+  // --- 选择路线 ---
+  async selectRoute(e) {
+    const userId = e.user_id;
+    const match = e.msg.match(/^#选择路线\s*(\d)$/);
+    const selection = parseInt(match[1]);
+
+    let tempClient = null;
+    try {
+      tempClient = await getTempRedis();
+      const dataStr = await tempClient.get(KEY_PREFIX + userId);
+      if (!dataStr) {
+        await tempClient.disconnect();
+        return e.reply('请先 #开启试炼。');
+      }
+
+      const runData = JSON.parse(dataStr);
+      
+      if (!runData.routes || runData.routes.length === 0) {
+        await tempClient.disconnect();
+        return e.reply('当前无需选择路线。若刚结束战斗，请先完成 #选择赐福。');
+      }
+
+      if (selection < 1 || selection > runData.routes.length) {
+        await tempClient.disconnect();
+        return e.reply(`请选择 1-${runData.routes.length} 之间的路线。`);
+      }
+
+      // 确认选择
+      const node = runData.routes[selection - 1];
+      runData.current_node = node;
+      runData.routes = []; // 清空待选
+      
+      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+      await tempClient.disconnect();
+
+      // 根据节点类型反馈
+      if (node.type === 'COMBAT' || node.type === 'ELITE' || node.type === 'BOSS') {
+          e.reply(`你选择了【${node.name}】。\n敌人已在前方，发送 #挑战 开始战斗！`);
+      } else if (node.type === 'REST') {
+          e.reply([
+              '你来到了一处隐蔽的营地，这里似乎很安全。',
+              '请做出选择：',
+              '1. 【休养生息】 全队恢复 40% 生命值',
+              '2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)',
+              '3. 【冥想】 获得 1 次赐福刷新机会',
+              '发送 #事件选择 [序号] 确认。'
+          ].join('\n'));
+      } else if (node.type === 'EVENT') {
+          // 暂时做一个简单的通用事件
+          e.reply([
+              '你在废墟中发现了一台古老的贩卖机。',
+              '请做出选择：',
+              '1. 【购买补给】 消耗 20% 当前生命值，随机强化一个赐福 (暂未实装，改为回血10%)',
+              '2. 【暴力破解】 试图砸开它 (50%获得随机3星赐福，50%受伤)',
+              '3. 【离开】 什么都不做',
+              '发送 #事件选择 [序号] 确认。'
+          ].join('\n'));
+      }
+
+    } catch (err) {
+      console.error(err);
+      if (tempClient) await tempClient.disconnect();
+    }
+  }
+
+  // --- 处理事件/修整选择 ---
+  async handleEventChoice(e) {
+    const userId = e.user_id;
+    const match = e.msg.match(/^#事件选择\s*(\d)$/);
+    const selection = parseInt(match[1]);
+    
+    let tempClient = null;
+    try {
+      tempClient = await getTempRedis();
+      const dataStr = await tempClient.get(KEY_PREFIX + userId);
+      if (!dataStr) { await tempClient.disconnect(); return; }
+
+      const runData = JSON.parse(dataStr);
+      const node = runData.current_node;
+
+      if (!node || (node.type !== 'REST' && node.type !== 'EVENT')) {
+          await tempClient.disconnect();
+          return e.reply('当前不在事件节点，无法选择。');
+      }
+
+      let replyMsg = '';
+      let isDone = false;
+
+      // 简单的逻辑处理
+      if (node.type === 'REST') {
+          if (selection === 1) { // 回血
+              runData.souls.forEach(s => {
+                  if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4));
+              });
+              replyMsg = '全员恢复了大量生命值。';
+              isDone = true;
+          } else if (selection === 2) { // 复活
+              const deadSouls = runData.souls.filter(s => s.is_dead);
+              if (deadSouls.length > 0) {
+                  const luckydog = deadSouls[Math.floor(Math.random() * deadSouls.length)];
+                  luckydog.is_dead = false;
+                  luckydog.current_hp = Math.floor(luckydog.max_hp * 0.5);
+                  replyMsg = `【${luckydog.name}】被复活了！`;
+              } else {
+                  replyMsg = '没有阵亡的队友，但你还是休息了一会儿。';
+              }
+              isDone = true;
+          } else if (selection === 3) { // 刷新次数
+              runData.refresh_count = (runData.refresh_count || 0) + 1;
+              replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。';
+              isDone = true;
+          }
+      } else if (node.type === 'EVENT') {
+          // 贩卖机逻辑
+          if (selection === 1) {
+             // 假装买补给 (回血小)
+             runData.souls.forEach(s => {
+                 if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.1));
+             });
+             replyMsg = '你喝下了一瓶过期的能量饮料，感觉好一点了。';
+             isDone = true;
+          } else if (selection === 2) {
+             const rand = Math.random();
+             if (rand > 0.5) {
+                 // 成功：给一个 Buff (直接塞进去)
+                 // 简化：给一个 heal_turn Buff
+                 if (!runData.buffs.includes('heal_after_turn_1')) {
+                    runData.buffs.push('heal_after_turn_1');
+                    replyMsg = '哐当一声，掉出来一个【生命回复·小】赐福！';
+                 } else {
+                    replyMsg = '贩卖机吐出了一枚硬币，但你不知道有什么用。';
+                 }
+             } else {
+                 // 失败：扣血
+                 runData.souls.forEach(s => {
+                     if (!s.is_dead) s.current_hp = Math.floor(s.current_hp * 0.8);
+                 });
+                 replyMsg = '贩卖机爆炸了！全员受到伤害。';
+             }
+             isDone = true;
+          } else {
+             replyMsg = '你谨慎地离开了。';
+             isDone = true;
+          }
+      }
+
+      if (isDone) {
+          e.reply(replyMsg);
+          // 事件结束，层数+1，生成新路线
+          runData.layer++;
+          runData.routes = this.generateRoutes(runData.layer);
+          runData.current_node = null; // 清空当前节点，等待选择
+
+          let routeMsg = `\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
+          runData.routes.forEach((r, i) => {
+              routeMsg += `${i+1}. 【${r.name}】 ${r.desc}\n`;
+          });
+          routeMsg += '发送 #选择路线 [序号] 确认。';
+          
+          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+          e.reply(routeMsg);
+      } else {
+          e.reply('无效的选项。');
+      }
+
+      await tempClient.disconnect();
+
+    } catch (err) {
+      console.error(err);
+      if (tempClient) await tempClient.disconnect();
+    }
+  }
+
+
 
   // 需要同步更新 quitRun, showStatus, challengeLayer 以使用临时连接，或者修复 redisClient
   // 为了一次性验证，先只修改 startRun。如果 startRun 能用，我们再考虑如何优雅地修复全局 redisClient。
@@ -178,7 +392,8 @@ export class WanxiangActivity extends plugin {
       layer: data.layer,
       souls: soulsData,
       buffs: buffsData,
-      refreshCount: data.refresh_count, // 传递刷新次数给模板
+      refreshCount: data.refresh_count,
+      currentNode: data.current_node, // 新增：传递当前节点信息
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
 
@@ -202,13 +417,27 @@ export class WanxiangActivity extends plugin {
       }
 
       runData = JSON.parse(dataStr);
-      const layerConfig = STAGES.find(s => s.layer === runData.layer);
 
-      if (!layerConfig) {
-        // 如果找不到配置，说明通关了所有配置的层数
+      // --- 节点检查 ---
+      const node = runData.current_node;
+      if (!node) {
+          await tempClient.disconnect();
+          return e.reply('请先 #选择路线。');
+      }
+      if (node.type !== 'COMBAT' && node.type !== 'ELITE' && node.type !== 'BOSS') {
+          await tempClient.disconnect();
+          return e.reply(`当前是【${node.name}】节点，无法进行战斗。请发送 #事件选择 进行互动。`);
+      }
+
+      const layerConfig = STAGES.find(s => s.layer === runData.layer);
+      // Fallback logic if layer config not found (loop monsters or generic)
+      // For now assume config exists or we reuse last available
+      const safeLayerConfig = layerConfig || STAGES[STAGES.length - 1];
+
+      if (!safeLayerConfig) {
         await tempClient.del(KEY_PREFIX + userId);
         await tempClient.disconnect();
-        return e.reply('恭喜你！你已经通关了目前开放的所有试炼层数！');
+        return e.reply('数据配置错误，无法加载关卡。');
       }
 
       // 1. 准备我方战斗单位 (应用血量继承)
@@ -288,8 +517,8 @@ export class WanxiangActivity extends plugin {
       }
 
       // 2. 准备敌方 (应用动态难度缩放)
-      const enemyNames = layerConfig.monsters;
-      e.reply(`第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}`);
+      const enemyNames = safeLayerConfig.monsters;
+      e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}`);
 
       const enemyTeamConfig = enemyNames.map(name => {
         const original = ALL_MONSTERS.find(m => m.name === name);
@@ -298,9 +527,12 @@ export class WanxiangActivity extends plugin {
         // 深拷贝以应用修改
         const mob = JSON.parse(JSON.stringify(original));
 
-        // 难度系数：基础成长 (每层8%) + Boss层修正
+        // 难度系数：基础成长 (每层8%)
         let multiplier = 1 + (runData.layer - 1) * 0.08;
-        if (runData.layer % 5 === 0) multiplier *= 1.2; // Boss层额外增强 20%
+        
+        // 节点修正
+        if (node.type === 'ELITE') multiplier *= 1.3; // 精英：属性额外+30%
+        if (node.type === 'BOSS') multiplier *= 1.5;  // Boss：属性额外+50%
 
         mob.base_stats.health = Math.floor(mob.base_stats.health * multiplier);
         mob.base_stats.attack = Math.floor(mob.base_stats.attack * multiplier);
@@ -371,14 +603,13 @@ export class WanxiangActivity extends plugin {
       }
 
       if (result.playerWon) {
-        const justClearedLayer = runData.layer;
-        runData.layer++;
+        // 胜利后逻辑
         
-        // Boss层 (5的倍数) 奖励双倍选择次数
         let pickCount = 1;
-        if (justClearedLayer % 5 === 0) {
-            pickCount = 2;
-        }
+        // 精英和Boss节点奖励更多选择次数
+        if (node.type === 'ELITE') pickCount = 2;
+        if (node.type === 'BOSS') pickCount = 2;
+
         runData.remaining_picks = pickCount;
 
         // 随机抽取 3 个 Buff (加权)
@@ -387,17 +618,15 @@ export class WanxiangActivity extends plugin {
         const acquiredBuffs = runData.buffs || [];
         
         // 动态调整权重
-        // 普通层：1星(80), 2星(40), 3星(10)
-        // 首领层：2星(50), 3星(30), 4星(2)
-        // 注意：这里的 layer 已经是下一层了 (justClearedLayer + 1)
-        // 如果我们希望在“进入首领层前”给好Buff，那就是 layer % 5 == 0
-        // 如果是“击败首领后”给好Buff，那就是 (layer-1) % 5 == 0
-        // 假设意图是“在首领层这一关的备战阶段”：layer % 5 == 0
+        // 普通：1星(80), 2星(40), 3星(10)
+        // 精英：2星(60), 3星(30), 4星(5)
+        // Boss：2星(20), 3星(60), 4星(20)
         
-        const isBossLayer = (runData.layer % 5 === 0);
         let currentWeights = { 1: 80, 2: 40, 3: 10, 4: 0 };
-        if (isBossLayer) {
-            currentWeights = { 1: 0, 2: 80, 3: 15, 4: 5 };
+        if (node.type === 'ELITE') {
+            currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
+        } else if (node.type === 'BOSS') {
+            currentWeights = { 1: 0, 2: 20, 3: 60, 4: 20 };
         }
 
         const pool = BUFFS.filter(b => {
@@ -406,12 +635,9 @@ export class WanxiangActivity extends plugin {
              // 四星唯一性
              if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
 
-             // 层级过滤
-             if (isBossLayer) {
-                 if (b.rarity === 1) return false;
-             } else {
-                 if (b.rarity === 4) return false;
-             }
+             // 权重为0的稀有度不出现
+             if (currentWeights[b.rarity] === 0) return false;
+             
              return true;
         });
 
@@ -439,7 +665,7 @@ export class WanxiangActivity extends plugin {
         await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
         await tempClient.disconnect();
 
-        let buffMsg = `战斗胜利！全队状态已保存。\n即将进入第 ${runData.layer} 层。\n\n【天机赐福】${pickCount > 1 ? ` (本层可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
+        let buffMsg = `【${node.name}】胜利！全队状态已保存。\n\n【天机赐福】${pickCount > 1 ? ` (可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
         
         choices.forEach((b, i) => {
           const stars = '★'.repeat(b.rarity || 1);
@@ -635,7 +861,25 @@ export class WanxiangActivity extends plugin {
                       }
                       e.reply(buffMsg);
                   } else {
-                      e.reply(`成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n发送 #挑战 继续前往下一层。`);
+                      // 所有赐福选择完毕，生成下一层的路线
+                      runData.pending_buffs = []; // 清理
+                      
+                      // 生成路线
+                      const nextRoutes = this.generateRoutes(runData.layer);
+                      runData.routes = nextRoutes;
+                      runData.current_node = null; // 确保清空当前节点
+
+                      let routeMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
+                      
+                      nextRoutes.forEach((r, i) => {
+                          const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
+                          routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
+                      });
+                      
+                      routeMsg += '发送 #选择路线 [序号] 确认。';
+                      
+                      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+                      e.reply(routeMsg);
                   }
     } catch (err) {
       console.error('[Wanxiang] selectBuff Error:', err);
