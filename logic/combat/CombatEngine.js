@@ -41,7 +41,9 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
   // 支持传入已经是 Player 对象的数据，或者星魂配置对象
   const playerTeam = playerSouls.map((soul, i) => {
       const c = new Combatant(soul.id || `player_${i + 1}`, soul, 'player');
-      c.global_buffs = globalBuffs; 
+      // 使用 soul 中预处理好的 global_buffs (存放的是 type，如 damage_up_turn)
+      // 而不是传入的 globalBuffs (存放的是 ID，如 damage_up_stack_turn)
+      c.global_buffs = soul.global_buffs || []; 
       return c;
   });
 
