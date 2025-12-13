@@ -138,32 +138,41 @@ export class WanxiangActivity extends plugin {
     const count = 2 + (Math.random() > 0.5 ? 1 : 0); // 2 or 3 options
     
     // 节点池定义
-    const types = [
+    let availableTypes = [
         { type: 'COMBAT', name: '激战', desc: '普通的战斗，胜利获得赐福。', weight: 50 },
         { type: 'ELITE', name: '精英', desc: '强敌出没！属性提升30%，必掉高级赐福。', weight: 20 },
         { type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 15 },
         { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 15 }
     ];
 
-    // 简单的权重随机
-    const getWeightedType = () => {
-        let total = types.reduce((acc, t) => acc + t.weight, 0);
+    // 每一层至少要有一个战斗选项 (COMBAT 或 ELITE)
+    // 但既然我们要去重，而且有 4 种类型选 2-3 个，只要随机池够好，问题不大。
+    // 为了体验更好，我们可以强制第一个选项总是 COMBAT，后面随机。
+    // 或者完全随机不重复。这里采用完全随机不重复。
+
+    const getWeightedRandomAndRemove = (list) => {
+        let total = list.reduce((acc, t) => acc + t.weight, 0);
         let r = Math.random() * total;
-        for (let t of types) {
-            r -= t.weight;
-            if (r <= 0) return t;
+        for (let i = 0; i < list.length; i++) {
+            r -= list[i].weight;
+            if (r <= 0) {
+                const selected = list[i];
+                list.splice(i, 1); // 移除已选，实现去重
+                return selected;
+            }
         }
-        return types[0];
+        // Fallback (shouldn't happen)
+        const selected = list[0];
+        list.shift();
+        return selected;
     };
 
     for(let i=0; i<count; i++) {
-        // 避免完全重复的类型 (可选优化，目前暂允许重复)
-        const t = getWeightedType();
+        if (availableTypes.length === 0) break;
+        const t = getWeightedRandomAndRemove(availableTypes);
         options.push({ ...t }); // Clone
     }
     
-    // 每一层至少要有一个战斗选项，防止连续修整导致无聊? 
-    // 不强制，因为几率低。
     return options;
   }
 
