@@ -673,28 +673,59 @@ function calculateDamage(attacker, target, rawDamageInput) {
                 globalMultiplier *= (attacker.crit_dmg || 1.5);
             }
   
-            let finalDmg = 0;  // 【核心优化】自适应伤害公式
-  if (attacker.attack > 10000) {
-    let def = target.defense * (1 - target.resistance);
-    let baseDiff = rawDamageInput - def;
-    let minDmg = rawDamageInput * 0.05;
-    let baseDmg = Math.max(baseDiff, minDmg);
-    
-    // 应用全局倍率
-    finalDmg = Math.floor(baseDmg * elementalBonus * globalMultiplier * (0.9 + Math.random() * 0.2));
-  }
-  else {
-    const DEF_CONSTANT = 280;
-    let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
-    let resistanceMultiplier = (1 - target.resistance);
-    let baseDmg = rawDamageInput * defenseMultiplier * resistanceMultiplier;
-    
-    // 应用全局倍率
-    finalDmg = Math.floor(baseDmg * elementalBonus * globalMultiplier * (0.9 + Math.random() * 0.2));
-  }
-
-  finalDmg = Math.max(1, finalDmg);
-  const hpDamage = target.takeDamage(finalDmg);
+              
+  
+                        let finalDmg = 0;  // 【核心优化】自适应伤害公式
+  
+              if (attacker.attack > 10000) {
+  
+                let def = target.defense * (1 - target.resistance);
+  
+                let baseDiff = rawDamageInput - def;
+  
+                let minDmg = rawDamageInput * 0.05;
+  
+                let baseDmg = Math.max(baseDiff, minDmg);
+  
+                
+  
+                // 应用全局倍率
+  
+                finalDmg = Math.floor(baseDmg * elementalBonus * globalMultiplier * (0.9 + Math.random() * 0.2));
+  
+              }
+  
+              else {
+  
+                const DEF_CONSTANT = 280;
+  
+                let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
+  
+                let resistanceMultiplier = (1 - target.resistance);
+  
+                let baseDmg = rawDamageInput * defenseMultiplier * resistanceMultiplier;
+  
+                
+  
+                // 应用全局倍率
+  
+                finalDmg = Math.floor(baseDmg * elementalBonus * globalMultiplier * (0.9 + Math.random() * 0.2));
+  
+              }
+  
+            
+  
+              finalDmg = Math.max(1, finalDmg);
+  
+            
+  
+              // ★ 受击回能
+  
+              target.addEnergy(10);
+  
+            
+  
+              const hpDamage = target.takeDamage(finalDmg);
   
   // ★ 盾灵天赋 (受击回血)
   let healBack = 0;
