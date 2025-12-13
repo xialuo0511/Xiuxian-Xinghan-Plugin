@@ -314,7 +314,6 @@ export class WanxiangActivity extends plugin {
       }
 
       if (isDone) {
-          e.reply(replyMsg);
           // 事件结束，层数+1，生成新路线
           runData.layer++;
           runData.routes = this.generateRoutes(runData.layer);
@@ -322,12 +321,13 @@ export class WanxiangActivity extends plugin {
 
           let routeMsg = `\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
           runData.routes.forEach((r, i) => {
-              routeMsg += `${i+1}. 【${r.name}】 ${r.desc}\n`;
+              const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
+              routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
           });
           routeMsg += '发送 #选择路线 [序号] 确认。';
           
           await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-          e.reply(routeMsg);
+          e.reply(replyMsg + routeMsg); // Combine messages here
       } else {
           e.reply('无效的选项。');
       }
