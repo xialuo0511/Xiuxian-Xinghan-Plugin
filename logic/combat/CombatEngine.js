@@ -806,7 +806,7 @@ function calculateDamage(attacker, target, rawDamageInput) {
     id: target.id,
     type: 'damage',
     value: hpDamage,
-    value_display: formatNumber(hpDamage),
+    value_display: formatNumber(finalDmg), // 显示总伤害 (含护盾吸收)
     is_counter: isCounter,
     is_crit: isCrit,
     hp_remaining: target.current_hp,
