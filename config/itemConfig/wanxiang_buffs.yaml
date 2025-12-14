@@ -224,3 +224,10 @@
   type: rainbow_thorns
   value: 1.20
   rarity: 4
+
+- id: max_energy_start
+  name: "天道·神力灌注"
+  desc: "进入战斗时，我方全体获得 100% 能量，直接激活终结技"
+  type: max_energy_start
+  value: 1.0
+  rarity: 4

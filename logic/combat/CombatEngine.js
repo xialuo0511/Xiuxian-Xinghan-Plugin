@@ -61,6 +61,8 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
 
   // 2. 初始化行动值 & 技能 & 战斗开始Buff
   const shieldTargets = [];
+  const energyTargets = [];
+  
   allCombatants.forEach(c => {
     c.resetAV();
     if (!c.source.skill) {
@@ -76,6 +78,16 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             type: 'shield', value: shieldAmt, value_display: `(壁垒)${formatNumber(shieldAmt)}`, is_counter: false
         });
     }
+    
+    // ★★★★ 天道·神力灌注 (战斗开始满能)
+    if (c.global_buffs && c.global_buffs.includes('max_energy_start')) {
+        const energyAdd = c.max_energy;
+        c.addEnergy(energyAdd);
+        energyTargets.push({
+            name: c.name, team: c.team, element: c.element, id: c.id,
+            type: 'heal', value: 0, value_display: '(充能)MAX', is_counter: false // 使用 heal 类型显示绿色文本
+        });
+    }
   });
 
   combatLog.push({ type: 'start', text: '战斗开始！' });
@@ -88,6 +100,21 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
           av_cost: 0,
           caster: { name: '天机赐福', team: 'system', element: '无', id: 'system' },
           targets: shieldTargets,
+          teamStatus: {
+              player: playerTeam.map(getUnitStatus),
+              enemy: enemyTeam.map(getUnitStatus)
+          }
+      });
+  }
+  
+  // 插入神力灌注日志
+  if (energyTargets.length > 0) {
+      combatLog.push({
+          type: 'action',
+          skill: '神力灌注', 
+          av_cost: 0,
+          caster: { name: '天机赐福', team: 'system', element: '无', id: 'system' },
+          targets: energyTargets,
           teamStatus: {
               player: playerTeam.map(getUnitStatus),
               enemy: enemyTeam.map(getUnitStatus)
