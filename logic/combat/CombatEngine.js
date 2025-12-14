@@ -332,7 +332,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     const friendlyTeam = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
     const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
 
-    const { skillResults, debuffsApplied } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
+    const { skillResults, debuffsApplied, extraDetails } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
     
     // 行动回复能量
     activeUnit.addEnergy(activeUnit.energy_regen || 20);
@@ -403,11 +403,14 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     // 合并主动技能结果和 Debuff 结果
     const allActionResults = [...skillResults,
       ...debuffsApplied];
+      
+    // 合并详细文本 (被动 + 技能副作用)
+    const allDetails = [...passiveDetails, ...(extraDetails || [])];
 
     // 3.4 记录日志
-    if (allActionResults.length > 0 || passiveDetails.length > 0) {
+    if (allActionResults.length > 0 || allDetails.length > 0) {
       combatLog.push({
-        details: passiveDetails,
+        details: allDetails,
         type: isUltimate ? 'ultimate' : 'action',
         is_extra_turn: activeUnit.is_extra_turn_pending,
         av_cost: Math.floor(elapsedAV),
@@ -456,10 +459,11 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
 function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
   let targets = [];
   const results = [];
+  const extraDetails = []; // 额外详细文本
   const aliveHostiles = hostileTeam.filter(u => u.isAlive());
   const aliveFriendlies = friendlyTeam.filter(u => u.isAlive());
 
-  if (aliveHostiles.length === 0 && skill.type === 'damage') return [];
+  if (aliveHostiles.length === 0 && skill.type === 'damage') return { skillResults: [], debuffsApplied: [], extraDetails: [] };
 
   switch (skill.target) {
     case 'single_enemy':
@@ -484,7 +488,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
       break;
   }
 
-  if (targets.length === 0) return [];
+  if (targets.length === 0) return { skillResults: [], debuffsApplied: [], extraDetails: [] };
 
   // ★★★ 孤注一掷 (少敌增伤)
   let focusBonus = 1.0;
@@ -534,14 +538,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
       if (target.global_buffs && target.global_buffs.includes('speed_up_on_hit')) {
           if (target.addSpeedStack) {
              target.addSpeedStack(0.05, 1, 'speed_up_stack');
-             results.push({
-                 name: target.name, team: target.team, element: target.element, level: target.level || 0,
-                 id: target.id,
-                 type: 'buff_trigger', 
-                 value: 0, 
-                 value_display: '速度+5%', 
-                 is_counter: false
-             });
+             extraDetails.push(`触发【激流勇进】，${target.name} 速度+5%`);
           }
       }
       
@@ -554,14 +551,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
               duration: 99,
               value: 4 
           });
-          results.push({
-              name: caster.name, team: caster.team, element: caster.element, level: caster.level || 0,
-              id: caster.id,
-              type: 'buff_trigger', 
-              value: 0, 
-              value_display: '伤害+20%', 
-              is_counter: false
-          });
+          extraDetails.push(`触发【杀意沸腾】，${caster.name} 伤害+20%`);
       }
     } else if (skill.type === 'heal') {
       const healed = target.receiveHeal(Math.floor(baseValue));
@@ -707,7 +697,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
 
     }
 
-  return { skillResults: results, debuffsApplied };
+  return { skillResults: results, debuffsApplied, extraDetails };
 }
 
 /**
