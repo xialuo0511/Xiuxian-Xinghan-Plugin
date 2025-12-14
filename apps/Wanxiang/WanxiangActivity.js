@@ -268,6 +268,7 @@ export class WanxiangActivity extends plugin {
       // 特殊初始化：商店
       if (node.type === 'SHOP' && !runData.shop_items) {
              runData.shop_items = [];
+             runData.shop_refresh_count = 1; // 免费刷新次数
              
              // 生成 3 个随机赐福
              const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
@@ -277,6 +278,8 @@ export class WanxiangActivity extends plugin {
              const pool = BUFFS.filter(b => {
                  if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
                  if (b.rarity === 4) return false;
+                 // 排除秘宝
+                 if (b.type === 'artifact_passive') return false;
                  return true;
              });
 
@@ -294,9 +297,9 @@ export class WanxiangActivity extends plugin {
                  if (pool.length === 0) break;
                  const selected = getWeightedRandom();
                  if (selected) {
-                     let price = 80;
-                     if (selected.rarity === 2) price = 160;
-                     if (selected.rarity === 3) price = 300;
+                     let price = 30;
+                     if (selected.rarity === 2) price = 60;
+                     if (selected.rarity === 3) price = 120;
                      
                      runData.shop_items.push({
                          type: 'buff',
@@ -320,7 +323,7 @@ export class WanxiangActivity extends plugin {
                      id: 'treasure_bowl',
                      name: '聚宝盆',
                      desc: '战斗胜利额外获得30%天机印',
-                     price: 250,
+                     price: 100,
                      rarity: 3,
                      bought: false
                  });
@@ -343,8 +346,11 @@ export class WanxiangActivity extends plugin {
               const typePrefix = item.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
               shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${item.name}】${status}\n   ${item.desc}\n`;
           });
-          shopMsg += `\n${runData.shop_items.length + 1}. 【离开】 继续前进`;
-          shopMsg += '\n发送 #事件选择 [序号] 购买或离开。';
+          
+          const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
+          shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
+          shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
+          shopMsg += '\n发送 #事件选择 [序号] 操作。';
           e.reply(shopMsg);
       } else if (node.type === 'REST') {
           e.reply([
@@ -399,11 +405,96 @@ export class WanxiangActivity extends plugin {
       // 简单的逻辑处理
       if (node.type === 'SHOP') {
           const items = runData.shop_items || [];
-          if (selection === items.length + 1) {
+          const leaveIndex = items.length + 2;
+          const refreshIndex = items.length + 1;
+
+          if (selection === leaveIndex) {
               replyMsg = '你告别了散修，继续踏上征途。';
               // 清理商店数据，节省空间 (可选)
               delete runData.shop_items;
+              delete runData.shop_refresh_count;
               isDone = true;
+          } else if (selection === refreshIndex) {
+              if (runData.shop_refresh_count > 0) {
+                  runData.shop_refresh_count--;
+                  runData.shop_items = []; // 重置商品列表
+                  
+                  // --- 重新生成商品逻辑 (与 selectRoute 一致) ---
+                  const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+                  const acquiredBuffs = runData.buffs || [];
+                  const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
+                  
+                  const pool = BUFFS.filter(b => {
+                      if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+                      if (b.rarity === 4) return false;
+                      if (b.type === 'artifact_passive') return false;
+                      return true;
+                  });
+
+                  const getWeightedRandom = () => {
+                      let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
+                      let r = Math.random() * total;
+                      for (const b of pool) {
+                          r -= (weights[b.rarity] || 0);
+                          if (r <= 0) return b;
+                      }
+                      return pool[0];
+                  };
+
+                  for(let k=0; k<3; k++) {
+                      if (pool.length === 0) break;
+                      const selected = getWeightedRandom();
+                      if (selected) {
+                          let price = 30;
+                          if (selected.rarity === 2) price = 60;
+                          if (selected.rarity === 3) price = 120;
+                          
+                          runData.shop_items.push({
+                              type: 'buff',
+                              id: selected.id,
+                              name: selected.name,
+                              desc: selected.desc,
+                              price: price,
+                              rarity: selected.rarity,
+                              bought: false
+                          });
+                          const idx = pool.indexOf(selected);
+                          if (idx > -1) pool.splice(idx, 1);
+                      }
+                  }
+                  // 重新生成秘宝
+                  if (!runData.artifacts.includes('treasure_bowl')) {
+                      runData.shop_items.push({
+                          type: 'artifact',
+                          id: 'treasure_bowl',
+                          name: '聚宝盆',
+                          desc: '战斗胜利额外获得30%天机印',
+                          price: 100,
+                          rarity: 3,
+                          bought: false
+                      });
+                  }
+                  // --- 生成结束 ---
+
+                  await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+                  
+                  let shopMsg = `商店已刷新！\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
+                  runData.shop_items.forEach((it, i) => {
+                      const stars = '★'.repeat(it.rarity || 1);
+                      const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
+                      const typePrefix = it.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
+                      shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${it.name}】${status}\n   ${it.desc}\n`;
+                  });
+                  
+                  const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
+                  shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
+                  shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
+                  shopMsg += '\n发送 #事件选择 [序号] 操作。';
+                  
+                  e.reply(shopMsg);
+              } else {
+                  e.reply('刷新次数已用尽。');
+              }
           } else if (selection >= 1 && selection <= items.length) {
               const item = items[selection - 1];
               if (item.bought) {
@@ -433,15 +524,13 @@ export class WanxiangActivity extends plugin {
                       const typePrefix = it.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
                       shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${it.name}】${status}\n   ${it.desc}\n`;
                   });
-                  shopMsg += `\n${items.length + 1}. 【离开】 继续前进`;
+                  
+                  const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
+                  shopMsg += `\n${items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
+                  shopMsg += `\n${items.length + 2}. 【离开】 继续前进`;
                   shopMsg += '\n发送 #事件选择 [序号] 继续购买。';
                   
                   e.reply(shopMsg);
-                  // 注意：这里不设置 isDone，也不断开连接(由最外层断开)，也不走通用的 next route 逻辑
-                  // 但 handleEventChoice 结尾会 disconnect。
-                  // 我们需要在 if (isDone) 块之外处理 disconnect。
-                  // 修改逻辑：handleEventChoice 结尾统一 disconnect。
-                  // 如果 !isDone，直接 return，不走下面的 next route 逻辑。
               }
           } else {
               e.reply('无效的选项。');
