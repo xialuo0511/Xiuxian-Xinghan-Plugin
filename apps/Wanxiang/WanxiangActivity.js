@@ -643,8 +643,8 @@ export class WanxiangActivity extends plugin {
       for (const entry of fullLog) {
         if (entry.type === 'turn') {
           roundCountInSlice++;
-          // 如果当前切片已经积累了8个回合，且遇到第9个回合的开始，则切分
-          if (roundCountInSlice > 8) {
+          // 如果当前切片已经积累了5个回合，且遇到第6个回合的开始，则切分
+          if (roundCountInSlice > 5) {
              if (currentSlice.length > 0) {
                  slices.push(currentSlice);
              }
