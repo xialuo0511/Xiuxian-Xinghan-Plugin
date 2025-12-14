@@ -60,6 +60,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     ...enemyTeam];
 
   // 2. 初始化行动值 & 技能 & 战斗开始Buff
+  const shieldTargets = [];
   allCombatants.forEach(c => {
     c.resetAV();
     if (!c.source.skill) {
@@ -70,10 +71,29 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     if (c.global_buffs && c.global_buffs.includes('shield_start')) {
         const shieldAmt = Math.floor(c.max_hp * 0.30);
         c.addShield(shieldAmt);
+        shieldTargets.push({
+            name: c.name, team: c.team, element: c.element, id: c.id,
+            type: 'shield', value: shieldAmt, value_display: `(壁垒)${formatNumber(shieldAmt)}`, is_counter: false
+        });
     }
   });
 
   combatLog.push({ type: 'start', text: '战斗开始！' });
+
+  // 插入存护壁垒日志
+  if (shieldTargets.length > 0) {
+      combatLog.push({
+          type: 'action',
+          skill: '存护壁垒', 
+          av_cost: 0,
+          caster: { name: '天机赐福', team: 'system', element: '无', id: 'system' },
+          targets: shieldTargets,
+          teamStatus: {
+              player: playerTeam.map(getUnitStatus),
+              enemy: enemyTeam.map(getUnitStatus)
+          }
+      });
+  }
 
   let totalElapsedAV = 0;
   let actionCount = 0;
