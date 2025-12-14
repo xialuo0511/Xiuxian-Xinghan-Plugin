@@ -325,17 +325,56 @@ export class WanxiangActivity extends plugin {
       } else if (node.type === 'EVENT') {
           // 贩卖机逻辑
           if (selection === 1) {
-             // 假装买补给 (回血小)
+             // 【购买补给】 消耗 20% 当前血量，获得 3 个随机赐福
+             let hpCostTotal = 0;
              runData.souls.forEach(s => {
-                 if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.1));
+                 if (!s.is_dead) {
+                     const cost = Math.floor(s.current_hp * 0.2);
+                     s.current_hp -= cost;
+                     hpCostTotal += cost;
+                 }
              });
-             replyMsg = '你喝下了一瓶过期的能量饮料，感觉好一点了。';
+
+             // 生成 3 个赐福 (激战层权重)
+             const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+             const acquiredBuffs = runData.buffs || [];
+             const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
+             
+             const pool = BUFFS.filter(b => {
+                 if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+                 if (b.rarity === 4) return false;
+                 return true;
+             });
+
+             const newBuffs = [];
+             const getWeightedRandom = () => {
+                let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
+                let r = Math.random() * total;
+                for (const b of pool) {
+                    r -= (weights[b.rarity] || 0);
+                    if (r <= 0) return b;
+                }
+                return pool[0];
+             };
+
+             for(let k=0; k<3; k++) {
+                 if (pool.length === 0) break;
+                 const selected = getWeightedRandom();
+                 if (selected) {
+                     newBuffs.push(selected);
+                     runData.buffs.push(selected.id);
+                     // 简单去重：从池子移除 (如果是唯一Buff需要移除，非唯一Buff其实可以重复获得，这里简化处理，假设一次购买不重复)
+                     const idx = pool.indexOf(selected);
+                     if (idx > -1) pool.splice(idx, 1);
+                 }
+             }
+
+             replyMsg = `你支付了生命值，贩卖机吐出了补给！\n获得赐福：${newBuffs.map(b => `【${b.name}】`).join('、')}`;
              isDone = true;
           } else if (selection === 2) {
              const rand = Math.random();
              if (rand > 0.5) {
-                 // 成功：给一个 Buff (直接塞进去)
-                 // 简化：给一个 heal_turn Buff
+                 // 成功：给一个 Buff
                  if (!runData.buffs.includes('heal_after_turn_1')) {
                     runData.buffs.push('heal_after_turn_1');
                     replyMsg = '哐当一声，掉出来一个【生命回复·小】赐福！';
