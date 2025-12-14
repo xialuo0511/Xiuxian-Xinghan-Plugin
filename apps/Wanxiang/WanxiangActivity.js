@@ -139,18 +139,33 @@ export class WanxiangActivity extends plugin {
 
     const options = [];
     
-    // 定义基础节点池 (不含 REST)
+    // 定义基础节点池 (不含 REST 和 SHOP)
     let availableTypes = [
         { type: 'COMBAT', name: '激战', desc: '普通的战斗，胜利获得赐福。', weight: 60 },
         { type: 'ELITE', name: '精英', desc: '强敌出没！属性提升30%，必掉高级赐福。', weight: 20 },
-        { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 20 },
-        { type: 'SHOP', name: '云游散修', desc: '偶遇云游天下的散修，可用天机印交换宝物。', weight: 15 }
+        { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 20 }
     ];
 
-    // 特殊逻辑：首领前一层 (4, 9, 14...) 必刷修整
+    // 特殊逻辑：首领前一层 (4, 9, 14...) 固定生成
     if (layer % 5 === 4) {
-        // 强制加入一个修整节点
+        // 固定 1: 修整
         options.push({ type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 0 });
+        // 固定 2: 商店
+        options.push({ type: 'SHOP', name: '云游散修', desc: '偶遇云游天下的散修，可用天机印交换宝物。', weight: 0 });
+        
+        // 随机 3: 激战/精英/奇遇
+        const getWeightedRandom = (list) => {
+            let total = list.reduce((acc, t) => acc + t.weight, 0);
+            let r = Math.random() * total;
+            for (let t of list) {
+                r -= t.weight;
+                if (r <= 0) return t;
+            }
+            return list[0];
+        };
+        options.push({ ...getWeightedRandom(availableTypes) });
+        
+        return options;
     }
 
     // 随机生成剩余选项 (凑齐 2-3 个)
