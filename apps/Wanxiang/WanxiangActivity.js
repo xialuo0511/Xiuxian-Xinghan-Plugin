@@ -615,8 +615,11 @@ export class WanxiangActivity extends plugin {
         return mob;
       }).filter(Boolean);
 
-      // 3. 运行战斗 (限制 10 回合)
-      const result = await runCombat(battleSouls, enemyTeamConfig, runData.buffs, 10);
+      // 3. 运行战斗 (根据节点类型动态调整最大回合数)
+      // Boss战给予更多回合 (20回合)，普通/精英战保持紧凑 (10回合)
+      const maxRounds = (node.type === 'BOSS') ? 20 : 10;
+      
+      const result = await runCombat(battleSouls, enemyTeamConfig, runData.buffs, maxRounds);
 
       // 4. 结算逻辑
       const finalPlayerCombatants = result.playerTeam;
