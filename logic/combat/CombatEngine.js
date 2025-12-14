@@ -518,6 +518,18 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
           });
       }
       
+      // 处理反弹伤害反馈
+      if (res.reflected_damage > 0) {
+          results.push({
+              name: attacker.name, team: attacker.team, element: attacker.element, level: attacker.level || 0,
+              id: attacker.id,
+              type: 'damage', // 反弹也算一种伤害
+              value: res.reflected_damage,
+              value_display: `(反弹)-${formatNumber(res.reflected_damage)}`,
+              is_counter: false
+          });
+      }
+      
       // ★ 激流勇进 (受击加速)
       if (target.global_buffs && target.global_buffs.includes('speed_up_on_hit')) {
           if (target.addSpeedStack) {
@@ -705,12 +717,14 @@ function calculateDamage(attacker, target, rawDamageInput) {
   let elementalBonus = 1.0;
   let isCounter = false;
   let globalMultiplier = 1.0;
+  let reflectedDamage = 0; // 新增：记录反弹伤害
 
   // 克制判断
   if (elementCounterMap[attacker.element] === target.element) {
     elementalBonus = COUNTER_BONUS; // 1.5
     isCounter = true;
   }
+
 
   // 元素增伤 Buff
   if (attacker.elemental_buffs && attacker.elemental_buffs[attacker.element]) {
@@ -842,7 +856,8 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
   // ★★★★ 天道·因果报应 (反伤)
   if (target.global_buffs && target.global_buffs.includes('rainbow_thorns')) {
-      attacker.takeDamage(Math.floor(finalDmg * 1.2));
+      reflectedDamage = Math.floor(finalDmg * 1.2);
+      attacker.takeDamage(reflectedDamage);
   }
 
   return {
@@ -860,7 +875,8 @@ function calculateDamage(attacker, target, rawDamageInput) {
     hp_max: target.max_hp,
     shield_remaining: target.shield,
     is_dead: !target.isAlive(),
-    heal_back: healBack // 返回回血量供日志显示
+    heal_back: healBack, // 返回回血量供日志显示
+    reflected_damage: reflectedDamage // 返回反弹伤害量供日志显示
   };
 }
 
