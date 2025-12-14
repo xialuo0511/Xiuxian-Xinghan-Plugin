@@ -642,9 +642,9 @@ export class WanxiangActivity extends plugin {
         runData.layer++; // 晋升下一层
         
         let pickCount = 1;
-        // 精英和Boss节点奖励更多选择次数
+        // 精英节点奖励更多选择次数
         if (node.type === 'ELITE') pickCount = 2;
-        if (node.type === 'BOSS') pickCount = 2;
+        // Boss节点奖励质量极高，但数量维持1 (必出3星+)
 
         runData.remaining_picks = pickCount;
 
@@ -656,13 +656,13 @@ export class WanxiangActivity extends plugin {
         // 动态调整权重
         // 普通：1星(80), 2星(40), 3星(10)
         // 精英：2星(60), 3星(30), 4星(5)
-        // Boss：2星(20), 3星(60), 4星(20)
+        // Boss：3星(75), 4星(25) (保底3星)
         
         let currentWeights = { 1: 80, 2: 40, 3: 10, 4: 0 };
         if (node.type === 'ELITE') {
             currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
         } else if (node.type === 'BOSS') {
-            currentWeights = { 1: 0, 2: 20, 3: 60, 4: 20 };
+            currentWeights = { 1: 0, 2: 0, 3: 75, 4: 25 };
         }
 
         const pool = BUFFS.filter(b => {
