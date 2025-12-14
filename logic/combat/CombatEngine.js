@@ -471,6 +471,21 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
           });
       }
       
+      // ★ 激流勇进 (受击加速)
+      if (target.global_buffs && target.global_buffs.includes('speed_up_on_hit')) {
+          if (target.addSpeedStack) {
+             target.addSpeedStack(0.05, 1, 'speed_up_stack');
+             results.push({
+                 name: target.name, team: target.team, element: target.element, level: target.level || 0,
+                 id: target.id,
+                 type: 'buff_trigger', 
+                 value: 0, 
+                 value_display: '速度+5%', 
+                 is_counter: false
+             });
+          }
+      }
+      
       // ★★★ 杀意沸腾 (击杀增伤)
       if (res.hp_remaining <= 0 && caster.global_buffs && caster.global_buffs.includes('damage_up_on_kill')) {
           // 20% = 4层 damage_up_stack (每层5%)
@@ -479,6 +494,14 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
               caster_id: caster.id,
               duration: 99,
               value: 4 
+          });
+          results.push({
+              name: caster.name, team: caster.team, element: caster.element, level: caster.level || 0,
+              id: caster.id,
+              type: 'buff_trigger', 
+              value: 0, 
+              value_display: '伤害+20%', 
+              is_counter: false
           });
       }
     } else if (skill.type === 'heal') {
