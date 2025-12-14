@@ -137,22 +137,25 @@ export class WanxiangActivity extends plugin {
         return [{ type: 'BOSS', name: '首领降临', desc: '极为危险的强敌，击败后可获得双倍赐福。', rarity: 5 }];
     }
 
-    // 随机生成 2-3 个选项
     const options = [];
-    const count = 2 + (Math.random() > 0.5 ? 1 : 0); // 2 or 3 options
     
-    // 节点池定义
+    // 定义基础节点池 (不含 REST)
     let availableTypes = [
-        { type: 'COMBAT', name: '激战', desc: '普通的战斗，胜利获得赐福。', weight: 50 },
+        { type: 'COMBAT', name: '激战', desc: '普通的战斗，胜利获得赐福。', weight: 60 }, // 提高激战权重
         { type: 'ELITE', name: '精英', desc: '强敌出没！属性提升30%，必掉高级赐福。', weight: 20 },
-        { type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 15 },
-        { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 15 }
+        { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 20 }
     ];
 
-    // 每一层至少要有一个战斗选项 (COMBAT 或 ELITE)
-    // 但既然我们要去重，而且有 4 种类型选 2-3 个，只要随机池够好，问题不大。
-    // 为了体验更好，我们可以强制第一个选项总是 COMBAT，后面随机。
-    // 或者完全随机不重复。这里采用完全随机不重复。
+    // 特殊逻辑：首领前一层 (4, 9, 14...) 必刷修整
+    if (layer % 5 === 4) {
+        // 强制加入一个修整节点
+        options.push({ type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 0 });
+    }
+
+    // 随机生成剩余选项 (凑齐 2-3 个)
+    // 如果已经有了修整，再随机 1-2 个；否则随机 2-3 个
+    const targetCount = 2 + (Math.random() > 0.5 ? 1 : 0); // 总共 2 或 3 个
+    const needed = targetCount - options.length;
 
     const getWeightedRandomAndRemove = (list) => {
         let total = list.reduce((acc, t) => acc + t.weight, 0);
@@ -165,19 +168,19 @@ export class WanxiangActivity extends plugin {
                 return selected;
             }
         }
-        // Fallback (shouldn't happen)
         const selected = list[0];
         list.shift();
         return selected;
     };
 
-    for(let i=0; i<count; i++) {
+    for(let i=0; i<needed; i++) {
         if (availableTypes.length === 0) break;
         const t = getWeightedRandomAndRemove(availableTypes);
         options.push({ ...t }); // Clone
     }
     
-    return options;
+    // 简单的打乱顺序，避免修整总是第一个 (虽然第一个也没关系)
+    return options.sort(() => Math.random() - 0.5);
   }
 
   // --- 辅助：处理路线生成与反馈 ---
