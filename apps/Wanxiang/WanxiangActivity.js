@@ -901,6 +901,8 @@ export class WanxiangActivity extends plugin {
              if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
              // 四星唯一性
              if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
+             // 排除秘宝 (秘宝只能通过商店或奇遇获得)
+             if (b.type === 'artifact_passive') return false;
 
              // 权重为0的稀有度不出现
              if (currentWeights[b.rarity] === 0) return false;
@@ -1006,6 +1008,8 @@ export class WanxiangActivity extends plugin {
           if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
           // 四星唯一性
           if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
+          // 排除秘宝
+          if (b.type === 'artifact_passive') return false;
           
           // 首领层过滤掉1星，允许4星
           if (isBossLayer) {
