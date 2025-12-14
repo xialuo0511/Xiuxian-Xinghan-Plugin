@@ -325,7 +325,8 @@ export class WanxiangActivity extends plugin {
           runData.shop_items.forEach((item, i) => {
               const stars = '★'.repeat(item.rarity || 1);
               const status = item.bought ? ' (已售罄)' : ` 💰${item.price}`;
-              shopMsg += `${i + 1}. [${stars}] 【${item.name}】${status}\n   ${item.desc}\n`;
+              const typePrefix = item.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
+              shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${item.name}】${status}\n   ${item.desc}\n`;
           });
           shopMsg += `\n${runData.shop_items.length + 1}. 【离开】 继续前进`;
           shopMsg += '\n发送 #事件选择 [序号] 购买或离开。';
@@ -414,7 +415,8 @@ export class WanxiangActivity extends plugin {
                   items.forEach((it, i) => {
                       const stars = '★'.repeat(it.rarity || 1);
                       const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
-                      shopMsg += `${i + 1}. [${stars}] 【${it.name}】${status}\n   ${it.desc}\n`;
+                      const typePrefix = it.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
+                      shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${it.name}】${status}\n   ${it.desc}\n`;
                   });
                   shopMsg += `\n${items.length + 1}. 【离开】 继续前进`;
                   shopMsg += '\n发送 #事件选择 [序号] 继续购买。';
@@ -605,10 +607,16 @@ export class WanxiangActivity extends plugin {
       return config || { name: buffId, desc: '未知效果', rarity: 1 };
     });
 
+    const artifactsData = (data.artifacts || []).map(artifactId => {
+        const config = BUFFS.find(b => b.id === artifactId);
+        return config || { name: artifactId, desc: '未知秘宝', rarity: 3 };
+    });
+
     const renderData = {
       layer: data.layer,
       souls: soulsData,
       buffs: buffsData,
+      artifacts: artifactsData, // 新增：秘宝数据
       refreshCount: data.refresh_count,
       currentNode: data.current_node, // 新增：传递当前节点信息
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`

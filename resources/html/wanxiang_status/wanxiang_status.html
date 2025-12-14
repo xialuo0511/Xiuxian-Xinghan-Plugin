@@ -122,6 +122,12 @@
       .buff-header { font-size: 18px; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
       .buff-desc { font-size: 14px; color: #666; font-family: "Microsoft YaHei"; }
       .buff-rarity { font-size: 12px; font-family: "tttgbnumber"; }
+      
+      .artifact-item { 
+          border-left: 6px solid #b58900 !important; 
+          background: #fffdf5; 
+          box-shadow: 0 2px 5px rgba(181, 137, 0, 0.2); 
+      }
 
   </style>
 </head>
@@ -156,6 +162,23 @@
       </div>
       {{/each}}
   </div>
+
+  {{if artifacts && artifacts.length > 0}}
+  <div class="section-title" style="margin-top: 20px; color: #b58900; border-bottom-style: double;">✦ 稀 世 秘 宝 ✦</div>
+  <div class="buff-section">
+      <div class="buff-list">
+          {{each artifacts item}}
+          <div class="buff-item artifact-item">
+              <div class="buff-header">
+                  <span>📦 {{item.name}}</span>
+                  <span class="buff-rarity" style="color: #b58900;">★ 秘宝</span>
+              </div>
+              <div class="buff-desc">{{item.desc}}</div>
+          </div>
+          {{/each}}
+      </div>
+  </div>
+  {{/if}}
 
   <div class="section-title" style="margin-top: 20px;">✦ 天 机 赐 福 ✦</div>
   <div class="buff-section">
