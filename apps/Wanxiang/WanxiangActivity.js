@@ -584,11 +584,24 @@ export class WanxiangActivity extends plugin {
 
     const data = JSON.parse(dataStr);
 
+    // 计算生命值加成
+    let maxHpMultiplier = 1.0;
+    (data.buffs || []).forEach(buffId => {
+        const buff = BUFFS.find(b => b.id === buffId);
+        if (buff && buff.type === 'max_hp_pct') {
+            maxHpMultiplier += buff.value;
+        }
+    });
+
     // 准备渲染数据
-    const soulsData = data.souls.map(s => ({
-      ...s,
-      hp_percent: s.max_hp > 0 ? (s.current_hp / s.max_hp * 100).toFixed(1) : 0
-    }));
+    const soulsData = data.souls.map(s => {
+      const effectiveMaxHp = Math.floor(s.max_hp * maxHpMultiplier);
+      return {
+        ...s,
+        max_hp: effectiveMaxHp, // 显示加成后的上限
+        hp_percent: effectiveMaxHp > 0 ? (s.current_hp / effectiveMaxHp * 100).toFixed(1) : 0
+      };
+    });
 
     const buffsData = (data.buffs || []).map(buffId => {
       const config = BUFFS.find(b => b.id === buffId);
