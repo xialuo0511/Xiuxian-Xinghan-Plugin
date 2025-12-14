@@ -421,7 +421,7 @@
 
     <!-- 战斗行动卡片 -->
     {{else if line.type === 'action' || line.type === 'ultimate'}}
-      <div class="action-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}} {{if line.type === 'ultimate'}}ultimate-action{{/if}}">
+      <div class="action-card {{if line.caster.team === 'player'}}player-action{{else if line.caster.team === 'system'}}system-action{{else}}enemy-action{{/if}} {{if line.type === 'ultimate'}}ultimate-action{{/if}}">
         
         <!-- 头部: 施法者 + 技能名 -->
         <div class="action-header">
