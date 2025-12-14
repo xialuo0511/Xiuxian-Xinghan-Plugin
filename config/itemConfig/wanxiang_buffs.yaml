@@ -49,31 +49,24 @@
 # --- 生命类 ---
 - id: hp_up_small_1
   name: "生命之印·一"
-  desc: "全队生命上限提升 5% (并在获得时恢复等量生命)"
+  desc: "全队生命上限提升 10% (并在获得时恢复等量生命)"
   type: max_hp_pct
-  value: 0.05
+  value: 0.10
   rarity: 1
 
 - id: hp_up_small_2
   name: "生命之印·二"
-  desc: "全队生命上限提升 10% (并在获得时恢复等量生命)"
-  type: max_hp_pct
-  value: 0.10
-  rarity: 2
-
-- id: hp_up_small_3
-  name: "生命之印·三"
-  desc: "全队生命上限提升 15% (并在获得时恢复等量生命)"
-  type: max_hp_pct
-  value: 0.15
-  rarity: 3
-
-- id: hp_max_up
-  name: "生命源泉"
   desc: "全队生命上限提升 20% (并在获得时恢复等量生命)"
   type: max_hp_pct
   value: 0.20
   rarity: 2
+
+- id: hp_up_small_3
+  name: "生命之印·三"
+  desc: "全队生命上限提升 30% (并在获得时恢复等量生命)"
+  type: max_hp_pct
+  value: 0.30
+  rarity: 3
 
 # --- 续航类 (Roguelike核心) ---
 - id: heal_after_turn_1
