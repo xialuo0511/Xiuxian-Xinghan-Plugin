@@ -250,15 +250,8 @@ export class WanxiangActivity extends plugin {
       runData.current_node = node;
       runData.routes = []; // 清空待选
       
-      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-      await tempClient.disconnect();
-
-      // 根据节点类型反馈
-      if (node.type === 'COMBAT' || node.type === 'ELITE' || node.type === 'BOSS') {
-          e.reply(`你选择了【${node.name}】。\n敌人已在前方，发送 #挑战 开始战斗！`);
-      } else if (node.type === 'SHOP') {
-          // 初始化商店商品 (如果尚未初始化)
-          if (!runData.shop_items) {
+      // 特殊初始化：商店
+      if (node.type === 'SHOP' && !runData.shop_items) {
              runData.shop_items = [];
              
              // 生成 3 个随机赐福
@@ -300,13 +293,12 @@ export class WanxiangActivity extends plugin {
                          bought: false
                      });
                      
-                     // 避免商店内重复
                      const idx = pool.indexOf(selected);
                      if (idx > -1) pool.splice(idx, 1);
                  }
              }
              
-             // 生成 1 个秘宝 (目前只有聚宝盆)
+             // 生成 1 个秘宝
              if (!runData.artifacts.includes('treasure_bowl')) {
                  runData.shop_items.push({
                      type: 'artifact',
@@ -318,8 +310,16 @@ export class WanxiangActivity extends plugin {
                      bought: false
                  });
              }
-          }
-          
+      }
+      
+      // 统一保存状态并断开
+      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+      await tempClient.disconnect();
+
+      // 根据节点类型反馈
+      if (node.type === 'COMBAT' || node.type === 'ELITE' || node.type === 'BOSS') {
+          e.reply(`你选择了【${node.name}】。\n敌人已在前方，发送 #挑战 开始战斗！`);
+      } else if (node.type === 'SHOP') {
           // 构建商店界面
           let shopMsg = `你遇到了云游散修，他向你展示了行囊。\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
           runData.shop_items.forEach((item, i) => {
@@ -329,10 +329,7 @@ export class WanxiangActivity extends plugin {
           });
           shopMsg += `\n${runData.shop_items.length + 1}. 【离开】 继续前进`;
           shopMsg += '\n发送 #事件选择 [序号] 购买或离开。';
-          
-          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
           e.reply(shopMsg);
-
       } else if (node.type === 'REST') {
           e.reply([
               '你来到了一处隐蔽的营地，这里似乎很安全。',
