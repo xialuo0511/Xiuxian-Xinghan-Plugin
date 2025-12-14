@@ -16,6 +16,8 @@ const ALL_MONSTERS = loadItemConfig('monsters.yaml') || [];
 
 const KEY_PREFIX = 'xiuxian:wanxiang:play:';
 
+const CURRENCY_NAME = "天机印"; // 全局货币名称
+
 // 临时辅助函数：创建连接
 async function getTempRedis() {
   const redisConfigPath = `${process.cwd()}/config/config/redis.yaml`;
@@ -39,8 +41,8 @@ export class WanxiangActivity extends plugin {
         { reg: /^#挑战$/, fnc: 'challengeLayer' },
         { reg: /^#选择赐福\s*(\d)$/, fnc: 'selectBuff' },
         { reg: /^#刷新赐福$/, fnc: 'refreshBuffChoices' },
-        { reg: /^#选择路线\s*(\d)$/, fnc: 'selectRoute' }, // 新增
-        { reg: /^#事件选择\s*(\d)$/, fnc: 'handleEventChoice' }, // 新增
+        { reg: /^#选择路线\s*(\d)$/, fnc: 'selectRoute' },
+        { reg: /^#事件选择\s*(\d)$/, fnc: 'handleEventChoice' },
         { reg: /^#试炼状态$/, fnc: 'showStatus' },
         { reg: /^#退出试炼$/, fnc: 'quitRun' }
       ]
@@ -103,6 +105,8 @@ export class WanxiangActivity extends plugin {
         layer: 1,
         souls: soulsState,
         buffs: [],
+        jing_yin: 0, // 新增：天机印
+        artifacts: [], // 新增：秘宝
         start_time: Date.now(),
         refresh_count: 3,
         // 第一层默认为战斗
@@ -683,6 +687,29 @@ export class WanxiangActivity extends plugin {
         // 胜利后逻辑
         runData.layer++; // 晋升下一层
         
+        // --- 天机印掉落 ---
+        let jing_yin_drop_min = 0;
+        let jing_yin_drop_max = 0;
+        if (node.type === 'COMBAT') {
+            jing_yin_drop_min = 10;
+            jing_yin_drop_max = 20;
+        } else if (node.type === 'ELITE') {
+            jing_yin_drop_min = 30;
+            jing_yin_drop_max = 50;
+        } else if (node.type === 'BOSS') {
+            jing_yin_drop_min = 80;
+            jing_yin_drop_max = 120;
+        }
+
+        let total_jing_yin_drop = Math.floor(Math.random() * (jing_yin_drop_max - jing_yin_drop_min + 1)) + jing_yin_drop_min;
+        
+        // 秘宝加成：聚宝盆 (treasure_bowl)
+        if (runData.artifacts.includes('treasure_bowl')) {
+            total_jing_yin_drop = Math.floor(total_jing_yin_drop * 1.3); // 30% 加成
+        }
+        
+        runData.jing_yin += total_jing_yin_drop;
+
         let pickCount = 1;
         // 精英节点奖励更多选择次数
         if (node.type === 'ELITE') pickCount = 2;
@@ -753,7 +780,7 @@ export class WanxiangActivity extends plugin {
         if (runData.refresh_count > 0) {
             buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
         }
-        e.reply(buffMsg);
+        e.reply(buffMsg + `\n\n获得${CURRENCY_NAME}：${total_jing_yin_drop}。当前${CURRENCY_NAME}：${runData.jing_yin}。`);
       } else {
         // 失败更新（记录死亡状态）
         await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
