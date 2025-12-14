@@ -159,7 +159,9 @@ export async function getPlayerAction(userId) {
 
   try {
     const actionDetails = JSON.parse(actionJson);
-    if (Date.now() > actionDetails.end_time) {
+    // 兼容 endTime 和 end_time 两种格式
+    const endTime = actionDetails.endTime || actionDetails.end_time;
+    if (Date.now() > endTime) {
       await redisClient.del(actionKey);
       return null;
     }

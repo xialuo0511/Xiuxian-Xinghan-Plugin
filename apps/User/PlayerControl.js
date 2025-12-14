@@ -58,10 +58,13 @@ export class PlayerControl extends plugin {
 
     const currentAction = await DAL.getPlayerAction(usr_qq);
     if (currentAction) {
-      let m = Math.floor((currentAction.endTime - Date.now()) / 60000);
-      let s = Math.floor(((currentAction.endTime - Date.now()) % 60000) / 1000);
-      e.reply(`你正在${currentAction.action}中，剩余时间: ${m}分${s}秒`);
-      return;
+      const remainingTime = currentAction.endTime - Date.now();
+      if (remainingTime > 0) {
+        let m = Math.floor(remainingTime / 60000);
+        let s = Math.floor((remainingTime % 60000) / 1000);
+        e.reply(`你正在${currentAction.action}中，剩余时间: ${m}分${s}秒`);
+        return;
+      }
     }
 
     //获取时间
@@ -146,10 +149,13 @@ export class PlayerControl extends plugin {
 
     const currentAction = await DAL.getPlayerAction(usr_qq);
     if (currentAction) {
-      let m = Math.floor((currentAction.endTime - Date.now()) / 60000);
-      let s = Math.floor(((currentAction.endTime - Date.now()) % 60000) / 1000);
-      e.reply(`你正在${currentAction.action}中，剩余时间: ${m}分${s}秒`);
-      return;
+      const remainingTime = currentAction.endTime - Date.now();
+      if (remainingTime > 0) {
+        let m = Math.floor(remainingTime / 60000);
+        let s = Math.floor((remainingTime % 60000) / 1000);
+        e.reply(`你正在${currentAction.action}中，剩余时间: ${m}分${s}秒`);
+        return;
+      }
     }
 
     //获取时间
