@@ -1028,6 +1028,9 @@ export class WanxiangActivity extends plugin {
 
           const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
           
+          console.log(`[Wanxiang] Puppeteer returned type: ${typeof imgResult}`);
+          if (typeof imgResult === 'object') console.log(`[Wanxiang] Puppeteer keys: ${Object.keys(imgResult)}`);
+          
           let finalBuffer = null;
           if (Buffer.isBuffer(imgResult)) {
               finalBuffer = imgResult;
@@ -1035,12 +1038,21 @@ export class WanxiangActivity extends plugin {
               if (Buffer.isBuffer(imgResult.file)) {
                   finalBuffer = imgResult.file;
               } else if (typeof imgResult.file === 'string') {
-                  const base64Data = imgResult.file.replace(/^base64:\/\//, '');
+                  // 清洗前缀，兼容 base64:// 和 data:image/...
+                  let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
                   finalBuffer = Buffer.from(base64Data, 'base64');
               }
+          } else if (typeof imgResult === 'string') {
+               // 直接返回 Base64 字符串的情况
+               let base64Data = imgResult.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
+               finalBuffer = Buffer.from(base64Data, 'base64');
           }
 
           if (finalBuffer) {
+              console.log(`[Wanxiang] Final Buffer Size: ${finalBuffer.length} bytes`);
+              if (finalBuffer.length === 0) {
+                  throw new Error('生成的图片数据为空 (0 bytes)');
+              }
               fs.default.writeFileSync(tempFilePath, finalBuffer);
               await e.reply(segment.image(tempFilePath));
           } else {
