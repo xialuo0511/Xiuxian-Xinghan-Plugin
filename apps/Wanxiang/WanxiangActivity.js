@@ -1029,7 +1029,20 @@ export class WanxiangActivity extends plugin {
           const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
           
           console.log(`[Wanxiang] Puppeteer returned type: ${typeof imgResult}`);
-          if (typeof imgResult === 'object') console.log(`[Wanxiang] Puppeteer keys: ${Object.keys(imgResult)}`);
+          if (typeof imgResult === 'object') {
+              console.log(`[Wanxiang] Puppeteer keys: ${Object.keys(imgResult)}`);
+              if (imgResult.file) {
+                  if (Buffer.isBuffer(imgResult.file)) {
+                      console.log(`[Wanxiang] imgResult.file is Buffer, length: ${imgResult.file.length}`);
+                  } else if (typeof imgResult.file === 'string') {
+                      console.log(`[Wanxiang] imgResult.file is String, length: ${imgResult.file.length}, starts with: ${imgResult.file.substring(0, 50)}`);
+                  } else {
+                      console.log(`[Wanxiang] imgResult.file is type: ${typeof imgResult.file}`);
+                  }
+              } else {
+                  console.log('[Wanxiang] imgResult.file is undefined/null');
+              }
+          }
           
           let finalBuffer = null;
           if (Buffer.isBuffer(imgResult)) {
