@@ -182,9 +182,13 @@ export class astral_combat extends plugin {
                 const p = imgPaths[i];
                 try {
                     const imageSendResult = await e.reply(segment.image(p));
-                    // 检查返回值，如果e.reply返回一个错误对象（而非抛出异常），也触发回退
-                    if (imageSendResult && imageSendResult.result === -1 && imageSendResult.errMsg === "rich media transfer failed") {
-                        console.error('[AstralCombat] Image send returned error result, falling back to file:', imageSendResult);
+                    console.log('[AstralCombat] e.reply return value:', imageSendResult); // Debug log
+
+                    // 检查返回值：如果返回 falsy (undefined/false) 或者 明确的错误对象，都触发回退
+                    const isFailure = !imageSendResult || (imageSendResult.result === -1 && imageSendResult.errMsg === "rich media transfer failed");
+
+                    if (isFailure) {
+                        console.error('[AstralCombat] Image send failed (result check), falling back to file. Result:', imageSendResult);
                         const fileName = path.basename(p);
                         await e.reply({ type: 'file', file: p, name: fileName });
                         if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
