@@ -1074,7 +1074,8 @@ export class WanxiangActivity extends plugin {
               try {
                   // 直接作为文件消息发送 (兼容性最好，适配器会自动处理上传)
                   const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
-                  await e.reply(fileMsg);
+                  const tipMsg = "\n💡若战斗日志图片无法加载，请点击下载查看原图";
+                  await e.reply([fileMsg, tipMsg]);
               } catch (sendErr) {
                   console.error('[Wanxiang] Send File Msg Error:', sendErr);
                   e.reply('战报生成成功但发送失败(文件过大)，请联系管理员。');
