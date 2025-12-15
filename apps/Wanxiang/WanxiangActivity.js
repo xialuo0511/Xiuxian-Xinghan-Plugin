@@ -1074,11 +1074,14 @@ export class WanxiangActivity extends plugin {
                 fs.default.writeFileSync(tempFilePath, finalBuffer);
                 tempFiles.push(tempFilePath);
                 
-                // 加入转发节点
+                // 转换为标准 file URI (兼容 Windows)
+                const fileUrl = `file:///${tempFilePath.replace(/\\/g, '/')}`;
+                
+                // 加入转发节点 (使用 CQ 码以确保最大兼容性)
                 msgNodes.push({
                     user_id: e.self_id || 2854196310,
                     nickname: "战斗记录",
-                    message: [ segment.image(tempFilePath) ]
+                    message: `[CQ:image,file=${fileUrl}]`
                 });
             }
           }
