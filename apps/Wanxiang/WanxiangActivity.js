@@ -1080,6 +1080,7 @@ export class WanxiangActivity extends plugin {
                   try {
                       await e.reply(segment.image(p));
                   } catch (imgSendErr) {
+                       console.error('[Wanxiang] Fallback triggered for image sending:', imgSendErr);
                        const fileName = path.basename(p);
                        await e.reply({ type: 'file', file: p, name: fileName });
                        // 仅在第一次发文件时提示

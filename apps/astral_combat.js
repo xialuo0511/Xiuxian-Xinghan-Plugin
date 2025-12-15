@@ -183,6 +183,7 @@ export class astral_combat extends plugin {
                 try {
                     await e.reply(segment.image(p));
                 } catch (imgSendErr) {
+                     console.error('[AstralCombat] Fallback triggered for image sending:', imgSendErr);
                      const fileName = path.basename(p);
                      await e.reply({ type: 'file', file: p, name: fileName });
                      if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
