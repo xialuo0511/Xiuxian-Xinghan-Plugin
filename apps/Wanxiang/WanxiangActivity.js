@@ -1006,21 +1006,7 @@ export class WanxiangActivity extends plugin {
         }
       }
 
-      // 渲染日志 (单图模式，保存为临时文件发送)
-      const renderData = {
-          log: result.log,
-          pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
-      };
 
-      const fs = await import('fs');
-      const path = await import('path');
-      const tempDir = path.default.join(process.cwd(), 'data', 'temp', 'wanxiang');
-      
-      if (!fs.default.existsSync(tempDir)) {
-          fs.default.mkdirSync(tempDir, { recursive: true });
-      }
-      
-      const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}.jpg`);
 
       // 渲染日志 (分片输出 - 每8回合一切)
       const fullLog = result.log;
