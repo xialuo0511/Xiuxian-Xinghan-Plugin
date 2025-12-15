@@ -1081,11 +1081,14 @@ export class WanxiangActivity extends plugin {
                       const imageSendResult = await e.reply(segment.image(p));
                       console.log('[Wanxiang] e.reply return value:', imageSendResult); // Debug log
 
-                      // 检查返回值：如果返回 falsy (undefined/false) 或者 明确的错误对象，都触发回退
-                      const isFailure = !imageSendResult || (imageSendResult.result === -1 && imageSendResult.errMsg === "rich media transfer failed");
+                      // 检查返回值：
+                      // 1. 如果返回 falsy (undefined/false/null)
+                      // 2. 如果包含 error 属性 (根据日志，失败时返回 { error: [...] })
+                      // 3. 如果 result 为 -1 (部分适配器行为)
+                      const isFailure = !imageSendResult || imageSendResult.error || (imageSendResult.result === -1);
 
                       if (isFailure) {
-                           console.error('[Wanxiang] Image send failed (result check), falling back to file. Result:', imageSendResult);
+                           console.error('[Wanxiang] Image send failed (detected error in return value), falling back to file. Result:', JSON.stringify(imageSendResult, null, 2));
                            const fileName = path.basename(p);
                            await e.reply({ type: 'file', file: p, name: fileName });
                            if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
