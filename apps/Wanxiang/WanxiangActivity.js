@@ -1049,10 +1049,15 @@ export class WanxiangActivity extends plugin {
                             
                             const fileName = `Wanxiang_Log_${userId}_${Date.now()}.jpg`;
           
-                            // 直接发送文件消息 (这是最稳定的方式，尽管不能上传到指定文件夹)
-                            const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
-                            await e.reply(fileMsg);
-                            await e.reply("💡若战斗日志图片无法加载，请点击下载查看原图");
+                            // 策略优化：优先尝试发送图片消息（体验更好），失败则转为文件发送
+                            try {
+                                await e.reply(segment.image(tempFilePath));
+                            } catch (imgErr) {
+                                console.error('[Wanxiang] Send Image Msg Failed (Likely too large/RMT failed), falling back to file:', imgErr);
+                                const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
+                                await e.reply(fileMsg);
+                                await e.reply("💡战斗日志图片过大，已转为文件发送。请点击下载查看原图");
+                            }
           
                         } else {
                             throw new Error('生成的图片数据为空 (0 bytes) - 可能是图片过长导致');

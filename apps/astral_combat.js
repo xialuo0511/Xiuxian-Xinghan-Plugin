@@ -5,6 +5,8 @@ import puppeteer from '../../../lib/puppeteer/puppeteer.js';
 import Show from '../model/show.js';
 import { getActivityStatus } from '../logic/fishing_logic.js';
 import { runCombat } from '../logic/combat/CombatEngine.js';
+import fs from 'fs';
+import path from 'path';
 
 const allStarSouls = loadItemConfig('star_souls.yaml');
 const EVENT_KEY = 'wanxiang_tianji_2025_10';
@@ -123,7 +125,42 @@ export class astral_combat extends plugin {
 
     const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
     const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-    await e.reply(img);
+    
+    // ----------------------------------------------------------------
+    // 发送逻辑优化：图片优先，文件保底
+    // ----------------------------------------------------------------
+    const tempDir = path.join(process.cwd(), 'data', 'temp', 'wanxiang');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+    const fileName = `Combat_Log_${e.user_id}_${Date.now()}.jpg`;
+    const tempFilePath = path.join(tempDir, fileName);
+
+    // 写入临时文件
+    if (Buffer.isBuffer(img)) {
+        fs.writeFileSync(tempFilePath, img);
+    } else if (typeof img === 'object' && img.file) {
+         // 处理 base64 或其他格式
+         let buf = null;
+         if (Buffer.isBuffer(img.file)) buf = img.file;
+         else if (typeof img.file === 'string') buf = Buffer.from(img.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, ''), 'base64');
+         
+         if (buf) fs.writeFileSync(tempFilePath, buf);
+    }
+
+    try {
+        await e.reply(segment.image(tempFilePath));
+    } catch (imgErr) {
+        console.error('[AstralCombat] Send Image Failed, fallback to file:', imgErr);
+        const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
+        await e.reply(fileMsg);
+        await e.reply("💡战斗日志图片过大，已转为文件发送。请点击下载查看原图");
+    }
+
+    // 延迟清理
+    setTimeout(() => {
+        if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
+    }, 60000);
   }
 
   /**
