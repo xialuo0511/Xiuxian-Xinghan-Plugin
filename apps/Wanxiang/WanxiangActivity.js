@@ -3,6 +3,7 @@ import * as DAL from '../../api/data-access.js';
 // import { redisClient } from '../../api/redis.js'; // 暂时注释掉
 import { createClient } from 'redis';
 import fs from 'fs';
+import path from 'path';
 import YAML from 'yaml';
 import { loadItemConfig } from '../../model/ConfigLoader.js';
 import { runCombat } from '../../logic/combat/CombatEngine.js';
@@ -1040,11 +1041,11 @@ export class WanxiangActivity extends plugin {
       }
       if (currentSlice.length > 0) slices.push(currentSlice);
 
-      const fs = await import('fs');
-      const path = await import('path');
-      const tempDir = path.default.join(process.cwd(), 'data', 'temp', 'wanxiang');
-      if (!fs.default.existsSync(tempDir)) {
-          fs.default.mkdirSync(tempDir, { recursive: true });
+      // const fs = await import('fs'); // Removed dynamic import
+      // const path = await import('path'); // Removed dynamic import
+      const tempDir = path.join(process.cwd(), 'data', 'temp', 'wanxiang');
+      if (!fs.existsSync(tempDir)) {
+          fs.mkdirSync(tempDir, { recursive: true });
       }
 
       const imgPaths = [];
@@ -1078,8 +1079,8 @@ export class WanxiangActivity extends plugin {
 
               if (finalBuffer && finalBuffer.length > 0) {
                   const fileName = `Combat_Log_${userId}_${Date.now()}_Part${i+1}.jpg`;
-                  const filePath = path.default.join(tempDir, fileName);
-                  fs.default.writeFileSync(filePath, finalBuffer);
+                  const filePath = path.join(tempDir, fileName);
+                  fs.writeFileSync(filePath, finalBuffer);
                   imgPaths.push(filePath);
               } else {
                   console.error(`[Wanxiang] Slice ${i+1} generation failed (0 bytes)`);
@@ -1093,7 +1094,7 @@ export class WanxiangActivity extends plugin {
                   try {
                       await e.reply(segment.image(p));
                   } catch (imgSendErr) {
-                       const fileName = path.default.basename(p);
+                       const fileName = path.basename(p);
                        await e.reply({ type: 'file', file: p, name: fileName });
                        // 仅在第一次发文件时提示
                        if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
@@ -1115,7 +1116,7 @@ export class WanxiangActivity extends plugin {
           setTimeout(() => {
               imgPaths.forEach(p => {
                   try {
-                      if (fs.default.existsSync(p)) fs.default.unlinkSync(p);
+                      if (fs.existsSync(p)) fs.unlinkSync(p);
                   } catch (e) { console.error('Failed to delete temp file:', p); }
               });
           }, 60000);
