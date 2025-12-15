@@ -527,9 +527,9 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
           results.push({
               name: caster.name, team: caster.team, element: caster.element, level: caster.level || 0,
               id: caster.id,
-              type: 'damage', // 反弹也算一种伤害
+              type: 'reflected_damage', // 新增类型：反弹伤害
               value: res.reflected_damage,
-              value_display: `(反弹)-${formatNumber(res.reflected_damage)}`,
+              value_display: formatNumber(res.reflected_damage), // 不带负号，由渲染决定
               is_counter: false
           });
       }

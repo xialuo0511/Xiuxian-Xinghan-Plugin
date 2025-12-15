@@ -462,6 +462,8 @@
                         {{/if}}
                     {{else if target.type === 'heal'}}+{{target.value_display}}
                     {{else if target.type === 'shield'}}🛡{{target.value_display}}
+                    {{else if target.type === 'reflected_damage'}}
+                        <span style="color:#e67e22;">(反弹){{target.value_display}}</span>
                     {{else if target.type === 'debuff_application'}}
                         <span style="font-size: 18px; color: #8e44ad;">{{target.value_display}}</span>
                     {{else if target.type === 'dot_damage'}}
