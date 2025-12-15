@@ -33,22 +33,28 @@ export async function getFishShopData(userId) {
     };
   }
 
-  const activityItems = playerData.najie['活动'] || [];
-
   let ownedFish = {};
-  activityItems.forEach(item => {
-    if (catchableItemNames.has(item.name)) {
-      ownedFish[item.name] = item.数量;
-    }
-  });
+
+  // 修复：遍历纳戒所有分类，而不仅仅是'活动'，以兼容像"花篮"这样被归类为"礼物"的物品
+  for (const categoryName in playerData.najie) {
+      const items = playerData.najie[categoryName];
+      if (Array.isArray(items)) {
+          items.forEach(item => {
+              if (item && catchableItemNames.has(item.name)) {
+                  // 如果存在多个分类有同名物品（理论不应发生），累加数量
+                  ownedFish[item.name] = (ownedFish[item.name] || 0) + item.数量;
+              }
+          });
+      }
+  }
 
   const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
   const purchaseHistory = await DAL.redisClient.hGetAll(purchaseHistoryKey);
 
   const shopItems = fishShopConfig.map(item => {
     const enhancedPrice = item.price.map(cost => {
-      const found = activityItems.find(i => i.name === cost.name);
-      const owned = found ? found.数量 : 0;
+      // 直接从 ownedFish 中获取数量
+      const owned = ownedFish[cost.name] || 0;
       return { ...cost, owned };
     });
 
@@ -88,7 +94,13 @@ export async function buyFromFishShop(userId, itemName) {
 
   // 2. 检查货币（鱼）是否足够
   for (const cost of shopItem.price) {
-    const ownedAmount = await DAL.getNajieItemAmount(userId, cost.name, '活动');
+    // 这里的检查也需要能够跨分类查找
+    // 由于 DAL.getNajieItemAmount 需要 class，我们先尝试用 foundthing 获取 class
+    const itemDef = await foundthing(cost.name);
+    let itemClass = '活动'; // 默认
+    if (itemDef && itemDef.class) itemClass = itemDef.class;
+
+    const ownedAmount = await DAL.getNajieItemAmount(userId, cost.name, itemClass);
     if (ownedAmount < cost.amount) {
       return {
         success: false,
@@ -99,7 +111,10 @@ export async function buyFromFishShop(userId, itemName) {
 
   // 3. 扣除货币（鱼）
   for (const cost of shopItem.price) {
-    await DAL.updateNajieItem(userId, cost.name, '活动', -cost.amount);
+    const itemDef = await foundthing(cost.name);
+    let itemClass = '活动';
+    if (itemDef && itemDef.class) itemClass = itemDef.class;
+    await DAL.updateNajieItem(userId, cost.name, itemClass, -cost.amount);
   }
 
   // 4. 发放购买的物品
@@ -108,7 +123,10 @@ export async function buyFromFishShop(userId, itemName) {
     logger.error(`[渔友商行] 致命错误：商店物品 [${itemName}] 在物品库中不存在！`);
     // 回滚已扣除的货币
     for (const cost of shopItem.price) {
-      await DAL.updateNajieItem(userId, cost.name, '活动', cost.amount);
+      const costDef = await foundthing(cost.name);
+      let costClass = '活动';
+      if (costDef && costDef.class) costClass = costDef.class;
+      await DAL.updateNajieItem(userId, cost.name, costClass, cost.amount);
     }
     return { success: false, message: '系统错误：商品信息不存在，请联系管理员。' };
   }
@@ -128,12 +146,17 @@ export async function buyFromFishShop(userId, itemName) {
 export async function getAnglerCodex(userId) {
   const { najie } = await DAL.getAllPlayerData(userId);
 
-  // 检查函数，用于获取纳戒中某个活动物品的数量
+  // 检查函数，用于获取纳戒中物品的数量（遍历所有分类）
   const getOwnedAmount = (itemName) => {
-    const category = najie['活动'];
-    if (!Array.isArray(category)) return 0;
-    const item = category.find(i => i && i.name === itemName);
-    return item?.数量 || 0;
+    let total = 0;
+    for (const categoryName in najie) {
+        const list = najie[categoryName];
+        if (Array.isArray(list)) {
+            const item = list.find(i => i && i.name === itemName);
+            if (item) total += item.数量;
+        }
+    }
+    return total;
   };
 
   // 1. 处理鱼竿
