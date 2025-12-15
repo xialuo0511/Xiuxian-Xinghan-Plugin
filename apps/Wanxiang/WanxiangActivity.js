@@ -1051,8 +1051,8 @@ export class WanxiangActivity extends plugin {
           
                             // 直接发送文件消息 (这是最稳定的方式，尽管不能上传到指定文件夹)
                             const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
-                            const tipMsg = "\n💡若战斗日志图片无法加载，请点击下载查看原图";
-                            await e.reply([fileMsg, tipMsg]);
+                            await e.reply(fileMsg);
+                            await e.reply("💡若战斗日志图片无法加载，请点击下载查看原图");
           
                         } else {
                             throw new Error('生成的图片数据为空 (0 bytes) - 可能是图片过长导致');
