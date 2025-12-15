@@ -1023,8 +1023,8 @@ export class WanxiangActivity extends plugin {
 
       try {
           const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-          dataForPuppeteer.imgType = 'jpeg';
-          dataForPuppeteer.quality = 80;
+          // dataForPuppeteer.imgType = 'jpeg';
+          // dataForPuppeteer.quality = 80;
 
           const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
           
