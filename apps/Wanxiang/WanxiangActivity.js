@@ -316,6 +316,28 @@ export class WanxiangActivity extends plugin {
                  }
              }
              
+             // 概率生成星魂专属赐福 (4层后, 30%概率)
+             if (runData.layer >= 4 && Math.random() < 0.3) {
+                 const soulBuffs = BUFFS.filter(b => 
+                     b.type === 'soul_exclusive' && 
+                     runData.souls.some(s => s.name === b.exclusive_soul) && 
+                     !(runData.buffs || []).includes(b.id)
+                 );
+                 
+                 if (soulBuffs.length > 0) {
+                     const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
+                     runData.shop_items.push({
+                         type: 'buff', // 视为普通赐福购买逻辑
+                         id: selected.id,
+                         name: selected.name,
+                         desc: selected.desc,
+                         price: 150,
+                         rarity: selected.rarity,
+                         bought: false
+                     });
+                 }
+             }
+             
              // 生成 1 个秘宝
              if (!runData.artifacts.includes('treasure_bowl')) {
                  runData.shop_items.push({
@@ -360,15 +382,38 @@ export class WanxiangActivity extends plugin {
               '发送 #事件选择 [序号] 确认。'
           ].join('\n'));
       } else if (node.type === 'EVENT') {
-          // 暂时做一个简单的通用事件
-          e.reply([
-              '你在废墟中发现了一台古老的贩卖机。',
-              '请做出选择：',
-              '1. 【购买补给】 消耗 20% 当前生命值，随机获得 3 个普通赐福',
-              '2. 【暴力破解】 试图砸开它 (50%获得随机3星赐福，50%受伤)',
-              '3. 【离开】 什么都不做',
-              '发送 #事件选择 [序号] 确认。'
-          ].join('\n'));
+          // 判定是否触发 星魂专属奇遇 (4层+, 50%)
+          let specialEvent = false;
+          if (runData.layer >= 4 && Math.random() < 0.5) {
+              const soulBuffs = BUFFS.filter(b => 
+                     b.type === 'soul_exclusive' && 
+                     runData.souls.some(s => s.name === b.exclusive_soul) && 
+                     !(runData.buffs || []).includes(b.id)
+              );
+              if (soulBuffs.length > 0) specialEvent = true;
+          }
+
+          if (specialEvent) {
+              runData.current_node.sub_type = 'soul_enhance';
+              e.reply([
+                  '你在废墟中遇到一位神秘的老者，他注视着你的星魂，眼中闪过一丝光芒。',
+                  '请做出选择：',
+                  '1. 【虚心求教】 获得一个针对已有星魂强化的三星赐福',
+                  '2. 【无视】 离开',
+                  '发送 #事件选择 [序号] 确认。'
+              ].join('\n'));
+          } else {
+              runData.current_node.sub_type = 'vending_machine';
+              e.reply([
+                  '你在废墟中发现了一台古老的贩卖机。',
+                  '请做出选择：',
+                  '1. 【购买补给】 消耗 20% 当前生命值，随机获得 3 个普通赐福',
+                  '2. 【暴力破解】 试图砸开它 (50%获得随机3星赐福，50%受伤)',
+                  '3. 【离开】 什么都不做',
+                  '发送 #事件选择 [序号] 确认。'
+              ].join('\n'));
+          }
+          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       }
 
     } catch (err) {
@@ -460,6 +505,29 @@ export class WanxiangActivity extends plugin {
                           if (idx > -1) pool.splice(idx, 1);
                       }
                   }
+                  
+                  // 概率生成星魂专属赐福 (4层后, 30%概率)
+                  if (runData.layer >= 4 && Math.random() < 0.3) {
+                     const soulBuffs = BUFFS.filter(b => 
+                         b.type === 'soul_exclusive' && 
+                         runData.souls.some(s => s.name === b.exclusive_soul) && 
+                         !(runData.buffs || []).includes(b.id)
+                     );
+                     
+                     if (soulBuffs.length > 0) {
+                         const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
+                         runData.shop_items.push({
+                             type: 'buff',
+                             id: selected.id,
+                             name: selected.name,
+                             desc: selected.desc,
+                             price: 150,
+                             rarity: selected.rarity,
+                             bought: false
+                         });
+                     }
+                  }
+                  
                   // 重新生成秘宝
                   if (!runData.artifacts.includes('treasure_bowl')) {
                       runData.shop_items.push({
@@ -555,75 +623,101 @@ export class WanxiangActivity extends plugin {
               isDone = true;
           }
       } else if (node.type === 'EVENT') {
-          // 贩卖机逻辑
-          if (selection === 1) {
-             // 【购买补给】 消耗 20% 当前血量，获得 3 个随机赐福
-             let hpCostTotal = 0;
-             runData.souls.forEach(s => {
-                 if (!s.is_dead) {
-                     const cost = Math.floor(s.current_hp * 0.2);
-                     s.current_hp -= cost;
-                     hpCostTotal += cost;
-                 }
-             });
-
-             // 生成 3 个赐福 (激战层权重)
-             const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
-             const acquiredBuffs = runData.buffs || [];
-             const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
-             
-             const pool = BUFFS.filter(b => {
-                 if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
-                 if (b.rarity === 4) return false;
-                 return true;
-             });
-
-             const newBuffs = [];
-             const getWeightedRandom = () => {
-                let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
-                let r = Math.random() * total;
-                for (const b of pool) {
-                    r -= (weights[b.rarity] || 0);
-                    if (r <= 0) return b;
-                }
-                return pool[0];
-             };
-
-             for(let k=0; k<3; k++) {
-                 if (pool.length === 0) break;
-                 const selected = getWeightedRandom();
-                 if (selected) {
-                     newBuffs.push(selected);
-                     runData.buffs.push(selected.id);
-                     // 简单去重：从池子移除 (如果是唯一Buff需要移除，非唯一Buff其实可以重复获得，这里简化处理，假设一次购买不重复)
-                     const idx = pool.indexOf(selected);
-                     if (idx > -1) pool.splice(idx, 1);
-                 }
-             }
-
-             replyMsg = `你支付了生命值，贩卖机吐出了补给！\n获得赐福：${newBuffs.map(b => `【${b.name}】`).join('、')}`;
-             isDone = true;
-          } else if (selection === 2) {
-             const rand = Math.random();
-             if (rand > 0.5) {
-                 // 成功：给一个 Buff
-                 if (!runData.buffs.includes('heal_after_turn_1')) {
-                    runData.buffs.push('heal_after_turn_1');
-                    replyMsg = '哐当一声，掉出来一个【生命回复·小】赐福！';
-                 } else {
-                    replyMsg = '贩卖机吐出了一枚硬币，但你不知道有什么用。';
-                 }
-             } else {
-                 // 失败：扣血
-                 runData.souls.forEach(s => {
-                     if (!s.is_dead) s.current_hp = Math.floor(s.current_hp * 0.8);
-                 });
-                 replyMsg = '贩卖机爆炸了！全员受到伤害。';
-             }
-             isDone = true;
+          if (node.sub_type === 'soul_enhance') {
+              if (selection === 1) {
+                  const soulBuffs = BUFFS.filter(b => 
+                         b.type === 'soul_exclusive' && 
+                         runData.souls.some(s => s.name === b.exclusive_soul) && 
+                         !(runData.buffs || []).includes(b.id)
+                  );
+                  
+                  if (soulBuffs.length > 0) {
+                      const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
+                      runData.buffs.push(selected.id);
+                      replyMsg = `老者微微一笑，传授了你【${selected.name}】的奥秘！\n效果：${selected.desc}`;
+                  } else {
+                      replyMsg = '老者摇了摇头，似乎没有适合你的教导了。';
+                  }
+                  isDone = true;
+              } else {
+                  replyMsg = '你向老者行了一礼，转身离开。';
+                  isDone = true;
+              }
           } else {
-             replyMsg = '你谨慎地离开了。';
-             isDone = true;
+              // 默认为贩卖机 (vending_machine)
+              if (selection === 1) {
+                 // 【购买补给】 消耗 20% 当前血量，获得 3 个随机赐福
+                 let hpCostTotal = 0;
+                 runData.souls.forEach(s => {
+                     if (!s.is_dead) {
+                         const cost = Math.floor(s.current_hp * 0.2);
+                         s.current_hp -= cost;
+                         hpCostTotal += cost;
+                     }
+                 });
+
+                 // 生成 3 个赐福 (激战层权重)
+                 const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+                 const acquiredBuffs = runData.buffs || [];
+                 const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
+                 
+                 const pool = BUFFS.filter(b => {
+                     if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+                     if (b.rarity === 4) return false;
+                     // 排除秘宝和星魂专属
+                     if (b.type === 'artifact_passive' || b.type === 'soul_exclusive') return false;
+                     return true;
+                 });
+
+                 const newBuffs = [];
+                 const getWeightedRandom = () => {
+                    let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
+                    let r = Math.random() * total;
+                    for (const b of pool) {
+                        r -= (weights[b.rarity] || 0);
+                        if (r <= 0) return b;
+                    }
+                    return pool[0];
+                 };
+
+                 for(let k=0; k<3; k++) {
+                     if (pool.length === 0) break;
+                     const selected = getWeightedRandom();
+                     if (selected) {
+                         newBuffs.push(selected);
+                         runData.buffs.push(selected.id);
+                         const idx = pool.indexOf(selected);
+                         if (idx > -1) pool.splice(idx, 1);
+                     }
+                 }
+
+                 replyMsg = `你支付了生命值，贩卖机吐出了补给！\n获得赐福：${newBuffs.map(b => `【${b.name}】`).join('、')}`;
+                 isDone = true;
+              } else if (selection === 2) {
+                 const rand = Math.random();
+                 if (rand > 0.5) {
+                     // 成功：给一个 Buff (3星)
+                     // 需从3星池中选，排除特殊Buff
+                     const pool = BUFFS.filter(b => b.rarity === 3 && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id));
+                     if (pool.length > 0) {
+                        const selected = pool[Math.floor(Math.random() * pool.length)];
+                        runData.buffs.push(selected.id);
+                        replyMsg = `哐当一声，掉出来一个【${selected.name}】赐福！`;
+                     } else {
+                        replyMsg = '贩卖机吐出了一枚硬币，但你不知道有什么用。';
+                     }
+                 } else {
+                     // 失败：扣血
+                     runData.souls.forEach(s => {
+                         if (!s.is_dead) s.current_hp = Math.floor(s.current_hp * 0.8);
+                     });
+                     replyMsg = '贩卖机爆炸了！全员受到伤害。';
+                 }
+                 isDone = true;
+              } else {
+                 replyMsg = '你谨慎地离开了。';
+                 isDone = true;
+              }
           }
       }
 
@@ -803,12 +897,24 @@ export class WanxiangActivity extends plugin {
               battleConfig.base_stats.attack += Math.floor(originalStats.attack * buff.value);
             } else if (buff.type === 'def_pct') {
               battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
-            } else if (buff.type === 'max_hp_pct') {
-              const hpAdd = Math.floor(originalStats.health * buff.value);
-              battleConfig.base_stats.health += hpAdd;
-              if (battleConfig.current_hp_inherit !== undefined) {
-                battleConfig.current_hp_inherit += hpAdd;
-              }
+            } else if (buff.type === 'soul_exclusive') {
+                // 星魂专属强化
+                if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
+                battleConfig.global_buffs.push(buff.id);
+
+                // 数值类直接生效
+                if (buff.id === 'soul_enhancement_wutu') {
+                    // 盾灵：生命+100%，满能
+                    const hpAdd = Math.floor(originalStats.health * 1.0);
+                    battleConfig.base_stats.health += hpAdd;
+                    if (battleConfig.current_hp_inherit !== undefined) {
+                         battleConfig.current_hp_inherit += hpAdd;
+                    }
+                    battleConfig.initial_energy = 999; // 满能
+                } else if (buff.id === 'soul_enhancement_yimu') {
+                    // 药仙：攻击+100%
+                    battleConfig.base_stats.attack += Math.floor(originalStats.attack * 1.0);
+                }
             } else if (buff.type === 'crit_rate') {
               battleConfig.crit_rate = (battleConfig.crit_rate || 0) + buff.value;
             } else if (buff.type === 'crit_dmg') {
@@ -988,6 +1094,8 @@ export class WanxiangActivity extends plugin {
              if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
              // 排除秘宝 (秘宝只能通过商店或奇遇获得)
              if (b.type === 'artifact_passive') return false;
+             // 排除星魂专属
+             if (b.type === 'soul_exclusive') return false;
 
              // 权重为0的稀有度不出现
              if (currentWeights[b.rarity] === 0) return false;
@@ -1098,6 +1206,8 @@ export class WanxiangActivity extends plugin {
           if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
           // 排除秘宝
           if (b.type === 'artifact_passive') return false;
+          // 排除星魂专属
+          if (b.type === 'soul_exclusive') return false;
           
           // 根据权重过滤 (权重为0的不出现)
           if (currentWeights[b.rarity] === 0) return false;

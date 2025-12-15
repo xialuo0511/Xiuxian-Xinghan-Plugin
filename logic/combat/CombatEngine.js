@@ -88,6 +88,15 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             type: 'heal', value: 0, value_display: '(充能)MAX', is_counter: false // 使用 heal 类型显示绿色文本
         });
     }
+    
+    // ★★★ 盾灵·戊土 (初始满能)
+    if (c.source.initial_energy) {
+        c.addEnergy(c.source.initial_energy);
+        energyTargets.push({
+            name: c.name, team: c.team, element: c.element, id: c.id,
+            type: 'heal', value: 0, value_display: '(充能)MAX', is_counter: false
+        });
+    }
   });
 
   combatLog.push({ type: 'start', text: '战斗开始！' });
@@ -308,12 +317,18 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     let skillConfig = null;
     let isUltimate = false;
 
-    // 敌方AI：优先释放终结技
-    if (activeUnit.team === 'enemy' && activeUnit.canCastUltimate()) {
+    // 优先释放终结技 (敌我通用)
+    if (activeUnit.canCastUltimate()) {
         skillConfig = activeUnit.skills.ultimate;
         activeUnit.energy -= skillConfig.energy_cost;
         isUltimate = true;
         combatLog.push({ type: 'system', text: `★ 【${activeUnit.name}】 积蓄已久，释放终结技：${skillConfig.name}！` });
+        
+        // ★★★ 剑魂·庚金 (大招回能)
+        if (activeUnit.global_buffs.includes('soul_enhancement_gengjin')) {
+            activeUnit.addEnergy(60);
+            combatLog.push({ type: 'system', text: `触发【剑魂·庚金】，${activeUnit.name} 额外恢复 60 点能量！` });
+        }
     } else {
         skillConfig = activeUnit.skills.basic;
     }
@@ -332,7 +347,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     const friendlyTeam = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
     const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
 
-    const { skillResults, debuffsApplied, extraDetails } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam);
+    const { skillResults, debuffsApplied, extraDetails } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam, isUltimate);
     
     // 行动回复能量
     activeUnit.addEnergy(activeUnit.energy_regen || 20);
@@ -367,9 +382,14 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
            }
         } else if (skill.type === 'speed_up_on_action') {
             if (activeUnit.addSpeedStack) {
-                activeUnit.addSpeedStack(skill.value, 1, 'speed_up_talent');
+                let speedVal = skill.value;
+                // ★★★ 剑魂·庚金 (速度天赋翻倍)
+                if (activeUnit.global_buffs && activeUnit.global_buffs.includes('soul_enhancement_gengjin')) {
+                    speedVal *= 2;
+                }
+                activeUnit.addSpeedStack(speedVal, 1, 'speed_up_talent');
                 const pName = skill.name || '被动';
-                const speedIncrease = (skill.value * 100).toFixed(0);
+                const speedIncrease = (speedVal * 100).toFixed(0);
                 passiveDetails.push(`触发【${pName}】，速度提高${speedIncrease}%`);
             }
         } else if (skill.type === 'heal_turn_end') {
@@ -445,6 +465,15 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     } else {
         activeUnit.has_acted_once = true;
     }
+    
+    // ★★★ 咒师·壬水 (连击)
+    if (activeUnit.global_buffs && activeUnit.global_buffs.includes('soul_enhancement_renshui')) {
+        if (!activeUnit.is_extra_turn_pending && Math.random() < 0.2) {
+             activeUnit.is_extra_turn_pending = true;
+             activeUnit.current_av = 0;
+             combatLog.push({ type: 'system', text: `触发【咒师·壬水】，${activeUnit.name} 法术连发，再次行动！` });
+        }
+    }
   }
 
   const playerWon = playerTeam.some(p => p.isAlive()) && roundCount <= maxRounds;
@@ -456,7 +485,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
 /**
  * 技能执行器
  */
-function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
+function executeSkill(caster, skill, friendlyTeam, hostileTeam, isUltimate = false) {
   let targets = [];
   const results = [];
   const extraDetails = []; // 额外详细文本
@@ -600,6 +629,21 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
           });
       }
     }
+  }
+
+  // ★★★ 药仙·乙木 (大招额外奶)
+  if (isUltimate && caster.global_buffs && caster.global_buffs.includes('soul_enhancement_yimu')) {
+      const allies = friendlyTeam.filter(u => u.isAlive());
+      if (allies.length > 0) {
+          allies.sort((a, b) => (a.current_hp / a.max_hp) - (b.current_hp / b.max_hp));
+          const target = allies[0];
+          const healed = target.receiveHeal(200);
+          results.push({
+              name: target.name, team: target.team, element: target.element, level: target.level || 0,
+              id: target.id,
+              type: 'heal', value: healed, value_display: `(乙木)${formatNumber(healed)}`, is_counter: false
+          });
+      }
   }
 
     // 处理Debuff
@@ -819,13 +863,75 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
             
   
-              finalDmg = Math.max(1, finalDmg);
+                            finalDmg = Math.max(1, finalDmg);
   
             
   
-              // ★ 受击回能
+              
   
-              target.addEnergy(10);
+            
+  
+                            // ★★★ 咒师·壬水 (减伤)
+  
+            
+  
+                            if (target.global_buffs && target.global_buffs.includes('soul_enhancement_renshui')) {
+  
+            
+  
+                                finalDmg = Math.floor(finalDmg * 0.8);
+  
+            
+  
+                            }
+  
+            
+  
+              
+  
+            
+  
+                            // ★★★ 炎君·丙火 (名刀)
+  
+            
+  
+                            if (target.global_buffs && target.global_buffs.includes('soul_enhancement_binghuo')) {
+  
+            
+  
+                                if (target.current_hp <= finalDmg && !target.has_triggered_binghuo) {
+  
+            
+  
+                                    finalDmg = Math.max(0, target.current_hp - 1);
+  
+            
+  
+                                    target.has_triggered_binghuo = true;
+  
+            
+  
+                                    target.current_av = 0; // 立即行动
+  
+            
+  
+                                }
+  
+            
+  
+                            }
+  
+            
+  
+                          
+  
+            
+  
+                            // ★ 受击回能
+  
+            
+  
+                            target.addEnergy(10);
   
             
   

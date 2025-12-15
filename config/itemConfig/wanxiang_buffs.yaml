@@ -239,3 +239,41 @@
   type: artifact_passive
   value: 0.3
   rarity: 3
+
+# --- 星魂专属强化 (Shop/Event Only) ---
+- id: soul_enhancement_gengjin
+  name: "剑魂·庚金"
+  desc: "天赋获得的速度提高效果提高100%(即提升为20%)，大招释放完后额外恢复60点能量"
+  type: soul_exclusive
+  exclusive_soul: "剑魂·庚金"
+  rarity: 3
+
+- id: soul_enhancement_wutu
+  name: "盾灵·戊土"
+  desc: "生命上限提高100%，战斗开始时会激活自身终结技"
+  type: soul_exclusive
+  exclusive_soul: "盾灵·戊土"
+  value: 1.0
+  rarity: 3
+
+- id: soul_enhancement_yimu
+  name: "药仙·乙木"
+  desc: "基础攻击力提高100%，终结技还会额外为当前生命百分比最低的我方单位恢复固定200点生命值"
+  type: soul_exclusive
+  exclusive_soul: "药仙·乙木"
+  value: 1.0
+  rarity: 3
+
+- id: soul_enhancement_renshui
+  name: "咒师·壬水"
+  desc: "攻击时有20%的概率再次攻击一次，受到的伤害降低20%"
+  type: soul_exclusive
+  exclusive_soul: "咒师·壬水"
+  rarity: 3
+
+- id: soul_enhancement_binghuo
+  name: "炎君·丙火"
+  desc: "首次受到致命伤害时不会使自己死亡，而是使得随后的血量为1，并立即行动一次"
+  type: soul_exclusive
+  exclusive_soul: "炎君·丙火"
+  rarity: 3
