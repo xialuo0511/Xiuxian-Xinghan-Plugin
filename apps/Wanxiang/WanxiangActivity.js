@@ -1077,14 +1077,17 @@ export class WanxiangActivity extends plugin {
       const acquiredBuffs = runData.buffs || [];
       // const pool 定义已移动到下方
 
-      // 动态调整权重：适当提高3星概率
+      // 动态调整权重
       // 普通层：1星(80), 2星(40), 3星(10)
-      // 首领层：2星(80), 3星(15), 4星(5) (不出现1星)
+      // 精英：2星(60), 3星(30), 4星(5)
+      // Boss：3星(75), 4星(25) (保底3星)
       let currentWeights = { 1: 80, 2: 40, 3: 10, 4: 0 };
-      
-      const isBossLayer = (runData.layer % 5 === 0);
-      if (isBossLayer) {
-          currentWeights = { 1: 0, 2: 80, 3: 15, 4: 5 }; // 首领层权重
+      const nodeType = runData.current_node ? runData.current_node.type : 'COMBAT';
+
+      if (nodeType === 'ELITE') {
+          currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
+      } else if (nodeType === 'BOSS') {
+          currentWeights = { 1: 0, 2: 0, 3: 75, 4: 25 };
       }
 
       // 过滤赐福池
@@ -1096,13 +1099,9 @@ export class WanxiangActivity extends plugin {
           // 排除秘宝
           if (b.type === 'artifact_passive') return false;
           
-          // 首领层过滤掉1星，允许4星
-          if (isBossLayer) {
-              if (b.rarity === 1) return false;
-          } else {
-              // 普通层过滤掉4星
-              if (b.rarity === 4) return false;
-          }
+          // 根据权重过滤 (权重为0的不出现)
+          if (currentWeights[b.rarity] === 0) return false;
+
           return true;
       });
 
