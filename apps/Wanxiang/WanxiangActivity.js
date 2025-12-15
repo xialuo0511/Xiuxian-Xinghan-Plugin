@@ -343,14 +343,12 @@ export class WanxiangActivity extends plugin {
           runData.shop_items.forEach((item, i) => {
               const stars = '★'.repeat(item.rarity || 1);
               const status = item.bought ? ' (已售罄)' : ` 💰${item.price}`;
-              const typePrefix = item.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
-              shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${item.name}】${status}\n   ${item.desc}\n`;
+              const typeIcon = item.type === 'artifact' ? '📦' : '📜';
+              shopMsg += `${i + 1}. 【${item.name}】${status}\n   ${typeIcon} [${stars}] ${item.desc}\n`;
           });
-          
-          const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
           shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
           shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
-          shopMsg += '\n发送 #事件选择 [序号] 操作。';
+          shopMsg += '\n发送 #事件选择 [序号] 购买或离开。';
           e.reply(shopMsg);
       } else if (node.type === 'REST') {
           e.reply([
@@ -482,8 +480,8 @@ export class WanxiangActivity extends plugin {
                   runData.shop_items.forEach((it, i) => {
                       const stars = '★'.repeat(it.rarity || 1);
                       const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
-                      const typePrefix = it.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
-                      shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${it.name}】${status}\n   ${it.desc}\n`;
+                      const typeIcon = it.type === 'artifact' ? '📦' : '📜';
+                      shopMsg += `${i + 1}. 【${it.name}】${status}\n   ${typeIcon} [${stars}] ${it.desc}\n`;
                   });
                   
                   const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
@@ -521,11 +519,9 @@ export class WanxiangActivity extends plugin {
                   items.forEach((it, i) => {
                       const stars = '★'.repeat(it.rarity || 1);
                       const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
-                      const typePrefix = it.type === 'artifact' ? '📦 [秘宝] ' : '📜 [赐福] ';
-                      shopMsg += `${i + 1}. ${typePrefix}[${stars}] 【${it.name}】${status}\n   ${it.desc}\n`;
+                      const typeIcon = it.type === 'artifact' ? '📦' : '📜';
+                      shopMsg += `${i + 1}. 【${it.name}】${status}\n   ${typeIcon} [${stars}] ${it.desc}\n`;
                   });
-                  
-                  const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
                   shopMsg += `\n${items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
                   shopMsg += `\n${items.length + 2}. 【离开】 继续前进`;
                   shopMsg += '\n发送 #事件选择 [序号] 继续购买。';
@@ -637,7 +633,7 @@ export class WanxiangActivity extends plugin {
           
           // 使用通用逻辑 (支持单路线自动锁定)
           await this.processRouteGeneration(e, runData, tempClient, replyMsg);
-      } else {
+      } else if (node.type !== 'SHOP') {
           e.reply('无效的选项。');
       }
 

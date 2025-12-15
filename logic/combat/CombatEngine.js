@@ -467,7 +467,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
 
   switch (skill.target) {
     case 'single_enemy':
-      const t = selectTargetByTaunt(aliveHostiles);
+      const t = selectTargetByTaunt(aliveHostiles, caster.id);
       if (t) targets.push(t);
       break;
     case 'all_enemies':
@@ -483,7 +483,7 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
       targets = aliveFriendlies;
       break;
     default:
-      const defT = selectTargetByTaunt(aliveHostiles);
+      const defT = selectTargetByTaunt(aliveHostiles, caster.id);
       if (defT) targets.push(defT);
       break;
   }
@@ -870,10 +870,10 @@ function calculateDamage(attacker, target, rawDamageInput) {
   };
 }
 
-function selectTargetByTaunt(candidates) {
+function selectTargetByTaunt(candidates, casterId) {
   // 优先选择被当前施法者嘲讽的敌人
   // 注意：这里需要确保嘲讽者仍然存活，且目标是被活着的嘲讽者嘲讽
-  const tauntedTargets = candidates.filter(c => c.isTaunted() && c.taunted_by_id === caster.id);
+  const tauntedTargets = candidates.filter(c => c.isTaunted() && c.taunted_by_id === casterId);
   if (tauntedTargets.length > 0) {
     // 如果有多个被嘲讽，仍然按 taunt 值选择最高嘲讽度的那个 (虽然理论上只能被一个嘲讽)
     tauntedTargets.sort((a, b) => b.taunt - a.taunt);
