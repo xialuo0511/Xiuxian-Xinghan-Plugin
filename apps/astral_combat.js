@@ -194,14 +194,14 @@ export class astral_combat extends plugin {
                         console.error('[AstralCombat] Image send failed (detected error in return value), falling back to file. Result:', JSON.stringify(imageSendResult, null, 2));
                         const fileName = path.basename(p);
                         await e.reply({ type: 'file', file: p, name: fileName });
-                        if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
+                            if (i === 0) await e.reply("💡若图片无法加载，请查看原图或下载");
                     }
                 } catch (imgSendErr) {
                     // e.reply直接抛出异常时捕获
                     console.error('[AstralCombat] Image send threw error, falling back to file:', imgSendErr);
                     const fileName = path.basename(p);
                     await e.reply({ type: 'file', file: p, name: fileName });
-                    if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
+                        if (i === 0) await e.reply("💡若图片无法加载，请查看原图或下载");
                 }
                 if (i < imgPaths.length - 1) {
                     await new Promise(r => setTimeout(r, 1000));

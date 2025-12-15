@@ -960,8 +960,8 @@ export class WanxiangActivity extends plugin {
       }
 
       // 2. 准备敌方 (应用动态难度缩放)
-      const enemyNames = safeLayerConfig.monsters;
-      e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}`);
+      const enemyNames = enemies.map(e => e.name);
+      e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}\n战斗进行中...`);
 
       const enemyTeamConfig = enemyNames.map(name => {
         const original = ALL_MONSTERS.find(m => m.name === name);
@@ -1091,14 +1091,14 @@ export class WanxiangActivity extends plugin {
                            console.error('[Wanxiang] Image send failed (detected error in return value), falling back to file. Result:', JSON.stringify(imageSendResult, null, 2));
                            const fileName = path.basename(p);
                            await e.reply({ type: 'file', file: p, name: fileName });
-                           if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
+                               if (i === 0) await e.reply("💡若图片无法加载，请查看原图或下载");
                       }
                   } catch (imgSendErr) {
                        // e.reply直接抛出异常时捕获
                        console.error('[Wanxiang] Image send threw error, falling back to file:', imgSendErr);
                        const fileName = path.basename(p);
                        await e.reply({ type: 'file', file: p, name: fileName });
-                       if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
+                           if (i === 0) await e.reply("💡若图片无法加载，请查看原图或下载");
                   }
                   // 稍微延迟避免顺序错乱或刷屏过快
                   if (i < imgPaths.length - 1) {
