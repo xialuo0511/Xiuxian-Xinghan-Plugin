@@ -124,6 +124,12 @@ export class astral_combat extends plugin {
     };
 
     const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+    
+    // 增加宽度以减少高度，避免超出限制
+    dataForPuppeteer.width = 2000;
+    dataForPuppeteer.imgType = 'jpeg';
+    dataForPuppeteer.quality = 80;
+
     const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
     
     // ----------------------------------------------------------------

@@ -1024,6 +1024,11 @@ export class WanxiangActivity extends plugin {
       try {
           const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
           
+          // 重新引入宽度调整和 JPEG 压缩，以解决 0 字节（高度超限）问题
+          dataForPuppeteer.width = 2000;
+          dataForPuppeteer.imgType = 'jpeg';
+          dataForPuppeteer.quality = 80;
+
           const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
           
           console.log(`[Wanxiang] Puppeteer returned type: ${typeof imgResult}`);
