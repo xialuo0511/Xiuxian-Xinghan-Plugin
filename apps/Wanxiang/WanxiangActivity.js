@@ -1049,50 +1049,20 @@ export class WanxiangActivity extends plugin {
                finalBuffer = Buffer.from(base64Data, 'base64');
           }
 
-          if (finalBuffer && finalBuffer.length > 0) {
-              console.log(`[Wanxiang] Final Buffer Size: ${finalBuffer.length} bytes`);
-              fs.default.writeFileSync(tempFilePath, finalBuffer);
-              
-              const fileName = `Wanxiang_Log_${userId}_${Date.now()}.jpg`;
-              let uploadedSuccessfully = false;
-
-              // 尝试使用 OneBot API 上传到指定文件夹
-              if (e.isGroup && e.bot && e.bot.sendApi) {
-                  try {
-                      await e.bot.sendApi('upload_group_file', {
-                          group_id: e.group_id,
-                          file: tempFilePath,
-                          name: fileName,
-                          folder: '/xiuxianlog'
-                      });
-                      await e.reply(`战报已上传至群文件：${fileName} (文件夹: /xiuxianlog)`);
-                      uploadedSuccessfully = true;
-                  } catch (apiErr) {
-                      console.error('[Wanxiang] upload_group_file failed, trying root folder:', apiErr);
-                      try {
-                          await e.bot.sendApi('upload_group_file', {
-                              group_id: e.group_id,
-                              file: tempFilePath,
-                              name: fileName
-                          });
-                          await e.reply(`战报已上传至群文件：${fileName}`);
-                          uploadedSuccessfully = true;
-                      } catch (rootErr) {
-                          console.error('[Wanxiang] upload_group_file root failed:', rootErr);
-                      }
-                  }
-              }
-              
-              if (!uploadedSuccessfully) {
-                  const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
-                  const tipMsg = "\n💡若战斗日志图片无法加载，请点击下载查看原图";
-                  await e.reply([fileMsg, tipMsg]);
-              }
-
-          } else {
-              throw new Error('生成的图片数据为空 (0 bytes) - 可能是图片过长导致');
-          }
-
+                        if (finalBuffer && finalBuffer.length > 0) {
+                            console.log(`[Wanxiang] Final Buffer Size: ${finalBuffer.length} bytes`);
+                            fs.default.writeFileSync(tempFilePath, finalBuffer);
+                            
+                            const fileName = `Wanxiang_Log_${userId}_${Date.now()}.jpg`;
+          
+                            // 直接发送文件消息 (这是最稳定的方式，尽管不能上传到指定文件夹)
+                            const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
+                            const tipMsg = "\n💡若战斗日志图片无法加载，请点击下载查看原图";
+                            await e.reply([fileMsg, tipMsg]);
+          
+                        } else {
+                            throw new Error('生成的图片数据为空 (0 bytes) - 可能是图片过长导致');
+                        }
       } catch (err) {
           console.error('[Wanxiang] Combat Log Generation Error:', err);
           e.reply('战报生成出错，请查看后台日志。');
