@@ -1005,107 +1005,58 @@ export class WanxiangActivity extends plugin {
         }
       }
 
-      // 渲染日志 (分片输出 + 合并转发)
-      const fullLog = result.log;
-      const slices = [];
-      let currentSlice = [];
-      let roundCountInSlice = 0;
+      // 渲染日志 (单图模式，保存为临时文件发送)
+      const renderData = {
+          log: result.log,
+          pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+      };
 
-      for (const entry of fullLog) {
-        if (entry.type === 'turn') {
-          roundCountInSlice++;
-          // 每 4 回合切片一次
-          if (roundCountInSlice > 4) {
-             if (currentSlice.length > 0) {
-                 slices.push(currentSlice);
-             }
-             currentSlice = [];
-             roundCountInSlice = 1;
-          }
-        }
-        currentSlice.push(entry);
-      }
-      if (currentSlice.length > 0) {
-        slices.push(currentSlice);
-      }
-
-      // 准备文件系统
       const fs = await import('fs');
       const path = await import('path');
       const tempDir = path.default.join(process.cwd(), 'data', 'temp', 'wanxiang');
+      
       if (!fs.default.existsSync(tempDir)) {
           fs.default.mkdirSync(tempDir, { recursive: true });
       }
-
-      const tempFiles = []; // 记录临时文件以便清理
-      const msgNodes = []; // 转发消息节点
+      
+      const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}.jpg`);
 
       try {
-          // 逐张生成图片
-          for (let i = 0; i < slices.length; i++) {
-            const sliceLog = slices[i];
-            const renderData = {
-                log: sliceLog,
-                pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
-            };
+          const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+          dataForPuppeteer.imgType = 'jpeg';
+          dataForPuppeteer.quality = 80;
 
-            const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-            dataForPuppeteer.imgType = 'jpeg';
-            dataForPuppeteer.quality = 80;
-
-            // 截图
-            const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-            
-            // 提取 Buffer
-            let finalBuffer = null;
-            if (Buffer.isBuffer(imgResult)) {
-                finalBuffer = imgResult;
-            } else if (typeof imgResult === 'object' && imgResult.file) {
-                if (Buffer.isBuffer(imgResult.file)) {
-                    finalBuffer = imgResult.file;
-                } else if (typeof imgResult.file === 'string') {
-                    const base64Data = imgResult.file.replace(/^base64:\/\//, '');
-                    finalBuffer = Buffer.from(base64Data, 'base64');
-                }
-            }
-
-            if (finalBuffer) {
-                const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}_${i}.jpg`);
-                fs.default.writeFileSync(tempFilePath, finalBuffer);
-                tempFiles.push(tempFilePath);
-                
-                // 转换为标准 file URI (兼容 Windows)
-                const fileUrl = `file:///${tempFilePath.replace(/\\/g, '/')}`;
-                
-                // 加入转发节点 (使用 CQ 码以确保最大兼容性)
-                msgNodes.push({
-                    user_id: e.self_id || 2854196310,
-                    nickname: "战斗记录",
-                    message: `[CQ:image,file=${fileUrl}]`
-                });
-            }
+          const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+          
+          let finalBuffer = null;
+          if (Buffer.isBuffer(imgResult)) {
+              finalBuffer = imgResult;
+          } else if (typeof imgResult === 'object' && imgResult.file) {
+              if (Buffer.isBuffer(imgResult.file)) {
+                  finalBuffer = imgResult.file;
+              } else if (typeof imgResult.file === 'string') {
+                  const base64Data = imgResult.file.replace(/^base64:\/\//, '');
+                  finalBuffer = Buffer.from(base64Data, 'base64');
+              }
           }
 
-          // 发送合并转发消息
-          if (msgNodes.length > 0) {
-              const forwardMsg = await common.makeForwardMsg(e, msgNodes, `【${node.name}】战斗回放`);
-              await e.reply(forwardMsg);
+          if (finalBuffer) {
+              fs.default.writeFileSync(tempFilePath, finalBuffer);
+              await e.reply(segment.image(tempFilePath));
           } else {
-              e.reply('生成战报失败。');
+              e.reply('战报生成失败：无法获取图片数据。');
           }
 
       } catch (err) {
           console.error('[Wanxiang] Combat Log Generation Error:', err);
-          e.reply('战报生成出错。');
+          e.reply('战报生成出错，请查看后台日志。');
       } finally {
-          // 延迟清理临时文件
+          // 延迟清理
           setTimeout(() => {
-              tempFiles.forEach(file => {
-                  try {
-                      if (fs.default.existsSync(file)) fs.default.unlinkSync(file);
-                  } catch (e) { console.error('Failed to delete temp file:', file); }
-              });
-          }, 60000); // 1分钟后清理，确保上传完成
+              try {
+                  if (fs.default.existsSync(tempFilePath)) fs.default.unlinkSync(tempFilePath);
+              } catch (e) { console.error('Failed to delete temp file:', tempFilePath); }
+          }, 60000);
       }
 
       if (result.playerWon) {
