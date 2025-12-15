@@ -525,8 +525,8 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam) {
       // 处理反弹伤害反馈
       if (res.reflected_damage > 0) {
           results.push({
-              name: attacker.name, team: attacker.team, element: attacker.element, level: attacker.level || 0,
-              id: attacker.id,
+              name: caster.name, team: caster.team, element: caster.element, level: caster.level || 0,
+              id: caster.id,
               type: 'damage', // 反弹也算一种伤害
               value: res.reflected_damage,
               value_display: `(反弹)-${formatNumber(res.reflected_damage)}`,
