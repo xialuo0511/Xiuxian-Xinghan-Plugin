@@ -1004,46 +1004,48 @@ export class WanxiangActivity extends plugin {
         }
       }
 
-      // 渲染日志 (分片输出，每8回合一张图)
-      const fullLog = result.log;
-      const slices = [];
-      let currentSlice = [];
-      let roundCountInSlice = 0;
+      // 渲染日志 (单图输出 + JPEG压缩 + 文件发送)
+      const renderData = {
+          log: result.log,
+          pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+      };
 
-      for (const entry of fullLog) {
-        if (entry.type === 'turn') {
-          roundCountInSlice++;
-          // 如果当前切片已经积累了5个回合，且遇到第6个回合的开始，则切分
-          if (roundCountInSlice > 5) {
-             if (currentSlice.length > 0) {
-                 slices.push(currentSlice);
-             }
-             currentSlice = [];
-             roundCountInSlice = 1; // 新切片的第一回合
-          }
-        }
-        currentSlice.push(entry);
+      const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+      
+      // 优化：使用 JPEG 格式和 80% 质量大幅减小体积，防止发送失败
+      dataForPuppeteer.imgType = 'jpeg';
+      dataForPuppeteer.quality = 80;
+
+      const imgBuffer = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+
+      // 优化：保存为临时文件通过路径发送，绕过 Base64/Buffer 传输限制
+      const fs = await import('fs');
+      const path = await import('path');
+      const tempDir = path.default.join(process.cwd(), 'data', 'temp', 'wanxiang');
+      
+      if (!fs.default.existsSync(tempDir)) {
+          fs.default.mkdirSync(tempDir, { recursive: true });
       }
-      if (currentSlice.length > 0) {
-        slices.push(currentSlice);
-      }
+      
+      const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}.jpg`);
+      fs.default.writeFileSync(tempFilePath, imgBuffer);
 
-      // 逐张发送图片
-      for (let i = 0; i < slices.length; i++) {
-        const sliceLog = slices[i];
-        const renderData = {
-            log: sliceLog,
-            pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
-        };
-
-        const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-        const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-        await e.reply(img);
-        
-        // 简单防刷屏/乱序延时
-        if (slices.length > 1 && i < slices.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
+      try {
+          await e.reply(segment.image(tempFilePath));
+      } catch (sendErr) {
+          console.error('[Wanxiang] Send Image Error:', sendErr);
+          e.reply('战报图片发送失败 (可能文件仍过大)。');
+      } finally {
+          // 发送后清理临时文件
+          setTimeout(() => {
+              try {
+                  if (fs.default.existsSync(tempFilePath)) {
+                      fs.default.unlinkSync(tempFilePath);
+                  }
+              } catch (delErr) {
+                  console.error('[Wanxiang] Delete Temp File Error:', delErr);
+              }
+          }, 10000); 
       }
 
       if (result.playerWon) {
