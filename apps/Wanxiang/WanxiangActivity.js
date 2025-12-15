@@ -1076,9 +1076,9 @@ export class WanxiangActivity extends plugin {
                 
                 // 加入转发节点
                 msgNodes.push({
-                    user_id: 2854196310, // 假装是机器人的QQ，或者用 e.self_id
+                    user_id: e.self_id || 2854196310,
                     nickname: "战斗记录",
-                    message: segment.image(tempFilePath)
+                    message: [ segment.image(tempFilePath) ]
                 });
             }
           }
