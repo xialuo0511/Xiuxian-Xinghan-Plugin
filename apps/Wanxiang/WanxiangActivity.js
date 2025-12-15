@@ -1022,29 +1022,17 @@ export class WanxiangActivity extends plugin {
       const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}.jpg`);
 
       try {
-                    const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-                    
-                    // 极致压缩尝试：降低质量以减小体积，提高发送成功率
-                    dataForPuppeteer.imgType = 'jpeg';
-                    dataForPuppeteer.quality = 50;
+          const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
           
-                    const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+          // 策略调整：增加宽度以减少图片高度，避免触发 Chromium 的最大高度限制 (16384px)
+          // 同时使用 JPEG 压缩减小体积
+          dataForPuppeteer.width = 2000; 
+          dataForPuppeteer.imgType = 'jpeg';
+          dataForPuppeteer.quality = 60;
+
+          const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
           
           console.log(`[Wanxiang] Puppeteer returned type: ${typeof imgResult}`);
-          if (typeof imgResult === 'object') {
-              console.log(`[Wanxiang] Puppeteer keys: ${Object.keys(imgResult)}`);
-              if (imgResult.file) {
-                  if (Buffer.isBuffer(imgResult.file)) {
-                      console.log(`[Wanxiang] imgResult.file is Buffer, length: ${imgResult.file.length}`);
-                  } else if (typeof imgResult.file === 'string') {
-                      console.log(`[Wanxiang] imgResult.file is String, length: ${imgResult.file.length}, starts with: ${imgResult.file.substring(0, 50)}`);
-                  } else {
-                      console.log(`[Wanxiang] imgResult.file is type: ${typeof imgResult.file}`);
-                  }
-              } else {
-                  console.log('[Wanxiang] imgResult.file is undefined/null');
-              }
-          }
           
           let finalBuffer = null;
           if (Buffer.isBuffer(imgResult)) {
@@ -1053,17 +1041,16 @@ export class WanxiangActivity extends plugin {
               if (Buffer.isBuffer(imgResult.file)) {
                   finalBuffer = imgResult.file;
               } else if (typeof imgResult.file === 'string') {
-                  // 清洗前缀，兼容 base64:// 和 data:image/...
                   let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
                   finalBuffer = Buffer.from(base64Data, 'base64');
               }
           } else if (typeof imgResult === 'string') {
-               // 直接返回 Base64 字符串的情况
                let base64Data = imgResult.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
                finalBuffer = Buffer.from(base64Data, 'base64');
           }
 
-          if (finalBuffer) {
+          if (finalBuffer && finalBuffer.length > 0) {
+              console.log(`[Wanxiang] Final Buffer Size: ${finalBuffer.length} bytes`);
               fs.default.writeFileSync(tempFilePath, finalBuffer);
               
               const fileName = `Wanxiang_Log_${userId}_${Date.now()}.jpg`;
@@ -1072,11 +1059,9 @@ export class WanxiangActivity extends plugin {
               // 尝试使用 OneBot API 上传到指定文件夹
               if (e.isGroup && e.bot && e.bot.sendApi) {
                   try {
-                      // 尝试上传到 /xiuxianlog 文件夹
-                      // 注意：file 参数需为绝对路径
                       await e.bot.sendApi('upload_group_file', {
                           group_id: e.group_id,
-                          file: tempFilePath, 
+                          file: tempFilePath,
                           name: fileName,
                           folder: '/xiuxianlog'
                       });
@@ -1085,7 +1070,6 @@ export class WanxiangActivity extends plugin {
                   } catch (apiErr) {
                       console.error('[Wanxiang] upload_group_file failed, trying root folder:', apiErr);
                       try {
-                          // 如果指定文件夹失败 (例如文件夹不存在)，尝试上传到根目录
                           await e.bot.sendApi('upload_group_file', {
                               group_id: e.group_id,
                               file: tempFilePath,
@@ -1099,7 +1083,6 @@ export class WanxiangActivity extends plugin {
                   }
               }
               
-              // 如果上传API失败，或不是群聊，则走降级：直接作为文件消息发送
               if (!uploadedSuccessfully) {
                   const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
                   const tipMsg = "\n💡若战斗日志图片无法加载，请点击下载查看原图";
@@ -1107,7 +1090,7 @@ export class WanxiangActivity extends plugin {
               }
 
           } else {
-              e.reply('战报生成失败：无法获取图片数据。');
+              throw new Error('生成的图片数据为空 (0 bytes) - 可能是图片过长导致');
           }
 
       } catch (err) {
