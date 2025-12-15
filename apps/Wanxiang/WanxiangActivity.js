@@ -1024,12 +1024,6 @@ export class WanxiangActivity extends plugin {
       try {
           const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
           
-          // 策略调整：增加宽度以减少图片高度，避免触发 Chromium 的最大高度限制 (16384px)
-          // 同时使用 JPEG 压缩减小体积
-          dataForPuppeteer.width = 2000; 
-          dataForPuppeteer.imgType = 'jpeg';
-          dataForPuppeteer.quality = 60;
-
           const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
           
           console.log(`[Wanxiang] Puppeteer returned type: ${typeof imgResult}`);
