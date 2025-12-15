@@ -906,7 +906,9 @@ export class WanxiangActivity extends plugin {
             } else if (buff.type === 'def_pct') {
               battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
             } else if (buff.type === 'soul_exclusive') {
-                // 星魂专属强化
+                // 星魂专属强化：必须匹配角色名
+                if (buff.exclusive_soul && buff.exclusive_soul !== soulState.name) return;
+
                 if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
                 battleConfig.global_buffs.push(buff.id);
 
