@@ -1016,7 +1016,24 @@ export class WanxiangActivity extends plugin {
       dataForPuppeteer.imgType = 'jpeg';
       dataForPuppeteer.quality = 80;
 
-      const imgBuffer = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+      const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+
+      let finalBuffer = null;
+      if (Buffer.isBuffer(imgResult)) {
+          finalBuffer = imgResult;
+      } else if (typeof imgResult === 'object' && imgResult.file) {
+          if (Buffer.isBuffer(imgResult.file)) {
+              finalBuffer = imgResult.file;
+          } else if (typeof imgResult.file === 'string') {
+              const base64Data = imgResult.file.replace(/^base64:\/\//, '');
+              finalBuffer = Buffer.from(base64Data, 'base64');
+          }
+      }
+
+      if (!finalBuffer) {
+          console.error('[Wanxiang] Puppeteer result:', imgResult);
+          throw new Error('截图失败：无法获取图片数据');
+      }
 
       // 优化：保存为临时文件通过路径发送，绕过 Base64/Buffer 传输限制
       const fs = await import('fs');
@@ -1028,7 +1045,7 @@ export class WanxiangActivity extends plugin {
       }
       
       const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}.jpg`);
-      fs.default.writeFileSync(tempFilePath, imgBuffer);
+      fs.default.writeFileSync(tempFilePath, finalBuffer);
 
       try {
           await e.reply(segment.image(tempFilePath));
