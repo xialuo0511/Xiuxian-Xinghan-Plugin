@@ -1021,61 +1021,103 @@ export class WanxiangActivity extends plugin {
       
       const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}.jpg`);
 
-      try {
-          const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-          
-          // 重新引入宽度调整和 JPEG 压缩，以解决 0 字节（高度超限）问题
-          dataForPuppeteer.width = 2000;
-          dataForPuppeteer.imgType = 'jpeg';
-          dataForPuppeteer.quality = 80;
+      // 渲染日志 (分片输出 - 每8回合一切)
+      const fullLog = result.log;
+      const slices = [];
+      let currentSlice = [];
+      let roundCountInSlice = 0;
 
-          const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-          
-          console.log(`[Wanxiang] Puppeteer returned type: ${typeof imgResult}`);
-          
-          let finalBuffer = null;
-          if (Buffer.isBuffer(imgResult)) {
-              finalBuffer = imgResult;
-          } else if (typeof imgResult === 'object' && imgResult.file) {
-              if (Buffer.isBuffer(imgResult.file)) {
-                  finalBuffer = imgResult.file;
-              } else if (typeof imgResult.file === 'string') {
-                  let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
-                  finalBuffer = Buffer.from(base64Data, 'base64');
+      for (const entry of fullLog) {
+        if (entry.type === 'turn') {
+          roundCountInSlice++;
+          if (roundCountInSlice > 8) { // 8回合切片
+             if (currentSlice.length > 0) slices.push(currentSlice);
+             currentSlice = [];
+             roundCountInSlice = 1;
+          }
+        }
+        currentSlice.push(entry);
+      }
+      if (currentSlice.length > 0) slices.push(currentSlice);
+
+      const fs = await import('fs');
+      const path = await import('path');
+      const tempDir = path.default.join(process.cwd(), 'data', 'temp', 'wanxiang');
+      if (!fs.default.existsSync(tempDir)) {
+          fs.default.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const imgPaths = [];
+
+      try {
+          for (let i = 0; i < slices.length; i++) {
+              const sliceLog = slices[i];
+              const renderData = {
+                  log: sliceLog,
+                  pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+              };
+
+              const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+              dataForPuppeteer.imgType = 'jpeg';
+              dataForPuppeteer.quality = 80;
+              // 分片模式下无需强制宽度，使用默认即可
+
+              const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+              
+              let finalBuffer = null;
+              if (Buffer.isBuffer(imgResult)) {
+                  finalBuffer = imgResult;
+              } else if (typeof imgResult === 'object' && imgResult.file) {
+                  if (Buffer.isBuffer(imgResult.file)) {
+                      finalBuffer = imgResult.file;
+                  } else if (typeof imgResult.file === 'string') {
+                      let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
+                      finalBuffer = Buffer.from(base64Data, 'base64');
+                  }
               }
-          } else if (typeof imgResult === 'string') {
-               let base64Data = imgResult.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
-               finalBuffer = Buffer.from(base64Data, 'base64');
+
+              if (finalBuffer && finalBuffer.length > 0) {
+                  const fileName = `Combat_Log_${userId}_${Date.now()}_Part${i+1}.jpg`;
+                  const filePath = path.default.join(tempDir, fileName);
+                  fs.default.writeFileSync(filePath, finalBuffer);
+                  imgPaths.push(filePath);
+              } else {
+                  console.error(`[Wanxiang] Slice ${i+1} generation failed (0 bytes)`);
+              }
           }
 
-                        if (finalBuffer && finalBuffer.length > 0) {
-                            console.log(`[Wanxiang] Final Buffer Size: ${finalBuffer.length} bytes`);
-                            fs.default.writeFileSync(tempFilePath, finalBuffer);
-                            
-                            const fileName = `Wanxiang_Log_${userId}_${Date.now()}.jpg`;
-          
-                            // 策略优化：优先尝试发送图片消息（体验更好），失败则转为文件发送
-                            try {
-                                await e.reply(segment.image(tempFilePath));
-                            } catch (imgErr) {
-                                console.error('[Wanxiang] Send Image Msg Failed (Likely too large/RMT failed), falling back to file:', imgErr);
-                                const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
-                                await e.reply(fileMsg);
-                                await e.reply("💡战斗日志图片过大，已转为文件发送。请点击下载查看原图");
-                            }
-          
-                        } else {
-                            throw new Error('生成的图片数据为空 (0 bytes) - 可能是图片过长导致');
-                        }
+          if (imgPaths.length > 0) {
+              // 逐张发送分片
+              for (let i = 0; i < imgPaths.length; i++) {
+                  const p = imgPaths[i];
+                  try {
+                      await e.reply(segment.image(p));
+                  } catch (imgSendErr) {
+                       const fileName = path.default.basename(p);
+                       await e.reply({ type: 'file', file: p, name: fileName });
+                       // 仅在第一次发文件时提示
+                       if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
+                  }
+                  // 稍微延迟避免顺序错乱或刷屏过快
+                  if (i < imgPaths.length - 1) {
+                      await new Promise(r => setTimeout(r, 1000));
+                  }
+              }
+          } else {
+              e.reply('战报生成失败：所有分片均为空。');
+          }
+
       } catch (err) {
           console.error('[Wanxiang] Combat Log Generation Error:', err);
           e.reply('战报生成出错，请查看后台日志。');
       } finally {
           // 延迟清理
           setTimeout(() => {
-              try {
-                  if (fs.default.existsSync(tempFilePath)) fs.default.unlinkSync(tempFilePath);
-              } catch (e) { console.error('Failed to delete temp file:', tempFilePath); }
+              imgPaths.forEach(p => {
+                  try {
+                      if (fs.default.existsSync(p)) fs.default.unlinkSync(p);
+                  } catch (e) { console.error('Failed to delete temp file:', p); }
+              });
           }, 60000);
       }
 

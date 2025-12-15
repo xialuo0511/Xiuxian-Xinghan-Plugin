@@ -117,56 +117,94 @@ export class astral_combat extends plugin {
 
     console.log(result.log);
 
-    // 渲染日志
-    const renderData = {
-      log: result.log,
-      pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
-    };
+    // 渲染日志 (分片输出 - 每8回合一切)
+    const fullLog = result.log;
+    const slices = [];
+    let currentSlice = [];
+    let roundCountInSlice = 0;
 
-    const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-    
-    // 增加宽度以减少高度，避免超出限制
-    dataForPuppeteer.width = 2000;
-    dataForPuppeteer.imgType = 'jpeg';
-    dataForPuppeteer.quality = 80;
+    for (const entry of fullLog) {
+      if (entry.type === 'turn') {
+        roundCountInSlice++;
+        if (roundCountInSlice > 8) { // 8回合切片
+           if (currentSlice.length > 0) slices.push(currentSlice);
+           currentSlice = [];
+           roundCountInSlice = 1;
+        }
+      }
+      currentSlice.push(entry);
+    }
+    if (currentSlice.length > 0) slices.push(currentSlice);
 
-    const img = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-    
-    // ----------------------------------------------------------------
-    // 发送逻辑优化：图片优先，文件保底
-    // ----------------------------------------------------------------
     const tempDir = path.join(process.cwd(), 'data', 'temp', 'wanxiang');
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
     }
-    const fileName = `Combat_Log_${e.user_id}_${Date.now()}.jpg`;
-    const tempFilePath = path.join(tempDir, fileName);
 
-    // 写入临时文件
-    if (Buffer.isBuffer(img)) {
-        fs.writeFileSync(tempFilePath, img);
-    } else if (typeof img === 'object' && img.file) {
-         // 处理 base64 或其他格式
-         let buf = null;
-         if (Buffer.isBuffer(img.file)) buf = img.file;
-         else if (typeof img.file === 'string') buf = Buffer.from(img.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, ''), 'base64');
-         
-         if (buf) fs.writeFileSync(tempFilePath, buf);
-    }
+    const imgPaths = [];
 
     try {
-        await e.reply(segment.image(tempFilePath));
-    } catch (imgErr) {
-        console.error('[AstralCombat] Send Image Failed, fallback to file:', imgErr);
-        const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
-        await e.reply(fileMsg);
-        await e.reply("💡战斗日志图片过大，已转为文件发送。请点击下载查看原图");
-    }
+        for (let i = 0; i < slices.length; i++) {
+            const sliceLog = slices[i];
+            const renderData = {
+                log: sliceLog,
+                pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+            };
 
-    // 延迟清理
-    setTimeout(() => {
-        if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
-    }, 60000);
+            const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+            dataForPuppeteer.imgType = 'jpeg';
+            dataForPuppeteer.quality = 80;
+
+            const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+            
+            let finalBuffer = null;
+            if (Buffer.isBuffer(imgResult)) {
+                finalBuffer = imgResult;
+            } else if (typeof imgResult === 'object' && imgResult.file) {
+                 if (Buffer.isBuffer(imgResult.file)) finalBuffer = imgResult.file;
+                 else if (typeof imgResult.file === 'string') {
+                     let base64 = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
+                     finalBuffer = Buffer.from(base64, 'base64');
+                 }
+            }
+
+            if (finalBuffer && finalBuffer.length > 0) {
+                 const fileName = `Combat_Log_${e.user_id}_${Date.now()}_Part${i+1}.jpg`;
+                 const filePath = path.join(tempDir, fileName);
+                 fs.writeFileSync(filePath, finalBuffer);
+                 imgPaths.push(filePath);
+            }
+        }
+
+        if (imgPaths.length > 0) {
+            // 逐张发送分片
+            for (let i = 0; i < imgPaths.length; i++) {
+                const p = imgPaths[i];
+                try {
+                    await e.reply(segment.image(p));
+                } catch (imgSendErr) {
+                     const fileName = path.basename(p);
+                     await e.reply({ type: 'file', file: p, name: fileName });
+                     if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
+                }
+                if (i < imgPaths.length - 1) {
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+        } else {
+            e.reply('战报生成失败。');
+        }
+
+    } catch (err) {
+        console.error('[AstralCombat] Log Generation Error:', err);
+        e.reply('战报生成出错。');
+    } finally {
+        setTimeout(() => {
+            imgPaths.forEach(p => {
+                if (fs.existsSync(p)) fs.unlinkSync(p);
+            });
+        }, 60000);
+    }
   }
 
   /**
