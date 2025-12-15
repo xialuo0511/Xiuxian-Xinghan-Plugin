@@ -1072,11 +1072,37 @@ export class WanxiangActivity extends plugin {
               const fileName = `Wanxiang_Log_${userId}_${Date.now()}.jpg`;
               
               try {
-                  // 直接作为文件消息发送 (兼容性最好，适配器会自动处理上传)
+                  // --- 调试：探测 e.group 可用 API ---
+                  console.log('[Wanxiang] e.group keys:', Object.keys(e.group));
+                  console.log('[Wanxiang] typeof e.group.callApi:', typeof e.group.callApi);
+                  // ------------------------------------
+
                   const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
                   const tipMsg = "\n💡若战斗日志图片无法加载，请点击下载查看原图";
+
+                  if (e.isGroup && typeof e.group.callApi === 'function') {
+                      try {
+                          // 尝试调用 OneBot API 上传到指定文件夹
+                          await e.group.callApi('upload_group_file', {
+                              group_id: e.group_id,
+                              file: tempFilePath,
+                              name: fileName,
+                              folder: '/xiuxianlog' // 尝试指定文件夹
+                          });
+                          await e.reply([`战报已上传至群文件：${fileName} (文件夹: /xiuxianlog)`, tipMsg]);
+                          return; // 成功则跳过降级
+                      } catch (apiErr) {
+                          console.error('[Wanxiang] e.group.callApi upload failed, falling back:', apiErr);
+                          // 如果上传API失败，继续走通用文件消息
+                      }
+                  }
+                  
+                  // 降级：直接作为文件消息发送 (兼容性最好)
                   await e.reply([fileMsg, tipMsg]);
               } catch (sendErr) {
+                  console.error('[Wanxiang] Send File Msg Error:', sendErr);
+                  e.reply('战报生成成功但发送失败(文件过大)，请联系管理员。');
+              }
                   console.error('[Wanxiang] Send File Msg Error:', sendErr);
                   e.reply('战报生成成功但发送失败(文件过大)，请联系管理员。');
               }
