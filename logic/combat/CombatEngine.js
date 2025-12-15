@@ -325,7 +325,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
         combatLog.push({ type: 'system', text: `★ 【${activeUnit.name}】 积蓄已久，释放终结技：${skillConfig.name}！` });
         
         // ★★★ 剑魂·庚金 (大招回能)
-        if (activeUnit.global_buffs.includes('soul_enhancement_gengjin')) {
+        if (activeUnit.global_buffs && activeUnit.global_buffs.includes('soul_enhancement_gengjin')) {
             activeUnit.addEnergy(60);
             combatLog.push({ type: 'system', text: `触发【剑魂·庚金】，${activeUnit.name} 额外恢复 60 点能量！` });
         }
