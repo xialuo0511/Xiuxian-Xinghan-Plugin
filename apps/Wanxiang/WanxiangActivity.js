@@ -1072,26 +1072,12 @@ export class WanxiangActivity extends plugin {
               const fileName = `Wanxiang_Log_${userId}_${Date.now()}.jpg`;
               
               try {
-                  if (e.isGroup) {
-                      // 尝试群文件上传 (OneBot v11)
-                      // Bot 全局对象通常可用
-                      await Bot.uploadGroupFile(e.group_id, tempFilePath, fileName);
-                      // await e.reply(`战报过长，已上传为群文件：${fileName}`);
-                  } else {
-                      // 私聊尝试发送离线文件 (OneBot v11)
-                      await Bot.uploadPrivateFile(e.user_id, tempFilePath, fileName);
-                  }
-              } catch (uploadErr) {
-                  console.error('[Wanxiang] File Upload Error:', uploadErr);
-                  // 降级尝试：作为普通文件消息发送
-                  try {
-                      // 尝试构造文件消息段
-                      const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
-                      await e.reply(fileMsg);
-                  } catch (sendErr) {
-                      console.error('[Wanxiang] Send File Msg Error:', sendErr);
-                      e.reply('战报生成成功但发送失败(文件过大)，请联系管理员。');
-                  }
+                  // 直接作为文件消息发送 (兼容性最好，适配器会自动处理上传)
+                  const fileMsg = { type: 'file', file: tempFilePath, name: fileName };
+                  await e.reply(fileMsg);
+              } catch (sendErr) {
+                  console.error('[Wanxiang] Send File Msg Error:', sendErr);
+                  e.reply('战报生成成功但发送失败(文件过大)，请联系管理员。');
               }
           } else {
               e.reply('战报生成失败：无法获取图片数据。');
