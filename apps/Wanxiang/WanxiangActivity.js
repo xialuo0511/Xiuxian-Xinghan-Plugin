@@ -1077,11 +1077,18 @@ export class WanxiangActivity extends plugin {
               // 逐张发送分片
               for (let i = 0; i < imgPaths.length; i++) {
                   const p = imgPaths[i];
-                  const imageSendResult = await e.reply(segment.image(p));
-                  // 根据日志，e.reply 在发送失败时不会抛出错误，而是返回一个带有错误信息的对象
-                  // 我们需要检查这个返回值来判断是否发送成功
-                  if (imageSendResult && imageSendResult.result === -1 && imageSendResult.errMsg === "rich media transfer failed") {
-                       console.error('[Wanxiang] Image send failed (rich media transfer failed), falling back to file:', imageSendResult);
+                  try {
+                      const imageSendResult = await e.reply(segment.image(p));
+                      // 检查返回值，如果e.reply返回一个错误对象（而非抛出异常），也触发回退
+                      if (imageSendResult && imageSendResult.result === -1 && imageSendResult.errMsg === "rich media transfer failed") {
+                           console.error('[Wanxiang] Image send returned error result, falling back to file:', imageSendResult);
+                           const fileName = path.basename(p);
+                           await e.reply({ type: 'file', file: p, name: fileName });
+                           if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
+                      }
+                  } catch (imgSendErr) {
+                       // e.reply直接抛出异常时捕获
+                       console.error('[Wanxiang] Image send threw error, falling back to file:', imgSendErr);
                        const fileName = path.basename(p);
                        await e.reply({ type: 'file', file: p, name: fileName });
                        if (i === 0) await e.reply("💡若图片无法加载，请下载文件查看");
