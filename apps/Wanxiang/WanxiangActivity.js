@@ -351,6 +351,26 @@ export class WanxiangActivity extends plugin {
                  });
              }
       }
+
+      // 特殊初始化：奇遇
+      if (node.type === 'EVENT') {
+          // 判定是否触发 星魂专属奇遇 (4层+, 50%)
+          let specialEvent = false;
+          if (runData.layer >= 4 && Math.random() < 0.5) {
+              const soulBuffs = BUFFS.filter(b => 
+                     b.type === 'soul_exclusive' && 
+                     runData.souls.some(s => s.name === b.exclusive_soul) && 
+                     !(runData.buffs || []).includes(b.id)
+              );
+              if (soulBuffs.length > 0) specialEvent = true;
+          }
+
+          if (specialEvent) {
+              runData.current_node.sub_type = 'soul_enhance';
+          } else {
+              runData.current_node.sub_type = 'vending_machine';
+          }
+      }
       
       // 统一保存状态并断开
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
@@ -368,6 +388,8 @@ export class WanxiangActivity extends plugin {
               const typeIcon = item.type === 'artifact' ? '📦' : '📜';
               shopMsg += `${i + 1}. 【${item.name}】${status}\n   ${typeIcon} [${stars}] ${item.desc}\n`;
           });
+          
+          const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
           shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
           shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
           shopMsg += '\n发送 #事件选择 [序号] 购买或离开。';
@@ -382,19 +404,7 @@ export class WanxiangActivity extends plugin {
               '发送 #事件选择 [序号] 确认。'
           ].join('\n'));
       } else if (node.type === 'EVENT') {
-          // 判定是否触发 星魂专属奇遇 (4层+, 50%)
-          let specialEvent = false;
-          if (runData.layer >= 4 && Math.random() < 0.5) {
-              const soulBuffs = BUFFS.filter(b => 
-                     b.type === 'soul_exclusive' && 
-                     runData.souls.some(s => s.name === b.exclusive_soul) && 
-                     !(runData.buffs || []).includes(b.id)
-              );
-              if (soulBuffs.length > 0) specialEvent = true;
-          }
-
-          if (specialEvent) {
-              runData.current_node.sub_type = 'soul_enhance';
+          if (runData.current_node.sub_type === 'soul_enhance') {
               e.reply([
                   '你在废墟中遇到一位神秘的老者，他注视着你的星魂，眼中闪过一丝光芒。',
                   '请做出选择：',
@@ -403,7 +413,6 @@ export class WanxiangActivity extends plugin {
                   '发送 #事件选择 [序号] 确认。'
               ].join('\n'));
           } else {
-              runData.current_node.sub_type = 'vending_machine';
               e.reply([
                   '你在废墟中发现了一台古老的贩卖机。',
                   '请做出选择：',
@@ -413,7 +422,6 @@ export class WanxiangActivity extends plugin {
                   '发送 #事件选择 [序号] 确认。'
               ].join('\n'));
           }
-          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       }
 
     } catch (err) {
