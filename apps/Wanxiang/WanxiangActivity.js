@@ -1022,11 +1022,13 @@ export class WanxiangActivity extends plugin {
       const tempFilePath = path.default.join(tempDir, `combat_log_${userId}_${Date.now()}.jpg`);
 
       try {
-          const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-          // dataForPuppeteer.imgType = 'jpeg';
-          // dataForPuppeteer.quality = 80;
-
-          const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+                    const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+                    
+                    // 极致压缩尝试：降低质量以减小体积，提高发送成功率
+                    dataForPuppeteer.imgType = 'jpeg';
+                    dataForPuppeteer.quality = 50;
+          
+                    const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
           
           console.log(`[Wanxiang] Puppeteer returned type: ${typeof imgResult}`);
           if (typeof imgResult === 'object') {
@@ -1068,18 +1070,32 @@ export class WanxiangActivity extends plugin {
               let uploadedSuccessfully = false;
 
               // 尝试使用 OneBot API 上传到指定文件夹
-              if (e.isGroup && typeof e.group.callApi === 'function') {
+              if (e.isGroup && e.bot && e.bot.sendApi) {
                   try {
-                      await e.group.callApi('upload_group_file', {
+                      // 尝试上传到 /xiuxianlog 文件夹
+                      // 注意：file 参数需为绝对路径
+                      await e.bot.sendApi('upload_group_file', {
                           group_id: e.group_id,
-                          file: tempFilePath,
+                          file: tempFilePath, 
                           name: fileName,
-                          folder: '/xiuxianlog' // 尝试指定文件夹
+                          folder: '/xiuxianlog'
                       });
                       await e.reply(`战报已上传至群文件：${fileName} (文件夹: /xiuxianlog)`);
                       uploadedSuccessfully = true;
                   } catch (apiErr) {
-                      console.error('[Wanxiang] e.group.callApi upload failed, falling back:', apiErr);
+                      console.error('[Wanxiang] upload_group_file failed, trying root folder:', apiErr);
+                      try {
+                          // 如果指定文件夹失败 (例如文件夹不存在)，尝试上传到根目录
+                          await e.bot.sendApi('upload_group_file', {
+                              group_id: e.group_id,
+                              file: tempFilePath,
+                              name: fileName
+                          });
+                          await e.reply(`战报已上传至群文件：${fileName}`);
+                          uploadedSuccessfully = true;
+                      } catch (rootErr) {
+                          console.error('[Wanxiang] upload_group_file root failed:', rootErr);
+                      }
                   }
               }
               
