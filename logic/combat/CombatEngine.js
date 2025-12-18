@@ -228,6 +228,12 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
       });
     }
 
+    // 检查是否因 Debuff 死亡 (防止尸体行动)
+    if (!activeUnit.isAlive()) {
+        combatLog.push({ type: 'die', name: activeUnit.name, text: `${activeUnit.name} 倒下了。` });
+        continue;
+    }
+
     const elapsedAV = activeUnit.current_av;
 
     // 3.2 时间流逝
