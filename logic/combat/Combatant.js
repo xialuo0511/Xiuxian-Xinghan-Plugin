@@ -25,7 +25,7 @@ export class Combatant {
     this.taunted_by_id = null; // 嘲讽者 ID
     this.is_frozen = false; // 是否被冻结
     this.is_stunned = false; // 是否被晕眩
-    this.active_debuffs = []; // 活跃的debuffs
+    this.active_debuffs = (source.initial_debuffs || []).map(d => ({ ...d, just_applied: true })); // 活跃的debuffs
 
     if (source.base_stats) {
         // 星魂或怪物
