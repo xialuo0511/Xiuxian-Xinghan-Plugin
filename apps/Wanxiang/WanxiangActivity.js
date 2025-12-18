@@ -18,7 +18,7 @@ const ALL_MONSTERS = loadItemConfig('monsters.yaml') || [];
 
 const KEY_PREFIX = 'xiuxian:wanxiang:play:';
 
-const CURRENCY_NAME = "天机印"; // 全局货币名称
+const CURRENCY_NAME = '天机印'; // 全局货币名称
 
 // 临时辅助函数：创建连接
 async function getTempRedis() {
@@ -136,38 +136,38 @@ export class WanxiangActivity extends plugin {
   generateRoutes(layer) {
     // Boss层 (5, 10...) 强制单一Boss节点
     if (layer % 5 === 0) {
-        return [{ type: 'BOSS', name: '首领降临', desc: '极为危险的强敌，击败后可获得双倍赐福。', rarity: 5 }];
+      return [{ type: 'BOSS', name: '首领降临', desc: '极为危险的强敌，击败后可获得双倍赐福。', rarity: 5 }];
     }
 
     const options = [];
-    
+
     // 定义基础节点池 (不含 REST 和 SHOP)
     let availableTypes = [
-        { type: 'COMBAT', name: '激战', desc: '普通的战斗，胜利获得赐福。', weight: 60 },
-        { type: 'ELITE', name: '精英', desc: '强敌出没！属性提升30%，必掉高级赐福。', weight: 20 },
-        { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 20 }
+      { type: 'COMBAT', name: '激战', desc: '普通的战斗，胜利获得赐福。', weight: 60 },
+      { type: 'ELITE', name: '精英', desc: '强敌出没！属性提升30%，必掉高级赐福。', weight: 20 },
+      { type: 'EVENT', name: '奇遇', desc: '未知的机遇或风险。', weight: 20 }
     ];
 
     // 特殊逻辑：首领前一层 (4, 9, 14...) 固定生成
     if (layer % 5 === 4) {
-        // 固定 1: 修整
-        options.push({ type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 0 });
-        // 固定 2: 商店
-        options.push({ type: 'SHOP', name: '云游散修', desc: '偶遇云游天下的散修，可用天机印交换宝物。', weight: 0 });
-        
-        // 随机 3: 激战/精英/奇遇
-        const getWeightedRandom = (list) => {
-            let total = list.reduce((acc, t) => acc + t.weight, 0);
-            let r = Math.random() * total;
-            for (let t of list) {
-                r -= t.weight;
-                if (r <= 0) return t;
-            }
-            return list[0];
-        };
-        options.push({ ...getWeightedRandom(availableTypes) });
-        
-        return options;
+      // 固定 1: 修整
+      options.push({ type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 0 });
+      // 固定 2: 商店
+      options.push({ type: 'SHOP', name: '云游散修', desc: '偶遇云游天下的散修，可用天机印交换宝物。', weight: 0 });
+
+      // 随机 3: 激战/精英/奇遇
+      const getWeightedRandom = (list) => {
+        let total = list.reduce((acc, t) => acc + t.weight, 0);
+        let r = Math.random() * total;
+        for (let t of list) {
+          r -= t.weight;
+          if (r <= 0) return t;
+        }
+        return list[0];
+      };
+      options.push({ ...getWeightedRandom(availableTypes) });
+
+      return options;
     }
 
     // 随机生成剩余选项 (凑齐 2-3 个)
@@ -176,63 +176,63 @@ export class WanxiangActivity extends plugin {
     const needed = targetCount - options.length;
 
     const getWeightedRandomAndRemove = (list) => {
-        let total = list.reduce((acc, t) => acc + t.weight, 0);
-        let r = Math.random() * total;
-        for (let i = 0; i < list.length; i++) {
-            r -= list[i].weight;
-            if (r <= 0) {
-                const selected = list[i];
-                list.splice(i, 1); // 移除已选，实现去重
-                return selected;
-            }
+      let total = list.reduce((acc, t) => acc + t.weight, 0);
+      let r = Math.random() * total;
+      for (let i = 0; i < list.length; i++) {
+        r -= list[i].weight;
+        if (r <= 0) {
+          const selected = list[i];
+          list.splice(i, 1); // 移除已选，实现去重
+          return selected;
         }
-        const selected = list[0];
-        list.shift();
-        return selected;
+      }
+      const selected = list[0];
+      list.shift();
+      return selected;
     };
 
-    for(let i=0; i<needed; i++) {
-        if (availableTypes.length === 0) break;
-        const t = getWeightedRandomAndRemove(availableTypes);
-        options.push({ ...t }); // Clone
+    for (let i = 0; i < needed; i++) {
+      if (availableTypes.length === 0) break;
+      const t = getWeightedRandomAndRemove(availableTypes);
+      options.push({ ...t }); // Clone
     }
-    
+
     // 简单的打乱顺序，避免修整总是第一个 (虽然第一个也没关系)
     return options.sort(() => Math.random() - 0.5);
   }
 
   // --- 辅助：处理路线生成与反馈 ---
   async processRouteGeneration(e, runData, tempClient, prefixMsg = '') {
-      const userId = e.user_id;
-      
-      // 1. 生成路线
-      const nextRoutes = this.generateRoutes(runData.layer);
-      runData.routes = nextRoutes;
-      runData.current_node = null;
+    const userId = e.user_id;
 
-      // 2. 检查是否需要自动锁定 (单条路线，通常是BOSS层)
-      if (nextRoutes.length === 1) {
-          const autoNode = nextRoutes[0];
-          runData.current_node = autoNode;
-          runData.routes = []; // 清空待选
-          
-          // 保存状态
-          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-          
-          const icon = autoNode.type === 'BOSS' ? '👹' : '⚔️';
-          e.reply(`${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n⚠️ 前方感应到强大的气息！\n${icon} 已自动锁定路线：【${autoNode.name}】\n发送 #挑战 开始对决！`);
-      } else {
-          // 3. 多条路线，让用户选
-          await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-          
-          let routeMsg = `${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
-          nextRoutes.forEach((r, i) => {
-              const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
-              routeMsg += `${i+1}. ${icon} 【${r.name}】 ${r.desc}\n`;
-          });
-          routeMsg += '发送 #选择路线 [序号] 确认。';
-          e.reply(routeMsg);
-      }
+    // 1. 生成路线
+    const nextRoutes = this.generateRoutes(runData.layer);
+    runData.routes = nextRoutes;
+    runData.current_node = null;
+
+    // 2. 检查是否需要自动锁定 (单条路线，通常是BOSS层)
+    if (nextRoutes.length === 1) {
+      const autoNode = nextRoutes[0];
+      runData.current_node = autoNode;
+      runData.routes = []; // 清空待选
+
+      // 保存状态
+      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+
+      const icon = autoNode.type === 'BOSS' ? '👹' : '⚔️';
+      e.reply(`${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n⚠️ 前方感应到强大的气息！\n${icon} 已自动锁定路线：【${autoNode.name}】\n发送 #挑战 开始对决！`);
+    } else {
+      // 3. 多条路线，让用户选
+      await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+
+      let routeMsg = `${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
+      nextRoutes.forEach((r, i) => {
+        const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : '🎲')));
+        routeMsg += `${i + 1}. ${icon} 【${r.name}】 ${r.desc}\n`;
+      });
+      routeMsg += '发送 #选择路线 [序号] 确认。';
+      e.reply(routeMsg);
+    }
   }
 
   // --- 选择路线 ---
@@ -251,7 +251,7 @@ export class WanxiangActivity extends plugin {
       }
 
       const runData = JSON.parse(dataStr);
-      
+
       if (!runData.routes || runData.routes.length === 0) {
         await tempClient.disconnect();
         return e.reply('当前无需选择路线。若刚结束战斗，请先完成 #选择赐福。');
@@ -266,164 +266,168 @@ export class WanxiangActivity extends plugin {
       const node = runData.routes[selection - 1];
       runData.current_node = node;
       runData.routes = []; // 清空待选
-      
+
       // 特殊初始化：商店
       if (node.type === 'SHOP' && !runData.shop_items) {
-             runData.shop_items = [];
-             runData.shop_refresh_count = 1; // 免费刷新次数
-             
-             // 生成 3 个随机赐福
-             const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
-             const acquiredBuffs = runData.buffs || [];
-             const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
-             
-             const pool = BUFFS.filter(b => {
-                 if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
-                 if (b.rarity === 4) return false;
-                 // 排除秘宝
-                 if (b.type === 'artifact_passive') return false;
-                 return true;
-             });
+        runData.shop_items = [];
+        runData.shop_refresh_count = 1; // 免费刷新次数
 
-             const getWeightedRandom = () => {
-                let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
-                let r = Math.random() * total;
-                for (const b of pool) {
-                    r -= (weights[b.rarity] || 0);
-                    if (r <= 0) return b;
-                }
-                return pool[0];
-             };
+        // 生成 3 个随机赐福
+        const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+        const acquiredBuffs = runData.buffs || [];
+        const UNIQUE_BUFFS = ['double_act_first_turn',
+          'heal_after_turn_1',
+          'heal_after_turn_2',
+          'heal_after_turn_3',
+          'shield_heal'];
 
-             for(let k=0; k<3; k++) {
-                 if (pool.length === 0) break;
-                 const selected = getWeightedRandom();
-                 if (selected) {
-                     let price = 30;
-                     if (selected.rarity === 2) price = 60;
-                     if (selected.rarity === 3) price = 120;
-                     
-                     runData.shop_items.push({
-                         type: 'buff',
-                         id: selected.id,
-                         name: selected.name,
-                         desc: selected.desc,
-                         price: price,
-                         rarity: selected.rarity,
-                         bought: false
-                     });
-                     
-                     const idx = pool.indexOf(selected);
-                     if (idx > -1) pool.splice(idx, 1);
-                 }
-             }
-             
-             // 概率生成星魂专属赐福 (4层后, 30%概率)
-             if (runData.layer >= 4 && Math.random() < 0.3) {
-                 const soulBuffs = BUFFS.filter(b => 
-                     b.type === 'soul_exclusive' && 
-                     runData.souls.some(s => s.name === b.exclusive_soul) && 
-                     !(runData.buffs || []).includes(b.id)
-                 );
-                 
-                 if (soulBuffs.length > 0) {
-                     const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
-                     runData.shop_items.push({
-                         type: 'buff', // 视为普通赐福购买逻辑
-                         id: selected.id,
-                         name: selected.name,
-                         desc: selected.desc,
-                         price: 150,
-                         rarity: selected.rarity,
-                         bought: false
-                     });
-                 }
-             }
-             
-             // 生成 1 个秘宝
-             if (!runData.artifacts.includes('treasure_bowl')) {
-                 runData.shop_items.push({
-                     type: 'artifact',
-                     id: 'treasure_bowl',
-                     name: '聚宝盆',
-                     desc: '战斗胜利额外获得30%天机印',
-                     price: 100,
-                     rarity: 3,
-                     bought: false
-                 });
-             }
+        const pool = BUFFS.filter(b => {
+          if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+          if (b.rarity === 4) return false;
+          // 排除秘宝
+          if (b.type === 'artifact_passive') return false;
+          return true;
+        });
+
+        const getWeightedRandom = () => {
+          let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
+          let r = Math.random() * total;
+          for (const b of pool) {
+            r -= (weights[b.rarity] || 0);
+            if (r <= 0) return b;
+          }
+          return pool[0];
+        };
+
+        for (let k = 0; k < 3; k++) {
+          if (pool.length === 0) break;
+          const selected = getWeightedRandom();
+          if (selected) {
+            let price = 30;
+            if (selected.rarity === 2) price = 60;
+            if (selected.rarity === 3) price = 120;
+
+            runData.shop_items.push({
+              type: 'buff',
+              id: selected.id,
+              name: selected.name,
+              desc: selected.desc,
+              price: price,
+              rarity: selected.rarity,
+              bought: false
+            });
+
+            const idx = pool.indexOf(selected);
+            if (idx > -1) pool.splice(idx, 1);
+          }
+        }
+
+        // 概率生成星魂专属赐福 (4层后, 30%概率)
+        if (runData.layer >= 4 && Math.random() < 0.3) {
+          const soulBuffs = BUFFS.filter(b =>
+            b.type === 'soul_exclusive' &&
+            runData.souls.some(s => s.name === b.exclusive_soul) &&
+            !(runData.buffs || []).includes(b.id)
+          );
+
+          if (soulBuffs.length > 0) {
+            const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
+            runData.shop_items.push({
+              type: 'buff', // 视为普通赐福购买逻辑
+              id: selected.id,
+              name: selected.name,
+              desc: selected.desc,
+              price: 150,
+              rarity: selected.rarity,
+              bought: false
+            });
+          }
+        }
+
+        // 生成 1 个秘宝
+        if (!runData.artifacts.includes('treasure_bowl')) {
+          runData.shop_items.push({
+            type: 'artifact',
+            id: 'treasure_bowl',
+            name: '聚宝盆',
+            desc: '战斗胜利额外获得30%天机印',
+            price: 100,
+            rarity: 3,
+            bought: false
+          });
+        }
       }
 
       // 特殊初始化：奇遇
       if (node.type === 'EVENT') {
-          // 判定是否触发 星魂专属奇遇 (4层+, 50%)
-          let specialEvent = false;
-          if (runData.layer >= 4 && Math.random() < 0.5) {
-              const soulBuffs = BUFFS.filter(b => 
-                     b.type === 'soul_exclusive' && 
-                     runData.souls.some(s => s.name === b.exclusive_soul) && 
-                     !(runData.buffs || []).includes(b.id)
-              );
-              if (soulBuffs.length > 0) specialEvent = true;
-          }
+        // 判定是否触发 星魂专属奇遇 (4层+, 50%)
+        let specialEvent = false;
+        if (runData.layer >= 4 && Math.random() < 0.5) {
+          const soulBuffs = BUFFS.filter(b =>
+            b.type === 'soul_exclusive' &&
+            runData.souls.some(s => s.name === b.exclusive_soul) &&
+            !(runData.buffs || []).includes(b.id)
+          );
+          if (soulBuffs.length > 0) specialEvent = true;
+        }
 
-          if (specialEvent) {
-              runData.current_node.sub_type = 'soul_enhance';
-          } else {
-              runData.current_node.sub_type = 'vending_machine';
-          }
+        if (specialEvent) {
+          runData.current_node.sub_type = 'soul_enhance';
+        } else {
+          runData.current_node.sub_type = 'vending_machine';
+        }
       }
-      
+
       // 统一保存状态并断开
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
 
       // 根据节点类型反馈
       if (node.type === 'COMBAT' || node.type === 'ELITE' || node.type === 'BOSS') {
-          e.reply(`你选择了【${node.name}】。\n敌人已在前方，发送 #挑战 开始战斗！`);
+        e.reply(`你选择了【${node.name}】。\n敌人已在前方，发送 #挑战 开始战斗！`);
       } else if (node.type === 'SHOP') {
-          // 构建商店界面
-          let shopMsg = `你遇到了云游散修，他向你展示了行囊。\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
-          runData.shop_items.forEach((item, i) => {
-              const stars = '★'.repeat(item.rarity || 1);
-              const status = item.bought ? ' (已售罄)' : ` 💰${item.price}`;
-              const typeIcon = item.type === 'artifact' ? '📦' : '📜';
-              shopMsg += `${i + 1}. 【${item.name}】${status}\n   ${typeIcon} [${stars}] ${item.desc}\n`;
-          });
-          
-          const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
-          shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
-          shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
-          shopMsg += '\n发送 #事件选择 [序号] 购买或离开。';
-          e.reply(shopMsg);
-      } else if (node.type === 'REST') {
-          e.reply([
-              '你来到了一处隐蔽的营地，这里似乎很安全。',
-              '请做出选择：',
-              '1. 【休养生息】 全队恢复 40% 生命值',
-              '2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)',
-              '3. 【冥想】 获得 1 次赐福刷新机会',
-              '发送 #事件选择 [序号] 确认。'
-          ].join('\n'));
+        // 构建商店界面
+        let shopMsg = `你遇到了云游散修，他向你展示了行囊。\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
+        runData.shop_items.forEach((item, i) => {
+          const stars = '★'.repeat(item.rarity || 1);
+          const status = item.bought ? ' (已售罄)' : ` 💰${item.price}`;
+          const typeIcon = item.type === 'artifact' ? '📦' : '📜';
+          shopMsg += `${i + 1}. 【${item.name}】${status}\n   ${typeIcon} [${stars}] ${item.desc}\n`;
+        });
+
+        const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
+        shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
+        shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
+        shopMsg += '\n发送 #事件选择 [序号] 购买或离开。';
+        e.reply(shopMsg);
+      } else if (node.type == 'REST') {
+        e.reply([
+          '你来到了一处隐蔽的营地，这里似乎很安全。',
+          '请做出选择：',
+          '1. 【休养生息】 全队恢复 40% 生命值',
+          '2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)',
+          '3. 【冥想】 获得 1 次赐福刷新机会',
+          '发送 #事件选择 [序号] 确认。'
+        ].join('\n'));
       } else if (node.type === 'EVENT') {
-          if (runData.current_node.sub_type === 'soul_enhance') {
-              e.reply([
-                  '你在废墟中遇到一位神秘的老者，他注视着你的星魂，眼中闪过一丝光芒。',
-                  '请做出选择：',
-                  '1. 【虚心求教】 获得一个针对已有星魂强化的三星赐福',
-                  '2. 【无视】 离开',
-                  '发送 #事件选择 [序号] 确认。'
-              ].join('\n'));
-          } else {
-              e.reply([
-                  '你在废墟中发现了一台古老的贩卖机。',
-                  '请做出选择：',
-                  '1. 【购买补给】 消耗 20% 当前生命值，随机获得 3 个普通赐福',
-                  '2. 【暴力破解】 试图砸开它 (50%获得随机3星赐福，50%受伤)',
-                  '3. 【离开】 什么都不做',
-                  '发送 #事件选择 [序号] 确认。'
-              ].join('\n'));
-          }
+        if (runData.current_node.sub_type === 'soul_enhance') {
+          e.reply([
+            '你在废墟中遇到一位神秘的老者，他注视着你的星魂，眼中闪过一丝光芒。',
+            '请做出选择：',
+            '1. 【虚心求教】 获得一个针对已有星魂强化的三星赐福',
+            '2. 【无视】 离开',
+            '发送 #事件选择 [序号] 确认。'
+          ].join('\n'));
+        } else {
+          e.reply([
+            '你在废墟中发现了一台古老的贩卖机。',
+            '请做出选择：',
+            '1. 【购买补给】 消耗 20% 当前生命值，随机获得 3 个普通赐福',
+            '2. 【暴力破解】 试图砸开它 (50%获得随机3星赐福，50%受伤)',
+            '3. 【离开】 什么都不做',
+            '发送 #事件选择 [序号] 确认。'
+          ].join('\n'));
+        }
       }
 
     } catch (err) {
@@ -437,19 +441,22 @@ export class WanxiangActivity extends plugin {
     const userId = e.user_id;
     const match = e.msg.match(/^#事件选择\s*(\d)$/);
     const selection = parseInt(match[1]);
-    
+
     let tempClient = null;
     try {
       tempClient = await getTempRedis();
       const dataStr = await tempClient.get(KEY_PREFIX + userId);
-      if (!dataStr) { await tempClient.disconnect(); return; }
+      if (!dataStr) {
+        await tempClient.disconnect();
+        return;
+      }
 
       const runData = JSON.parse(dataStr);
       const node = runData.current_node;
 
       if (!node || (node.type !== 'REST' && node.type !== 'EVENT' && node.type !== 'SHOP')) {
-          await tempClient.disconnect();
-          return e.reply('当前不在事件节点，无法选择。');
+        await tempClient.disconnect();
+        return e.reply('当前不在事件节点，无法选择。');
       }
 
       let replyMsg = '';
@@ -457,288 +464,296 @@ export class WanxiangActivity extends plugin {
 
       // 简单的逻辑处理
       if (node.type === 'SHOP') {
-          const items = runData.shop_items || [];
-          const leaveIndex = items.length + 2;
-          const refreshIndex = items.length + 1;
+        const items = runData.shop_items || [];
+        const leaveIndex = items.length + 2;
+        const refreshIndex = items.length + 1;
 
-          if (selection === leaveIndex) {
-              replyMsg = '你告别了散修，继续踏上征途。';
-              // 清理商店数据，节省空间 (可选)
-              delete runData.shop_items;
-              delete runData.shop_refresh_count;
-              isDone = true;
-          } else if (selection === refreshIndex) {
-              if (runData.shop_refresh_count > 0) {
-                  runData.shop_refresh_count--;
-                  runData.shop_items = []; // 重置商品列表
-                  
-                  // --- 重新生成商品逻辑 (与 selectRoute 一致) ---
-                  const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
-                  const acquiredBuffs = runData.buffs || [];
-                  const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
-                  
-                  const pool = BUFFS.filter(b => {
-                      if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
-                      if (b.rarity === 4) return false;
-                      if (b.type === 'artifact_passive') return false;
-                      return true;
-                  });
+        if (selection === leaveIndex) {
+          replyMsg = '你告别了散修，继续踏上征途。';
+          // 清理商店数据，节省空间 (可选)
+          delete runData.shop_items;
+          delete runData.shop_refresh_count;
+          isDone = true;
+        } else if (selection === refreshIndex) {
+          if (runData.shop_refresh_count > 0) {
+            runData.shop_refresh_count--;
+            runData.shop_items = []; // 重置商品列表
 
-                  const getWeightedRandom = () => {
-                      let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
-                      let r = Math.random() * total;
-                      for (const b of pool) {
-                          r -= (weights[b.rarity] || 0);
-                          if (r <= 0) return b;
-                      }
-                      return pool[0];
-                  };
+            // --- 重新生成商品逻辑 (与 selectRoute 一致) ---
+            const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+            const acquiredBuffs = runData.buffs || [];
+            const UNIQUE_BUFFS = ['double_act_first_turn',
+              'heal_after_turn_1',
+              'heal_after_turn_2',
+              'heal_after_turn_3',
+              'shield_heal'];
 
-                  for(let k=0; k<3; k++) {
-                      if (pool.length === 0) break;
-                      const selected = getWeightedRandom();
-                      if (selected) {
-                          let price = 30;
-                          if (selected.rarity === 2) price = 60;
-                          if (selected.rarity === 3) price = 120;
-                          
-                          runData.shop_items.push({
-                              type: 'buff',
-                              id: selected.id,
-                              name: selected.name,
-                              desc: selected.desc,
-                              price: price,
-                              rarity: selected.rarity,
-                              bought: false
-                          });
-                          const idx = pool.indexOf(selected);
-                          if (idx > -1) pool.splice(idx, 1);
-                      }
-                  }
-                  
-                  // 概率生成星魂专属赐福 (4层后, 30%概率)
-                  if (runData.layer >= 4 && Math.random() < 0.3) {
-                     const soulBuffs = BUFFS.filter(b => 
-                         b.type === 'soul_exclusive' && 
-                         runData.souls.some(s => s.name === b.exclusive_soul) && 
-                         !(runData.buffs || []).includes(b.id)
-                     );
-                     
-                     if (soulBuffs.length > 0) {
-                         const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
-                         runData.shop_items.push({
-                             type: 'buff',
-                             id: selected.id,
-                             name: selected.name,
-                             desc: selected.desc,
-                             price: 150,
-                             rarity: selected.rarity,
-                             bought: false
-                         });
-                     }
-                  }
-                  
-                  // 重新生成秘宝
-                  if (!runData.artifacts.includes('treasure_bowl')) {
-                      runData.shop_items.push({
-                          type: 'artifact',
-                          id: 'treasure_bowl',
-                          name: '聚宝盆',
-                          desc: '战斗胜利额外获得30%天机印',
-                          price: 100,
-                          rarity: 3,
-                          bought: false
-                      });
-                  }
-                  // --- 生成结束 ---
+            const pool = BUFFS.filter(b => {
+              if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+              if (b.rarity === 4) return false;
+              if (b.type === 'artifact_passive') return false;
+              return true;
+            });
 
-                  await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-                  
-                  let shopMsg = `商店已刷新！\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
-                  runData.shop_items.forEach((it, i) => {
-                      const stars = '★'.repeat(it.rarity || 1);
-                      const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
-                      const typeIcon = it.type === 'artifact' ? '📦' : '📜';
-                      shopMsg += `${i + 1}. 【${it.name}】${status}\n   ${typeIcon} [${stars}] ${it.desc}\n`;
-                  });
-                  
-                  const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
-                  shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
-                  shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
-                  shopMsg += '\n发送 #事件选择 [序号] 操作。';
-                  
-                  e.reply(shopMsg);
-              } else {
-                  e.reply('刷新次数已用尽。');
+            const getWeightedRandom = () => {
+              let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
+              let r = Math.random() * total;
+              for (const b of pool) {
+                r -= (weights[b.rarity] || 0);
+                if (r <= 0) return b;
               }
-          } else if (selection >= 1 && selection <= items.length) {
-              const item = items[selection - 1];
-              if (item.bought) {
-                  e.reply('该商品已售罄。');
-              } else if (runData.jing_yin < item.price) {
-                  e.reply(`你的${CURRENCY_NAME}不足 (需要 ${item.price})。`);
-              } else {
-                  // 购买成功
-                  runData.jing_yin -= item.price;
-                  item.bought = true;
-                  
-                  if (item.type === 'artifact') {
-                      if (!runData.artifacts.includes(item.id)) {
-                          runData.artifacts.push(item.id);
-                      }
-                  } else {
-                      runData.buffs.push(item.id);
-                  }
-                  
-                  // 保存并刷新界面
-                  await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-                  
-                  let shopMsg = `购买成功！\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
-                  items.forEach((it, i) => {
-                      const stars = '★'.repeat(it.rarity || 1);
-                      const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
-                      const typeIcon = it.type === 'artifact' ? '📦' : '📜';
-                      shopMsg += `${i + 1}. 【${it.name}】${status}\n   ${typeIcon} [${stars}] ${it.desc}\n`;
-                  });
-                  shopMsg += `\n${items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
-                  shopMsg += `\n${items.length + 2}. 【离开】 继续前进`;
-                  shopMsg += '\n发送 #事件选择 [序号] 继续购买。';
-                  
-                  e.reply(shopMsg);
+              return pool[0];
+            };
+
+            for (let k = 0; k < 3; k++) {
+              if (pool.length === 0) break;
+              const selected = getWeightedRandom();
+              if (selected) {
+                let price = 30;
+                if (selected.rarity === 2) price = 60;
+                if (selected.rarity === 3) price = 120;
+
+                runData.shop_items.push({
+                  type: 'buff',
+                  id: selected.id,
+                  name: selected.name,
+                  desc: selected.desc,
+                  price: price,
+                  rarity: selected.rarity,
+                  bought: false
+                });
+                const idx = pool.indexOf(selected);
+                if (idx > -1) pool.splice(idx, 1);
               }
-          } else {
-              e.reply('无效的选项。');
-          }
-      } else if (node.type === 'REST') {
-          if (selection === 1) { // 回血
-              runData.souls.forEach(s => {
-                  if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4));
+            }
+
+            // 概率生成星魂专属赐福 (4层后, 30%概率)
+            if (runData.layer >= 4 && Math.random() < 0.3) {
+              const soulBuffs = BUFFS.filter(b =>
+                b.type === 'soul_exclusive' &&
+                runData.souls.some(s => s.name === b.exclusive_soul) &&
+                !(runData.buffs || []).includes(b.id)
+              );
+
+              if (soulBuffs.length > 0) {
+                const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
+                runData.shop_items.push({
+                  type: 'buff',
+                  id: selected.id,
+                  name: selected.name,
+                  desc: selected.desc,
+                  price: 150,
+                  rarity: selected.rarity,
+                  bought: false
+                });
+              }
+            }
+
+            // 重新生成秘宝
+            if (!runData.artifacts.includes('treasure_bowl')) {
+              runData.shop_items.push({
+                type: 'artifact',
+                id: 'treasure_bowl',
+                name: '聚宝盆',
+                desc: '战斗胜利额外获得30%天机印',
+                price: 100,
+                rarity: 3,
+                bought: false
               });
-              replyMsg = '全员恢复了大量生命值。';
-              isDone = true;
-          } else if (selection === 2) { // 复活
-              const deadSouls = runData.souls.filter(s => s.is_dead);
-              if (deadSouls.length > 0) {
-                  const luckydog = deadSouls[Math.floor(Math.random() * deadSouls.length)];
-                  luckydog.is_dead = false;
-                  luckydog.current_hp = Math.floor(luckydog.max_hp * 0.5);
-                  replyMsg = `【${luckydog.name}】被复活了！`;
-              } else {
-                  replyMsg = '没有阵亡的队友，但你还是休息了一会儿。';
-              }
-              isDone = true;
-          } else if (selection === 3) { // 刷新次数
-              runData.refresh_count = (runData.refresh_count || 0) + 1;
-              replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。';
-              isDone = true;
-          }
-      } else if (node.type === 'EVENT') {
-          if (node.sub_type === 'soul_enhance') {
-              if (selection === 1) {
-                  const soulBuffs = BUFFS.filter(b => 
-                         b.type === 'soul_exclusive' && 
-                         runData.souls.some(s => s.name === b.exclusive_soul) && 
-                         !(runData.buffs || []).includes(b.id)
-                  );
-                  
-                  if (soulBuffs.length > 0) {
-                      const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
-                      runData.buffs.push(selected.id);
-                      replyMsg = `老者微微一笑，传授了你【${selected.name}】的奥秘！\n效果：${selected.desc}`;
-                  } else {
-                      replyMsg = '老者摇了摇头，似乎没有适合你的教导了。';
-                  }
-                  isDone = true;
-              } else {
-                  replyMsg = '你向老者行了一礼，转身离开。';
-                  isDone = true;
-              }
+            }
+            // --- 生成结束 ---
+
+            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+
+            let shopMsg = `商店已刷新！\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
+            runData.shop_items.forEach((it, i) => {
+              const stars = '★'.repeat(it.rarity || 1);
+              const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
+              const typeIcon = it.type === 'artifact' ? '📦' : '📜';
+              shopMsg += `${i + 1}. 【${it.name}】${status}\n   ${typeIcon} [${stars}] ${it.desc}\n`;
+            });
+
+            const refreshText = runData.shop_refresh_count > 0 ? ` (剩余 ${runData.shop_refresh_count} 次)` : ' (次数已尽)';
+            shopMsg += `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
+            shopMsg += `\n${runData.shop_items.length + 2}. 【离开】 继续前进`;
+            shopMsg += '\n发送 #事件选择 [序号] 操作。';
+
+            e.reply(shopMsg);
           } else {
-              // 默认为贩卖机 (vending_machine)
-              if (selection === 1) {
-                 // 【购买补给】 消耗 20% 当前血量，获得 3 个随机赐福
-                 let hpCostTotal = 0;
-                 runData.souls.forEach(s => {
-                     if (!s.is_dead) {
-                         const cost = Math.floor(s.current_hp * 0.2);
-                         s.current_hp -= cost;
-                         hpCostTotal += cost;
-                     }
-                 });
-
-                 // 生成 3 个赐福 (激战层权重)
-                 const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
-                 const acquiredBuffs = runData.buffs || [];
-                 const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
-                 
-                 const pool = BUFFS.filter(b => {
-                     if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
-                     if (b.rarity === 4) return false;
-                     // 排除秘宝和星魂专属
-                     if (b.type === 'artifact_passive' || b.type === 'soul_exclusive') return false;
-                     return true;
-                 });
-
-                 const newBuffs = [];
-                 const getWeightedRandom = () => {
-                    let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
-                    let r = Math.random() * total;
-                    for (const b of pool) {
-                        r -= (weights[b.rarity] || 0);
-                        if (r <= 0) return b;
-                    }
-                    return pool[0];
-                 };
-
-                 for(let k=0; k<3; k++) {
-                     if (pool.length === 0) break;
-                     const selected = getWeightedRandom();
-                     if (selected) {
-                         newBuffs.push(selected);
-                         runData.buffs.push(selected.id);
-                         const idx = pool.indexOf(selected);
-                         if (idx > -1) pool.splice(idx, 1);
-                     }
-                 }
-
-                 replyMsg = `你支付了生命值，贩卖机吐出了补给！\n获得赐福：${newBuffs.map(b => `【${b.name}】`).join('、')}`;
-                 isDone = true;
-              } else if (selection === 2) {
-                 const rand = Math.random();
-                 if (rand > 0.5) {
-                     // 成功：给一个 Buff (3星)
-                     // 需从3星池中选，排除特殊Buff
-                     const pool = BUFFS.filter(b => b.rarity === 3 && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id));
-                     if (pool.length > 0) {
-                        const selected = pool[Math.floor(Math.random() * pool.length)];
-                        runData.buffs.push(selected.id);
-                        replyMsg = `哐当一声，掉出来一个【${selected.name}】赐福！`;
-                     } else {
-                        replyMsg = '贩卖机吐出了一枚硬币，但你不知道有什么用。';
-                     }
-                 } else {
-                     // 失败：扣血
-                     runData.souls.forEach(s => {
-                         if (!s.is_dead) s.current_hp = Math.floor(s.current_hp * 0.8);
-                     });
-                     replyMsg = '贩卖机爆炸了！全员受到伤害。';
-                 }
-                 isDone = true;
-              } else {
-                 replyMsg = '你谨慎地离开了。';
-                 isDone = true;
-              }
+            e.reply('刷新次数已用尽。');
           }
+        } else if (selection >= 1 && selection <= items.length) {
+          const item = items[selection - 1];
+          if (item.bought) {
+            e.reply('该商品已售罄。');
+          } else if (runData.jing_yin < item.price) {
+            e.reply(`你的${CURRENCY_NAME}不足 (需要 ${item.price})。`);
+          } else {
+            // 购买成功
+            runData.jing_yin -= item.price;
+            item.bought = true;
+
+            if (item.type === 'artifact') {
+              if (!runData.artifacts.includes(item.id)) {
+                runData.artifacts.push(item.id);
+              }
+            } else {
+              runData.buffs.push(item.id);
+            }
+
+            // 保存并刷新界面
+            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+
+            let shopMsg = `购买成功！\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
+            items.forEach((it, i) => {
+              const stars = '★'.repeat(it.rarity || 1);
+              const status = it.bought ? ' (已售罄)' : ` 💰${it.price}`;
+              const typeIcon = it.type === 'artifact' ? '📦' : '📜';
+              shopMsg += `${i + 1}. 【${it.name}】${status}\n   ${typeIcon} [${stars}] ${it.desc}\n`;
+            });
+            shopMsg += `\n${items.length + 1}. 【刷新】 更换一批商品${refreshText}`;
+            shopMsg += `\n${items.length + 2}. 【离开】 继续前进`;
+            shopMsg += '\n发送 #事件选择 [序号] 继续购买。';
+
+            e.reply(shopMsg);
+          }
+        } else {
+          e.reply('无效的选项。');
+        }
+      } else if (node.type === 'REST') {
+        if (selection === 1) { // 回血
+          runData.souls.forEach(s => {
+            if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4));
+          });
+          replyMsg = '全员恢复了大量生命值。';
+          isDone = true;
+        } else if (selection === 2) { // 复活
+          const deadSouls = runData.souls.filter(s => s.is_dead);
+          if (deadSouls.length > 0) {
+            const luckydog = deadSouls[Math.floor(Math.random() * deadSouls.length)];
+            luckydog.is_dead = false;
+            luckydog.current_hp = Math.floor(luckydog.max_hp * 0.5);
+            replyMsg = `【${luckydog.name}】被复活了！`;
+          } else {
+            replyMsg = '没有阵亡的队友，但你还是休息了一会儿。';
+          }
+          isDone = true;
+        } else if (selection === 3) { // 刷新次数
+          runData.refresh_count = (runData.refresh_count || 0) + 1;
+          replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。';
+          isDone = true;
+        }
+      } else if (node.type === 'EVENT') {
+        if (node.sub_type === 'soul_enhance') {
+          if (selection === 1) {
+            const soulBuffs = BUFFS.filter(b =>
+              b.type === 'soul_exclusive' &&
+              runData.souls.some(s => s.name === b.exclusive_soul) &&
+              !(runData.buffs || []).includes(b.id)
+            );
+
+            if (soulBuffs.length > 0) {
+              const selected = soulBuffs[Math.floor(Math.random() * soulBuffs.length)];
+              runData.buffs.push(selected.id);
+              replyMsg = `老者微微一笑，传授了你【${selected.name}】的奥秘！\n效果：${selected.desc}`;
+            } else {
+              replyMsg = '老者摇了摇头，似乎没有适合你的教导了。';
+            }
+            isDone = true;
+          } else {
+            replyMsg = '你向老者行了一礼，转身离开。';
+            isDone = true;
+          }
+        } else {
+          // 默认为贩卖机 (vending_machine)
+          if (selection === 1) {
+            // 【购买补给】 消耗 20% 当前血量，获得 3 个随机赐福
+            let hpCostTotal = 0;
+            runData.souls.forEach(s => {
+              if (!s.is_dead) {
+                const cost = Math.floor(s.current_hp * 0.2);
+                s.current_hp -= cost;
+                hpCostTotal += cost;
+              }
+            });
+
+            // 生成 3 个赐福 (激战层权重)
+            const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+            const acquiredBuffs = runData.buffs || [];
+            const UNIQUE_BUFFS = ['double_act_first_turn',
+              'heal_after_turn_1',
+              'heal_after_turn_2',
+              'heal_after_turn_3',
+              'shield_heal'];
+
+            const pool = BUFFS.filter(b => {
+              if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+              if (b.rarity === 4) return false;
+              // 排除秘宝和星魂专属
+              if (b.type === 'artifact_passive' || b.type === 'soul_exclusive') return false;
+              return true;
+            });
+
+            const newBuffs = [];
+            const getWeightedRandom = () => {
+              let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0);
+              let r = Math.random() * total;
+              for (const b of pool) {
+                r -= (weights[b.rarity] || 0);
+                if (r <= 0) return b;
+              }
+              return pool[0];
+            };
+
+            for (let k = 0; k < 3; k++) {
+              if (pool.length === 0) break;
+              const selected = getWeightedRandom();
+              if (selected) {
+                newBuffs.push(selected);
+                runData.buffs.push(selected.id);
+                const idx = pool.indexOf(selected);
+                if (idx > -1) pool.splice(idx, 1);
+              }
+            }
+
+            replyMsg = `你支付了生命值，贩卖机吐出了补给！\n获得赐福：${newBuffs.map(b => `【${b.name}】`).join('、')}`;
+            isDone = true;
+          } else if (selection === 2) {
+            const rand = Math.random();
+            if (rand > 0.5) {
+              // 成功：给一个 Buff (3星)
+              // 需从3星池中选，排除特殊Buff
+              const pool = BUFFS.filter(b => b.rarity === 3 && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id));
+              if (pool.length > 0) {
+                const selected = pool[Math.floor(Math.random() * pool.length)];
+                runData.buffs.push(selected.id);
+                replyMsg = `哐当一声，掉出来一个【${selected.name}】赐福！`;
+              } else {
+                replyMsg = '贩卖机吐出了一枚硬币，但你不知道有什么用。';
+              }
+            } else {
+              // 失败：扣血
+              runData.souls.forEach(s => {
+                if (!s.is_dead) s.current_hp = Math.floor(s.current_hp * 0.8);
+              });
+              replyMsg = '贩卖机爆炸了！全员受到伤害。';
+            }
+            isDone = true;
+          } else {
+            replyMsg = '你谨慎地离开了。';
+            isDone = true;
+          }
+        }
       }
 
       if (isDone) {
-          // 事件结束，层数+1，生成新路线
-          runData.layer++;
-          
-          // 使用通用逻辑 (支持单路线自动锁定)
-          await this.processRouteGeneration(e, runData, tempClient, replyMsg);
+        // 事件结束，层数+1，生成新路线
+        runData.layer++;
+
+        // 使用通用逻辑 (支持单路线自动锁定)
+        await this.processRouteGeneration(e, runData, tempClient, replyMsg);
       } else if (node.type !== 'SHOP') {
-          e.reply('无效的选项。');
+        e.reply('无效的选项。');
       }
 
       await tempClient.disconnect();
@@ -749,7 +764,6 @@ export class WanxiangActivity extends plugin {
       if (tempClient) await tempClient.disconnect();
     }
   }
-
 
 
   // 需要同步更新 quitRun, showStatus, challengeLayer 以使用临时连接，或者修复 redisClient
@@ -790,10 +804,10 @@ export class WanxiangActivity extends plugin {
     // 计算生命值加成
     let maxHpMultiplier = 1.0;
     (data.buffs || []).forEach(buffId => {
-        const buff = BUFFS.find(b => b.id === buffId);
-        if (buff && buff.type === 'max_hp_pct') {
-            maxHpMultiplier += buff.value;
-        }
+      const buff = BUFFS.find(b => b.id === buffId);
+      if (buff && buff.type === 'max_hp_pct') {
+        maxHpMultiplier += buff.value;
+      }
     });
 
     // 准备渲染数据
@@ -812,8 +826,8 @@ export class WanxiangActivity extends plugin {
     });
 
     const artifactsData = (data.artifacts || []).map(artifactId => {
-        const config = BUFFS.find(b => b.id === artifactId);
-        return config || { name: artifactId, desc: '未知秘宝', rarity: 3 };
+      const config = BUFFS.find(b => b.id === artifactId);
+      return config || { name: artifactId, desc: '未知秘宝', rarity: 3 };
     });
 
     const renderData = {
@@ -850,12 +864,12 @@ export class WanxiangActivity extends plugin {
       // --- 节点检查 ---
       const node = runData.current_node;
       if (!node) {
-          await tempClient.disconnect();
-          return e.reply('请先 #选择路线。');
+        await tempClient.disconnect();
+        return e.reply('请先 #选择路线。');
       }
       if (node.type !== 'COMBAT' && node.type !== 'ELITE' && node.type !== 'BOSS') {
-          await tempClient.disconnect();
-          return e.reply(`当前是【${node.name}】节点，无法进行战斗。请发送 #事件选择 进行互动。`);
+        await tempClient.disconnect();
+        return e.reply(`当前是【${node.name}】节点，无法进行战斗。请发送 #事件选择 进行互动。`);
       }
 
       const layerConfig = STAGES.find(s => s.layer === runData.layer);
@@ -892,9 +906,9 @@ export class WanxiangActivity extends plugin {
 
           // 记录原始属性，用于计算百分比加成 (防止指数级膨胀)
           const originalStats = {
-              health: battleConfig.base_stats.health,
-              attack: battleConfig.base_stats.attack,
-              defense: battleConfig.base_stats.defense
+            health: battleConfig.base_stats.health,
+            attack: battleConfig.base_stats.attack,
+            defense: battleConfig.base_stats.defense
           };
 
           // 注入 Buff
@@ -908,25 +922,25 @@ export class WanxiangActivity extends plugin {
             } else if (buff.type === 'def_pct') {
               battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
             } else if (buff.type === 'soul_exclusive') {
-                // 星魂专属强化：必须匹配角色名
-                if (buff.exclusive_soul && buff.exclusive_soul !== soulState.name) return;
+              // 星魂专属强化：必须匹配角色名
+              if (buff.exclusive_soul && buff.exclusive_soul !== soulState.name) return;
 
-                if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
-                battleConfig.global_buffs.push(buff.id);
+              if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
+              battleConfig.global_buffs.push(buff.id);
 
-                // 数值类直接生效
-                if (buff.id === 'soul_enhancement_wutu') {
-                    // 盾灵：生命+100%，满能
-                    const hpAdd = Math.floor(originalStats.health * 1.0);
-                    battleConfig.base_stats.health += hpAdd;
-                    if (battleConfig.current_hp_inherit !== undefined) {
-                         battleConfig.current_hp_inherit += hpAdd;
-                    }
-                    battleConfig.initial_energy = 999; // 满能
-                } else if (buff.id === 'soul_enhancement_yimu') {
-                    // 药仙：攻击+100%
-                    battleConfig.base_stats.attack += Math.floor(originalStats.attack * 1.0);
+              // 数值类直接生效
+              if (buff.id === 'soul_enhancement_wutu') {
+                // 盾灵：生命+100%，满能
+                const hpAdd = Math.floor(originalStats.health * 1.0);
+                battleConfig.base_stats.health += hpAdd;
+                if (battleConfig.current_hp_inherit !== undefined) {
+                  battleConfig.current_hp_inherit += hpAdd;
                 }
+                battleConfig.initial_energy = 999; // 满能
+              } else if (buff.id === 'soul_enhancement_yimu') {
+                // 药仙：攻击+100%
+                battleConfig.base_stats.attack += Math.floor(originalStats.attack * 1.0);
+              }
             } else if (buff.type === 'crit_rate') {
               battleConfig.crit_rate = (battleConfig.crit_rate || 0) + buff.value;
             } else if (buff.type === 'crit_dmg') {
@@ -960,7 +974,7 @@ export class WanxiangActivity extends plugin {
       }
 
       // 2. 准备敌方 (应用动态难度缩放)
-      const enemyNames = enemies.map(e => e.name);
+      const enemyNames = safeLayerConfig.monsters || [];
       e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}\n战斗进行中...`);
 
       const enemyTeamConfig = enemyNames.map(name => {
@@ -972,7 +986,7 @@ export class WanxiangActivity extends plugin {
 
         // 难度系数：基础成长 (每层8%)
         let multiplier = 1 + (runData.layer - 1) * 0.08;
-        
+
         // 节点修正
         if (node.type === 'ELITE') multiplier *= 1.3; // 精英：属性额外+30%
         if (node.type === 'BOSS') multiplier *= 1.5;  // Boss：属性额外+50%
@@ -987,7 +1001,7 @@ export class WanxiangActivity extends plugin {
       // 3. 运行战斗 (根据节点类型动态调整最大回合数)
       // Boss战给予更多回合 (20回合)，普通/精英战保持紧凑 (10回合)
       const maxRounds = (node.type === 'BOSS') ? 20 : 10;
-      
+
       const result = await runCombat(battleSouls, enemyTeamConfig, runData.buffs, maxRounds);
 
       // 4. 结算逻辑
@@ -1007,7 +1021,6 @@ export class WanxiangActivity extends plugin {
       }
 
 
-
       // 渲染日志 (分片输出 - 每8回合一切)
       const fullLog = result.log;
       const slices = [];
@@ -1018,9 +1031,9 @@ export class WanxiangActivity extends plugin {
         if (entry.type === 'turn') {
           roundCountInSlice++;
           if (roundCountInSlice > 8) { // 8回合切片
-             if (currentSlice.length > 0) slices.push(currentSlice);
-             currentSlice = [];
-             roundCountInSlice = 1;
+            if (currentSlice.length > 0) slices.push(currentSlice);
+            currentSlice = [];
+            roundCountInSlice = 1;
           }
         }
         currentSlice.push(entry);
@@ -1031,123 +1044,125 @@ export class WanxiangActivity extends plugin {
       // const path = await import('path'); // Removed dynamic import
       const tempDir = path.join(process.cwd(), 'data', 'temp', 'wanxiang');
       if (!fs.existsSync(tempDir)) {
-          fs.mkdirSync(tempDir, { recursive: true });
+        fs.mkdirSync(tempDir, { recursive: true });
       }
 
       const imgPaths = [];
 
       try {
-          for (let i = 0; i < slices.length; i++) {
-              const sliceLog = slices[i];
-              const renderData = {
-                  log: sliceLog,
-                  pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
-              };
+        for (let i = 0; i < slices.length; i++) {
+          const sliceLog = slices[i];
+          const renderData = {
+            log: sliceLog,
+            pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+          };
 
-              const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-              dataForPuppeteer.imgType = 'jpeg';
-              dataForPuppeteer.quality = 80;
-              // 分片模式下无需强制宽度，使用默认即可
+          const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+          dataForPuppeteer.imgType = 'jpeg';
+          dataForPuppeteer.quality = 80;
+          // 分片模式下无需强制宽度，使用默认即可
 
-              const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-              
-              let finalBuffer = null;
-              if (Buffer.isBuffer(imgResult)) {
-                  finalBuffer = imgResult;
-              } else if (typeof imgResult === 'object' && imgResult.file) {
-                  if (Buffer.isBuffer(imgResult.file)) {
-                      finalBuffer = imgResult.file;
-                  } else if (typeof imgResult.file === 'string') {
-                      let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
-                      finalBuffer = Buffer.from(base64Data, 'base64');
-                  }
-              }
+          const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
 
-              if (finalBuffer && finalBuffer.length > 0) {
-                  const fileName = `Combat_Log_${userId}_${Date.now()}_Part${i+1}.jpg`;
-                  const filePath = path.join(tempDir, fileName);
-                  fs.writeFileSync(filePath, finalBuffer);
-                  imgPaths.push(filePath);
-              } else {
-                  console.error(`[Wanxiang] Slice ${i+1} generation failed (0 bytes)`);
-              }
+          let finalBuffer = null;
+          if (Buffer.isBuffer(imgResult)) {
+            finalBuffer = imgResult;
+          } else if (typeof imgResult === 'object' && imgResult.file) {
+            if (Buffer.isBuffer(imgResult.file)) {
+              finalBuffer = imgResult.file;
+            } else if (typeof imgResult.file === 'string') {
+              let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
+              finalBuffer = Buffer.from(base64Data, 'base64');
+            }
           }
 
-          if (imgPaths.length > 0) {
-              // 逐张发送分片
-              for (let i = 0; i < imgPaths.length; i++) {
-                  const p = imgPaths[i];
-                  try {
-                      const imageSendResult = await e.reply(segment.image(p));
-                      console.log('[Wanxiang] e.reply return value:', imageSendResult); // Debug log
-
-                      // 检查返回值：
-                      // 1. 如果返回 falsy (undefined/false/null)
-                      // 2. 如果包含 error 属性 (根据日志，失败时返回 { error: [...] })
-                      // 3. 如果 result 为 -1 (部分适配器行为)
-                      const isFailure = !imageSendResult || imageSendResult.error || (imageSendResult.result === -1);
-
-                      if (isFailure) {
-                           console.error('[Wanxiang] Image send failed (detected error in return value), falling back to file. Result:', JSON.stringify(imageSendResult, null, 2));
-                           const fileName = path.basename(p);
-                           await e.reply({ type: 'file', file: p, name: fileName });
-                               if (i === 0) await e.reply("💡若图片无法加载，请查看原图或下载");
-                      }
-                  } catch (imgSendErr) {
-                       // e.reply直接抛出异常时捕获
-                       console.error('[Wanxiang] Image send threw error, falling back to file:', imgSendErr);
-                       const fileName = path.basename(p);
-                       await e.reply({ type: 'file', file: p, name: fileName });
-                           if (i === 0) await e.reply("💡若图片无法加载，请查看原图或下载");
-                  }
-                  // 稍微延迟避免顺序错乱或刷屏过快
-                  if (i < imgPaths.length - 1) {
-                      await new Promise(r => setTimeout(r, 1000));
-                  }
-              }
+          if (finalBuffer && finalBuffer.length > 0) {
+            const fileName = `Combat_Log_${userId}_${Date.now()}_Part${i + 1}.jpg`;
+            const filePath = path.join(tempDir, fileName);
+            fs.writeFileSync(filePath, finalBuffer);
+            imgPaths.push(filePath);
           } else {
-              e.reply('战报生成失败：所有分片均为空。');
+            console.error(`[Wanxiang] Slice ${i + 1} generation failed (0 bytes)`);
           }
+        }
+
+        if (imgPaths.length > 0) {
+          // 逐张发送分片
+          for (let i = 0; i < imgPaths.length; i++) {
+            const p = imgPaths[i];
+            try {
+              const imageSendResult = await e.reply(segment.image(p));
+              console.log('[Wanxiang] e.reply return value:', imageSendResult); // Debug log
+
+              // 检查返回值：
+              // 1. 如果返回 falsy (undefined/false/null)
+              // 2. 如果包含 error 属性 (根据日志，失败时返回 { error: [...] })
+              // 3. 如果 result 为 -1 (部分适配器行为)
+              const isFailure = !imageSendResult || imageSendResult.error || (imageSendResult.result === -1);
+
+              if (isFailure) {
+                console.error('[Wanxiang] Image send failed (detected error in return value), falling back to file. Result:', JSON.stringify(imageSendResult, null, 2));
+                const fileName = path.basename(p);
+                await e.reply({ type: 'file', file: p, name: fileName });
+                if (i === 0) await e.reply('💡若图片无法加载，请查看原图或下载');
+              }
+            } catch (imgSendErr) {
+              // e.reply直接抛出异常时捕获
+              console.error('[Wanxiang] Image send threw error, falling back to file:', imgSendErr);
+              const fileName = path.basename(p);
+              await e.reply({ type: 'file', file: p, name: fileName });
+              if (i === 0) await e.reply('💡若图片无法加载，请查看原图或下载');
+            }
+            // 稍微延迟避免顺序错乱或刷屏过快
+            if (i < imgPaths.length - 1) {
+              await new Promise(r => setTimeout(r, 1000));
+            }
+          }
+        } else {
+          e.reply('战报生成失败：所有分片均为空。');
+        }
 
       } catch (err) {
-          console.error('[Wanxiang] Combat Log Generation Error:', err);
-          e.reply('战报生成出错，请查看后台日志。');
+        console.error('[Wanxiang] Combat Log Generation Error:', err);
+        e.reply('战报生成出错，请查看后台日志。');
       } finally {
-          // 延迟清理
-          setTimeout(() => {
-              imgPaths.forEach(p => {
-                  try {
-                      if (fs.existsSync(p)) fs.unlinkSync(p);
-                  } catch (e) { console.error('Failed to delete temp file:', p); }
-              });
-          }, 60000);
+        // 延迟清理
+        setTimeout(() => {
+          imgPaths.forEach(p => {
+            try {
+              if (fs.existsSync(p)) fs.unlinkSync(p);
+            } catch (e) {
+              console.error('Failed to delete temp file:', p);
+            }
+          });
+        }, 60000);
       }
 
       if (result.playerWon) {
         // 胜利后逻辑
         runData.layer++; // 晋升下一层
-        
+
         // --- 天机印掉落 ---
         let jing_yin_drop_min = 0;
         let jing_yin_drop_max = 0;
         if (node.type === 'COMBAT') {
-            jing_yin_drop_min = 10;
-            jing_yin_drop_max = 20;
+          jing_yin_drop_min = 10;
+          jing_yin_drop_max = 20;
         } else if (node.type === 'ELITE') {
-            jing_yin_drop_min = 30;
-            jing_yin_drop_max = 50;
+          jing_yin_drop_min = 30;
+          jing_yin_drop_max = 50;
         } else if (node.type === 'BOSS') {
-            jing_yin_drop_min = 80;
-            jing_yin_drop_max = 120;
+          jing_yin_drop_min = 80;
+          jing_yin_drop_max = 120;
         }
 
         let total_jing_yin_drop = Math.floor(Math.random() * (jing_yin_drop_max - jing_yin_drop_min + 1)) + jing_yin_drop_min;
-        
+
         // 秘宝加成：聚宝盆 (treasure_bowl)
         if (runData.artifacts.includes('treasure_bowl')) {
-            total_jing_yin_drop = Math.floor(total_jing_yin_drop * 1.3); // 30% 加成
+          total_jing_yin_drop = Math.floor(total_jing_yin_drop * 1.3); // 30% 加成
         }
-        
+
         runData.jing_yin += total_jing_yin_drop;
 
         let pickCount = 1;
@@ -1159,35 +1174,39 @@ export class WanxiangActivity extends plugin {
 
         // 随机抽取 3 个 Buff (加权)
         const choices = [];
-        const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
+        const UNIQUE_BUFFS = ['double_act_first_turn',
+          'heal_after_turn_1',
+          'heal_after_turn_2',
+          'heal_after_turn_3',
+          'shield_heal'];
         const acquiredBuffs = runData.buffs || [];
-        
+
         // 动态调整权重
         // 普通：1星(80), 2星(40), 3星(10)
         // 精英：2星(60), 3星(30), 4星(5)
         // Boss：3星(75), 4星(25) (保底3星)
-        
+
         let currentWeights = { 1: 80, 2: 40, 3: 10, 4: 0 };
         if (node.type === 'ELITE') {
-            currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
+          currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
         } else if (node.type === 'BOSS') {
-            currentWeights = { 1: 0, 2: 0, 3: 75, 4: 25 };
+          currentWeights = { 1: 0, 2: 0, 3: 75, 4: 25 };
         }
 
         const pool = BUFFS.filter(b => {
-             // 唯一性检查
-             if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
-             // 四星唯一性
-             if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
-             // 排除秘宝 (秘宝只能通过商店或奇遇获得)
-             if (b.type === 'artifact_passive') return false;
-             // 排除星魂专属
-             if (b.type === 'soul_exclusive') return false;
+          // 唯一性检查
+          if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+          // 四星唯一性
+          if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
+          // 排除秘宝 (秘宝只能通过商店或奇遇获得)
+          if (b.type === 'artifact_passive') return false;
+          // 排除星魂专属
+          if (b.type === 'soul_exclusive') return false;
 
-             // 权重为0的稀有度不出现
-             if (currentWeights[b.rarity] === 0) return false;
-             
-             return true;
+          // 权重为0的稀有度不出现
+          if (currentWeights[b.rarity] === 0) return false;
+
+          return true;
         });
 
         const getWeightedRandom = (candidates) => {
@@ -1215,14 +1234,14 @@ export class WanxiangActivity extends plugin {
         await tempClient.disconnect();
 
         let buffMsg = `【${node.name}】胜利！全队状态已保存。\n\n【天机赐福】${pickCount > 1 ? ` (可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
-        
+
         choices.forEach((b, i) => {
           const stars = '★'.repeat(b.rarity || 1);
           buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n   ${b.desc}\n`;
         });
 
         if (runData.refresh_count > 0) {
-            buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+          buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
         }
         e.reply(buffMsg + `\n\n获得${CURRENCY_NAME}：${total_jing_yin_drop}。当前${CURRENCY_NAME}：${runData.jing_yin}。`);
       } else {
@@ -1267,8 +1286,12 @@ export class WanxiangActivity extends plugin {
 
       // 重新生成 3 个赐福选项 (复用 challengeLayer 中的逻辑)
       const choices = [];
-      
-      const UNIQUE_BUFFS = ['double_act_first_turn', 'heal_after_turn_1', 'heal_after_turn_2', 'heal_after_turn_3', 'shield_heal'];
+
+      const UNIQUE_BUFFS = ['double_act_first_turn',
+        'heal_after_turn_1',
+        'heal_after_turn_2',
+        'heal_after_turn_3',
+        'shield_heal'];
       const acquiredBuffs = runData.buffs || [];
       // const pool 定义已移动到下方
 
@@ -1280,26 +1303,26 @@ export class WanxiangActivity extends plugin {
       const nodeType = runData.current_node ? runData.current_node.type : 'COMBAT';
 
       if (nodeType === 'ELITE') {
-          currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
+        currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
       } else if (nodeType === 'BOSS') {
-          currentWeights = { 1: 0, 2: 0, 3: 75, 4: 25 };
+        currentWeights = { 1: 0, 2: 0, 3: 75, 4: 25 };
       }
 
       // 过滤赐福池
       const pool = BUFFS.filter(b => {
-          // 已拥有或唯一性检查
-          if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
-          // 四星唯一性
-          if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
-          // 排除秘宝
-          if (b.type === 'artifact_passive') return false;
-          // 排除星魂专属
-          if (b.type === 'soul_exclusive') return false;
-          
-          // 根据权重过滤 (权重为0的不出现)
-          if (currentWeights[b.rarity] === 0) return false;
+        // 已拥有或唯一性检查
+        if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+        // 四星唯一性
+        if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
+        // 排除秘宝
+        if (b.type === 'artifact_passive') return false;
+        // 排除星魂专属
+        if (b.type === 'soul_exclusive') return false;
 
-          return true;
+        // 根据权重过滤 (权重为0的不出现)
+        if (currentWeights[b.rarity] === 0) return false;
+
+        return true;
       });
 
       const getWeightedRandom = (candidates) => {
@@ -1375,7 +1398,7 @@ export class WanxiangActivity extends plugin {
       // 移除已选 (防止重复)
       const idxToRemove = selection - 1;
       runData.pending_buffs.splice(idxToRemove, 1);
-      
+
       // 扣除次数
       runData.remaining_picks = (runData.remaining_picks || 1) - 1;
 
@@ -1393,14 +1416,14 @@ export class WanxiangActivity extends plugin {
       */
 
       if (runData.remaining_picks <= 0) {
-          runData.pending_buffs = []; // 次数用尽，清空
-          
-          // 使用通用逻辑生成下一层路线 (支持单路线自动锁定)
-          const msg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！`;
-          await this.processRouteGeneration(e, runData, tempClient, msg);
-          
-          await tempClient.disconnect();
-          return;
+        runData.pending_buffs = []; // 次数用尽，清空
+
+        // 使用通用逻辑生成下一层路线 (支持单路线自动锁定)
+        const msg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！`;
+        await this.processRouteGeneration(e, runData, tempClient, msg);
+
+        await tempClient.disconnect();
+        return;
       }
 
       // 还有剩余选择次数，保存状态
@@ -1409,18 +1432,18 @@ export class WanxiangActivity extends plugin {
 
       // --- 发送反馈 (多选情况) ---
       if (runData.remaining_picks > 0) {
-          let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
-          runData.pending_buffs.forEach((bid, i) => {
-             const b = BUFFS.find(bf => bf.id === bid);
-             if(b) {
-                const stars = '★'.repeat(b.rarity || 1);
-                buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n`;
-             }
-          });
-          if (runData.refresh_count > 0) {
-              buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+        let buffMsg = `成功选择了【${buffConfig ? buffConfig.name : '未知'}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`;
+        runData.pending_buffs.forEach((bid, i) => {
+          const b = BUFFS.find(bf => bf.id === bid);
+          if (b) {
+            const stars = '★'.repeat(b.rarity || 1);
+            buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n`;
           }
-          e.reply(buffMsg);
+        });
+        if (runData.refresh_count > 0) {
+          buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+        }
+        e.reply(buffMsg);
       }
 
 
