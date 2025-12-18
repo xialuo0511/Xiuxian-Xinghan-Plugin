@@ -148,6 +148,47 @@
           font-size: 14px;
       }
 
+      .commands-section {
+          margin-top: 30px;
+          border: 1px solid var(--border-brown);
+          background: rgba(255, 255, 255, 0.4);
+          padding: 15px;
+          border-radius: 8px;
+      }
+      .cmd-title {
+          font-size: 20px;
+          font-weight: bold;
+          margin-bottom: 15px;
+          text-align: center;
+          color: #5a4632;
+          border-bottom: 1px dashed #d4cbb8;
+          padding-bottom: 5px;
+      }
+      .cmd-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+      }
+      .cmd-item {
+          display: flex;
+          align-items: baseline;
+          font-size: 14px;
+      }
+      .cmd-code {
+          font-family: "tttgbnumber";
+          font-weight: bold;
+          color: #c53828;
+          background: #fff;
+          padding: 2px 6px;
+          border-radius: 4px;
+          border: 1px solid #e0e0e0;
+          margin-right: 8px;
+          white-space: nowrap;
+      }
+      .cmd-desc {
+          color: #555;
+      }
+
   </style>
 </head>
 <body>
@@ -193,6 +234,20 @@
 
       {{/each}}
   </div>
+
+  {{if helpCommands}}
+  <div class="commands-section">
+      <div class="cmd-title">❖ 试炼指令指南 ❖</div>
+      <div class="cmd-grid">
+          {{each helpCommands cmd}}
+          <div class="cmd-item">
+              <span class="cmd-code">{{cmd.cmd}}</span>
+              <span class="cmd-desc">{{cmd.desc}}</span>
+          </div>
+          {{/each}}
+      </div>
+  </div>
+  {{/if}}
 
   <div class="footer-tip">
       💡 提示：所有槽位配置完成后，发送 <span>#开启试炼</span> 即可进入无尽挑战。

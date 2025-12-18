@@ -269,8 +269,26 @@ export class astral_combat extends plugin {
       }
     }
 
+    const helpCommands = [
+      { cmd: '#万象天机', desc: '查看活动主界面、当前配队及帮助' },
+      { cmd: '#星魂图鉴', desc: '查看所有可收集的星魂属性' },
+      { cmd: '#详细星魂图鉴', desc: '查看星魂的详细技能机制' },
+      { cmd: '#星魂装备[序号]号 [星魂名]', desc: '装备星魂，如 #星魂装备1号 剑魂·庚金' },
+      { cmd: '#开启试炼', desc: '进入Roguelike爬塔玩法' },
+      { cmd: '#挑战', desc: '在试炼中进行下一层挑战' },
+      { cmd: '#选择路线 [序号]', desc: '在试炼中选择前进的分支' },
+      { cmd: '#选择赐福 [序号]', desc: '战斗胜利后选择增益效果' },
+      { cmd: '#刷新赐福', desc: '消耗机会刷新备选赐福' },
+      { cmd: '#事件选择 [序号]', desc: '在事件/商店节点进行交互' },
+      { cmd: '#试炼状态', desc: '查看当前试炼队伍状态、Buff等' },
+      { cmd: '#天机秘术', desc: '查看局外强化天赋树' },
+      { cmd: '#强化天机秘术', desc: '消耗天机玉进行永久强化' },
+      { cmd: '#退出试炼', desc: '放弃当前进度并结算奖励' }
+    ];
+
     const renderData = {
       team: teamData,
+      helpCommands: helpCommands,
       pifu: playerData.pifu || playerData.练气皮肤,
       pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
     };
