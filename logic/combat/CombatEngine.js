@@ -199,32 +199,10 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             value: 1 
         });
         
-        // 增加触发日志
+        // 增加触发日志 (改为 system 避免显示为独立行动)
         combatLog.push({
-            type: 'action',
-            skill: '锋锐之气',
-            av_cost: 0,
-            caster: {
-                name: activeUnit.name,
-                team: activeUnit.team,
-                element: activeUnit.element,
-                level: activeUnit.level || 0,
-                id: activeUnit.id
-            },
-            targets: [{
-                name: activeUnit.name,
-                team: activeUnit.team,
-                element: activeUnit.element,
-                id: activeUnit.id,
-                type: 'buff_trigger',
-                value: 0,
-                value_display: '伤害+5%',
-                is_counter: false
-            }],
-            teamStatus: {
-                player: playerTeam.map(getUnitStatus),
-                enemy: enemyTeam.map(getUnitStatus)
-            }
+            type: 'system',
+            text: `${activeUnit.name} 触发【锋锐之气】，伤害提升 5% (当前 ${activeUnit.active_debuffs.find(d=>d.type==='damage_up_stack')?.value || 0} 层)`
         });
     }
 
