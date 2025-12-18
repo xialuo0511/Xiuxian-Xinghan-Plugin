@@ -21,6 +21,7 @@ const EFFECT_CONFIG = {
   'taunt': { name: '嘲讽', is_debuff: true, icon: '💢' },
   'stun': { name: '晕眩', is_debuff: true, icon: '💫' },
   'weakness': { name: '虚弱', is_debuff: true, icon: '📉' },
+  'force_dmg_one': { name: '威压', is_debuff: true, icon: '🔻' },
   'speed_up_stack': { name: '战意', is_debuff: false, icon: '⚡' },
   'speed_up_talent': { name: '疾风', is_debuff: false, icon: '💨' },
   'damage_up_stack': { name: '锋锐', is_debuff: false, icon: '⚔️' },
@@ -863,7 +864,12 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
             
   
-                            finalDmg = Math.max(1, finalDmg);
+                            // Debuff: 威压 (伤害强制为1)
+                            if (attacker.active_debuffs && attacker.active_debuffs.some(d => d.type === 'force_dmg_one')) {
+                                finalDmg = 1;
+                            } else {
+                                finalDmg = Math.max(1, finalDmg);
+                            }
   
             
   
