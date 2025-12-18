@@ -456,7 +456,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     activeUnit.resetAV();
 
     // ★★ 风驰电掣 (首轮再动)
-    if (activeUnit.global_buffs && activeUnit.global_buffs.includes('double_act_first_turn')) {
+    if (activeUnit.global_buffs && activeUnit.global_buffs.includes('double_act')) {
         if (!activeUnit.has_acted_once) {
             activeUnit.has_acted_once = true;
             activeUnit.current_av = 0; // 立即再次行动
