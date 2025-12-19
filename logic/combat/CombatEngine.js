@@ -152,8 +152,15 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
 
             combatLog.push({ type: 'system', text: `★ 【${ultingUnit.name}】 能量满溢，释放终结技：${skillConfig.name}！` });
 
-            const { skillResults, debuffsApplied } = executeSkill(ultingUnit, skillConfig, friendlyTeam, hostileTeam);
+            // isUltimate = true (第5个参数)
+            const { skillResults, debuffsApplied } = executeSkill(ultingUnit, skillConfig, friendlyTeam, hostileTeam, true);
             ultingUnit.energy -= skillConfig.energy_cost;
+
+            // ★★★ 剑魂·庚金 (大招回能) - 插队逻辑补全
+            if (ultingUnit.global_buffs && ultingUnit.global_buffs.includes('soul_enhancement_gengjin')) {
+                ultingUnit.addEnergy(60);
+                combatLog.push({ type: 'system', text: `触发【剑魂·庚金】，${ultingUnit.name} 额外恢复 60 点能量！` });
+            }
 
             debuffsApplied.forEach(d => {
                 const targetUnit = allCombatants.find(c => c.id === d.id);
