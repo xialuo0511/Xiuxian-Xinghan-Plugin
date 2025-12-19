@@ -25,6 +25,31 @@ export async function existPlayer(userId) {
   return result === 1;
 }
 
+/**
+ * 通用锁执行器
+ * 自动获取锁（带重试），执行任务，最后释放锁
+ * @param {string} key 资源标识
+ * @param {Function} task 异步任务函数
+ * @returns {Promise<any>}
+ */
+async function executeWithLock(key, task) {
+  // 1. 尝试获取锁
+  const lockToken = await acquireLock(key, 5000);
+  if (!lockToken) {
+    // 获取失败，等待后递归重试 (自旋)
+    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 100));
+    return executeWithLock(key, task);
+  }
+
+  try {
+    // 2. 执行业务逻辑
+    return await task();
+  } finally {
+    // 3. 释放锁
+    await releaseLock(key, lockToken);
+  }
+}
+
 // --- 数据读写 ---
 export async function getAllPlayerData(userId) {
   try {
@@ -43,28 +68,34 @@ export async function getAllPlayerData(userId) {
 }
 
 export async function savePlayer(userId, playerData) {
-  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  await redisClient.hSet(mainKey, 'player', JSON.stringify(playerData));
+  await executeWithLock(userId, async () => {
+    const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+    await redisClient.hSet(mainKey, 'player', JSON.stringify(playerData));
+  });
 }
 
 /**
- * 覆写式保存玩家的纳戒数据
+ * 覆写式保存玩家的纳戒数据 (已加锁)
  * @param {string} userId 玩家QQ号
  * @param {object} najieData 完整的纳戒数据对象
  */
 export async function saveNajie(userId, najieData) {
-  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  await redisClient.hSet(mainKey, 'najie', JSON.stringify(najieData));
+  await executeWithLock(userId, async () => {
+    const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+    await redisClient.hSet(mainKey, 'najie', JSON.stringify(najieData));
+  });
 }
 
 /**
- * 覆写式保存玩家的装备数据
+ * 覆写式保存玩家的装备数据 (已加锁)
  * @param {string} userId 玩家QQ号
  * @param {object} equipmentData 完整的装备数据对象
  */
 export async function saveEquipment(userId, equipmentData) {
-  const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  await redisClient.hSet(mainKey, 'equipment', JSON.stringify(equipmentData));
+  await executeWithLock(userId, async () => {
+    const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
+    await redisClient.hSet(mainKey, 'equipment', JSON.stringify(equipmentData));
+  });
 }
 
 
@@ -274,14 +305,17 @@ export async function getAssociation(sectName) {
 }
 
 /**
- * 保存/更新宗门信息
+ * 保存/更新宗门信息 (已加锁)
  * @param {string} sectName - 宗门名称
  * @param {object} sectData - 完整的宗门数据对象
  * @returns {Promise<void>}
  */
 export async function saveAssociation(sectName, sectData) {
-  const key = `${ASSOCIATION_KEY_PREFIX}${sectName}`;
-  await redisClient.set(key, JSON.stringify(sectData));
+  const lockKey = `Association:${sectName}`;
+  await executeWithLock(lockKey, async () => {
+    const key = `${ASSOCIATION_KEY_PREFIX}${sectName}`;
+    await redisClient.set(key, JSON.stringify(sectData));
+  });
 }
 
 /**
