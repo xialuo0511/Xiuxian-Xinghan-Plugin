@@ -965,7 +965,19 @@ export class WanxiangActivity extends plugin {
 
     // 准备渲染数据
     const soulsData = data.souls.map(s => {
-      const effectiveMaxHp = Math.floor(s.max_hp * maxHpMultiplier);
+      let localMultiplier = maxHpMultiplier;
+      
+      // 检查星魂专属强化 (如盾灵·戊土 +100% HP)
+      (data.buffs || []).forEach(buffId => {
+         const buff = BUFFS.find(b => b.id === buffId);
+         if (buff && buff.type === 'soul_exclusive' && buff.exclusive_soul === s.name) {
+             if (buff.id === 'soul_enhancement_wutu') {
+                 localMultiplier += buff.value; // value is 1.0 (100%)
+             }
+         }
+      });
+
+      const effectiveMaxHp = Math.floor(s.max_hp * localMultiplier);
       return {
         ...s,
         max_hp: effectiveMaxHp, // 显示加成后的上限
