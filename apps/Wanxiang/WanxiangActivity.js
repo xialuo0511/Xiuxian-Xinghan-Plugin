@@ -1055,12 +1055,16 @@ export class WanxiangActivity extends plugin {
       const userLevel = runData.user_level || 0;
       let bonusCrit = 0;
       let bonusCritDmg = 0;
+      let bonusAtk = 0;
+      let bonusHpPct = 0;
       let hasCoercion = false;
 
       UPGRADES.forEach(u => {
         if (userLevel >= u.id) {
           if (u.type === 'crit_rate') bonusCrit += u.value;
           if (u.type === 'crit_dmg') bonusCritDmg += u.value;
+          if (u.type === 'atk_flat') bonusAtk += u.value;
+          if (u.type === 'hp_pct') bonusHpPct += u.value;
           if (u.type === 'start_debuff') hasCoercion = true;
         }
       });
@@ -1082,10 +1086,14 @@ export class WanxiangActivity extends plugin {
           const battleConfig = { ...originalConfig };
           battleConfig.base_stats = { ...originalConfig.base_stats };
 
+          // ★ 应用天机秘术基础加成 (确保与 startRun/showStatus 一致)
+          battleConfig.base_stats.health = Math.floor(battleConfig.base_stats.health * (1 + bonusHpPct));
+          battleConfig.base_stats.attack += bonusAtk;
+
           // 注入当前血量
           battleConfig.current_hp_inherit = soulState.current_hp;
 
-          // 应用天机秘术加成
+          // 应用天机秘术加成 (暴击/爆伤)
           battleConfig.crit_rate = (battleConfig.crit_rate || 0) + bonusCrit;
           battleConfig.crit_dmg = (battleConfig.crit_dmg || 1.5) + bonusCritDmg;
 
@@ -1102,48 +1110,59 @@ export class WanxiangActivity extends plugin {
             const buff = BUFFS.find(b => b.id === buffId);
             if (!buff) return;
 
-            if (buff.type === 'atk_pct') {
-              battleConfig.base_stats.attack += Math.floor(originalStats.attack * buff.value);
-            } else if (buff.type === 'def_pct') {
-              battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
-            } else if (buff.type === 'max_hp_pct') {
-              // 生命上限提升
-              battleConfig.base_stats.health += Math.floor(originalStats.health * buff.value);
-            } else if (buff.type === 'soul_exclusive') {
-              // 星魂专属强化：必须匹配角色名
-              if (buff.exclusive_soul && buff.exclusive_soul !== soulState.name) return;
+            switch (buff.type) {
+                case 'atk_pct':
+                    battleConfig.base_stats.attack += Math.floor(originalStats.attack * buff.value);
+                    break;
+                case 'def_pct':
+                    battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
+                    break;
+                case 'max_hp_pct':
+                    // 生命上限提升
+                    battleConfig.base_stats.health += Math.floor(originalStats.health * buff.value);
+                    break;
+                case 'soul_exclusive':
+                    // 星魂专属强化：必须匹配角色名
+                    if (buff.exclusive_soul && buff.exclusive_soul === soulState.name) {
+                        if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
+                        battleConfig.global_buffs.push(buff.id);
 
-              if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
-              battleConfig.global_buffs.push(buff.id);
-
-              // 数值类直接生效
-              if (buff.id === 'soul_enhancement_wutu') {
-                const hpAdd = Math.floor(originalStats.health * 1.0);
-                battleConfig.base_stats.health += hpAdd;
-                if (battleConfig.current_hp_inherit !== undefined) {
-                  battleConfig.current_hp_inherit += hpAdd;
-                }
-                battleConfig.initial_energy = 999; // 满能
-              } else if (buff.id === 'soul_enhancement_yimu') {
-                battleConfig.base_stats.attack += Math.floor(originalStats.attack * 1.0);
-              }
-            } else if (buff.type === 'crit_rate') {
-              battleConfig.crit_rate = (battleConfig.crit_rate || 0) + buff.value;
-            } else if (buff.type === 'crit_dmg') {
-              battleConfig.crit_dmg = (battleConfig.crit_dmg || 1.5) + buff.value;
-            } else if (buff.type === 'element_dmg') {
-              if (!battleConfig.elemental_buffs) battleConfig.elemental_buffs = {};
-              if (!battleConfig.elemental_buffs[buff.element]) battleConfig.elemental_buffs[buff.element] = 0;
-              battleConfig.elemental_buffs[buff.element] += buff.value;
-            } else if (buff.type === 'heal_turn') {
-              if (!battleConfig.passive_skills) battleConfig.passive_skills = [];
-              battleConfig.passive_skills.push({ type: 'heal_turn', value: buff.value, name: buff.name });
-            } else if (buff.type === 'energy_regen_pct') {
-              if (!battleConfig.base_stats.energy_regen) battleConfig.base_stats.energy_regen = 20;
-              battleConfig.base_stats.energy_regen = Math.floor(battleConfig.base_stats.energy_regen * (1 + buff.value));
-            } else {
-              if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
-              battleConfig.global_buffs.push(buff.type);
+                        // 数值类直接生效
+                        if (buff.id === 'soul_enhancement_wutu') {
+                            const hpAdd = Math.floor(originalStats.health * 1.0);
+                            battleConfig.base_stats.health += hpAdd;
+                            if (battleConfig.current_hp_inherit !== undefined) {
+                                battleConfig.current_hp_inherit += hpAdd;
+                            }
+                            battleConfig.initial_energy = 999; // 满能
+                        } else if (buff.id === 'soul_enhancement_yimu') {
+                            battleConfig.base_stats.attack += Math.floor(originalStats.attack * 1.0);
+                        }
+                    }
+                    break;
+                case 'crit_rate':
+                    battleConfig.crit_rate = (battleConfig.crit_rate || 0) + buff.value;
+                    break;
+                case 'crit_dmg':
+                    battleConfig.crit_dmg = (battleConfig.crit_dmg || 1.5) + buff.value;
+                    break;
+                case 'element_dmg':
+                    if (!battleConfig.elemental_buffs) battleConfig.elemental_buffs = {};
+                    if (!battleConfig.elemental_buffs[buff.element]) battleConfig.elemental_buffs[buff.element] = 0;
+                    battleConfig.elemental_buffs[buff.element] += buff.value;
+                    break;
+                case 'heal_turn':
+                    if (!battleConfig.passive_skills) battleConfig.passive_skills = [];
+                    battleConfig.passive_skills.push({ type: 'heal_turn', value: buff.value, name: buff.name });
+                    break;
+                case 'energy_regen_pct':
+                    if (!battleConfig.base_stats.energy_regen) battleConfig.base_stats.energy_regen = 20;
+                    battleConfig.base_stats.energy_regen = Math.floor(battleConfig.base_stats.energy_regen * (1 + buff.value));
+                    break;
+                default:
+                    if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
+                    battleConfig.global_buffs.push(buff.type);
+                    break;
             }
           });
           battleSouls.push(battleConfig);
