@@ -242,7 +242,13 @@ export class Combatant {
       if (existing) {
           existing.duration = debuffConfig.duration; 
           existing.caster_id = debuffConfig.caster_id;
-          existing.value = debuffConfig.value;
+          
+          // 可叠加 Buff 处理
+          if (['speed_up_stack', 'damage_up_stack'].includes(debuffConfig.type)) {
+              existing.value += debuffConfig.value;
+          } else {
+              existing.value = debuffConfig.value;
+          }
       } else {
           this.active_debuffs.push({ ...debuffConfig, just_applied: true });
       }
