@@ -68,13 +68,69 @@ export async function saveEquipment(userId, equipmentData) {
 }
 
 
+// --- 分布式锁机制 ---
+
 /**
- * 使用事务安全地更新玩家数据包
+ * 尝试获取分布式锁
+ * @param {string} key 锁的资源标识
+ * @param {number} ttl 锁的自动过期时间(毫秒)
+ * @returns {Promise<string|null>} 成功返回锁的token，失败返回null
+ */
+async function acquireLock(key, ttl = 5000) {
+  const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+  const lockKey = `XinghanXiuxian:Lock:${key}`;
+  try {
+    const result = await redisClient.set(lockKey, token, {
+      NX: true,
+      PX: ttl
+    });
+    return result === 'OK' ? token : null;
+  } catch (err) {
+    console.error(`[Lock] 获取锁失败 ${key}:`, err);
+    return null;
+  }
+}
+
+/**
+ * 释放分布式锁
+ * @param {string} key 锁的资源标识
+ * @param {string} token 获取锁时得到的token
+ */
+async function releaseLock(key, token) {
+  const lockKey = `XinghanXiuxian:Lock:${key}`;
+  const script = `
+    if redis.call("get", KEYS[1]) == ARGV[1] then
+      return redis.call("del", KEYS[1])
+    else
+      return 0
+    end
+  `;
+  try {
+    await redisClient.eval(script, {
+      keys: [lockKey],
+      arguments: [token]
+    });
+  } catch (err) {
+    console.error(`[Lock] 释放锁失败 ${key}:`, err);
+  }
+}
+
+/**
+ * 使用事务安全地更新玩家数据包 (主要入口)
+ * 集成了分布式锁 + Optimistic Lock (WATCH) 双重保障
  * @param {string} userId 玩家QQ号
  * @param {(player: object, equipment: object, najie: object) => boolean | void} updateFunction
  * @returns {Promise<boolean>}
  */
 export async function transaction_update(userId, updateFunction) {
+  // 1. 尝试获取分布式锁 (防止多进程并发冲突)
+  const lockToken = await acquireLock(userId, 5000);
+  if (!lockToken) {
+    // 获取锁失败，说明有其他进程正在操作该用户，等待后重试
+    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 100));
+    return transaction_update(userId, updateFunction);
+  }
+
   // 事务需要一个独立的连接来执行 WATCH
   const transactionClient = redisClient.duplicate();
   await transactionClient.connect();
@@ -133,8 +189,10 @@ export async function transaction_update(userId, updateFunction) {
     const execResult = await multi.exec();
 
     if (execResult === null) {
-      console.info(`[TX] 用户 ${userId} 数据发生写入冲突，正在重试...`);
-      return await transaction_update(userId, updateFunction); // 自动重试
+      console.info(`[TX] 用户 ${userId} 数据发生写入冲突 (CAS失败)，正在重试...`);
+      // 释放当前资源的锁，然后重试
+      await releaseLock(userId, lockToken);
+      return await transaction_update(userId, updateFunction); 
     }
     return true;
 
@@ -143,6 +201,8 @@ export async function transaction_update(userId, updateFunction) {
     return false;
   } finally {
     await transactionClient.quit();
+    // 务必释放锁
+    await releaseLock(userId, lockToken);
   }
 }
 
