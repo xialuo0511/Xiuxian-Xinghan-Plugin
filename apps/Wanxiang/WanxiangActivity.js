@@ -87,6 +87,7 @@ export class WanxiangActivity extends plugin {
       tempClient = await getTempRedis();
       const userData = await this.getUserData(tempClient, e.user_id);
       await tempClient.disconnect();
+      tempClient = null;
 
       const renderData = {
         jade: userData.jade,
@@ -101,55 +102,15 @@ export class WanxiangActivity extends plugin {
         })
       };
 
-      // 使用 model/show.js 生成图片 (假设支持自定义模板)
-      // 由于没有直接支持自定义HTML路径的通用接口，这里模拟数据传递给前端
-      // 实际上我们可能需要临时修改 Show.js 或者使用 puppeteer 直接渲染
-      // 为了兼容现有架构，我们直接用 puppeteer 加载本地文件
-      
       const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_secrets.html');
-      // 读取HTML内容并替换占位符 (简单的模板引擎)
-      let html = fs.readFileSync(htmlPath, 'utf8');
       
-      // 替换 {{jade}}
-      html = html.replace('{{jade}}', renderData.jade);
-      
-      // 替换列表
-      const listRegex = /{{#upgrades}}([\s\S]*?){{\/upgrades}}/m;
-      const match = html.match(listRegex);
-      if (match) {
-        const itemTemplate = match[1];
-        let itemsHtml = '';
-        renderData.upgrades.forEach((u, index) => {
-          let itemStr = itemTemplate
-            .replace(/{{name}}/g, u.name)
-            .replace(/{{desc}}/g, u.desc)
-            .replace(/{{cost}}/g, u.cost)
-            .replace(/{{status}}/g, u.status)
-            .replace(/{{#if \(eq status "unlocked"\)}}([\s\S]*?){{\/if}}/g, u.status === 'unlocked' ? '$1' : '')
-            .replace(/{{#if \(eq status "next"\)}}([\s\S]*?){{\/if}}/g, u.status === 'next' ? '$1' : '')
-            .replace(/{{#if \(eq status "locked"\)}}([\s\S]*?){{\/if}}/g, u.status === 'locked' ? '$1' : '')
-            .replace(/{{#unless @last}}([\s\S]*?){{\/unless}}/g, index < renderData.upgrades.length - 1 ? '$1' : '');
-          itemsHtml += itemStr;
-        });
-        html = html.replace(match[0], itemsHtml);
-      }
-
       const img = await puppeteer.screenshot('wanxiang_secrets', {
-        tplFile: htmlPath, // 传递路径仅作参考，实际内容通过 html 参数
-        html: html, // 假设 puppeteer.screenshot 支持直接传 html 字符串，如果不支持则需写入临时文件
+        tplFile: htmlPath,
+        ...renderData,
         imgType: 'jpeg'
       });
       
-      // 如果 puppeteer 封装不支持 html 字符串，回退到写入临时文件
-      if (!img) {
-         const tempHtmlPath = path.join(process.cwd(), 'data', 'temp', `secrets_${e.user_id}.html`);
-         fs.writeFileSync(tempHtmlPath, html);
-         const img2 = await puppeteer.screenshot('wanxiang_secrets', { tplFile: tempHtmlPath });
-         await e.reply(img2);
-         fs.unlinkSync(tempHtmlPath);
-      } else {
-         await e.reply(img);
-      }
+      await e.reply(img);
 
     } catch (err) {
       console.error('[Wanxiang] viewSecrets Error:', err);
@@ -169,11 +130,13 @@ export class WanxiangActivity extends plugin {
 
       if (!upgrade) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('你的天机秘术已臻化境，无需继续强化。');
       }
 
       if (userData.jade < upgrade.cost) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply(`天机玉不足！需要 ${upgrade.cost}，当前拥有 ${userData.jade}。`);
       }
 
@@ -183,6 +146,7 @@ export class WanxiangActivity extends plugin {
 
       await this.saveUserData(tempClient, e.user_id, userData);
       await tempClient.disconnect();
+      tempClient = null;
 
       e.reply(`强化成功！\n已激活【${upgrade.name}】\n效果：${upgrade.desc}\n当前剩余天机玉：${userData.jade}`);
 
@@ -208,6 +172,7 @@ export class WanxiangActivity extends plugin {
 
       if (existData) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('你当前已有正在进行的试炼，请先 #挑战 或 #退出试炼。');
       }
 
@@ -215,6 +180,7 @@ export class WanxiangActivity extends plugin {
       const playerData = (await DAL.getAllPlayerData(userId))?.player;
       if (!playerData) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('你尚未踏入仙途。');
       }
 
@@ -227,6 +193,7 @@ export class WanxiangActivity extends plugin {
 
       if (equippedNames.length === 0) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('你没有装备任何星魂，无法参加试炼。请先去 #星魂装备。');
       }
 
@@ -249,11 +216,6 @@ export class WanxiangActivity extends plugin {
           if (soulConfig) {
             // 应用基础加成
             const baseHp = Math.floor(soulConfig.base_stats.health * (1 + bonusHpPct));
-            // 攻击力加成在战斗时计算，或者这里直接存入 base? 
-            // 既然是"基础攻击力+5"，直接加在面板上比较好，但这里只存了 max_hp。
-            // 攻击力通常是实时读取配置计算的。
-            // 为了在战斗中生效，我们需要在 startRun 时不改变配置，而是战斗时注入。
-            // 但 HP 需要这里定下来，因为 current_hp 是持久化的。
             
             soulsState.push({
               slot: i,
@@ -283,6 +245,7 @@ export class WanxiangActivity extends plugin {
 
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
+      tempClient = null;
 
       e.reply([
         '【万象天机·无尽试炼】已开启！',
@@ -297,15 +260,6 @@ export class WanxiangActivity extends plugin {
       return e.reply('系统错误：' + err.message);
     }
   }
-
-  // ... (generateRoutes, processRouteGeneration, selectRoute, handleEventChoice 保持不变)
-  // ... (省略中间代码，替换时需注意不要覆盖这些方法，replace 工具只替换 old_string)
-  // 这里的 instruction 是替换整个文件内容还是部分？看起来 replace 工具如果是 "replacing a single occurrence"，我需要精确定位。
-  // 为了安全，我将只替换受影响的方法。
-
-  // 下面是针对 startRun 的 old_string。
-  // 实际上我要替换很多地方。我将分块替换。
-
 
   // --- 路线生成逻辑 ---
   generateRoutes(layer) {
@@ -422,6 +376,7 @@ export class WanxiangActivity extends plugin {
       const dataStr = await tempClient.get(KEY_PREFIX + userId);
       if (!dataStr) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('请先 #开启试炼。');
       }
 
@@ -429,11 +384,13 @@ export class WanxiangActivity extends plugin {
 
       if (!runData.routes || runData.routes.length === 0) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('当前无需选择路线。若刚结束战斗，请先完成 #选择赐福。');
       }
 
       if (selection < 1 || selection > runData.routes.length) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply(`请选择 1-${runData.routes.length} 之间的路线。`);
       }
 
@@ -556,6 +513,7 @@ export class WanxiangActivity extends plugin {
       // 统一保存状态并断开
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
+      tempClient = null;
 
       // 根据节点类型反馈
       if (node.type === 'COMBAT' || node.type === 'ELITE' || node.type === 'BOSS') {
@@ -623,6 +581,7 @@ export class WanxiangActivity extends plugin {
       const dataStr = await tempClient.get(KEY_PREFIX + userId);
       if (!dataStr) {
         await tempClient.disconnect();
+        tempClient = null;
         return;
       }
 
@@ -631,6 +590,7 @@ export class WanxiangActivity extends plugin {
 
       if (!node || (node.type !== 'REST' && node.type !== 'EVENT' && node.type !== 'SHOP')) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('当前不在事件节点，无法选择。');
       }
 
@@ -932,7 +892,7 @@ export class WanxiangActivity extends plugin {
       }
 
       await tempClient.disconnect();
-
+      tempClient = null;
 
     } catch (err) {
       console.error(err);
@@ -967,6 +927,7 @@ export class WanxiangActivity extends plugin {
       }
       
       await tempClient.disconnect();
+      tempClient = null;
     } catch (err) {
       console.error('[Wanxiang] quitRun Redis Error:', err);
       if (tempClient) await tempClient.disconnect();
@@ -982,6 +943,7 @@ export class WanxiangActivity extends plugin {
       tempClient = await getTempRedis();
       dataStr = await tempClient.get(KEY_PREFIX + userId);
       await tempClient.disconnect();
+      tempClient = null;
     } catch (err) {
       console.error('[Wanxiang] showStatus Redis Error:', err);
       if (tempClient) await tempClient.disconnect();
@@ -1048,6 +1010,7 @@ export class WanxiangActivity extends plugin {
       dataStr = await tempClient.get(KEY_PREFIX + userId);
       if (!dataStr) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('请先 #开启试炼。');
       }
 
@@ -1057,10 +1020,12 @@ export class WanxiangActivity extends plugin {
       const node = runData.current_node;
       if (!node) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('请先 #选择路线。');
       }
       if (node.type !== 'COMBAT' && node.type !== 'ELITE' && node.type !== 'BOSS') {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply(`当前是【${node.name}】节点，无法进行战斗。请发送 #事件选择 进行互动。`);
       }
 
@@ -1070,6 +1035,7 @@ export class WanxiangActivity extends plugin {
       if (!safeLayerConfig) {
         await tempClient.del(KEY_PREFIX + userId);
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('数据配置错误，无法加载关卡。');
       }
 
@@ -1181,6 +1147,7 @@ export class WanxiangActivity extends plugin {
         }
         await tempClient.del(KEY_PREFIX + userId);
         await tempClient.disconnect();
+        tempClient = null;
         return;
       }
 
@@ -1348,6 +1315,7 @@ export class WanxiangActivity extends plugin {
              await this.saveUserData(tempClient, userId, userData);
              await tempClient.del(KEY_PREFIX + userId);
              await tempClient.disconnect();
+             tempClient = null;
              e.reply(`恭喜通关万象天机！\n本次试炼共获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
              return;
         }
@@ -1427,6 +1395,7 @@ export class WanxiangActivity extends plugin {
 
         await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
         await tempClient.disconnect();
+        tempClient = null;
 
         let buffMsg = `【${node.name}】胜利！全队状态已保存。\n\n【天机赐福】${pickCount > 1 ? ` (可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
 
@@ -1448,6 +1417,7 @@ export class WanxiangActivity extends plugin {
              await this.saveUserData(tempClient, userId, userData);
              await tempClient.del(KEY_PREFIX + userId); 
              await tempClient.disconnect();
+             tempClient = null;
              e.reply(`战斗失败！你的队伍遭受重创。\n本次试炼结束，获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
         } else {
              // 没玉，只是保存死亡状态（允许复活？不，Roguelike通常死了就没了，除非有复活币）
@@ -1460,6 +1430,7 @@ export class WanxiangActivity extends plugin {
              // 通常 Boss战超时算输，直接结束。
              await tempClient.del(KEY_PREFIX + userId); 
              await tempClient.disconnect();
+             tempClient = null;
              e.reply('战斗超时或失败！试炼结束。');
         }
       }
@@ -1480,6 +1451,7 @@ export class WanxiangActivity extends plugin {
       dataStr = await tempClient.get(KEY_PREFIX + userId);
       if (!dataStr) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('请先 #开启试炼。');
       }
 
@@ -1487,11 +1459,13 @@ export class WanxiangActivity extends plugin {
 
       if (!runData.pending_buffs || runData.pending_buffs.length === 0) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('当前没有待选择的赐福，无法刷新。请先 #挑战。');
       }
 
       if (runData.refresh_count <= 0) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('刷新赐福的机会已用尽！');
       }
 
@@ -1561,6 +1535,7 @@ export class WanxiangActivity extends plugin {
 
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
+      tempClient = null;
 
       let buffMsg = `赐福已刷新！剩余刷新机会：${runData.refresh_count} 次。\n\n【天机赐福】\n请发送 #选择赐福 [序号] 获取增益：\n`;
       choices.forEach((b, i) => {
@@ -1588,17 +1563,20 @@ export class WanxiangActivity extends plugin {
 
       if (!dataStr) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('请先 #开启试炼。');
       }
 
       const runData = JSON.parse(dataStr);
       if (!runData.pending_buffs || runData.pending_buffs.length === 0) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply('当前没有待选择的赐福。请先 #挑战 获取胜利。');
       }
 
       if (selection < 1 || selection > runData.pending_buffs.length) {
         await tempClient.disconnect();
+        tempClient = null;
         return e.reply(`请选择 1-${runData.pending_buffs.length} 之间的序号。`);
       }
 
@@ -1636,12 +1614,14 @@ export class WanxiangActivity extends plugin {
         await this.processRouteGeneration(e, runData, tempClient, msg);
 
         await tempClient.disconnect();
+        tempClient = null;
         return;
       }
 
       // 还有剩余选择次数，保存状态
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
+      tempClient = null;
 
       // --- 发送反馈 (多选情况) ---
       if (runData.remaining_picks > 0) {
