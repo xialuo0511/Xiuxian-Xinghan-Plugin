@@ -1094,6 +1094,9 @@ export class WanxiangActivity extends plugin {
               battleConfig.base_stats.attack += Math.floor(originalStats.attack * buff.value);
             } else if (buff.type === 'def_pct') {
               battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
+            } else if (buff.type === 'max_hp_pct') {
+              // 生命上限提升
+              battleConfig.base_stats.health += Math.floor(originalStats.health * buff.value);
             } else if (buff.type === 'soul_exclusive') {
               // 星魂专属强化：必须匹配角色名
               if (buff.exclusive_soul && buff.exclusive_soul !== soulState.name) return;
@@ -1593,8 +1596,7 @@ export class WanxiangActivity extends plugin {
       // 扣除次数
       runData.remaining_picks = (runData.remaining_picks || 1) - 1;
 
-      // max_hp_pct 逻辑 (移除：已在战斗准备阶段通过动态计算实现血量上限提升与当前血量同步增加)
-      /*
+      // max_hp_pct 逻辑: 立即恢复等量生命值
       if (buffConfig && buffConfig.type === 'max_hp_pct') {
         runData.souls.forEach(soul => {
           if (!soul.is_dead) {
@@ -1602,9 +1604,8 @@ export class WanxiangActivity extends plugin {
             soul.current_hp += healAmount;
           }
         });
-        e.reply(`【${buffConfig.name}】生效！全员恢复了部分生命值。`);
+        // 提示信息将在后续统一发送
       }
-      */
 
       if (runData.remaining_picks <= 0) {
         runData.pending_buffs = []; // 次数用尽，清空
