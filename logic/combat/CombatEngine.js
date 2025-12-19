@@ -947,10 +947,27 @@ function calculateDamage(attacker, target, rawDamageInput) {
       attacker.receiveHeal(Math.floor(finalDmg));
   }
   
-  // ★★★★ 天道·因果报应 (反伤)
+  // ★★★★ 天道·因果报应 (反伤 - 不致死)
   if (target.global_buffs && target.global_buffs.includes('rainbow_thorns')) {
       reflectedDamage = Math.floor(finalDmg * 1.2);
-      attacker.takeDamage(reflectedDamage);
+      
+      // 计算护盾后的溢出伤害
+      let damageToHp = reflectedDamage;
+      if (attacker.shield > 0) {
+          damageToHp = Math.max(0, reflectedDamage - attacker.shield);
+      }
+      
+      // 限制HP伤害不超过 (当前HP - 1)
+      const maxHpDamage = Math.max(0, attacker.current_hp - 1);
+      
+      if (damageToHp > maxHpDamage) {
+          // 如果会致死，调整总伤害为 (护盾值 + 允许扣除的HP)
+          const actualReflect = (attacker.shield || 0) + maxHpDamage;
+          attacker.takeDamage(actualReflect);
+          reflectedDamage = actualReflect; // 更新显示的数值
+      } else {
+          attacker.takeDamage(reflectedDamage);
+      }
   }
 
   return {
