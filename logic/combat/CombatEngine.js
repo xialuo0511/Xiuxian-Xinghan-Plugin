@@ -929,11 +929,39 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
             
   
-                            // ★ 受击回能
+                                                        // ★ 受击回能
   
             
   
-                            target.addEnergy(10);
+                          
+  
+            
+  
+                                                        // 修正：具有终结技的敌人受击不回能
+  
+            
+  
+                          
+  
+            
+  
+                                                        if (target.team === 'player' || !target.skills.ultimate) {
+  
+            
+  
+                          
+  
+            
+  
+                                                            target.addEnergy(10);
+  
+            
+  
+                          
+  
+            
+  
+                                                        }
   
             
   
