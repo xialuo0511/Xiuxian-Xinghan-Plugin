@@ -255,10 +255,10 @@ export class Combatant {
   }
 
   /**
-   * 处理Debuff效果 (在回合开始时调用)
-   * @returns {array} 返回本次Debuff产生的效果列表 (用于日志)
+   * 触发回合开始效果 (DOT, 控制判定)
+   * ★ 关键修正：不再此处扣除 duration，移至 tickBuffDuration
    */
-  processDebuffs() {
+  triggerTurnStartEffects() {
       const results = [];
       this.is_frozen = false;
       this.is_stunned = false;
@@ -268,10 +268,8 @@ export class Combatant {
           return results;
       }
 
-      // 使用 reduce 重新构建 active_debuffs，同时处理移除逻辑
-      this.active_debuffs = this.active_debuffs.reduce((acc, debuff) => {
-          let keep = true;
-
+      // 遍历所有 active_debuffs，但不移除，只触发效果和更新 just_applied
+      this.active_debuffs.forEach(debuff => {
           if (debuff.type === 'freeze') {
               this.is_frozen = true;
           } else if (debuff.type === 'curse_water') {
@@ -303,7 +301,23 @@ export class Combatant {
                   });
               }
           }
+      });
 
+      return results;
+  }
+
+  /**
+   * 扣除 Buff 持续时间 (回合动作结束时调用)
+   */
+  tickBuffDuration() {
+      if (!this.isAlive()) {
+          this.active_debuffs = [];
+          return;
+      }
+
+      this.active_debuffs = this.active_debuffs.reduce((acc, debuff) => {
+          let keep = true;
+          
           debuff.duration--;
           
           if (debuff.duration <= 0) {
@@ -318,7 +332,5 @@ export class Combatant {
           if (keep) acc.push(debuff);
           return acc;
       }, []);
-
-      return results;
   }
 }

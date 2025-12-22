@@ -27,7 +27,7 @@ const UPGRADES = [
   { id: 2, name: '强韧之躯', desc: '所有星魂基础生命值 +10%', cost: 30, type: 'hp_pct', value: 0.10 },
   { id: 3, name: '鹰眼', desc: '所有星魂暴击率 +2%', cost: 30, type: 'crit_rate', value: 0.02 },
   { id: 4, name: '致命一击', desc: '所有星魂暴击伤害 +5%', cost: 30, type: 'crit_dmg', value: 0.05 },
-  { id: 5, name: '威压', desc: '战斗开始时，敌方全体造成的伤害强制为 1 (持续1回合)', cost: 100, type: 'start_debuff', value: 1, duration: 2 }
+  { id: 5, name: '威压', desc: '战斗开始时，敌方全体造成的伤害强制为 1 (持续1回合)', cost: 100, type: 'start_debuff', value: 1, duration: 1 }
 ];
 
 // 临时辅助函数：创建连接
@@ -1205,7 +1205,7 @@ export class WanxiangActivity extends plugin {
         
         // 应用威压效果 (初始虚弱)
         if (hasCoercion) {
-            mob.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 2, caster_id: 'system' }];
+            mob.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
         }
 
         return mob;

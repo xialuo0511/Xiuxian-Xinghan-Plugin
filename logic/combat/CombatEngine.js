@@ -214,7 +214,8 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
     }
 
     // 结算 activeUnit 的 Debuff (如毒)
-    const debuffResults = activeUnit.processDebuffs();
+    // ★ 关键修改：只触发效果，不扣除回合数
+    const debuffResults = activeUnit.triggerTurnStartEffects();
     if (debuffResults.length > 0) {
       combatLog.push({
         type: 'action',
@@ -302,6 +303,8 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
                   enemy: enemyTeam.map(getUnitStatus)
                 }
             });
+            // ★ 关键修改：行动跳过也要扣除 Buff 持续时间
+            activeUnit.tickBuffDuration();
             activeUnit.resetAV();
             continue;
         }
@@ -435,17 +438,18 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
           id: activeUnit.id
         },
         targets: allActionResults,
-        teamStatus: {
-          player: playerTeam.map(getUnitStatus),
-          enemy: enemyTeam.map(getUnitStatus)
-        }
-      });
-      
-      if (activeUnit.is_extra_turn_pending) activeUnit.is_extra_turn_pending = false;
-    }
-
-    activeUnit.resetAV();
-
+                  teamStatus: {
+                    player: playerTeam.map(getUnitStatus),
+                    enemy: enemyTeam.map(getUnitStatus)
+                  }
+                });
+                
+                if (activeUnit.is_extra_turn_pending) activeUnit.is_extra_turn_pending = false;
+              }
+        
+              // ★ 关键修改：行动结束后扣除 Buff 持续时间
+              activeUnit.tickBuffDuration();
+              activeUnit.resetAV();
     // ★★ 风驰电掣 (首轮再动)
     if (activeUnit.global_buffs && activeUnit.global_buffs.includes('double_act')) {
         if (!activeUnit.has_acted_once) {
