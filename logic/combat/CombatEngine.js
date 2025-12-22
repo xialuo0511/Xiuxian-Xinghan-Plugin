@@ -855,12 +855,8 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
             
   
-                            // Debuff: 威压 (伤害强制为1)
-                            if (attacker.active_debuffs && attacker.active_debuffs.some(d => d.type === 'force_dmg_one')) {
-                                finalDmg = 1;
-                            } else {
-                                finalDmg = Math.max(1, finalDmg);
-                            }
+                            // 基础伤害保底
+                            finalDmg = Math.max(1, finalDmg);
   
             
   
@@ -880,6 +876,11 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
             
   
+                            }
+
+                            // Debuff: 威压 (伤害强制为1)
+                            if (attacker.active_debuffs && attacker.active_debuffs.some(d => d.type === 'force_dmg_one')) {
+                                finalDmg = 1;
                             }
   
             
