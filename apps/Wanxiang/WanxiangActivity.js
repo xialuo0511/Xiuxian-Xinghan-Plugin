@@ -447,18 +447,57 @@ export class WanxiangActivity extends plugin {
         let jade = Math.floor((node.type === 'BOSS' ? 30 : 5) * (1 + (runData.total_profit || 0)));
         let gold = Math.floor((Math.random() * 20 + 10) * (activeOaths.some(o => o.name === '俭省') ? 0.5 : 1));
         let extraMsg = '', skipBuffChoice = false;
+
+        // --- 统计击败的妖兽数量并计算个体奖励 ---
+        const defeatedTreasures = result.enemyTeam.filter(et => et.name === '盗宝妖兽' && et.current_hp <= 0 && !et.has_fled);
+        let treasureGoldTotal = 0;
+        let treasureBuffsNames = [];
+
+        defeatedTreasures.forEach(() => {
+            if (Math.random() < 0.7) {
+                treasureGoldTotal += 50;
+            } else {
+                const pool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+                if (pool.length > 0) {
+                    // 30% 概率得赐福，极低概率四星
+                    let targetRarity = 1;
+                    const r = Math.random();
+                    if (r < 0.02) targetRarity = 4;
+                    else if (r < 0.15) targetRarity = 3;
+                    else if (r < 0.45) targetRarity = 2;
+                    const b = pool.filter(p => p.rarity === targetRarity).sort(() => Math.random() - 0.5)[0] || pool[0];
+                    runData.buffs.push(b.id);
+                    treasureBuffsNames.push(b.name);
+                }
+            }
+        });
+
         if (node.type === 'MONSTER_TREASURE') {
-            const killed = result.enemyTeam.filter(et => et.current_hp <= 0 && !et.has_fled).length;
-            gold = killed === 3 ? 300 : 250; extraMsg = `\n击败了 ${killed} 只妖兽，获得 ${gold} 天机印！`;
+            const killed = defeatedTreasures.length;
+            gold = killed === 3 ? 300 : 250; 
+            gold += treasureGoldTotal; // 累加个体掉落的金币
+            extraMsg = `\n【妖兽猎人】击败妖兽：${killed}/3`;
+            if (treasureGoldTotal > 0) extraMsg += `\n额外获得：${treasureGoldTotal} 天机印`;
+            if (treasureBuffsNames.length > 0) extraMsg += `\n额外获得赐福：${treasureBuffsNames.join('、')}`;
+            
             skipBuffChoice = true;
             if (killed === 3) {
                 const pool = BUFFS.filter(b => (b.rarity === 3 || b.rarity === 4) && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
-                if (pool.length > 0) { const b = pool[Math.floor(Math.random() * pool.length)]; runData.buffs.push(b.id); extraMsg += `\n【完美达成】获得随机高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`; }
+                if (pool.length > 0) { 
+                    const b = pool[Math.floor(Math.random() * pool.length)]; 
+                    runData.buffs.push(b.id); 
+                    extraMsg += `\n【完美通关】获得高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`; 
+                }
             }
         } else {
-            const killedExtra = result.enemyTeam.filter(et => et.name === '盗宝妖兽' && et.current_hp <= 0 && !et.has_fled).length;
-            if (killedExtra > 0) { if (Math.random() < 0.7) { gold += 50; extraMsg = `\n额外击败了乱入的妖兽，获得 50 天机印！`; } else { const bP = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)); const b = bP[Math.floor(Math.random() * bP.length)]; runData.buffs.push(b.id); extraMsg = `\n额外击败了乱入的妖兽，获得随机赐福：【${b.name}】！`; } }
+            // 普通战斗乱入
+            if (defeatedTreasures.length > 0) {
+                gold += treasureGoldTotal;
+                if (treasureGoldTotal > 0) extraMsg += `\n额外击败妖兽，获得 ${treasureGoldTotal} 天机印！`;
+                if (treasureBuffsNames.length > 0) extraMsg += `\n额外击败妖兽，获得赐福：${treasureBuffsNames.join('、')}！`;
+            }
         }
+        
         runData.jing_yin += gold; runData.temp_jade += jade;
         if (runData.layer >= 20) {
           const ud = await this.getUserData(tempClient, userId); const bonus = (runData.total_profit >= 1.0) ? 150 : 0;
