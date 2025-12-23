@@ -174,8 +174,7 @@ export class WanxiangActivity extends plugin {
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); await tempClient.disconnect();
       const oathText = activeOaths.length > 0 ? `
 已激活誓约：${activeOaths.map(o => `【${o.name}】`).join('、')} (结算收益 +${(totalProfit * 100).toFixed(0)}%)` : '';
-      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点，发送 #挑战 即可开始。`].join('
-'));
+      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点，发送 #挑战 即可开始。`].join('\n'));
     } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('系统错误：' + err.message); }
   }
 
@@ -462,7 +461,17 @@ export class WanxiangActivity extends plugin {
           const dFP = await new Show(e).get_imgData('astral_combat_log', rData);
           dFP.imgType = 'jpeg'; dFP.quality = 80;
           const imgResult = await puppeteer.screenshot('astral_combat_log', dFP);
-          let finalBuffer = Buffer.isBuffer(imgResult) ? imgResult : (imgResult?.file ? (Buffer.isBuffer(imgResult.file) ? imgResult.file : Buffer.from(imgResult.file.replace(/^base64:\/\/, '').replace(/^data:image\/\w+;base64,/, ''), 'base64')) : null);
+          let finalBuffer = null;
+          if (Buffer.isBuffer(imgResult)) {
+            finalBuffer = imgResult;
+          } else if (imgResult?.file) {
+            if (Buffer.isBuffer(imgResult.file)) {
+              finalBuffer = imgResult.file;
+            } else if (typeof imgResult.file === 'string') {
+              let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
+              finalBuffer = Buffer.from(base64Data, 'base64');
+            }
+          }
           if (finalBuffer) {
             const filePath = path.join(tempDir, `Log_${userId}_${Date.now()}_P${i + 1}.jpg`);
             fs.writeFileSync(filePath, finalBuffer);
