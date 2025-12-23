@@ -144,8 +144,7 @@ export class WanxiangActivity extends plugin {
         await tempClient.disconnect(); return e.reply(`由于刚刚挑战失败，天机紊乱，请在 ${remaining} 秒后重新开始。`);
       }
       const inputStr = e.msg.replace('#开启试炼', '').trim();
-      const selectedOaths = inputStr ? inputStr.split(/[​
-	 ,，]+/).filter(Boolean) : [];
+      const selectedOaths = inputStr ? inputStr.split(/[\s,，]+/).filter(Boolean) : [];
       const activeOaths = []; let totalProfit = 0;
       if (selectedOaths.length > 0) {
         if (!userData.cleared) { await tempClient.disconnect(); return e.reply('只有完整通关一次基础的 20 层方可开启誓约挑战。'); }
