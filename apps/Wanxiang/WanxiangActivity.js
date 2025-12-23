@@ -269,13 +269,13 @@ export class WanxiangActivity extends plugin {
       if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) e.reply(`你选择了【${node.name}】。
 敌人已在前方，发送 #挑战 开始战斗！`);
       else if (node.type === 'SHOP') {
-        let msg = `你遇到了云游散修，他向你展示了行囊。
-当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
+        let msg = `你遇到了云游散修，他向你展示了行囊。\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
         runData.shop_items.forEach((it, i) => {
           const stars = '★'.repeat(it.rarity || 1);
-          msg += `${i + 1}. 【${it.name}】${it.bought ? '(已售罄)' : `💰${it.price}`}\n   📜 [${stars}] ${it.desc}\n`;
+          const typeIcon = it.type === 'artifact' ? '📦' : '📜';
+          msg += `${i + 1}. ${typeIcon} 【${it.name}】${it.bought ? '(已售罄)' : `💰${it.price}`}\n   [${stars}] ${it.desc}\n`;
         });
-        e.reply(msg + `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品\n${runData.shop_items.length + 2}. 【离开】 继续前进\n发送 #事件选择 [序号] 购买或离开。`);
+        e.reply(msg + `\n${runData.shop_items.length + 1}. 🔄 【刷新】 更换一批商品\n${runData.shop_items.length + 2}. 🏃 【离开】 继续前进\n发送 #事件选择 [序号] 确认。`);
       } else if (node.type === 'REST') e.reply('你来到了一处隐蔽的营地，这里似乎很安全。\n\n1. 【休养生息】 全队恢复 40% 生命值\n2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)\n3. 【冥想】 获得 1 次赐福刷新机会\n\n发送 #事件选择 [序号] 确认。');
       else if (node.type === 'EVENT') {
         const sub = runData.current_node.sub_type;
