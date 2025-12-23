@@ -308,6 +308,38 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             activeUnit.resetAV();
             continue;
         }
+
+    // --- 盗宝妖兽特殊逻辑 ---
+    if (activeUnit.source.is_treasure) {
+        activeUnit.turns_acted = (activeUnit.turns_acted || 0) + 1;
+        if (activeUnit.turns_acted >= 3) {
+            activeUnit.current_hp = 0; // 逃离视同“死亡”移除
+            activeUnit.has_fled = true;
+            combatLog.push({ 
+                type: 'system', 
+                text: `💨 【${activeUnit.name}】 见势不妙，一溜烟逃走了！`,
+                teamStatus: {
+                    player: playerTeam.map(getUnitStatus),
+                    enemy: enemyTeam.map(getUnitStatus)
+                }
+            });
+            activeUnit.resetAV();
+            continue;
+        } else {
+            combatLog.push({ 
+                type: 'system', 
+                text: `💎 【${activeUnit.name}】 正在左顾右盼，寻找逃跑机会... (行动次数: ${activeUnit.turns_acted}/3)`,
+                teamStatus: {
+                    player: playerTeam.map(getUnitStatus),
+                    enemy: enemyTeam.map(getUnitStatus)
+                }
+            });
+            activeUnit.tickBuffDuration();
+            activeUnit.resetAV();
+            continue;
+        }
+    }
+
     // --- 行动逻辑 ---
     let skillConfig = null;
     let isUltimate = false;
