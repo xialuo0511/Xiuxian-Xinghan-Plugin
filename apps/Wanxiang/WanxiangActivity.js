@@ -321,16 +321,16 @@ export class WanxiangActivity extends plugin {
           else if (r < 0.1) { const b = filterPool(3)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `不错！你获得了三星赐福【${b.name}】！`; } else replyMsg = '空的。'; }
           else if (r < 0.7) { const b = filterPool(2)[0] || filterPool(1)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `获得赐福【${b.name}】。`; } else replyMsg = '空的。'; }
           else replyMsg = '空空如也...什么都没抽到。';
-          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + '\n还可以抽奖 ' + (3 - node.event_count) + ' 次。'); return; }
+          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + `\n还可以抽奖 ${3 - node.event_count} 次.\n2. 【离开】`); return; }
         } else if (sub === 'vending_machine_weird' && selection === 1) {
           if (runData.jing_yin < 25 || node.event_count >= 3) return e.reply('售货机已熄灭。');
           runData.jing_yin -= 25; node.event_count++; const r = Math.random();
           if (r < 0.1) { runData.souls.forEach(s => s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.9))); replyMsg = '诡异的烟雾让你感到虚弱 (当前生命值-10%)。'; }
-          else if (r < 0.2) { runData.souls.forEach(s => s.current_hp = Math.min(s.max_hp, Math.floor(s.current_hp * 1.1))); replyMsg = '你感到一阵暖流 (恢复10%生命)。'; }
+          else if (r < 0.2) { runData.souls.forEach(s => s.current_hp = Math.min(s.max_hp, Math.floor(s.current_hp * 1.1))); replyMsg = '一股暖流涌入，全体星魂恢复了 10% 生命值。'; }
           else if (r < 0.4) { runData.extra_atk_pct = (runData.extra_atk_pct || 0) + 1.0; replyMsg = '一名星魂杀气大增 (总攻击+100%)！'; }
           else if (r < 0.6) { const oath = OATHS[Math.floor(Math.random() * OATHS.length)]; runData.active_oaths.push({ ...oath, profit: oath.profit + 0.1 }); replyMsg = `干扰：获得誓约【${oath.name}】效果，且结算收益+10%！`; }
           else replyMsg = '售货机发出了奇怪的咔哒声，但什么都没发生。';
-          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + '\n还可以抽奖 ' + (3 - node.event_count) + ' 次。'); return; }
+          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + `\n还可以抽奖 ${3 - node.event_count} 次.\n2. 【离开】`); return; }
         } else if (sub === 'gamble_all' && selection === 1) { runData.souls.forEach(s => s.current_hp = 1); runData.gamble_buff = true; replyMsg = '契约成立！你感到力量在燃烧，但生命已如风中残烛。'; isDone = true; }
         else if (sub === 'ultimate_boost' && selection === 1) { runData.souls.forEach(s => { s.is_dead = false; s.current_hp = s.max_hp; const b = BUFFS.find(b => b.type === 'soul_exclusive' && b.exclusive_soul === s.name && b.rarity === 3); if (b && !runData.buffs.includes(b.id)) runData.buffs.push(b.id); }); replyMsg = '圣光洗礼！全员复活并获得了专属强化！'; isDone = true; }
         else if (sub === 'soul_enhance' && selection === 1) { const b = BUFFS.find(b => b.type === 'soul_exclusive' && runData.souls.some(s => s.name === b.exclusive_soul) && !runData.buffs.includes(b.id)); if (b) { runData.buffs.push(b.id); replyMsg = `老者传授了你【${b.name}】的奥秘！`; } else replyMsg = '老者摇了摇头，转过身去。'; isDone = true; }
