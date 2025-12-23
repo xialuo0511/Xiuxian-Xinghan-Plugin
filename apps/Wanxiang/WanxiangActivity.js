@@ -32,7 +32,7 @@ const OATHS = [
   { name: '孤行', desc: '只能上阵 2 名星魂（队伍配置中的1、2号位）', profit: 0.5 },
   { name: '禁术', desc: '星魂无法使用终结技，所有星魂的攻击力 +20%', profit: 0.4 },
   { name: '血契', desc: '全队最大生命值 -50%，但攻击力 +20%', profit: 0.3 },
-  { name: '贫苦', desc: '本局无法获得天机印，无法在商店买Buff', profit: 0.3 },
+  { name: '贫苦', desc: '本局无法获得天机印，无法在云游散修处购买增益', profit: 0.3 },
   { name: '坚毅', desc: '敌方单位会在进入战斗的时候获得生命上限30%的护盾', profit: 0.3 },
   { name: '压制', desc: '进入战斗后我方单位造成的伤害必定为1，持续一回合', profit: 0.3 },
   { name: '变数', desc: '首领节点结算后不会再必定刷新三星以上赐福，而是按照正常概率刷新', profit: 0.25 },
@@ -193,7 +193,7 @@ export class WanxiangActivity extends plugin {
     }
     if (layer % 5 === 4) {
       options.push({ type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 0 });
-      options.push({ type: 'SHOP', name: '商店', desc: '偶遇云游天下的散修，可用天机印交换宝物。', weight: 0 });
+      options.push({ type: 'SHOP', name: '云游散修', desc: '偶遇云游天下的散修，可用天机印交换宝物。', weight: 0 });
       const total = availableTypes.reduce((acc, t) => acc + t.weight, 0); let r = Math.random() * total;
       for (let t of availableTypes) { r -= t.weight; if (r <= 0) { options.push({ ...t }); break; } }
       return options;
@@ -242,7 +242,7 @@ export class WanxiangActivity extends plugin {
       if (node.type === 'SHOP') {
         if (runData.active_oaths?.some(o => o.name === '贫苦')) {
           runData.layer++; await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-          await this.processRouteGeneration(e, runData, tempClient, '你遇到了云游散修，但他感应到你身无分文（由于誓约·贫苦），摆了摆手拒绝了你。');
+          await this.processRouteGeneration(e, runData, tempClient, '云游散修已离开。');
           await tempClient.disconnect(); return;
         }
         runData.shop_items = []; runData.shop_refresh_count = 1;
