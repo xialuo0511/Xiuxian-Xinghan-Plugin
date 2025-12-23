@@ -353,9 +353,26 @@ export class WanxiangActivity extends plugin {
               e.reply(`${replyMsg}\n\n1. 【抽奖一次】 消耗 25 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
               return; 
           }
-        } else if (sub === 'gamble_all' && selection === 1) { runData.souls.forEach(s => s.current_hp = 1); runData.gamble_buff = true; replyMsg = '契约成立！你感到力量在燃烧，但生命已如风中残烛。'; isDone = true; }
-        else if (sub === 'ultimate_boost' && selection === 1) { runData.souls.forEach(s => { s.is_dead = false; s.current_hp = s.max_hp; const b = BUFFS.find(b => b.type === 'soul_exclusive' && b.exclusive_soul === s.name && b.rarity === 3); if (b && !runData.buffs.includes(b.id)) runData.buffs.push(b.id); }); replyMsg = '圣光洗礼！全员复活并获得了专属强化！'; isDone = true; }
-        else if (sub === 'soul_enhance' && selection === 1) { const b = BUFFS.find(b => b.type === 'soul_exclusive' && runData.souls.some(s => s.name === b.exclusive_soul) && !runData.buffs.includes(b.id)); if (b) { runData.buffs.push(b.id); replyMsg = `老者传授了你【${b.name}】的奥秘！`; } else replyMsg = '老者摇了摇头，转过身去。'; isDone = true; }
+        } else if (sub === 'vending_machine' && (selection === 1 || selection === 2)) {
+           if (selection === 1) {
+               runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.8)); });
+               const pool = BUFFS.filter(b => b.rarity <= 2 && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
+               const picked = pool.slice(0, 3);
+               picked.forEach(b => runData.buffs.push(b.id));
+               replyMsg = `支付了生命能量，你获得了：${picked.map(b => `【${b.name}】`).join('、')}！`;
+           } else {
+               if (Math.random() < 0.5) {
+                   const pool = BUFFS.filter(b => b.rarity === 3 && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+                   const b = pool[Math.floor(Math.random() * pool.length)] || BUFFS[0];
+                   runData.buffs.push(b.id);
+                   replyMsg = `咔哒一声！售货机被砸开了，你捡到了【${b.name}】！`;
+               } else {
+                   runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.8)); });
+                   replyMsg = '售货机纹丝不动，反震力让你感到气血翻腾 (生命值-20%)。';
+               }
+           }
+           isDone = true;
+        } else if (sub === 'soul_enhance' && selection === 1) { const b = BUFFS.find(b => b.type === 'soul_exclusive' && runData.souls.some(s => s.name === b.exclusive_soul) && !runData.buffs.includes(b.id)); if (b) { runData.buffs.push(b.id); replyMsg = `老者传授了你【${b.name}】的奥秘！`; } else replyMsg = '老者摇了摇头，转过身去。'; isDone = true; }
         else { replyMsg = '你谨慎地离开了。'; isDone = true; }
       }
       if (isDone) { runData.layer++; await this.processRouteGeneration(e, runData, tempClient, replyMsg); } 
