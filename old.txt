@@ -1,0 +1,463 @@
+async challengeLayer(e) {
+    const userId = e.user_id;
+    let tempClient = null;
+    let runData = null;
+    let dataStr = null;
+
+    try {
+      tempClient = await getTempRedis();
+      dataStr = await tempClient.get(KEY_PREFIX + userId);
+      if (!dataStr) {
+        await tempClient.disconnect();
+        tempClient = null;
+        return e.reply('请先 #开启试炼。');
+      }
+
+      runData = JSON.parse(dataStr);
+
+      // --- 节点检查 ---
+      const node = runData.current_node;
+      if (!node) {
+        await tempClient.disconnect();
+        tempClient = null;
+        return e.reply('请先 #选择路线。');
+      }
+      if (node.type !== 'COMBAT' && node.type !== 'ELITE' && node.type !== 'BOSS') {
+        await tempClient.disconnect();
+        tempClient = null;
+        return e.reply(`当前是【${node.name}】节点，无法进行战斗。请发送 #事件选择 进行互动。`);
+      }
+
+      const layerConfig = STAGES.find(s => s.layer === runData.layer);
+      const safeLayerConfig = layerConfig || STAGES[STAGES.length - 1];
+
+      if (!safeLayerConfig) {
+        await tempClient.del(KEY_PREFIX + userId);
+        await tempClient.disconnect();
+        tempClient = null;
+        return e.reply('数据配置错误，无法加载关卡。');
+      }
+
+      // 计算天机秘术动态加成
+      const userLevel = runData.user_level || 0;
+      let bonusCrit = 0;
+      let bonusCritDmg = 0;
+      let bonusAtk = 0;
+      let bonusHpPct = 0;
+      let hasCoercion = false;
+
+      UPGRADES.forEach(u => {
+        if (userLevel >= u.id) {
+          if (u.type === 'crit_rate') bonusCrit += u.value;
+          if (u.type === 'crit_dmg') bonusCritDmg += u.value;
+          if (u.type === 'atk_flat') bonusAtk += u.value;
+          if (u.type === 'hp_pct') bonusHpPct += u.value;
+          if (u.type === 'start_debuff') hasCoercion = true;
+        }
+      });
+
+      // 1. 准备我方战斗单位 (应用血量继承)
+      const battleSouls = [];
+      const deadSouls = [];
+
+      for (const soulState of runData.souls) {
+        if (soulState.is_dead) {
+          deadSouls.push(soulState.name);
+          continue;
+        }
+
+        // 找到原始配置
+        const originalConfig = ALL_SOULS.find(s => s.name === soulState.name);
+        if (originalConfig) {
+          // 浅拷贝配置
+          const battleConfig = { ...originalConfig };
+          battleConfig.base_stats = { ...originalConfig.base_stats };
+
+          // ★ 应用天机秘术基础加成 (确保与 startRun/showStatus 一致)
+          battleConfig.base_stats.health = Math.floor(battleConfig.base_stats.health * (1 + bonusHpPct));
+          battleConfig.base_stats.attack += bonusAtk;
+
+          // 注入当前血量
+          battleConfig.current_hp_inherit = soulState.current_hp;
+
+          // 应用天机秘术加成 (暴击/爆伤)
+          battleConfig.crit_rate = (battleConfig.crit_rate || 0) + bonusCrit;
+          battleConfig.crit_dmg = (battleConfig.crit_dmg || 1.5) + bonusCritDmg;
+
+          // 记录原始属性，用于计算百分比加成
+          const originalStats = {
+            health: battleConfig.base_stats.health,
+            attack: battleConfig.base_stats.attack,
+            defense: battleConfig.base_stats.defense
+          };
+
+          // 注入 Buff
+          const activeBuffs = runData.buffs || [];
+          activeBuffs.forEach(buffId => {
+            const buff = BUFFS.find(b => b.id === buffId);
+            if (!buff) return;
+
+            switch (buff.type) {
+                case 'atk_pct':
+                    battleConfig.base_stats.attack += Math.floor(originalStats.attack * buff.value);
+                    break;
+                case 'def_pct':
+                    battleConfig.base_stats.defense += Math.floor(originalStats.defense * buff.value);
+                    break;
+                case 'max_hp_pct':
+                    // 生命上限提升
+                    battleConfig.base_stats.health += Math.floor(originalStats.health * buff.value);
+                    break;
+                case 'soul_exclusive':
+                    // 星魂专属强化：必须匹配角色名
+                    if (buff.exclusive_soul && buff.exclusive_soul === soulState.name) {
+                        if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
+                        battleConfig.global_buffs.push(buff.id);
+
+                        // 数值类直接生效
+                        if (buff.id === 'soul_enhancement_wutu') {
+                            const hpAdd = Math.floor(originalStats.health * 1.0);
+                            battleConfig.base_stats.health += hpAdd;
+                            if (battleConfig.current_hp_inherit !== undefined) {
+                                battleConfig.current_hp_inherit += hpAdd;
+                            }
+                            battleConfig.initial_energy = 999; // 满能
+                        } else if (buff.id === 'soul_enhancement_yimu') {
+                            battleConfig.base_stats.attack += Math.floor(originalStats.attack * 1.0);
+                        }
+                    }
+                    break;
+                case 'crit_rate':
+                    battleConfig.crit_rate = (battleConfig.crit_rate || 0) + buff.value;
+                    break;
+                case 'crit_dmg':
+                    battleConfig.crit_dmg = (battleConfig.crit_dmg || 1.5) + buff.value;
+                    break;
+                case 'element_dmg':
+                    if (!battleConfig.elemental_buffs) battleConfig.elemental_buffs = {};
+                    if (!battleConfig.elemental_buffs[buff.element]) battleConfig.elemental_buffs[buff.element] = 0;
+                    battleConfig.elemental_buffs[buff.element] += buff.value;
+                    break;
+                case 'heal_turn':
+                    if (!battleConfig.passive_skills) battleConfig.passive_skills = [];
+                    battleConfig.passive_skills.push({ type: 'heal_turn', value: buff.value, name: buff.name });
+                    break;
+                case 'energy_regen_pct':
+                    if (!battleConfig.base_stats.energy_regen) battleConfig.base_stats.energy_regen = 20;
+                    battleConfig.base_stats.energy_regen = Math.floor(battleConfig.base_stats.energy_regen * (1 + buff.value));
+                    break;
+                default:
+                    if (!battleConfig.global_buffs) battleConfig.global_buffs = [];
+                    battleConfig.global_buffs.push(buff.type);
+                    break;
+            }
+          });
+          battleSouls.push(battleConfig);
+        }
+      }
+
+      if (battleSouls.length === 0) {
+        // 全员阵亡，试炼结束 (结算玉)
+        if (runData.temp_jade > 0) {
+             const userData = await this.getUserData(tempClient, userId);
+             userData.jade += runData.temp_jade;
+             await this.saveUserData(tempClient, userId, userData);
+             e.reply(`你的队伍已全军覆没，试炼失败！本次获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。\n请 #退出试炼 重新开始。`);
+        } else {
+             e.reply('你的队伍已全军覆没，试炼失败！请 #退出试炼 重新开始。');
+        }
+        await tempClient.del(KEY_PREFIX + userId);
+        await tempClient.disconnect();
+        tempClient = null;
+        return;
+      }
+
+      // 2. 准备敌方 (应用动态难度缩放)
+      const enemyNames = safeLayerConfig.monsters || [];
+      e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n敌人：${enemyNames.join('、')}\n战斗进行中...`);
+
+      const enemyTeamConfig = enemyNames.map(name => {
+        const original = ALL_MONSTERS.find(m => m.name === name);
+        if (!original) return null;
+
+        const mob = JSON.parse(JSON.stringify(original));
+        let multiplier = 1 + (runData.layer - 1) * 0.08;
+
+        if (node.type === 'ELITE') multiplier *= 1.3; 
+        if (node.type === 'BOSS') multiplier *= 1.5;  
+
+        mob.base_stats.health = Math.floor(mob.base_stats.health * multiplier);
+        mob.base_stats.attack = Math.floor(mob.base_stats.attack * multiplier);
+        mob.base_stats.defense = Math.floor(mob.base_stats.defense * multiplier);
+        
+        // 应用威压效果 (初始虚弱)
+        if (hasCoercion) {
+            mob.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
+        }
+
+        return mob;
+      }).filter(Boolean);
+
+      const maxRounds = (node.type === 'BOSS') ? 20 : 10;
+      const result = await runCombat(battleSouls, enemyTeamConfig, runData.buffs, maxRounds);
+      const finalPlayerCombatants = result.playerTeam;
+
+      for (const soulState of runData.souls) {
+        const combatant = finalPlayerCombatants.find(c => c.name === soulState.name);
+        if (combatant) {
+          soulState.current_hp = combatant.current_hp;
+          if (combatant.current_hp <= 0) {
+            soulState.is_dead = true;
+            soulState.current_hp = 0;
+          }
+        }
+      }
+
+      // 渲染日志
+      const fullLog = result.log;
+      const slices = [];
+      let currentSlice = [];
+      let roundCountInSlice = 0;
+
+      for (const entry of fullLog) {
+        if (entry.type === 'turn') {
+          roundCountInSlice++;
+          if (roundCountInSlice > 8) { 
+            if (currentSlice.length > 0) slices.push(currentSlice);
+            currentSlice = [];
+            roundCountInSlice = 1;
+          }
+        }
+        currentSlice.push(entry);
+      }
+      if (currentSlice.length > 0) slices.push(currentSlice);
+
+      const tempDir = path.join(process.cwd(), 'data', 'temp', 'wanxiang');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const imgPaths = [];
+
+      try {
+        for (let i = 0; i < slices.length; i++) {
+          const sliceLog = slices[i];
+          const renderData = {
+            log: sliceLog,
+            pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+          };
+
+          const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
+          dataForPuppeteer.imgType = 'jpeg';
+          dataForPuppeteer.quality = 80;
+
+          const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
+
+          let finalBuffer = null;
+          if (Buffer.isBuffer(imgResult)) {
+            finalBuffer = imgResult;
+          } else if (typeof imgResult === 'object' && imgResult.file) {
+            if (Buffer.isBuffer(imgResult.file)) {
+              finalBuffer = imgResult.file;
+            } else if (typeof imgResult.file === 'string') {
+              let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
+              finalBuffer = Buffer.from(base64Data, 'base64');
+            }
+          }
+
+          if (finalBuffer && finalBuffer.length > 0) {
+            const fileName = `Combat_Log_${userId}_${Date.now()}_Part${i + 1}.jpg`;
+            const filePath = path.join(tempDir, fileName);
+            fs.writeFileSync(filePath, finalBuffer);
+            imgPaths.push(filePath);
+          } else {
+            console.error(`[Wanxiang] Slice ${i + 1} generation failed (0 bytes)`);
+          }
+        }
+
+        if (imgPaths.length > 0) {
+          for (let i = 0; i < imgPaths.length; i++) {
+            const p = imgPaths[i];
+            try {
+              const imageSendResult = await e.reply(segment.image(p));
+              const isFailure = !imageSendResult || imageSendResult.error || (imageSendResult.result === -1);
+              if (isFailure) {
+                const fileName = path.basename(p);
+                await e.reply({ type: 'file', file: p, name: fileName });
+              }
+            } catch (imgSendErr) {
+              const fileName = path.basename(p);
+              await e.reply({ type: 'file', file: p, name: fileName });
+            }
+            if (i < imgPaths.length - 1) {
+              await new Promise(r => setTimeout(r, 1000));
+            }
+          }
+        } else {
+          e.reply('战报生成失败：所有分片均为空。');
+        }
+
+      } catch (err) {
+        console.error('[Wanxiang] Combat Log Generation Error:', err);
+        e.reply('战报生成出错，请查看后台日志。');
+      } finally {
+        setTimeout(() => {
+          imgPaths.forEach(p => {
+            try {
+              if (fs.existsSync(p)) fs.unlinkSync(p);
+            } catch (e) {
+              console.error('Failed to delete temp file:', p);
+            }
+          });
+        }, 60000);
+      }
+
+      if (result.playerWon) {
+        // --- 胜利后逻辑 ---
+        
+        // 1. 计算天机玉掉落
+        let jadeDrop = 0;
+        if (node.type === 'BOSS') {
+            jadeDrop = 30;
+        } else {
+            jadeDrop = 5;
+        }
+        
+        // 累加并封顶
+        const currentJade = runData.temp_jade || 0;
+        const newJade = Math.min(200, currentJade + jadeDrop);
+        runData.temp_jade = newJade;
+
+        // 2. 检查是否通关 (层数 >= 20 且是BOSS战胜利)
+        // 假设 STAGES 定义的最后一层是 20
+        if (runData.layer >= 20) {
+             const userData = await this.getUserData(tempClient, userId);
+             userData.jade += runData.temp_jade;
+             await this.saveUserData(tempClient, userId, userData);
+             await tempClient.del(KEY_PREFIX + userId);
+             await tempClient.disconnect();
+             tempClient = null;
+             e.reply(`恭喜通关万象天机！\n本次试炼共获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
+             return;
+        }
+
+        runData.layer++; 
+
+        // --- 天机印掉落 ---
+        let jing_yin_drop_min = 0;
+        let jing_yin_drop_max = 0;
+        if (node.type === 'COMBAT') {
+          jing_yin_drop_min = 10;
+          jing_yin_drop_max = 20;
+        } else if (node.type === 'ELITE') {
+          jing_yin_drop_min = 30;
+          jing_yin_drop_max = 50;
+        } else if (node.type === 'BOSS') {
+          jing_yin_drop_min = 80;
+          jing_yin_drop_max = 120;
+        }
+
+        let total_jing_yin_drop = Math.floor(Math.random() * (jing_yin_drop_max - jing_yin_drop_min + 1)) + jing_yin_drop_min;
+        if (runData.artifacts.includes('treasure_bowl')) {
+          total_jing_yin_drop = Math.floor(total_jing_yin_drop * 1.3); 
+        }
+
+        runData.jing_yin += total_jing_yin_drop;
+
+        let pickCount = 1;
+        if (node.type === 'ELITE') pickCount = 2;
+
+        runData.remaining_picks = pickCount;
+
+        const choices = [];
+        const UNIQUE_BUFFS = ['double_act_first_turn',
+          'heal_after_turn_1',
+          'heal_after_turn_2',
+          'heal_after_turn_3',
+          'shield_heal'];
+        const acquiredBuffs = runData.buffs || [];
+
+        let currentWeights = { 1: 80, 2: 40, 3: 10, 4: 0 };
+        if (node.type === 'ELITE') {
+          currentWeights = { 1: 20, 2: 60, 3: 30, 4: 5 };
+        } else if (node.type === 'BOSS') {
+          currentWeights = { 1: 0, 2: 0, 3: 75, 4: 25 };
+        }
+
+        const pool = BUFFS.filter(b => {
+          if (UNIQUE_BUFFS.includes(b.id) && acquiredBuffs.includes(b.id)) return false;
+          if (b.rarity === 4 && acquiredBuffs.includes(b.id)) return false;
+          if (b.type === 'artifact_passive') return false;
+          if (b.type === 'soul_exclusive') return false;
+          if (currentWeights[b.rarity] === 0) return false;
+          return true;
+        });
+
+        const getWeightedRandom = (candidates) => {
+          let totalWeight = 0;
+          candidates.forEach(b => totalWeight += (currentWeights[b.rarity] || 0));
+          let r = Math.random() * totalWeight;
+          for (const b of candidates) {
+            r -= (currentWeights[b.rarity] || 0);
+            if (r <= 0) return b;
+          }
+          return candidates[0];
+        };
+
+        for (let i = 0; i < 3; i++) {
+          if (pool.length === 0) break;
+          const selected = getWeightedRandom(pool);
+          choices.push(selected);
+          const idx = pool.indexOf(selected);
+          if (idx > -1) pool.splice(idx, 1);
+        }
+
+        runData.pending_buffs = choices.map(b => b.id);
+
+        await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+        await tempClient.disconnect();
+        tempClient = null;
+
+        let buffMsg = `【${node.name}】胜利！全队状态已保存。\n\n【天机赐福】${pickCount > 1 ? ` (可选 ${pickCount} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
+
+        choices.forEach((b, i) => {
+          const stars = '★'.repeat(b.rarity || 1);
+          buffMsg += `${i + 1}. [${stars}] 【${b.name}】\n   ${b.desc}\n`;
+        });
+
+        if (runData.refresh_count > 0) {
+          buffMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+        }
+        e.reply(buffMsg + `\n\n获得${CURRENCY_NAME}：${total_jing_yin_drop}。当前${CURRENCY_NAME}：${runData.jing_yin}。`);
+      } else {
+        // 失败更新（记录死亡状态）
+        // 失败也结算天机玉
+        if (runData.temp_jade > 0) {
+             const userData = await this.getUserData(tempClient, userId);
+             userData.jade += runData.temp_jade;
+             await this.saveUserData(tempClient, userId, userData);
+             await tempClient.del(KEY_PREFIX + userId); 
+             await tempClient.disconnect();
+             tempClient = null;
+             e.reply(`战斗失败！你的队伍遭受重创。\n本次试炼结束，获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
+        } else {
+             // 没玉，只是保存死亡状态（允许复活？不，Roguelike通常死了就没了，除非有复活币）
+             // 原逻辑是保存状态。如果全军覆没，应该GameOver。
+             // 上面 battleSouls.length === 0 已经处理了全军覆没。
+             // 这里是 playerWon = false，但 battleSouls 不为空？这意味着战斗超时？
+             // 按照 runCombat 逻辑，如果超时，算输。
+             
+             // 如果超时判负，且还没死绝，理论上可以继续？或者直接结束？
+             // 通常 Boss战超时算输，直接结束。
+             await tempClient.del(KEY_PREFIX + userId); 
+             await tempClient.disconnect();
+             tempClient = null;
+             e.reply('战斗超时或失败！试炼结束。');
+        }
+      }
+    } catch (err) {
+      console.error('[Wanxiang] challengeLayer Error:', err);
+      if (tempClient) await tempClient.disconnect(); // 错误时断开
+      return e.reply('挑战失败：' + err.message);
+    }
+  }
