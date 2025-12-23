@@ -395,7 +395,19 @@ export class WanxiangActivity extends plugin {
         const dFP = await new Show(e).get_imgData('astral_combat_log', rData);
         dFP.imgType = 'jpeg'; dFP.quality = 80;
         const img = await puppeteer.screenshot('astral_combat_log', dFP);
-        let buf = Buffer.isBuffer(img) ? img : (img?.file ? Buffer.from(img.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, ''), 'base64') : null);
+        let buf = null;
+        if (Buffer.isBuffer(img)) {
+          buf = img;
+        } else if (img?.file) {
+          if (Buffer.isBuffer(img.file)) {
+            buf = img.file;
+          } else if (typeof img.file === 'string') {
+            buf = Buffer.from(img.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, ''), 'base64');
+          }
+        } else if (typeof img === 'string') {
+          buf = Buffer.from(img.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, ''), 'base64');
+        }
+
         if (buf) {
           const fP = path.join(tempDir, `Log_${userId}_${Date.now()}_P${i + 1}.jpg`);
           fs.writeFileSync(fP, buf);
