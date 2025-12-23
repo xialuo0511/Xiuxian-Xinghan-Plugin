@@ -240,7 +240,7 @@ export class WanxiangActivity extends plugin {
         }
         runData.shop_items = []; runData.shop_refresh_count = 1;
         const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
-        const pool = BUFFS.filter(b => b.rarity < 4 && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+        const pool = BUFFS.filter(b => b.rarity < 4 && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id));
         for (let k = 0; k < 3; k++) {
           let total = pool.reduce((acc, b) => acc + (weights[b.rarity] || 0), 0); let r = Math.random() * total;
           for (let i = 0; i < pool.length; i++) {
@@ -305,10 +305,11 @@ export class WanxiangActivity extends plugin {
         if (sub === 'vending_machine_gold' && selection === 1) {
           if (runData.jing_yin < 100 || node.event_count >= 3) return e.reply('无法继续抽奖。');
           runData.jing_yin -= 100; node.event_count++; const r = Math.random();
+          const filterPool = (rarity) => BUFFS.filter(b => b.rarity === rarity && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
           if (r < 0.05) { runData.jing_yin += 500; replyMsg = '运气爆棚！你获得了 500 天机印！'; }
-          else if (r < 0.07) { const b = BUFFS.filter(b => b.rarity === 4)[0]; runData.buffs.push(b.id); replyMsg = `出货了！你获得了四星赐福【${b.name}】！`; }
-          else if (r < 0.1) { const b = BUFFS.filter(b => b.rarity === 3)[0]; runData.buffs.push(b.id); replyMsg = `不错！你获得了三星赐福【${b.name}】！`; }
-          else if (r < 0.7) { const b = BUFFS.filter(b => b.rarity <= 2)[0]; runData.buffs.push(b.id); replyMsg = `获得赐福【${b.name}】。`; }
+          else if (r < 0.07) { const b = filterPool(4)[0] || filterPool(3)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `出货了！你获得了四星赐福【${b.name}】！`; } else replyMsg = '空的。'; }
+          else if (r < 0.1) { const b = filterPool(3)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `不错！你获得了三星赐福【${b.name}】！`; } else replyMsg = '空的。'; }
+          else if (r < 0.7) { const b = filterPool(2)[0] || filterPool(1)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `获得赐福【${b.name}】。`; } else replyMsg = '空的。'; }
           else replyMsg = '空空如也...什么都没抽到。';
           if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + `
 还可以抽奖 ${3 - node.event_count} 次。`); return; }
@@ -518,7 +519,7 @@ export class WanxiangActivity extends plugin {
           runData.layer++; runData.remaining_picks = node.type === 'ELITE' ? 2 : 1;
           const isBoss = node.type === 'BOSS' && !activeOaths.some(o => o.name === '变数');
           let weights = isBoss ? { 1: 0, 2: 0, 3: 75, 4: 25 } : { 1: 80, 2: 40, 3: 10, 4: 0 };
-          const pool = BUFFS.filter(b => b.type !== 'artifact_passive' && !runData.buffs.includes(b.id) && weights[b.rarity] > 0);
+          const pool = BUFFS.filter(b => b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id) && weights[b.rarity] > 0);
           const choices = [];
           for (let i = 0; i < 3 && pool.length > 0; i++) {
               let t = pool.reduce((acc, b) => acc + weights[b.rarity], 0); let r = Math.random() * t;
