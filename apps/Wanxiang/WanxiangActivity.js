@@ -144,7 +144,7 @@ export class WanxiangActivity extends plugin {
         await tempClient.disconnect(); return e.reply(`由于刚刚挑战失败，天机紊乱，请在 ${remaining} 秒后重新开始。`);
       }
       const inputStr = e.msg.replace('#开启试炼', '').trim();
-      const selectedOaths = inputStr ? inputStr.split(/[	 ,，]+/).filter(Boolean) : [];
+      const selectedOaths = inputStr ? inputStr.split(/[\s,，]+/).filter(Boolean) : [];
       const activeOaths = []; let totalProfit = 0;
       if (selectedOaths.length > 0) {
         if (!userData.cleared) { await tempClient.disconnect(); return e.reply('只有完整通关一次基础的 20 层方可开启誓约挑战。'); }
@@ -170,11 +170,11 @@ export class WanxiangActivity extends plugin {
         }
       }
       if (soulsState.length === 0) { await tempClient.disconnect(); return e.reply('无星魂可出战。'); }
-      const runData = { layer: 1, souls: soulsState, buffs: [], jing_yin: 0, temp_jade: 0, artifacts: [], start_time: now, refresh_count: 3, current_node: { type: 'COMBAT', name: '激战', desc: '普通的战斗。' }, routes: [], user_level: userData.level, active_oaths: activeOaths, total_profit: totalProfit };
+      const runData = { layer: 1, souls: soulsState, buffs: [], jing_yin: 0, temp_jade: 0, artifacts: [], start_time: now, refresh_count: 3, current_node: { type: 'COMBAT', name: '激战', desc: '普通的战斗试炼。' }, routes: [], user_level: userData.level, active_oaths: activeOaths, total_profit: totalProfit };
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); await tempClient.disconnect();
       const oathText = activeOaths.length > 0 ? `
-已激活誓约：${activeOaths.map(o => `【${o.name}】`).join('、')} (+${(totalProfit * 100).toFixed(0)}%)` : '';
-      e.reply([`【万象天机·无尽试炼】已开启！`, `出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点，发送 #挑战 即可开始。`].join('\n'));
+已激活誓约：${activeOaths.map(o => `【${o.name}】`).join('、')} (结算收益 +${(totalProfit * 100).toFixed(0)}%)` : '';
+      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点，发送 #挑战 即可开始。`].join('\n'));
     } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('系统错误：' + err.message); }
   }
 
@@ -215,11 +215,15 @@ export class WanxiangActivity extends plugin {
     if (nextRoutes.length === 1) {
       runData.current_node = nextRoutes[0]; runData.routes = [];
       await tempClient.set(KEY_PREFIX + e.user_id, JSON.stringify(runData));
-      e.reply(`${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n已自动锁定路线：【${runData.current_node.name}】\n发送 #挑战 开始挑战！`);
+      const icon = runData.current_node.type === 'BOSS' ? '👹' : '⚔️';
+      e.reply(`${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n⚠️ 前方感应到强大的气息！\n${icon} 已自动锁定路线：【${runData.current_node.name}】\n发送 #挑战 开始对决！`);
     } else {
       await tempClient.set(KEY_PREFIX + e.user_id, JSON.stringify(runData));
       let msg = `${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
-      nextRoutes.forEach((r, i) => msg += `${i + 1}. 【${r.name}】 ${r.desc}\n`);
+      nextRoutes.forEach((r, i) => {
+        const icon = r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : (r.type === 'MONSTER_TREASURE' ? '💎' : '🎲'))));
+        msg += `${i + 1}. ${icon} 【${r.name}】 ${r.desc}\n`;
+      });
       e.reply(msg + '发送 #选择路线 [序号] 确认。');
     }
   }
@@ -229,8 +233,9 @@ export class WanxiangActivity extends plugin {
     let tempClient = null;
     try {
       tempClient = await getTempRedis();
-      const runData = JSON.parse(await tempClient.get(KEY_PREFIX + userId));
-      if (!runData) { await tempClient.disconnect(); return e.reply('请先 #开启试炼。'); }
+      const dataStr = await tempClient.get(KEY_PREFIX + userId);
+      if (!dataStr) { await tempClient.disconnect(); return e.reply('请先 #开启试炼。'); }
+      const runData = JSON.parse(dataStr);
       if (!runData.routes?.length) { await tempClient.disconnect(); return e.reply('当前无需选择路线。'); }
       if (!selection || selection < 1 || selection > runData.routes.length) { await tempClient.disconnect(); return e.reply(`请选择 1-${runData.routes.length} 之间的序号。`); }
       const node = runData.routes[selection - 1]; runData.current_node = node; runData.routes = [];
@@ -264,17 +269,20 @@ export class WanxiangActivity extends plugin {
       if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) e.reply(`你选择了【${node.name}】。\n敌人已在前方，发送 #挑战 开始战斗！`);
       else if (node.type === 'SHOP') {
         let msg = `你遇到了云游散修，他向你展示了行囊。\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
-        runData.shop_items.forEach((it, i) => msg += `${i + 1}. 【${it.name}】${it.bought ? '(已售罄)' : `💰${it.price}`}\n   ${it.desc}\n`);
+        runData.shop_items.forEach((it, i) => {
+          const stars = '★'.repeat(it.rarity || 1);
+          msg += `${i + 1}. 【${it.name}】${it.bought ? '(已售罄)' : ` 💰${it.price}`}\n   📜 [${stars}] ${it.desc}\n`;
+        });
         e.reply(msg + `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品\n${runData.shop_items.length + 2}. 【离开】 继续前进\n发送 #事件选择 [序号] 购买或离开。`);
-      } else if (node.type === 'REST') e.reply('你来到了一处营地。\n1. 【休养生息】 全队恢复 40% 生命值\n2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)\n3. 【冥想】 获得 1 次赐福刷新机会\n发送 #事件选择 [序号] 确认。');
+      } else if (node.type === 'REST') e.reply('你来到了一处隐蔽的营地，这里似乎很安全。\n\n1. 【休养生息】 全队恢复 40% 生命值\n2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)\n3. 【冥想】 获得 1 次赐福刷新机会\n\n发送 #事件选择 [序号] 确认。');
       else if (node.type === 'EVENT') {
         const sub = runData.current_node.sub_type;
-        if (sub === 'vending_machine_gold') e.reply('你发现一台金光闪闪的【抽奖售货机】。\n1. 【抽奖一次】 消耗 100 天机印 (至多3次)\n2. 【离开】');
-        else if (sub === 'vending_machine_weird') e.reply('你发现一台外形诡异的【奇怪售货机】。\n1. 【抽奖一次】 消耗 25 天机印 (至多3次)\n2. 【离开】');
-        else if (sub === 'gamble_all') e.reply('你在祭坛上发现一份禁忌契约。\n1. 【放手一搏】 消耗 99% 当前生命值，大幅强化星魂属性直到本局结束！\n2. 【无视】');
-        else if (sub === 'ultimate_boost') e.reply('一道圣光从天而降！\n1. 【顶级强化】 复活全员，恢复满状态，并获得全员专属三星赐福！\n2. 【离开】');
-        else if (sub === 'soul_enhance') e.reply('你在废墟中遇到一位神秘的老者。\n1. 【虚心求教】 获得一个针对已有星魂强化的三星赐福\n2. 【无视】 离开');
-        else e.reply('你在废墟中发现一台古老的贩卖机。\n1. 【购买补给】 消耗 20% 当前生命值，获得 3 个普通赐福\n2. 【暴力破解】 试图砸开它 (50%获得随机3星赐福，50%受伤)\n3. 【离开】');
+        if (sub === 'vending_machine_gold') e.reply('你发现了一台金光闪闪的【抽奖售货机】。\n\n1. 【抽奖一次】 消耗 100 天机印 (至多3次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。');
+        else if (sub === 'vending_machine_weird') e.reply('你发现了一台外形诡异的【奇怪售货机】。\n\n1. 【抽奖一次】 消耗 25 天机印 (至多3次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。');
+        else if (sub === 'gamble_all') e.reply('你在祭坛上发现了一份禁忌契约。\n\n1. 【放手一搏】 消耗 99% 当前生命值，大幅强化星魂属性直到本局结束！\n2. 【无视】\n\n发送 #事件选择 [序号] 确认。');
+        else if (sub === 'ultimate_boost') e.reply('一道圣光从天而降！你感到充满了力量！\n\n1. 【顶级强化】 复活全员，恢复满状态，并获得全员专属三星赐福！\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。');
+        else if (sub === 'soul_enhance') e.reply('你在废墟中遇到一位神秘的老者，他注视着你的星魂，眼中闪过一丝光芒。\n\n1. 【虚心求教】 获得一个针对已有星魂强化的三星赐福\n2. 【无视】 离开\n\n发送 #事件选择 [序号] 确认。');
+        else e.reply('你在废墟中发现一台古老的贩卖机。\n\n1. 【购买补给】 消耗 20% 当前生命值，获得 3 个普通赐福\n2. 【暴力破解】 试图砸开它 (50%获得随机3星赐福，50%受伤)\n3. 【离开】\n\n发送 #事件选择 [序号] 确认。');
       }
       await tempClient.disconnect();
     } catch (err) { if (tempClient) await tempClient.disconnect(); }
@@ -291,7 +299,7 @@ export class WanxiangActivity extends plugin {
       if (node.type === 'SHOP') {
         const items = runData.shop_items;
         if (selection === items.length + 2) { replyMsg = '你告别了散修，继续踏上征途。'; isDone = true; }
-        else if (selection === items.length + 1) { e.reply('正在刷新商品...'); return this.selectRoute(e); }
+        else if (selection === items.length + 1) { e.reply('正在重新生成商品...'); return this.selectRoute(e); }
         else if (selection >= 1 && selection <= items.length) {
           const it = items[selection - 1];
           if (it.bought) e.reply('该商品已售罄。');
@@ -300,7 +308,7 @@ export class WanxiangActivity extends plugin {
         }
       } else if (node.type === 'REST') {
         if (selection === 1) { runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4)); }); replyMsg = '全员恢复了大量生命值。'; isDone = true; }
-        else if (selection === 2) { const dead = runData.souls.filter(s => s.is_dead); if (dead.length) { const s = dead[Math.floor(Math.random() * dead.length)]; s.is_dead = false; s.current_hp = Math.floor(s.max_hp * 0.5); replyMsg = `【${s.name}】已复活。`; } else replyMsg = '无人阵亡，你只是休息了一会儿。'; isDone = true; }
+        else if (selection === 2) { const dead = runData.souls.filter(s => s.is_dead); if (dead.length) { const s = dead[Math.floor(Math.random() * dead.length)]; s.is_dead = false; s.current_hp = Math.floor(s.max_hp * 0.5); replyMsg = `【${s.name}】已从冥界归来。`; } else replyMsg = '无人阵亡，你只是休息了一会儿。'; isDone = true; }
         else if (selection === 3) { runData.refresh_count++; replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。'; isDone = true; }
       } else if (node.type === 'EVENT') {
         const sub = node.sub_type;
@@ -313,18 +321,16 @@ export class WanxiangActivity extends plugin {
           else if (r < 0.1) { const b = filterPool(3)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `不错！你获得了三星赐福【${b.name}】！`; } else replyMsg = '空的。'; }
           else if (r < 0.7) { const b = filterPool(2)[0] || filterPool(1)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `获得赐福【${b.name}】。`; } else replyMsg = '空的。'; }
           else replyMsg = '空空如也...什么都没抽到。';
-          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + `
-还可以抽奖 ${3 - node.event_count} 次。`); return; }
+          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + '\n还可以抽奖 ' + (3 - node.event_count) + ' 次。'); return; }
         } else if (sub === 'vending_machine_weird' && selection === 1) {
           if (runData.jing_yin < 25 || node.event_count >= 3) return e.reply('售货机已熄灭。');
           runData.jing_yin -= 25; node.event_count++; const r = Math.random();
-          if (r < 0.1) { runData.souls.forEach(s => s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.9))); replyMsg = '诡异的烟雾让你感到虚弱 (生命值-10%)。'; }
+          if (r < 0.1) { runData.souls.forEach(s => s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.9))); replyMsg = '诡异的烟雾让你感到虚弱 (当前生命值-10%)。'; }
           else if (r < 0.2) { runData.souls.forEach(s => s.current_hp = Math.min(s.max_hp, Math.floor(s.current_hp * 1.1))); replyMsg = '你感到一阵暖流 (恢复10%生命)。'; }
           else if (r < 0.4) { runData.extra_atk_pct = (runData.extra_atk_pct || 0) + 1.0; replyMsg = '一名星魂杀气大增 (总攻击+100%)！'; }
           else if (r < 0.6) { const oath = OATHS[Math.floor(Math.random() * OATHS.length)]; runData.active_oaths.push({ ...oath, profit: oath.profit + 0.1 }); replyMsg = `干扰：获得誓约【${oath.name}】效果，且结算收益+10%！`; }
           else replyMsg = '售货机发出了奇怪的咔哒声，但什么都没发生。';
-          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + `
-还可以抽奖 ${3 - node.event_count} 次。`); return; }
+          if (node.event_count >= 3) isDone = true; else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(replyMsg + '\n还可以抽奖 ' + (3 - node.event_count) + ' 次。'); return; }
         } else if (sub === 'gamble_all' && selection === 1) { runData.souls.forEach(s => s.current_hp = 1); runData.gamble_buff = true; replyMsg = '契约成立！你感到力量在燃烧，但生命已如风中残烛。'; isDone = true; }
         else if (sub === 'ultimate_boost' && selection === 1) { runData.souls.forEach(s => { s.is_dead = false; s.current_hp = s.max_hp; const b = BUFFS.find(b => b.type === 'soul_exclusive' && b.exclusive_soul === s.name && b.rarity === 3); if (b && !runData.buffs.includes(b.id)) runData.buffs.push(b.id); }); replyMsg = '圣光洗礼！全员复活并获得了专属强化！'; isDone = true; }
         else if (sub === 'soul_enhance' && selection === 1) { const b = BUFFS.find(b => b.type === 'soul_exclusive' && runData.souls.some(s => s.name === b.exclusive_soul) && !runData.buffs.includes(b.id)); if (b) { runData.buffs.push(b.id); replyMsg = `老者传授了你【${b.name}】的奥秘！`; } else replyMsg = '老者摇了摇头，转过身去。'; isDone = true; }
@@ -337,33 +343,27 @@ export class WanxiangActivity extends plugin {
   }
 
   async challengeLayer(e) {
-    const userId = e.user_id;
-    let tempClient = null;
-    let runData = null;
-
+    const userId = e.user_id; let tempClient = null;
     try {
       tempClient = await getTempRedis();
-      const dataStr = await tempClient.get(KEY_PREFIX + userId);
-      if (!dataStr) { if (tempClient) await tempClient.disconnect(); return e.reply('请先 #开启试炼。'); }
-
-      runData = JSON.parse(dataStr);
+      const runData = JSON.parse(await tempClient.get(KEY_PREFIX + userId));
+      if (!runData?.current_node) { if (tempClient) await tempClient.disconnect(); return e.reply('请先选择路线。'); }
       const node = runData.current_node;
-      if (!node || !['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) { if (tempClient) await tempClient.disconnect(); return e.reply('请先 #选择路线。'); }
-
+      if (!['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) { if (tempClient) await tempClient.disconnect(); return e.reply('当前节点不可进行挑战。'); }
+      
       const activeOaths = runData.active_oaths || [];
       const battleSouls = [];
-      for (const soulState of runData.souls) {
-        if (soulState.is_dead) continue;
-        const conf = ALL_SOULS.find(s => s.name === soulState.name);
+      for (const s of runData.souls) {
+        if (s.is_dead) continue;
+        const conf = ALL_SOULS.find(as => as.name === s.name);
         if (conf) {
-          const bc = JSON.parse(JSON.stringify(conf));
-          let hpMul = 1.0, atkMul = 1.0;
+          const bc = JSON.parse(JSON.stringify(conf)); let hpMul = 1.0, atkMul = 1.0;
           UPGRADES.forEach(u => { if (runData.user_level >= u.id) { if (u.type === 'atk_flat') bc.base_stats.attack += u.value; if (u.type === 'hp_pct') hpMul += u.value; } });
           if (activeOaths.some(o => o.name === '禁术')) { delete bc.skills.ultimate; atkMul += 0.2; }
           if (activeOaths.some(o => o.name === '血契')) { hpMul -= 0.5; atkMul += 0.2; }
           if (runData.gamble_buff) { hpMul *= 2; atkMul *= 2; bc.crit_rate = (bc.crit_rate || 0) + 1.0; bc.base_stats.energy_regen = (bc.base_stats.energy_regen || 20) * 1.25; }
           bc.base_stats.health = Math.floor(bc.base_stats.health * hpMul); bc.base_stats.attack = Math.floor(bc.base_stats.attack * atkMul);
-          bc.current_hp_inherit = Math.min(soulState.current_hp, bc.base_stats.health);
+          bc.current_hp_inherit = Math.min(s.current_hp, bc.base_stats.health);
           if (activeOaths.some(o => o.name === '压制')) { bc.initial_debuffs = bc.initial_debuffs || []; bc.initial_debuffs.push({ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }); }
           if (runData.extra_atk_pct) bc.base_stats.attack += Math.floor(conf.base_stats.attack * runData.extra_atk_pct);
           runData.buffs.forEach(bid => {
@@ -374,7 +374,7 @@ export class WanxiangActivity extends plugin {
           battleSouls.push(bc);
         }
       }
-
+      
       const hasCoercion = (runData.user_level || 0) >= 5;
       let enemies = [];
       if (node.type === 'MONSTER_TREASURE') {
@@ -402,134 +402,95 @@ export class WanxiangActivity extends plugin {
               enemies.push(em);
           }
       }
-
+      
       e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n战斗进行中...`);
       const maxR = (node.type === 'BOSS' || node.type === 'MONSTER_TREASURE') ? 20 : 10;
       const result = await runCombat(battleSouls, enemies, runData.buffs, maxR);
-
-      // --- 日志生成图片 (核心修复部分) ---
+      
       const slices = []; let currentSlice = [], rCount = 0;
       for (const entry of result.log) {
         if (entry.type === 'turn') { rCount++; if (rCount > 8) { slices.push(currentSlice); currentSlice = []; rCount = 1; } }
         currentSlice.push(entry);
       }
       if (currentSlice.length > 0) slices.push(currentSlice);
-
       const tempDir = path.join(process.cwd(), 'data', 'temp', 'wanxiang');
       if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-
       const imgPaths = [];
       try {
         for (let i = 0; i < slices.length; i++) {
-          const sliceLog = slices[i];
-          const renderData = { log: sliceLog, pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` };
-          const dataForPuppeteer = await new Show(e).get_imgData('astral_combat_log', renderData);
-          dataForPuppeteer.imgType = 'jpeg'; dataForPuppeteer.quality = 80;
-          const imgResult = await puppeteer.screenshot('astral_combat_log', { ...dataForPuppeteer });
-
-          let finalBuffer = null;
-          if (Buffer.isBuffer(imgResult)) {
-            finalBuffer = imgResult;
-          } else if (typeof imgResult === 'object' && imgResult.file) {
-            if (Buffer.isBuffer(imgResult.file)) {
-              finalBuffer = imgResult.file;
-            } else if (typeof imgResult.file === 'string') {
-              let base64Data = imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, '');
-              finalBuffer = Buffer.from(base64Data, 'base64');
-            }
-          }
-
-          if (finalBuffer && finalBuffer.length > 0) {
-            const fileName = `Combat_Log_${userId}_${Date.now()}_Part${i + 1}.jpg`;
-            const filePath = path.join(tempDir, fileName);
+          const rData = { log: slices[i], pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` };
+          const dFP = await new Show(e).get_imgData('astral_combat_log', rData);
+          dFP.imgType = 'jpeg'; dFP.quality = 80;
+          const imgResult = await puppeteer.screenshot('astral_combat_log', dFP);
+          let finalBuffer = Buffer.isBuffer(imgResult) ? imgResult : (imgResult?.file ? (Buffer.isBuffer(imgResult.file) ? imgResult.file : Buffer.from(imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, ''), 'base64')) : null);
+          if (finalBuffer) {
+            const filePath = path.join(tempDir, `Log_${userId}_${Date.now()}_P${i + 1}.jpg`);
             fs.writeFileSync(filePath, finalBuffer);
             imgPaths.push(filePath);
           }
         }
-
         if (imgPaths.length > 0) {
           for (let i = 0; i < imgPaths.length; i++) {
             const p = imgPaths[i];
             try {
-              const imageSendResult = await e.reply(segment.image(p));
-              const isFailure = !imageSendResult || imageSendResult.error || (imageSendResult.result === -1);
-              if (isFailure) await e.reply({ type: 'file', file: p, name: path.basename(p) });
-            } catch (imgSendErr) { await e.reply({ type: 'file', file: p, name: path.basename(p) }); }
+              const res = await e.reply(segment.image(p));
+              if (!res || res.result === -1) await e.reply({ type: 'file', file: p, name: path.basename(p) });
+            } catch (err) { await e.reply({ type: 'file', file: p, name: path.basename(p) }); }
             if (i < imgPaths.length - 1) await new Promise(r => setTimeout(r, 1000));
           }
         }
       } catch (err) { console.error('[Wanxiang] Combat Log Error:', err); e.reply('战报生成出错。'); }
       finally { setTimeout(() => { imgPaths.forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p); }); }, 60000); }
 
-      for (const s of runData.souls) {
-        const c = result.playerTeam.find(pt => pt.name === s.name);
-        if (c) { s.current_hp = c.current_hp; s.is_dead = c.current_hp <= 0; s.current_hp = Math.max(0, s.current_hp); }
-      }
-
+      for (const s of runData.souls) { const c = result.playerTeam.find(pt => pt.name === s.name); if (c) { s.current_hp = Math.max(0, c.current_hp); s.is_dead = s.current_hp <= 0; } }
       if (result.playerWon) {
         let jade = Math.floor((node.type === 'BOSS' ? 30 : 5) * (1 + (runData.total_profit || 0)));
         let gold = Math.floor((Math.random() * 20 + 10) * (activeOaths.some(o => o.name === '俭省') ? 0.5 : 1));
-        let extraMsg = '';
-        let skipBuffChoice = false;
-
+        let extraMsg = '', skipBuffChoice = false;
         if (node.type === 'MONSTER_TREASURE') {
             const killed = result.enemyTeam.filter(et => et.current_hp <= 0 && !et.has_fled).length;
-            gold = killed === 3 ? 300 : 250;
-            extraMsg = `\n击败了 ${killed} 只妖兽，获得 ${gold} 天机印！`;
+            gold = killed === 3 ? 300 : 250; extraMsg = `\n击败了 ${killed} 只妖兽，获得 ${gold} 天机印！`;
             skipBuffChoice = true;
             if (killed === 3) {
                 const pool = BUFFS.filter(b => (b.rarity === 3 || b.rarity === 4) && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
-                if (pool.length > 0) {
-                    const b = pool[Math.floor(Math.random() * pool.length)];
-                    runData.buffs.push(b.id);
-                    extraMsg += `\n【完美达成】获得随机高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`;
-                }
+                if (pool.length > 0) { const b = pool[Math.floor(Math.random() * pool.length)]; runData.buffs.push(b.id); extraMsg += `\n【完美达成】获得随机高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`; }
             }
         } else {
             const killedExtra = result.enemyTeam.filter(et => et.name === '盗宝妖兽' && et.current_hp <= 0 && !et.has_fled).length;
-            if (killedExtra > 0) { 
-                if (Math.random() < 0.7) { gold += 50; extraMsg = `\n额外击败了乱入的妖兽，获得 50 天机印！`; }
-                else {
-                    const bPool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
-                    const b = bPool[Math.floor(Math.random() * bPool.length)];
-                    runData.buffs.push(b.id);
-                    extraMsg = `\n额外击败了乱入的妖兽，获得随机赐福：【${b.name}】！`;
-                }
-            }
+            if (killedExtra > 0) { if (Math.random() < 0.7) { gold += 50; extraMsg = `\n额外击败了乱入的妖兽，获得 50 天机印！`; } else { const bP = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)); const b = bP[Math.floor(Math.random() * bP.length)]; runData.buffs.push(b.id); extraMsg = `\n额外击败了乱入的妖兽，获得随机赐福：【${b.name}】！`; } }
         }
         runData.jing_yin += gold; runData.temp_jade += jade;
-
         if (runData.layer >= 20) {
           const ud = await this.getUserData(tempClient, userId); const bonus = (runData.total_profit >= 1.0) ? 150 : 0;
           ud.jade += runData.temp_jade + bonus; ud.cleared = true;
           await this.saveUserData(tempClient, userId, ud); await tempClient.del(KEY_PREFIX + userId);
-          e.reply(`【试炼通关】恭喜！\n本次试炼共获得 ${runData.temp_jade} 天机玉${bonus > 0 ? ` (含誓约奖励 ${bonus})` : ''}。\n状态已重置。`);
+          e.reply(`【试炼通关】恭喜！本次共获得 ${runData.temp_jade} 天机玉${bonus > 0 ? ` (含誓约奖 ${bonus})` : ''}。`);
         } else if (skipBuffChoice) {
-          runData.layer++;
-          await this.processRouteGeneration(e, runData, tempClient, `【${node.name}】胜利！${extraMsg}\n获得${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。`);
+          runData.layer++; await this.processRouteGeneration(e, runData, tempClient, `【${node.name}】胜利！${extraMsg}\n获得${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。`);
         } else {
           runData.layer++; runData.remaining_picks = node.type === 'ELITE' ? 2 : 1;
-          const isBoss = node.type === 'BOSS' && !activeOaths.some(o => o.name === '变数');
-          let weights = isBoss ? { 1: 0, 2: 0, 3: 75, 4: 25 } : { 1: 80, 2: 40, 3: 10, 4: 0 };
-          const pool = BUFFS.filter(b => b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id) && weights[b.rarity] > 0);
-          const choices = [];
+          const isB = node.type === 'BOSS' && !activeOaths.some(o => o.name === '变数');
+          let w = isB ? { 1: 0, 2: 0, 3: 75, 4: 25 } : { 1: 80, 2: 40, 3: 10, 4: 0 };
+          const pool = BUFFS.filter(b => b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id) && w[b.rarity] > 0);
+          const ch = [];
           for (let i = 0; i < 3 && pool.length > 0; i++) {
-              let t = pool.reduce((acc, b) => acc + weights[b.rarity], 0); let r = Math.random() * t;
-              for (let j = 0; j < pool.length; j++) { r -= weights[pool[j].rarity]; if (r <= 0) { choices.push(pool[j]); pool.splice(j, 1); break; } }
+              let t = pool.reduce((acc, b) => acc + w[b.rarity], 0); let r = Math.random() * t;
+              for (let j = 0; j < pool.length; j++) { r -= w[pool[j].rarity]; if (r <= 0) { ch.push(pool[j]); pool.splice(j, 1); break; } }
           }
-          runData.pending_buffs = choices.map(c => c.id);
+          runData.pending_buffs = ch.map(c => c.id);
           await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-          let buffMsg = `【${node.name}】胜利！全队状态已保存。${extraMsg}\n获得${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。\n\n【天机赐福】${runData.remaining_picks > 1 ? ` (可选 ${runData.remaining_picks} 个)` : ''}\n请发送 #选择赐福 [序号]：\n`;
-          choices.forEach((b, i) => buffMsg += `${i + 1}. [${'★'.repeat(b.rarity)}] 【${b.name}】\n   ${b.desc}\n`);
-          e.reply(buffMsg);
+          let bMsg = `【${node.name}】胜利！全队状态已保存。${extraMsg}\n获${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。\n\n【天机赐福】${runData.remaining_picks > 1 ? ` (可选 ${runData.remaining_picks} 个)` : ''}\n发送 #选择赐福 [序号] 获取增益：\n`;
+          ch.forEach((b, i) => bMsg += `${i + 1}. [${'★'.repeat(b.rarity)}] 【${b.name}】\n   ${b.desc}\n`);
+          if (runData.refresh_count > 0) bMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
+          e.reply(bMsg);
         }
       } else {
         const ud = await this.getUserData(tempClient, userId); ud.last_fail_time = Date.now(); ud.jade += runData.temp_jade;
         await this.saveUserData(tempClient, userId, ud); await tempClient.del(KEY_PREFIX + userId);
-        e.reply(`战斗失败！获得 ${runData.temp_jade} 天机玉。由于挑战失败，进入 3 分钟冷静期。`);
+        e.reply(`战斗失败！获得 ${runData.temp_jade} 天机玉。冷静期开始，请 3 分钟后再试。`);
       }
       await tempClient.disconnect();
-    } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('系统错误：' + err.message); }
+    } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('错误：' + err.message); }
   }
 
   async refreshBuffChoices(e) {
@@ -550,7 +511,7 @@ export class WanxiangActivity extends plugin {
       }
       runData.pending_buffs = choices.map(c => c.id);
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-      let msg = `赐福已刷新！剩余次数：${runData.refresh_count}\n\n【天机赐福】\n`;
+      let msg = `赐福已刷新！剩余刷新机会：${runData.refresh_count} 次。\n\n【天机赐福】\n请发送 #选择赐福 [序号] 获取增益：\n`;
       choices.forEach((b, i) => msg += `${i + 1}. [${'★'.repeat(b.rarity)}] 【${b.name}】\n   ${b.desc}\n`);
       e.reply(msg);
       await tempClient.disconnect();
@@ -566,8 +527,8 @@ export class WanxiangActivity extends plugin {
       if (!runData?.pending_buffs?.length || !selection || selection > runData.pending_buffs.length) { await tempClient.disconnect(); return; }
       const bid = runData.pending_buffs[selection - 1]; const b = BUFFS.find(bf => bf.id === bid);
       runData.buffs.push(bid); runData.remaining_picks--; runData.pending_buffs.splice(selection - 1, 1);
-      if (runData.remaining_picks <= 0) { runData.pending_buffs = []; await this.processRouteGeneration(e, runData, tempClient, `选定【${b.name}】！`); } 
-      else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(`选定【${b.name}】，还可选 ${runData.remaining_picks} 个。`); }
+      if (runData.remaining_picks <= 0) { runData.pending_buffs = []; await this.processRouteGeneration(e, runData, tempClient, `成功选择了【${b.name}】！`); } 
+      else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(`成功选择了【${b.name}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`); }
       await tempClient.disconnect();
     } catch (err) { if (tempClient) await tempClient.disconnect(); }
   }
@@ -576,7 +537,7 @@ export class WanxiangActivity extends plugin {
     const userId = e.user_id; let tempClient = null;
     try {
       tempClient = await getTempRedis(); const dataStr = await tempClient.get(KEY_PREFIX + userId); await tempClient.disconnect();
-      if (!dataStr) return e.reply('未在试炼中。');
+      if (!dataStr) return e.reply('你当前没有进行中的试炼。');
       const data = JSON.parse(dataStr);
       const renderData = { layer: data.layer, souls: data.souls, buffs: data.buffs.map(id => BUFFS.find(b => b.id === id) || { name: id }), artifacts: data.artifacts.map(id => BUFFS.find(b => b.id === id) || { name: id }), refreshCount: data.refresh_count, currentNode: data.current_node, tempJade: data.temp_jade || 0, pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` };
       const dFP = await new Show(e).get_imgData('wanxiang_status', renderData);
