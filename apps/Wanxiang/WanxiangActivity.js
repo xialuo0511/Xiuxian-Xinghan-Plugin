@@ -443,8 +443,33 @@ ${runData.shop_items.length + 2}. 离开
   }
 
   async quitRun(e) {
-    let tempClient = await getTempRedis(); const data = JSON.parse(await tempClient.get(KEY_PREFIX + e.user_id));
-    if (data) { const ud = await this.getUserData(tempClient, e.user_id); ud.jade += data.temp_jade; await this.saveUserData(tempClient, e.user_id, ud); await tempClient.del(KEY_PREFIX + e.user_id); e.reply('已退。'); }
-    await tempClient.disconnect();
+    let tempClient = null;
+    try {
+      tempClient = await getTempRedis();
+      const dataStr = await tempClient.get(KEY_PREFIX + e.user_id);
+      
+      if (dataStr) {
+        const runData = JSON.parse(dataStr);
+        // 结算天机玉
+        if (runData.temp_jade > 0) {
+            const userData = await this.getUserData(tempClient, e.user_id);
+            userData.jade += runData.temp_jade;
+            await this.saveUserData(tempClient, e.user_id, userData);
+            e.reply(`已放弃试炼。本次获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
+        } else {
+            e.reply('已放弃试炼。本次未获得天机玉。');
+        }
+        await tempClient.del(KEY_PREFIX + e.user_id);
+      } else {
+         e.reply('你当前没有进行中的试炼。');
+      }
+      
+      await tempClient.disconnect();
+      tempClient = null;
+    } catch (err) {
+      console.error('[Wanxiang] quitRun Redis Error:', err);
+      if (tempClient) await tempClient.disconnect();
+      e.reply('退出试炼失败：' + err.message);
+    }
   }
 }
