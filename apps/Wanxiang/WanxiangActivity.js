@@ -470,12 +470,32 @@ export class WanxiangActivity extends plugin {
         let jade = Math.floor((node.type === 'BOSS' ? 30 : 5) * (1 + (runData.total_profit || 0)));
         let gold = Math.floor((Math.random() * 20 + 10) * (activeOaths.some(o => o.name === '俭省') ? 0.5 : 1));
         let extraMsg = '';
+        let skipBuffChoice = false;
+
         if (node.type === 'MONSTER_TREASURE') {
             const killed = result.enemyTeam.filter(et => et.current_hp <= 0 && !et.has_fled).length;
-            gold = killed === 3 ? 300 : 250; extraMsg = `\n击败了 ${killed} 只妖兽，获得 ${gold} 天机印！`;
+            gold = killed === 3 ? 300 : 250;
+            extraMsg = `\n击败了 ${killed} 只妖兽，获得 ${gold} 天机印！`;
+            skipBuffChoice = true;
+            if (killed === 3) {
+                const pool = BUFFS.filter(b => (b.rarity === 3 || b.rarity === 4) && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+                if (pool.length > 0) {
+                    const b = pool[Math.floor(Math.random() * pool.length)];
+                    runData.buffs.push(b.id);
+                    extraMsg += `\n【完美达成】获得随机高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`;
+                }
+            }
         } else {
             const killedExtra = result.enemyTeam.filter(et => et.name === '盗宝妖兽' && et.current_hp <= 0 && !et.has_fled).length;
-            if (killedExtra > 0) { gold += 50; extraMsg = `\n额外击败了乱入的妖兽，获得 50 天机印！`; }
+            if (killedExtra > 0) { 
+                if (Math.random() < 0.7) { gold += 50; extraMsg = `\n额外击败了乱入的妖兽，获得 50 天机印！`; }
+                else {
+                    const bPool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+                    const b = bPool[Math.floor(Math.random() * bPool.length)];
+                    runData.buffs.push(b.id);
+                    extraMsg = `\n额外击败了乱入的妖兽，获得随机赐福：【${b.name}】！`;
+                }
+            }
         }
         runData.jing_yin += gold; runData.temp_jade += jade;
 
@@ -484,6 +504,9 @@ export class WanxiangActivity extends plugin {
           ud.jade += runData.temp_jade + bonus; ud.cleared = true;
           await this.saveUserData(tempClient, userId, ud); await tempClient.del(KEY_PREFIX + userId);
           e.reply(`【试炼通关】恭喜！\n本次试炼共获得 ${runData.temp_jade} 天机玉${bonus > 0 ? ` (含誓约奖励 ${bonus})` : ''}。\n状态已重置。`);
+        } else if (skipBuffChoice) {
+          runData.layer++;
+          await this.processRouteGeneration(e, runData, tempClient, `【${node.name}】胜利！${extraMsg}\n获得${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。`);
         } else {
           runData.layer++; runData.remaining_picks = node.type === 'ELITE' ? 2 : 1;
           const isBoss = node.type === 'BOSS' && !activeOaths.some(o => o.name === '变数');
