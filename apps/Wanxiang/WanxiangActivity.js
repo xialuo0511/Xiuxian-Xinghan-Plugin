@@ -393,9 +393,16 @@ export class WanxiangActivity extends plugin {
       }
 
       // 2. 准备敌方单位
+      const hasCoercion = (runData.user_level || 0) >= 5;
       let enemies = [];
       if (node.type === 'MONSTER_TREASURE') {
-          for (let i = 0; i < 3; i++) enemies.push({ id: `t_${i}`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } });
+          for (let i = 0; i < 3; i++) {
+              const treasureMob = { id: `t_${i}`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } };
+              if (hasCoercion) {
+                  treasureMob.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
+              }
+              enemies.push(treasureMob);
+          }
       } else {
           const names = STAGES.find(s => s.layer === runData.layer)?.monsters || [];
           enemies = names.map(n => {
@@ -408,9 +415,19 @@ export class WanxiangActivity extends plugin {
             m.base_stats.health = Math.floor(m.base_stats.health * mul);
             m.base_stats.attack = Math.floor(m.base_stats.attack * mul);
             if (activeOaths.some(o => o.name === '坚毅')) m.initial_shields = Math.floor(m.base_stats.health * 0.3);
+            
+            // 注入“威压”效果
+            if (hasCoercion) {
+                m.initial_debuffs = m.initial_debuffs || [];
+                m.initial_debuffs.push({ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' });
+            }
             return m;
           }).filter(Boolean);
-          if (Math.random() < 0.05) enemies.push({ id: `t_extra`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } });
+          if (Math.random() < 0.05) {
+              const extraMob = { id: `t_extra`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } };
+              if (hasCoercion) extraMob.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
+              enemies.push(extraMob);
+          }
       }
 
       e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n战斗进行中...`);
