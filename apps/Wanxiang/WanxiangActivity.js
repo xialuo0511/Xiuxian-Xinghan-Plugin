@@ -144,7 +144,8 @@ export class WanxiangActivity extends plugin {
         await tempClient.disconnect(); return e.reply(`由于刚刚挑战失败，天机紊乱，请在 ${remaining} 秒后重新开始。`);
       }
       const inputStr = e.msg.replace('#开启试炼', '').trim();
-      const selectedOaths = inputStr ? inputStr.split(/[\s,，]+/).filter(Boolean) : [];
+      const selectedOaths = inputStr ? inputStr.split(/[​
+	 ,，]+/).filter(Boolean) : [];
       const activeOaths = []; let totalProfit = 0;
       if (selectedOaths.length > 0) {
         if (!userData.cleared) { await tempClient.disconnect(); return e.reply('只有完整通关一次基础的 20 层方可开启誓约挑战。'); }
@@ -174,7 +175,8 @@ export class WanxiangActivity extends plugin {
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); await tempClient.disconnect();
       const oathText = activeOaths.length > 0 ? `
 已激活誓约：${activeOaths.map(o => `【${o.name}】`).join('、')} (结算收益 +${(totalProfit * 100).toFixed(0)}%)` : '';
-      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点，发送 #挑战 即可开始。`].join('\n'));
+      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点，发送 #挑战 即可开始。`].join('
+'));
     } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('系统错误：' + err.message); }
   }
 
@@ -271,7 +273,7 @@ export class WanxiangActivity extends plugin {
         let msg = `你遇到了云游散修，他向你展示了行囊。\n当前持有${CURRENCY_NAME}：${runData.jing_yin}\n\n`;
         runData.shop_items.forEach((it, i) => {
           const stars = '★'.repeat(it.rarity || 1);
-          msg += `${i + 1}. 【${it.name}】${it.bought ? '(已售罄)' : ` 💰${it.price}`}\n   📜 [${stars}] ${it.desc}\n`;
+          msg += `${i + 1}. 【${it.name}】${it.bought ? '(已售罄)' : `💰${it.price}`}\n   📜 [${stars}] ${it.desc}\n`;
         });
         e.reply(msg + `\n${runData.shop_items.length + 1}. 【刷新】 更换一批商品\n${runData.shop_items.length + 2}. 【离开】 继续前进\n发送 #事件选择 [序号] 购买或离开。`);
       } else if (node.type === 'REST') e.reply('你来到了一处隐蔽的营地，这里似乎很安全。\n\n1. 【休养生息】 全队恢复 40% 生命值\n2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)\n3. 【冥想】 获得 1 次赐福刷新机会\n\n发送 #事件选择 [序号] 确认。');
@@ -317,10 +319,13 @@ export class WanxiangActivity extends plugin {
           runData.jing_yin -= 100; node.event_count++; const r = Math.random();
           const filterPool = (rarity) => BUFFS.filter(b => b.rarity === rarity && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
           if (r < 0.05) { runData.jing_yin += 500; replyMsg = '运气爆棚！你获得了 500 天机印！'; }
-          else if (r < 0.07) { const b = filterPool(4)[0] || filterPool(3)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `出货了！你获得了四星赐福【${b.name}】！`; } else replyMsg = '空的。'; }
-          else if (r < 0.1) { const b = filterPool(3)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `不错！你获得了三星赐福【${b.name}】！`; } else replyMsg = '空的。'; }
-          else if (r < 0.7) { const b = filterPool(2)[0] || filterPool(1)[0]; if (b) { runData.buffs.push(b.id); replyMsg = `获得赐福【${b.name}】。`; } else replyMsg = '空的。'; }
-          else replyMsg = '空空如也...什么都没抽到。';
+          else {
+              let b = null;
+              if (r < 0.07) b = filterPool(4)[0] || filterPool(3)[0];
+              else if (r < 0.1) b = filterPool(3)[0];
+              else if (r < 0.7) b = filterPool(2)[0] || filterPool(1)[0];
+              if (b) { runData.buffs.push(b.id); const stars = '★'.repeat(b.rarity || 1); replyMsg = `获得赐福：[${stars}] 【${b.name}】\n效果：${b.desc}`; } else replyMsg = '空空如也...什么都没抽到。';
+          }
           if (node.event_count >= 3) isDone = true; else { 
               await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); 
               e.reply(`${replyMsg}\n\n1. 【抽奖一次】 消耗 100 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
@@ -336,8 +341,11 @@ export class WanxiangActivity extends plugin {
               const oath = OATHS[Math.floor(Math.random() * OATHS.length)]; 
               runData.active_oaths.push({ ...oath, profit: oath.profit + 0.1 }); 
               replyMsg = `受到额外的天机干扰：获得誓约【${oath.name}】效果！\n效果说明：${oath.desc}，且使该局结算收益额外提高 10%！`; 
+          } else {
+              const bPool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
+              const b = bPool[0];
+              if (b) { runData.buffs.push(b.id); const stars = '★'.repeat(b.rarity || 1); replyMsg = `获得赐福：[${stars}] 【${b.name}】\n效果：${b.desc}`; } else replyMsg = '售货机发出了奇怪的咔哒声，但什么都没发生。';
           }
-          else replyMsg = '售货机发出了奇怪的咔哒声，但什么都没发生。';
           if (node.event_count >= 3) isDone = true; else { 
               await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); 
               e.reply(`${replyMsg}\n\n1. 【抽奖一次】 消耗 25 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
@@ -382,6 +390,24 @@ export class WanxiangActivity extends plugin {
             const b = BUFFS.find(bf => bf.id === bid); if (!b) return;
             if (b.type === 'atk_pct') bc.base_stats.attack += Math.floor(conf.base_stats.attack * b.value);
             else if (b.type === 'max_hp_pct') bc.base_stats.health += Math.floor(conf.base_stats.health * b.value);
+            else if (b.type === 'soul_exclusive') {
+                if (b.exclusive_soul === s.name) {
+                    if (!bc.global_buffs) bc.global_buffs = [];
+                    bc.global_buffs.push(b.id);
+                    // 专属数值补偿
+                    if (b.id === 'soul_enhancement_wutu') {
+                        const hpAdd = Math.floor(conf.base_stats.health * 1.0);
+                        bc.base_stats.health += hpAdd;
+                        if (bc.current_hp_inherit !== undefined) bc.current_hp_inherit += hpAdd;
+                        bc.initial_energy = 999;
+                    } else if (b.id === 'soul_enhancement_yimu') {
+                        bc.base_stats.attack += Math.floor(conf.base_stats.attack * 1.0);
+                    }
+                }
+            } else {
+                if (!bc.global_buffs) bc.global_buffs = [];
+                bc.global_buffs.push(b.type); 
+            }
           });
           battleSouls.push(bc);
         }
@@ -434,7 +460,7 @@ export class WanxiangActivity extends plugin {
           const dFP = await new Show(e).get_imgData('astral_combat_log', rData);
           dFP.imgType = 'jpeg'; dFP.quality = 80;
           const imgResult = await puppeteer.screenshot('astral_combat_log', dFP);
-          let finalBuffer = Buffer.isBuffer(imgResult) ? imgResult : (imgResult?.file ? (Buffer.isBuffer(imgResult.file) ? imgResult.file : Buffer.from(imgResult.file.replace(/^base64:\/\//, '').replace(/^data:image\/\w+;base64,/, ''), 'base64')) : null);
+          let finalBuffer = Buffer.isBuffer(imgResult) ? imgResult : (imgResult?.file ? (Buffer.isBuffer(imgResult.file) ? imgResult.file : Buffer.from(imgResult.file.replace(/^base64:\\/, '').replace(/^data:image\/\w+;base64,/, ''), 'base64')) : null);
           if (finalBuffer) {
             const filePath = path.join(tempDir, `Log_${userId}_${Date.now()}_P${i + 1}.jpg`);
             fs.writeFileSync(filePath, finalBuffer);
@@ -460,7 +486,6 @@ export class WanxiangActivity extends plugin {
         let gold = Math.floor((Math.random() * 20 + 10) * (activeOaths.some(o => o.name === '俭省') ? 0.5 : 1));
         let extraMsg = '', skipBuffChoice = false;
 
-        // --- 统计击败的妖兽数量并计算个体奖励 ---
         const defeatedTreasures = result.enemyTeam.filter(et => et.name === '盗宝妖兽' && et.current_hp <= 0 && !et.has_fled);
         let treasureGoldTotal = 0;
         let treasureBuffsNames = [];
@@ -471,7 +496,6 @@ export class WanxiangActivity extends plugin {
             } else {
                 const pool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
                 if (pool.length > 0) {
-                    // 30% 概率得赐福，极低概率四星
                     let targetRarity = 1;
                     const r = Math.random();
                     if (r < 0.02) targetRarity = 4;
@@ -487,22 +511,16 @@ export class WanxiangActivity extends plugin {
         if (node.type === 'MONSTER_TREASURE') {
             const killed = defeatedTreasures.length;
             gold = killed === 3 ? 300 : 250; 
-            gold += treasureGoldTotal; // 累加个体掉落的金币
+            gold += treasureGoldTotal;
             extraMsg = `\n【妖兽猎人】击败妖兽：${killed}/3`;
             if (treasureGoldTotal > 0) extraMsg += `\n额外获得：${treasureGoldTotal} 天机印`;
             if (treasureBuffsNames.length > 0) extraMsg += `\n额外获得赐福：${treasureBuffsNames.join('、')}`;
-            
             skipBuffChoice = true;
             if (killed === 3) {
                 const pool = BUFFS.filter(b => (b.rarity === 3 || b.rarity === 4) && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
-                if (pool.length > 0) { 
-                    const b = pool[Math.floor(Math.random() * pool.length)]; 
-                    runData.buffs.push(b.id); 
-                    extraMsg += `\n【完美通关】获得高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`; 
-                }
+                if (pool.length > 0) { const b = pool[Math.floor(Math.random() * pool.length)]; runData.buffs.push(b.id); extraMsg += `\n【完美通关】获得高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`; }
             }
         } else {
-            // 普通战斗乱入
             if (defeatedTreasures.length > 0) {
                 gold += treasureGoldTotal;
                 if (treasureGoldTotal > 0) extraMsg += `\n额外击败妖兽，获得 ${treasureGoldTotal} 天机印！`;
@@ -530,7 +548,7 @@ export class WanxiangActivity extends plugin {
           }
           runData.pending_buffs = ch.map(c => c.id);
           await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-          let bMsg = `【${node.name}】胜利！全队状态已保存。${extraMsg}\n获${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。\n\n【天机赐福】${runData.remaining_picks > 1 ? ` (可选 ${runData.remaining_picks} 个)` : ''}\n发送 #选择赐福 [序号] 获取增益：\n`;
+          let bMsg = `【${node.name}】胜利！全队状态已保存。${extraMsg}\n获${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。\n\n【天机赐福】${runData.remaining_picks > 1 ? ` (可选 ${runData.remaining_picks} 个)` : ''}\n请发送 #选择赐福 [序号] 获取增益：\n`;
           ch.forEach((b, i) => bMsg += `${i + 1}. [${'★'.repeat(b.rarity)}] 【${b.name}】\n   ${b.desc}\n`);
           if (runData.refresh_count > 0) bMsg += `\n你还有 ${runData.refresh_count} 次刷新机会，可发送 #刷新赐福。`;
           e.reply(bMsg);
