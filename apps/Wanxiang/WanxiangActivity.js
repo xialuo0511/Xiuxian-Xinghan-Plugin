@@ -236,7 +236,8 @@ export class WanxiangActivity extends plugin {
       const typeIcon = it.type === 'artifact' ? '📦' : '📜';
       msg += `${i + 1}. ${typeIcon} 【${it.name}】${it.bought ? '(已售罄)' : `💰${it.price}`}\n   [${stars}] ${it.desc}\n`;
     });
-    e.reply(msg + `\n${runData.shop_items.length + 1}. 🔄 【刷新】 更换一批商品\n${runData.shop_items.length + 2}. 🏃 【离开】 继续前进\n发送 #事件选择 [序号] 确认。`);
+    const refreshText = (runData.shop_refresh_count > 0) ? `🔄 【刷新】 更换一批商品 (剩余${runData.shop_refresh_count}次)` : `🚫 【刷新】 (次数已用尽)`;
+    e.reply(msg + `\n${runData.shop_items.length + 1}. ${refreshText}\n${runData.shop_items.length + 2}. 🏃 【离开】 继续前进\n发送 #事件选择 [序号] 确认。`);
   }
 
   async selectRoute(e) {
@@ -306,6 +307,12 @@ export class WanxiangActivity extends plugin {
         if (selection === items.length + 2) { replyMsg = '你告别了散修，继续踏上征途。'; isDone = true; }
         else if (selection === items.length + 1) {
           // --- 修正刷新逻辑：重新生成并手动显示 ---
+          if ((runData.shop_refresh_count || 0) <= 0) {
+            e.reply('云游散修摆了摆手：“货物就这些了，爱买不买。” (已无刷新次数)');
+            await tempClient.disconnect(); return;
+          }
+          runData.shop_refresh_count = (runData.shop_refresh_count || 0) - 1;
+
           runData.shop_items = [];
           const weights = { 1: 80, 2: 40, 3: 10, 4: 0 };
           const pool = BUFFS.filter(b => b.rarity < 4 && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
