@@ -78,7 +78,7 @@ export class UserSellAll extends plugin {
                     fnc: "tiandao",
                 },
                 {
-                    reg: '^#(锁定|解锁)(装备|道具|丹药|功法|草药|材料|食材|盒子|仙宠|口粮).*$',
+                    reg: '^#(一键)?(锁定|解锁).*$',
                     fnc: 'locked'
                 },
                 {
@@ -146,95 +146,110 @@ export class UserSellAll extends plugin {
         if (!ifexistplay) {
             return;
         }
-        //命令判断
-        let msg = e.msg.replace("#", '');
-        let un_lock = msg.substr(0, 2);
-        let thing = msg.substr(4).split("\*");
-        let thing_name = thing[0];
-        let thing_pinji;
-        if (msg.substr(2, 2) == "装备") {
-            thing_pinji = thing[1];
-            if (!isNotNull(thing_pinji)) {
-                e.reply("装备未指定品级！");
-                return;
-            }
-            let pinji = ['劣', '普', '优', '精', '极', '绝', '顶'];
-            let pinji_yes = true;
-            for (var i = 0; i < pinji.length; i++) {
-                if (pinji[i] == thing_pinji) {
-                    pinji_yes = false;
-                    thing_pinji = i;
-                    break;
-                }
-            }
-            if (pinji_yes) {
-                e.reply("未输入正确品级");
-                return;
-            }
-        }
-        let thing_exist = await foundthing(thing_name);
-        if (!thing_exist) {
-            e.reply(`你瓦特了吧，这方世界没有这样的东西:${thing_name}`);
-            return;
-        }
+        
+        let msg = e.msg.replace("#", '').trim();
+        let isOneKey = false;
+        let action = ''; 
+        let target = '';
 
+        if (msg.startsWith('一键')) {
+            isOneKey = true;
+            action = msg.substr(2, 2); 
+        } else {
+            action = msg.substr(0, 2);
+            target = msg.substr(2).trim(); 
+        }
 
         let najie = await Read_najie(usr_qq);
-        let ifexist;
-        if (thing_exist.class == "装备") {
-            ifexist = najie.装备.find(item => (item.name == thing_name && item.pinji == thing_pinji));
-        }
-        if (thing_exist.class == "丹药") {
-            ifexist = najie.丹药.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "道具") {
-            ifexist = najie.道具.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "功法") {
-            ifexist = najie.功法.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "草药") {
-            ifexist = najie.草药.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "材料") {
-            ifexist = najie.材料.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "食材") {
-            ifexist = najie.食材.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "盒子") {
-            ifexist = najie.盒子.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "仙宠") {
-            ifexist = najie.仙宠.find(item => item.name == thing_name);
-        }
-        if (thing_exist.class == "仙米") {
-            ifexist = najie.仙宠口粮.find(item => item.name == thing_name);
-        }
-        if (!ifexist) {//没有
-            e.reply(`你没有【${thing_name}】这样的${thing_exist.class}`);
+        const najieKeys = ['装备', '丹药', '道具', '功法', '草药', '材料', '食材', '盒子', '仙宠', '仙宠口粮'];
+
+        // --- 一键操作 ---
+        if (isOneKey) {
+            let count = 0;
+            const targetLockStatus = (action === '锁定') ? 1 : 0;
+            
+            for (const key of najieKeys) {
+                if (Array.isArray(najie[key])) {
+                    for (const item of najie[key]) {
+                        if (item.islockd !== targetLockStatus) {
+                            item.islockd = targetLockStatus;
+                            count++;
+                        }
+                    }
+                }
+            }
+            await Write_najie(usr_qq, najie);
+            e.reply(`已一键${action}${count}个物品`);
             return;
         }
-        if (ifexist.islockd == 0) {
-            if (un_lock == "锁定") {
-                ifexist.islockd = 1;
-                await Write_najie(usr_qq, najie);
-                e.reply(`${thing_exist.class}:${thing_name}已锁定`);
-                return;
-            } else if (un_lock == "解锁") {
-                e.reply(`${thing_exist.class}:${thing_name}本就是未锁定的`);
-                return;
+
+        // --- 单个操作 ---
+        if (!target) {
+            e.reply(`请输入要${action}的物品`);
+            return;
+        }
+
+        // 移除可能的 *n
+        if (target.includes('*')) {
+            target = target.split('*')[0].trim();
+        }
+
+        // 辅助查找函数
+        const findInNajie = (name) => {
+            let matches = [];
+            for (const key of najieKeys) {
+                if (Array.isArray(najie[key])) {
+                    const items = najie[key].filter(i => i.name === name);
+                    if (items.length > 0) {
+                        matches.push({ category: key, items: items });
+                    }
+                }
             }
-        } else if (ifexist.islockd == 1) {
-            if (un_lock == "解锁") {
-                ifexist.islockd = 0;
-                await Write_najie(usr_qq, najie);
-                e.reply(`${thing_exist.class}:${thing_name}已解锁`);
-                return;
-            } else if (un_lock == "锁定") {
-                e.reply(`${thing_exist.class}:${thing_name}本就是锁定的`);
-                return;
+            return matches;
+        };
+
+        let foundItems = findInNajie(target);
+
+        // 如果直接没找到，尝试去掉类别前缀
+        if (foundItems.length === 0) {
+            const validCategories = ['装备', '道具', '丹药', '功法', '草药', '材料', '食材', '盒子', '仙宠', '口粮', '仙宠口粮'];
+            for (const cat of validCategories) {
+                if (target.startsWith(cat)) {
+                    const potentialName = target.substring(cat.length).trim();
+                    if (potentialName) {
+                        const res = findInNajie(potentialName);
+                        if (res.length > 0) {
+                            foundItems = res;
+                            break;
+                        }
+                    }
+                }
             }
+        }
+
+        if (foundItems.length === 0) {
+            e.reply(`你纳戒里没有【${target}】`);
+            return;
+        }
+
+        // 执行锁定/解锁
+        const targetLockStatus = (action === '锁定') ? 1 : 0;
+        let modifiedCount = 0;
+
+        for (const entry of foundItems) {
+            for (const item of entry.items) {
+                if (item.islockd !== targetLockStatus) {
+                    item.islockd = targetLockStatus;
+                    modifiedCount++;
+                }
+            }
+        }
+
+        if (modifiedCount > 0) {
+            await Write_najie(usr_qq, najie);
+            e.reply(`已${action} ${target} (共${modifiedCount}个)`);
+        } else {
+            e.reply(`【${target}】已经是${action}状态了`);
         }
     }
 
