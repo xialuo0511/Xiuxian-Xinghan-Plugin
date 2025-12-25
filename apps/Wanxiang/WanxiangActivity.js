@@ -521,10 +521,19 @@ export class WanxiangActivity extends plugin {
           for (let i = 0; i < imgPaths.length; i++) {
             const p = imgPaths[i];
             try {
-              const res = await e.reply(segment.image(p));
-              if (!res || res.result === -1) await e.reply({ type: 'file', file: p, name: path.basename(p) });
-            } catch (err) { await e.reply({ type: 'file', file: p, name: path.basename(p) }); }
-            if (i < imgPaths.length - 1) await new Promise(r => setTimeout(r, 1000));
+              const imageSendResult = await e.reply(segment.image(p));
+              const isFailure = !imageSendResult || imageSendResult.error || (imageSendResult.result === -1);
+              if (isFailure) {
+                const fileName = path.basename(p);
+                await e.reply({ type: 'file', file: p, name: fileName });
+              }
+            } catch (imgSendErr) {
+              const fileName = path.basename(p);
+              await e.reply({ type: 'file', file: p, name: fileName });
+            }
+            if (i < imgPaths.length - 1) {
+              await new Promise(r => setTimeout(r, 1000));
+            }
           }
         }
       } catch (err) { console.error('[Wanxiang] Combat Log Error:', err); e.reply('战报生成出错。'); }
