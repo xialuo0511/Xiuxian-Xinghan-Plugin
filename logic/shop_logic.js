@@ -143,8 +143,15 @@ export async function sellItem(userId, itemName, quantity = 1) {
              return { success: false, message: `[${itemName}]不可出售` };
         }
         
-        // 出售价格为原价的一半
-        const sellPrice = Math.floor(basePrice * 0.5);
+        let sellPrice;
+        // 特殊处理：钞票类物品原价回收
+        if (itemInfo.type === '钞票') {
+            sellPrice = basePrice;
+        } else {
+            // 其他物品出售价格为原价的一半
+            sellPrice = Math.floor(basePrice * 0.5);
+        }
+
         if (sellPrice <= 0) {
              return { success: false, message: `[${itemName}]太廉价了，卖不出去` };
         }
