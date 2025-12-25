@@ -12,6 +12,7 @@ import { findItemLocation } from '../../logic/search_logic.js';
 import { refineEquipment } from '../../logic/refine_logic.js';
 import { drawFromPool } from '../../logic/gacha_logic.js';
 import { offerStone } from '../../logic/stone_logic.js';
+import { sellItem, buyItem, buyItemWithXianshi } from '../../logic/shop_logic.js';
 import { checkPlayerArchives } from '../../logic/admin_logic.js';
 import { equipItem, consumeItem, learnSkill } from '../../logic/item_use_logic.js';
 
@@ -119,6 +120,103 @@ export class UserHome extends plugin {
     const result = await redeemCode(usr_qq, code);
 
     return e.reply(result.message, true);
+  }
+
+  /**
+   * #出售
+   */
+  async sellCommodities(e) {
+    const userId = await this.preCheck(e, true);
+    if (!userId) return;
+
+    let args = e.msg.replace('#出售', '').trim();
+    if (!args) {
+      e.reply('请输入要出售的物品名称');
+      return;
+    }
+
+    let itemName = args;
+    let quantity = 1;
+
+    // 处理 *n
+    if (args.includes('*')) {
+      const parts = args.split('*');
+      itemName = parts[0].trim();
+      const q = parseInt(parts[1]);
+      if (!isNaN(q) && q > 0) {
+        quantity = q;
+      } else {
+        e.reply('数量格式错误');
+        return;
+      }
+    }
+
+    const result = await sellItem(userId, itemName, quantity);
+    e.reply(result.message);
+  }
+
+  /**
+   * #购买
+   */
+  async buyCommodities(e) {
+    const userId = await this.preCheck(e, true);
+    if (!userId) return;
+
+    let args = e.msg.replace('#购买', '').trim();
+    if (!args) {
+      e.reply('请输入要购买的物品名称');
+      return;
+    }
+
+    let itemName = args;
+    let quantity = 1;
+
+    if (args.includes('*')) {
+      const parts = args.split('*');
+      itemName = parts[0].trim();
+      const q = parseInt(parts[1]);
+      if (!isNaN(q) && q > 0) {
+        quantity = q;
+      } else {
+        e.reply('数量格式错误');
+        return;
+      }
+    }
+
+    const result = await buyItem(userId, itemName, quantity);
+    e.reply(result.message);
+  }
+
+  /**
+   * #仙石购买
+   */
+  async xianshiBuyCommodities(e) {
+    const userId = await this.preCheck(e, true);
+    if (!userId) return;
+
+    let args = e.msg.replace('#仙石购买', '').trim();
+    if (!args) {
+      e.reply('请输入要购买的物品名称');
+      return;
+    }
+
+    let itemName = args;
+    let quantity = 1;
+
+    if (args.includes('*')) {
+      const parts = args.split('*');
+      itemName = parts[0].trim();
+      const q = parseInt(parts[1]);
+      if (!isNaN(q) && q > 0) {
+        quantity = q;
+      } else {
+        e.reply('数量格式错误');
+        return;
+      }
+    }
+
+    const result = await buyItemWithXianshi(userId, itemName, quantity);
+    e.reply(result.message);
   }
 
   /**
