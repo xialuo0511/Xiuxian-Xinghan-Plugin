@@ -1,8 +1,9 @@
 import * as DAL from '../api/data-access.js';
 import { foundthing, Check_thing } from '../apps/Xiuxian/xiuxian.js';
+import data from '../model/XiuxianData.js';
 
 /**
- * 购买商品逻辑
+ * 购买商品逻辑 (普通灵石商店)
  * @param {string} userId 用户ID
  * @param {string} itemName 物品名称
  * @param {number} quantity 购买数量
@@ -10,16 +11,25 @@ import { foundthing, Check_thing } from '../apps/Xiuxian/xiuxian.js';
  */
 export async function buyItem(userId, itemName, quantity = 1) {
     try {
+        // 1. 在普通商品列表里查找
+        const shopItem = data.commodities_list.find(i => i.name === itemName);
+        if (!shopItem) {
+            return { success: false, message: `商店里没有卖[${itemName}]` };
+        }
+
+        // 2. 获取物品完整信息 (用于获取class等)
         const itemInfo = await foundthing(itemName);
         if (!itemInfo) {
-            return { success: false, message: `这方世界没有[${itemName}]` };
+            return { success: false, message: `数据异常：[${itemName}]不存在于世` };
         }
 
-        if (!itemInfo.price || itemInfo.price <= 0) {
-            return { success: false, message: `[${itemName}]不可购买` };
+        // 3. 确定价格 (优先使用商店列表里的价格)
+        const price = shopItem.出售价 || shopItem.price || 0;
+        if (price <= 0) {
+            return { success: false, message: `[${itemName}]价格异常，无法购买` };
         }
 
-        const totalPrice = itemInfo.price * quantity;
+        const totalPrice = price * quantity;
         let finalMessage = "";
 
         const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
@@ -28,26 +38,14 @@ export async function buyItem(userId, itemName, quantity = 1) {
                 return false;
             }
 
-            // 简单的空间检查 (总数量)
-            // 注意：这里假设所有物品都占1个空间，或者不做严格体积检查
-            // 现有逻辑通常是检查 najie 里数组的长度或者总数。
-            // 暂时沿用旧逻辑：不做复杂空间检查，或者假设每种物品占一个格子(堆叠)
-            // 如果需要检查纳戒空间限制:
-            if (player.纳戒空间 <= 0) { // 简单防御
-                 // player.纳戒空间 通常是上限
-            }
-            // 暂时省略空间检查，以免误判
-
             // 扣钱
             player.灵石 -= totalPrice;
 
             // 加物品
             const itemClass = itemInfo.class;
-            // 使用 DAL 的同步辅助函数来确保一致性
-            // 但这里我们是在回调里，所以不能直接调 async 函数，只能调普通函数
-            // api/data-access.js 导出了 updateNajieSync
-            
-            const success = DAL.updateNajieSync(najie, itemName, itemClass, quantity, 0); // 默认为0品级(如果是装备)
+            // updateNajieSync 会自动处理堆叠和添加
+            // 默认为0品级
+            const success = DAL.updateNajieSync(najie, itemName, itemClass, quantity, 0); 
             if (!success) {
                 finalMessage = "纳戒空间不足或物品添加失败";
                 return false;
@@ -65,7 +63,7 @@ export async function buyItem(userId, itemName, quantity = 1) {
 }
 
 /**
- * 仙石购买商品逻辑
+ * 仙石购买商品逻辑 (仙石商店)
  * @param {string} userId 用户ID
  * @param {string} itemName 物品名称
  * @param {number} quantity 购买数量
@@ -73,16 +71,23 @@ export async function buyItem(userId, itemName, quantity = 1) {
  */
 export async function buyItemWithXianshi(userId, itemName, quantity = 1) {
     try {
+        // 1. 在仙石商品列表里查找
+        const shopItem = data.xianshi_list.find(i => i.name === itemName);
+        if (!shopItem) {
+            return { success: false, message: `仙石商店里没有卖[${itemName}]` };
+        }
+
         const itemInfo = await foundthing(itemName);
         if (!itemInfo) {
-            return { success: false, message: `这方世界没有[${itemName}]` };
+             return { success: false, message: `数据异常：[${itemName}]不存在于世` };
         }
 
-        if (!itemInfo.仙石价格 || itemInfo.仙石价格 <= 0) {
-            return { success: false, message: `[${itemName}]不可用仙石购买` };
+        const price = shopItem.出售价 || shopItem.price || 0;
+        if (price <= 0) {
+            return { success: false, message: `[${itemName}]价格异常，无法购买` };
         }
 
-        const totalPrice = itemInfo.仙石价格 * quantity;
+        const totalPrice = price * quantity;
         let finalMessage = "";
 
         const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
@@ -93,7 +98,8 @@ export async function buyItemWithXianshi(userId, itemName, quantity = 1) {
 
             player.仙石 -= totalPrice;
 
-            const success = DAL.updateNajieSync(najie, itemName, itemInfo.class, quantity, 0);
+            const itemClass = itemInfo.class;
+            const success = DAL.updateNajieSync(najie, itemName, itemClass, quantity, 0);
             if (!success) {
                 finalMessage = "纳戒空间不足或物品添加失败";
                 return false;
@@ -131,13 +137,14 @@ export async function sellItem(userId, itemName, quantity = 1) {
         }
 
         // 检查价格
-        // 注意：某些物品可能没有 price 字段，或者 price 为 0
-        const price = itemInfo.price || 0;
-        if (price <= 0) {
+        // 兼容 '出售价' 字段
+        const basePrice = itemInfo.出售价 || itemInfo.price || 0;
+        if (basePrice <= 0) {
              return { success: false, message: `[${itemName}]不可出售` };
         }
         
-        const sellPrice = Math.floor(price * 0.5);
+        // 出售价格为原价的一半
+        const sellPrice = Math.floor(basePrice * 0.5);
         if (sellPrice <= 0) {
              return { success: false, message: `[${itemName}]太廉价了，卖不出去` };
         }
@@ -153,14 +160,8 @@ export async function sellItem(userId, itemName, quantity = 1) {
                  return false;
              }
 
-             // 查找物品
-             // 优先查找非锁定的
-             // 如果是装备，可能会有多个，这里简单起见，找第一个匹配名字的
-             // 实际上应该优先找低品级或者非锁定的
-             
              let itemIndex = -1;
              
-             // 如果是装备，可能有多个同名但不同品级
              if (itemClass === '装备') {
                  // 找到所有同名的
                  const candidates = najie[najieKey]
@@ -181,13 +182,11 @@ export async function sellItem(userId, itemName, quantity = 1) {
                      return false;
                  }
              } else {
-                 // 非装备（堆叠物品），通常只有一个 entry
                  itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
                  if (itemIndex === -1) {
                     finalMessage = `你没有[${itemName}]`;
                     return false;
                  }
-                 // 检查锁定
                  if (najie[najieKey][itemIndex].islockd) {
                     finalMessage = `[${itemName}]已被锁定，请先解锁`;
                     return false;
