@@ -658,7 +658,38 @@ export class WanxiangActivity extends plugin {
       tempClient = await getTempRedis(); const dataStr = await tempClient.get(KEY_PREFIX + userId); await tempClient.disconnect();
       if (!dataStr) return e.reply('你当前没有进行中的试炼。');
       const data = JSON.parse(dataStr);
-      const renderData = { layer: data.layer, souls: data.souls, buffs: data.buffs.map(id => BUFFS.find(b => b.id === id) || { name: id }), artifacts: data.artifacts.map(id => BUFFS.find(b => b.id === id) || { name: id }), refreshCount: data.refresh_count, currentNode: data.current_node, tempJade: data.temp_jade || 0, pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` };
+      
+      let nextOperation = "未知状态";
+      if (data.pending_buffs && data.pending_buffs.length > 0) {
+        nextOperation = "请选择赐福 (发送 #选择赐福 [序号])";
+        if ((data.refresh_count || 0) > 0) nextOperation += " 或 #刷新赐福";
+      } else if (data.routes && data.routes.length > 0) {
+        nextOperation = "请选择前进路线 (发送 #选择路线 [序号])";
+      } else if (data.current_node) {
+        const type = data.current_node.type;
+        if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(type)) {
+          nextOperation = `当前位于【${data.current_node.name}】，请发送 #挑战 开始战斗`;
+        } else if (['SHOP', 'REST', 'EVENT'].includes(type)) {
+          nextOperation = `正在进行【${data.current_node.name}】事件，请发送 #事件选择 [序号] 进行交互`;
+        } else {
+          nextOperation = "请继续探索 (发送 #选择路线 [序号] 或 #事件选择 [序号])";
+        }
+      }
+
+      const renderData = { 
+        layer: data.layer, 
+        souls: data.souls.map(s => ({
+          ...s,
+          hp_percent: s.max_hp > 0 ? Math.floor(Math.max(0, s.current_hp) / s.max_hp * 100) : 0
+        })), 
+        buffs: data.buffs.map(id => BUFFS.find(b => b.id === id) || { name: id }), 
+        artifacts: data.artifacts.map(id => BUFFS.find(b => b.id === id) || { name: id }), 
+        refreshCount: data.refresh_count, 
+        currentNode: data.current_node, 
+        tempJade: data.temp_jade || 0,
+        nextOperation: nextOperation,
+        pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` 
+      };
       const dFP = await new Show(e).get_imgData('wanxiang_status', renderData);
       const img = await puppeteer.screenshot('wanxiang_status', dFP); await e.reply(img);
     } catch (err) { if (tempClient) await tempClient.disconnect(); }
