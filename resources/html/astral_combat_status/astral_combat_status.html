@@ -157,34 +157,50 @@
       .commands-section {
           margin-top: 30px;
           border: 2px solid var(--border-brown);
-          background: rgba(255, 252, 240, 0.9);
+          background: rgba(255, 252, 240, 0.95);
           padding: 20px;
           border-radius: 12px;
           box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       }
       
-      .cmd-title {
-          font-size: 24px;
+      .cmd-main-title {
+          font-size: 26px;
           font-weight: bold;
-          margin-bottom: 20px;
+          margin-bottom: 25px;
           text-align: center;
           color: #3e2723;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 15px;
+          font-family: "NZBZ";
       }
-      .cmd-title::before, .cmd-title::after {
+      .cmd-main-title::before, .cmd-main-title::after {
           content: "";
-          height: 1px;
+          height: 2px;
           background: linear-gradient(to right, transparent, var(--border-brown), transparent);
           flex: 1;
+      }
+
+      .cmd-group {
+          margin-bottom: 20px;
+      }
+      .cmd-group:last-child { margin-bottom: 0; }
+
+      .cmd-category-title {
+          font-size: 18px;
+          font-weight: bold;
+          color: #5d4037;
+          margin-bottom: 10px;
+          padding-left: 10px;
+          border-left: 4px solid var(--gold);
+          font-family: "NZBZ";
       }
 
       .cmd-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
+          gap: 10px;
       }
 
       .cmd-item {
@@ -271,15 +287,21 @@
 
   {{if helpCommands}}
   <div class="commands-section">
-      <div class="cmd-title">❖ 试炼指令指南 ❖</div>
-      <div class="cmd-grid">
-          {{each helpCommands cmd}}
-          <div class="cmd-item">
-              <span class="cmd-code">{{cmd.cmd}}</span>
-              <span class="cmd-desc">{{cmd.desc}}</span>
+      <div class="cmd-main-title">❖ 试炼指令指南 ❖</div>
+      
+      {{each helpCommands group}}
+      <div class="cmd-group">
+          <div class="cmd-category-title">{{group.category}}</div>
+          <div class="cmd-grid">
+              {{each group.commands cmd}}
+              <div class="cmd-item">
+                  <span class="cmd-code">{{cmd.cmd}}</span>
+                  <span class="cmd-desc">{{cmd.desc}}</span>
+              </div>
+              {{/each}}
           </div>
-          {{/each}}
       </div>
+      {{/each}}
   </div>
   {{/if}}
 
