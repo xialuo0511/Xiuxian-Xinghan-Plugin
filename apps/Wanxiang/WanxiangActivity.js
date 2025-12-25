@@ -660,17 +660,71 @@ export class WanxiangActivity extends plugin {
       const data = JSON.parse(dataStr);
       
       let nextOperation = "未知状态";
+      let options = [];
+
       if (data.pending_buffs && data.pending_buffs.length > 0) {
         nextOperation = "请选择赐福 (发送 #选择赐福 [序号])";
         if ((data.refresh_count || 0) > 0) nextOperation += " 或 #刷新赐福";
+        options = data.pending_buffs.map((bid, i) => {
+            const b = BUFFS.find(bf => bf.id === bid) || { name: bid, desc: '未知赐福', rarity: 1 };
+            return { index: i + 1, type: 'buff', name: b.name, desc: b.desc, rarity: b.rarity };
+        });
       } else if (data.routes && data.routes.length > 0) {
         nextOperation = "请选择前进路线 (发送 #选择路线 [序号])";
+        options = data.routes.map((r, i) => ({ index: i + 1, type: 'route', name: r.name, desc: r.desc, icon: r.type === 'COMBAT' ? '⚔️' : (r.type === 'ELITE' ? '💀' : (r.type === 'REST' ? '⛺' : (r.type === 'BOSS' ? '👹' : (r.type === 'MONSTER_TREASURE' ? '💎' : '🎲')))) }));
       } else if (data.current_node) {
-        const type = data.current_node.type;
+        const node = data.current_node;
+        const type = node.type;
         if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(type)) {
-          nextOperation = `当前位于【${data.current_node.name}】，请发送 #挑战 开始战斗`;
-        } else if (['SHOP', 'REST', 'EVENT'].includes(type)) {
-          nextOperation = `正在进行【${data.current_node.name}】事件，请发送 #事件选择 [序号] 进行交互`;
+          nextOperation = `当前位于【${node.name}】，请发送 #挑战 开始战斗`;
+        } else if (type === 'SHOP') {
+            nextOperation = `请选择购买商品或离开 (发送 #事件选择 [序号])`;
+            options = (data.shop_items || []).map((it, i) => ({ index: i + 1, type: 'shop_item', name: it.name, desc: it.desc, price: it.price, bought: it.bought, rarity: it.rarity }));
+            const refreshCount = data.shop_refresh_count || 0;
+            options.push({ index: options.length + 1, type: 'action', name: '刷新商品', desc: refreshCount > 0 ? `消耗刷新次数 (剩余${refreshCount}次)` : '次数已用尽', disabled: refreshCount <= 0 });
+            options.push({ index: options.length + 1, type: 'action', name: '离开', desc: '继续前进' });
+        } else if (type === 'REST') {
+            nextOperation = `请选择休整方式 (发送 #事件选择 [序号])`;
+            options = [
+                { index: 1, type: 'action', name: '休养生息', desc: '全队恢复 40% 生命值' },
+                { index: 2, type: 'action', name: '招魂仪式', desc: '复活一名随机阵亡队友 (50%血量)' },
+                { index: 3, type: 'action', name: '冥想', desc: '获得 1 次赐福刷新机会' }
+            ];
+        } else if (type === 'EVENT') {
+            nextOperation = `请选择应对方式 (发送 #事件选择 [序号])`;
+            const sub = node.sub_type;
+            if (sub === 'vending_machine_gold') {
+                options = [
+                    { index: 1, type: 'action', name: '抽奖一次', desc: `消耗 100 天机印 (剩余 ${3 - (node.event_count || 0)} 次)` },
+                    { index: 2, type: 'action', name: '离开', desc: '不感兴趣' }
+                ];
+            } else if (sub === 'vending_machine_weird') {
+                options = [
+                    { index: 1, type: 'action', name: '抽奖一次', desc: `消耗 25 天机印 (剩余 ${3 - (node.event_count || 0)} 次)` },
+                    { index: 2, type: 'action', name: '离开', desc: '不感兴趣' }
+                ];
+            } else if (sub === 'gamble_all') {
+                options = [
+                    { index: 1, type: 'action', name: '放手一搏', desc: '消耗 99% 当前生命值，大幅强化星魂属性' },
+                    { index: 2, type: 'action', name: '无视', desc: '太危险了' }
+                ];
+            } else if (sub === 'ultimate_boost') {
+                options = [
+                    { index: 1, type: 'action', name: '顶级强化', desc: '复活全员并满状态，获得全员专属三星赐福' },
+                    { index: 2, type: 'action', name: '离开', desc: '不需要帮助' }
+                ];
+            } else if (sub === 'soul_enhance') {
+                options = [
+                    { index: 1, type: 'action', name: '虚心求教', desc: '获得一个针对已有星魂强化的三星赐福' },
+                    { index: 2, type: 'action', name: '无视', desc: '离开' }
+                ];
+            } else { // vending_machine (standard)
+                options = [
+                    { index: 1, type: 'action', name: '购买补给', desc: '消耗 20% 当前生命值，获得 3 个普通赐福' },
+                    { index: 2, type: 'action', name: '暴力破解', desc: '试图砸开它 (50%获得随机3星赐福，50%受伤)' },
+                    { index: 3, type: 'action', name: '离开', desc: '离开' }
+                ];
+            }
         } else {
           nextOperation = "请继续探索 (发送 #选择路线 [序号] 或 #事件选择 [序号])";
         }
@@ -688,6 +742,7 @@ export class WanxiangActivity extends plugin {
         currentNode: data.current_node, 
         tempJade: data.temp_jade || 0,
         nextOperation: nextOperation,
+        options: options,
         pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` 
       };
       const dFP = await new Show(e).get_imgData('wanxiang_status', renderData);
