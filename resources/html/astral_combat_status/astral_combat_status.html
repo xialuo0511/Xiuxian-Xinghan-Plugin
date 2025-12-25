@@ -15,6 +15,7 @@
           --water: #266b96;
           --fire: #c53828;
           --earth: #8f653b;
+          --accent-red: #c53828;
       }
 
       body {
@@ -131,62 +132,95 @@
       }
 
       .footer-tip {
-          margin-top: 30px;
+          margin-top: 25px;
           text-align: center;
-          color: #7f8c8d;
-          font-size: 16px;
-          border-top: 1px dashed var(--border-brown);
-          padding-top: 10px;
+          color: #5d4037;
+          font-size: 18px;
+          font-weight: bold;
+          background: rgba(255, 255, 255, 0.3);
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px dashed var(--border-brown);
       }
       .footer-tip span {
+          color: var(--accent-red);
           background: #fff;
-          border: 1px solid #ccc;
-          padding: 2px 6px;
+          border: 1px solid var(--accent-red);
+          padding: 0px 8px;
           border-radius: 4px;
           font-family: "tttgbnumber";
-          margin: 0 5px;
-          font-size: 14px;
+          margin: 0 4px;
+          font-size: 16px;
       }
 
+      /* 指令面板美化 */
       .commands-section {
           margin-top: 30px;
-          border: 1px solid var(--border-brown);
-          background: rgba(255, 255, 255, 0.4);
-          padding: 15px;
-          border-radius: 8px;
+          border: 2px solid var(--border-brown);
+          background: rgba(255, 252, 240, 0.9);
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       }
+      
       .cmd-title {
-          font-size: 20px;
+          font-size: 24px;
           font-weight: bold;
-          margin-bottom: 15px;
+          margin-bottom: 20px;
           text-align: center;
-          color: #5a4632;
-          border-bottom: 1px dashed #d4cbb8;
-          padding-bottom: 5px;
+          color: #3e2723;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
       }
+      .cmd-title::before, .cmd-title::after {
+          content: "";
+          height: 1px;
+          background: linear-gradient(to right, transparent, var(--border-brown), transparent);
+          flex: 1;
+      }
+
       .cmd-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
+          gap: 12px;
       }
+
       .cmd-item {
           display: flex;
-          align-items: baseline;
-          font-size: 14px;
+          align-items: center;
+          background: #fff;
+          border: 1px solid #dcd6cc;
+          border-radius: 6px;
+          padding: 8px 12px;
+          transition: transform 0.2s;
       }
+      
+      .cmd-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
+
       .cmd-code {
           font-family: "tttgbnumber";
           font-weight: bold;
-          color: #c53828;
-          background: #fff;
-          padding: 2px 6px;
+          color: #fff;
+          background: #5d4037;
+          padding: 3px 10px;
           border-radius: 4px;
-          border: 1px solid #e0e0e0;
-          margin-right: 8px;
+          margin-right: 12px;
           white-space: nowrap;
+          font-size: 15px;
+          min-width: 100px;
+          text-align: center;
       }
+
       .cmd-desc {
-          color: #555;
+          font-size: 14px;
+          color: #4e342e;
+          flex: 1;
+          line-height: 1.2;
       }
 
   </style>
