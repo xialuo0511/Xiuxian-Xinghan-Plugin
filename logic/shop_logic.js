@@ -1,5 +1,5 @@
 import * as DAL from '../api/data-access.js';
-import { foundthing } from '../apps/Xiuxian/xiuxian.js';
+import { foundthing, Check_thing } from '../apps/Xiuxian/xiuxian.js';
 
 /**
  * 购买商品逻辑
@@ -122,6 +122,12 @@ export async function sellItem(userId, itemName, quantity = 1) {
         const itemInfo = await foundthing(itemName);
         if (!itemInfo) {
             return { success: false, message: `这方世界没有[${itemName}]` };
+        }
+
+        // 检查特殊限制 (活动物品等)
+        const isRestricted = await Check_thing(itemInfo);
+        if (isRestricted === 1) {
+             return { success: false, message: `[${itemName}]特殊物品/活动物品，无法出售` };
         }
 
         // 检查价格
