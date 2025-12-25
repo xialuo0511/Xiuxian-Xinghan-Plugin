@@ -776,6 +776,30 @@ function executeSkill(caster, skill, friendlyTeam, hostileTeam, isUltimate = fal
  * 伤害计算逻辑 (自适应公式)
  */
 function calculateDamage(attacker, target, rawDamageInput) {
+  // ★ 天机秘术·幻影 (伤害免疫)
+  if (target.source && target.source.damage_immune_chance > 0) {
+      if (Math.random() < target.source.damage_immune_chance) {
+          return {
+              name: target.name,
+              team: target.team,
+              element: target.element,
+              level: target.level || 0,
+              id: target.id,
+              type: 'damage',
+              value: 0,
+              value_display: '(幻影)0',
+              is_counter: false,
+              is_crit: false,
+              hp_remaining: target.current_hp,
+              hp_max: target.max_hp,
+              shield_remaining: target.shield,
+              is_dead: !target.isAlive(),
+              heal_back: 0,
+              reflected_damage: 0
+          };
+      }
+  }
+
   let elementalBonus = 1.0;
   let isCounter = false;
   let globalMultiplier = 1.0;

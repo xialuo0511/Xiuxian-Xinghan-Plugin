@@ -25,7 +25,12 @@ const UPGRADES = [
   { id: 2, name: '强韧之躯', desc: '所有星魂基础生命值 +10%', cost: 30, type: 'hp_pct', value: 0.10 },
   { id: 3, name: '鹰眼', desc: '所有星魂暴击率 +2%', cost: 30, type: 'crit_rate', value: 0.02 },
   { id: 4, name: '致命一击', desc: '所有星魂暴击伤害 +5%', cost: 30, type: 'crit_dmg', value: 0.05 },
-  { id: 5, name: '威压', desc: '战斗开始时，敌方全体造成的伤害强制为 1 (持续1回合)', cost: 100, type: 'start_debuff', value: 1, duration: 1 }
+  { id: 5, name: '威压', desc: '战斗开始时，敌方全体造成的伤害强制为 1 (持续1回合)', cost: 100, type: 'start_debuff', value: 1, duration: 1 },
+  { id: 6, name: '神行', desc: '所有星魂速度 +5%', cost: 50, type: 'speed_pct', value: 0.05 },
+  { id: 7, name: '铁壁', desc: '所有星魂基础防御 +5%', cost: 50, type: 'def_pct', value: 0.05 },
+  { id: 8, name: '狂暴', desc: '所有星魂基础攻击力 +5%', cost: 50, type: 'atk_pct', value: 0.05 },
+  { id: 9, name: '幻影', desc: '星魂受到伤害时有 15% 概率完全免疫', cost: 150, type: 'damage_immune', value: 0.15 },
+  { id: 10, name: '招魂幡', desc: '休整节点中复活的星魂数变为 2 名', cost: 200, type: 'rest_buff_resurrect', value: 2 }
 ];
 
 const OATHS = [
@@ -340,7 +345,26 @@ export class WanxiangActivity extends plugin {
         }
       } else if (node.type === 'REST') {
         if (selection === 1) { runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4)); }); replyMsg = '全员恢复了大量生命值。'; isDone = true; }
-        else if (selection === 2) { const dead = runData.souls.filter(s => s.is_dead); if (dead.length) { const s = dead[Math.floor(Math.random() * dead.length)]; s.is_dead = false; s.current_hp = Math.floor(s.max_hp * 0.5); replyMsg = `【${s.name}】已从冥界归来。`; } else replyMsg = '无人阵亡，你只是休息了一会儿。'; isDone = true; }
+        else if (selection === 2) { 
+            const dead = runData.souls.filter(s => s.is_dead); 
+            if (dead.length) { 
+                const maxRevive = (runData.user_level >= 10) ? 2 : 1;
+                const toReviveCount = Math.min(dead.length, maxRevive);
+                const revivedNames = [];
+                
+                // 随机选择复活对象
+                for (let i = 0; i < toReviveCount; i++) {
+                    const idx = Math.floor(Math.random() * dead.length);
+                    const s = dead[idx];
+                    s.is_dead = false; 
+                    s.current_hp = Math.floor(s.max_hp * 0.5); 
+                    revivedNames.push(`【${s.name}】`);
+                    dead.splice(idx, 1); // 避免重复选中
+                }
+                replyMsg = `${revivedNames.join('、')}已从冥界归来。`; 
+            } else replyMsg = '无人阵亡，你只是休息了一会儿。'; 
+            isDone = true; 
+        }
         else if (selection === 3) { runData.refresh_count++; replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。'; isDone = true; }
       } else if (node.type === 'EVENT') {
         const sub = node.sub_type;
@@ -428,12 +452,24 @@ export class WanxiangActivity extends plugin {
         if (s.is_dead) continue;
         const conf = ALL_SOULS.find(as => as.name === s.name);
         if (conf) {
-          const bc = JSON.parse(JSON.stringify(conf)); let hpMul = 1.0, atkMul = 1.0;
-          UPGRADES.forEach(u => { if (runData.user_level >= u.id) { if (u.type === 'atk_flat') bc.base_stats.attack += u.value; if (u.type === 'hp_pct') hpMul += u.value; } });
+          const bc = JSON.parse(JSON.stringify(conf)); let hpMul = 1.0, atkMul = 1.0, defMul = 1.0, speedMul = 1.0;
+          UPGRADES.forEach(u => { 
+            if (runData.user_level >= u.id) { 
+              if (u.type === 'atk_flat') bc.base_stats.attack += u.value; 
+              if (u.type === 'hp_pct') hpMul += u.value; 
+              if (u.type === 'atk_pct') atkMul += u.value;
+              if (u.type === 'def_pct') defMul += u.value;
+              if (u.type === 'speed_pct') speedMul += u.value;
+              if (u.type === 'damage_immune') bc.damage_immune_chance = u.value;
+            } 
+          });
           if (activeOaths.some(o => o.name === '禁术')) { delete bc.skills.ultimate; atkMul += 0.2; }
           if (activeOaths.some(o => o.name === '血契')) { hpMul -= 0.5; atkMul += 0.2; }
           if (runData.gamble_buff) { hpMul *= 2; atkMul *= 2; bc.crit_rate = (bc.crit_rate || 0) + 1.0; bc.base_stats.energy_regen = (bc.base_stats.energy_regen || 20) * 1.25; }
-          bc.base_stats.health = Math.floor(bc.base_stats.health * hpMul); bc.base_stats.attack = Math.floor(bc.base_stats.attack * atkMul);
+          bc.base_stats.health = Math.floor(bc.base_stats.health * hpMul); 
+          bc.base_stats.attack = Math.floor(bc.base_stats.attack * atkMul);
+          bc.base_stats.defense = Math.floor(bc.base_stats.defense * defMul);
+          bc.base_stats.speed = Math.floor(bc.base_stats.speed * speedMul);
           bc.current_hp_inherit = Math.min(s.current_hp, bc.base_stats.health);
           if (activeOaths.some(o => o.name === '压制')) { bc.initial_debuffs = bc.initial_debuffs || []; bc.initial_debuffs.push({ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }); }
           if (runData.extra_atk_pct) bc.base_stats.attack += Math.floor(conf.base_stats.attack * runData.extra_atk_pct);
