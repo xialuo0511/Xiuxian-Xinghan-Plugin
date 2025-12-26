@@ -288,8 +288,8 @@ export class WanxiangActivity extends plugin {
       else if (node.type === 'REST') e.reply('你来到了一处隐蔽的营地，这里似乎很安全。\n\n1. 【休养生息】 全队恢复 40% 生命值\n2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)\n3. 【冥想】 获得 1 次赐福刷新机会\n\n发送 #事件选择 [序号] 确认。');
       else if (node.type === 'EVENT') {
         const sub = runData.current_node.sub_type;
-        if (sub === 'vending_machine_gold') e.reply('你发现了一台金光闪闪的【抽奖售货机】。\n\n1. 【抽奖一次】 消耗 100 天机印 (至多3次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。');
-        else if (sub === 'vending_machine_weird') e.reply('你发现了一台外形诡异的【奇怪售货机】。\n\n1. 【抽奖一次】 消耗 25 天机印 (至多3次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。');
+        if (sub === 'vending_machine_gold') e.reply(`你发现了一台金光闪闪的【抽奖售货机】。(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 100 天机印 (至多3次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`);
+        else if (sub === 'vending_machine_weird') e.reply(`你发现了一台外形诡异的【奇怪售货机】。(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 25 天机印 (至多3次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`);
         else if (sub === 'gamble_all') e.reply('你在祭坛上发现了一份禁忌契约。\n\n1. 【放手一搏】 消耗 99% 当前生命值，大幅强化星魂属性直到本局结束！\n2. 【无视】\n\n发送 #事件选择 [序号] 确认。');
         else if (sub === 'ultimate_boost') e.reply('一道圣光从天而降！你感到充满了力量！\n\n1. 【顶级强化】 复活全员，恢复满状态，并获得全员专属三星赐福！\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。');
         else if (sub === 'soul_enhance') e.reply('你在废墟中遇到一位神秘的老者，他注视着你的星魂，眼中闪过一丝光芒。\n\n1. 【虚心求教】 获得一个针对已有星魂强化的三星赐福\n2. 【无视】 离开\n\n发送 #事件选择 [序号] 确认。');
@@ -383,7 +383,7 @@ export class WanxiangActivity extends plugin {
           }
           if (node.event_count >= 3) isDone = true; else { 
               await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); 
-              e.reply(`${replyMsg}\n\n1. 【抽奖一次】 消耗 100 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
+              e.reply(`${replyMsg}\n(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 100 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
               return; 
           }
         } else if (sub === 'vending_machine_weird' && selection === 1) {
@@ -404,7 +404,7 @@ export class WanxiangActivity extends plugin {
           }
           if (node.event_count >= 3) isDone = true; else { 
               await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); 
-              e.reply(`${replyMsg}\n\n1. 【抽奖一次】 消耗 25 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
+              e.reply(`${replyMsg}\n(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 25 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
               return; 
           }
         } else if (sub === 'vending_machine' && (selection === 1 || selection === 2)) {
