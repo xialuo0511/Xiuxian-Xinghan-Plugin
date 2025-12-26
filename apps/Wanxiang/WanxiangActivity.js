@@ -369,7 +369,8 @@ export class WanxiangActivity extends plugin {
       } else if (node.type === 'EVENT') {
         const sub = node.sub_type;
         if (sub === 'vending_machine_gold' && selection === 1) {
-          if (runData.jing_yin < 100 || node.event_count >= 3) return e.reply('无法继续抽奖。');
+          if (node.event_count >= 3) return e.reply('该售货机库存已空。');
+          if (runData.jing_yin < 100) return e.reply('你的天机印不足，无法启动售货机。');
           runData.jing_yin -= 100; node.event_count++; const r = Math.random();
           const filterPool = (rarity) => BUFFS.filter(b => b.rarity === rarity && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
           if (r < 0.05) { runData.jing_yin += 500; replyMsg = '运气爆棚！你获得了 500 天机印！'; }
@@ -387,7 +388,8 @@ export class WanxiangActivity extends plugin {
               return; 
           }
         } else if (sub === 'vending_machine_weird' && selection === 1) {
-          if (runData.jing_yin < 25 || node.event_count >= 3) return e.reply('售货机已熄灭。');
+          if (node.event_count >= 3) return e.reply('售货机里的东西已经被掏空了。');
+          if (runData.jing_yin < 25) return e.reply('投入的天机印不足，售货机毫无反应。');
           runData.jing_yin -= 25; node.event_count++; const r = Math.random();
           if (r < 0.1) { runData.souls.forEach(s => s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.9))); replyMsg = '诡异的烟雾让你感到虚弱 (当前生命值-10%)。'; }
           else if (r < 0.2) { runData.souls.forEach(s => s.current_hp = Math.min(s.max_hp, Math.floor(s.current_hp * 1.1))); replyMsg = '一股暖流涌入，全体星魂恢复了 10% 生命值。'; }
