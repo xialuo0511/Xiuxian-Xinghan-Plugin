@@ -9,7 +9,7 @@
   mechanics: "高爆发单体输出，终结技可造成毁灭性打击。"
   lore: "上古剑修遗留的一缕杀伐剑意，经万载庚金之气孕育而生。它没有实体，唯有一股刺破苍穹的锐气。传闻得此战魂者，剑出无回，无坚不摧。其绝技「太白庚金斩」引动太白星力，瞬息之间可取敌首级，造成毁灭性打击。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 195, defense: 100, health: 1000, resistance: 0.1, speed: 125, taunt: 100, element: "金", crit_rate: 0.25, crit_dmg: 1.6, max_energy: 120, energy_regen: 25 }
+  base_stats: { attack: 195, defense: 100, health: 1200, resistance: 0.1, speed: 125, taunt: 100, element: "金", crit_rate: 0.35, crit_dmg: 1.6, max_energy: 120, energy_regen: 25 }
   skills:
     basic:
       name: "锐金指"
@@ -40,23 +40,23 @@
   mechanics: "强力护盾辅助，天赋提供全队减伤。"
   lore: "生于极西之地的万年戊土之精，性情温厚沉稳。它象征着大地的宽容与承载，能将脚下的每一寸土地化为坚不可摧的屏障。其绝技「不动明王阵」能沟通大地脉动，为所有队友提供坚实的护盾，任凭风吹雨打，我自岿然不动。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 80, defense: 220, health: 1500, resistance: 0.25, speed: 70, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5, max_energy: 100, energy_regen: 15 }
+  base_stats: { attack: 80, defense: 200, health: 1850, resistance: 0.25, speed: 70, taunt: 300, element: "土", crit_rate: 0.05, crit_dmg: 1.5, max_energy: 100, energy_regen: 15 }
   skills:
     basic:
       name: "地裂波"
       type: "damage"
       target: "all_enemies"
       value_type: "def"
-      value: 0.7
-      detailed_mechanics: "对敌方全体造成基于防御力 70% 的土属性伤害。"
+      value: 0.65
+      detailed_mechanics: "对敌方全体造成基于防御力 65% 的土属性伤害。"
     talent:
       name: "大地守护"
       type: "passive"
       target: "self"
-      effect: "taunt_up_heal"
-      value: 2.0 # 嘲讽倍率
-      heal_ratio: 0.05
-      detailed_mechanics: "大幅提高受到攻击的概率，受到攻击后恢复本次受到伤害5%的生命值。"
+      effect: "taunt_up_damage_reduce"
+      value: 0.1 # 减伤10%
+      initial_energy: 50 # 初始能量
+      detailed_mechanics: "大幅提高受到攻击的概率，受到的伤害降低10%。战斗开始时恢复50%的能量。"
     ultimate:
       name: "不动如山"
       type: "shield"
@@ -73,7 +73,7 @@
   mechanics: "群体治疗专家，天赋能持续滋养队友。"
   lore: "曾是百草园中一株得道的灵芝，感悟乙木长生之理化形。它所过之处，百花盛开，枯木逢春。它不喜争斗，只愿悬壶济世。其绝技「青帝长生诀」借来东方青帝之生机，能瞬间治愈重伤的队友，由于它是灵体，甚至能修复受损的神魂。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 100, defense: 120, health: 1200, resistance: 0.15, speed: 100, taunt: 100, element: "木", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 110 }
+  base_stats: { attack: 100, defense: 120, health: 1350, resistance: 0.15, speed: 100, taunt: 100, element: "木", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 110 }
   skills:
     basic:
       name: "飞叶"
@@ -85,19 +85,19 @@
     talent:
       name: "生生不息"
       type: "passive"
-      target: "lowest_hp_ally"
+      target: "lowest_hp_ally_and_self"
       effect: "heal_turn_end"
-      value_type: "atk"
-      value: 0.5
-      detailed_mechanics: "回合结束时，为生命值最低的友方单位恢复 50% 攻击力的生命值。"
+      value_type: "max_hp"
+      value: 0.1
+      detailed_mechanics: "回合结束时，为自身以及生命最低的友方单位恢复 10% 生命上限的生命值。"
     ultimate:
       name: "青帝长生诀"
       type: "heal"
       target: "all_allies"
-      value_type: "atk"
-      value: 1.8
-      energy_cost: 110
-      detailed_mechanics: "消耗110点能量，为我方全体恢复 180% 攻击力的生命值。"
+      value_type: "max_hp"
+      value: 0.8
+      energy_cost: 115
+      detailed_mechanics: "消耗115点能量，为我方全体恢复 80% 生命上限的生命值。"
 
 - name: "咒师·壬水"
   class: "活动"
@@ -105,7 +105,7 @@
   mechanics: "群体控制与削弱，终结技可冻结敌人。"
   lore: "诞生于北冥深海的幽寒之灵，掌握着水的变幻莫测。水可至柔滋养万物，亦可至刚席卷天下。咒师深谙此道，平时静若处子，动则如怒海狂涛。其绝技「弱水三千」能召唤来自九幽的弱水，冲击敌方全体，且弱水沉重，一旦沾染，难以摆脱。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 140, defense: 100, health: 1100, resistance: 0.1, speed: 105, taunt: 100, element: "水", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 120 }
+  base_stats: { attack: 140, defense: 100, health: 1300, resistance: 0.1, speed: 105, taunt: 100, element: "水", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 120 }
   skills:
     basic:
       name: "凝冰刺"
@@ -118,9 +118,10 @@
       name: "寒气侵袭"
       type: "passive"
       target: "attacker"
-      effect: "speed_down"
-      value: 0.1
-      detailed_mechanics: "受到攻击时，有 50% 概率使攻击者速度降低 10%，持续 2 回合。"
+      effect: "counter_poison"
+      value: 0.05
+      prob: 0.3
+      detailed_mechanics: "受到攻击时，有 30% 概率为敌方施加两回合【毒水】效果（回合开始受5%当前生命伤害）。"
     ultimate:
       name: "弱水三千"
       type: "damage"
@@ -137,7 +138,7 @@
   mechanics: "极致的单体爆发，暴击率越高伤害越高。"
   lore: "采南方离火之精修炼而成的火灵，性格暴烈如火。它崇尚极致的毁灭力量，认为只有灰烬才是万物最终的归宿。其绝技「九龙神火罩」通过召唤九条火龙盘旋而上，将敌人困于火罩之中焚烧，造成毁灭性单体伤害，非大毅力者不可降服。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 210, defense: 80, health: 900, resistance: 0.05, speed: 125, taunt: 80, element: "火", crit_rate: 0.25, crit_dmg: 1.6, max_energy: 130 }
+  base_stats: { attack: 210, defense: 80, health: 1250, resistance: 0.05, speed: 125, taunt: 80, element: "火", crit_rate: 0.25, crit_dmg: 1.8, max_energy: 130 }
   skills:
     basic:
       name: "烈焰掌"
@@ -150,14 +151,16 @@
       name: "焚天之怒"
       type: "passive"
       target: "self"
-      effect: "crit_dmg_up"
-      value: 0.3
-      detailed_mechanics: "暴击伤害提升 30%。"
+      effect: "consume_hp_dmg_up"
+      value: 0.5
+      cost: 0.05
+      detailed_mechanics: "攻击时会消耗当前 5% 的血量使得造成的伤害额外提高 50%。"
     ultimate:
       name: "九龙神火罩"
       type: "damage"
       target: "single_enemy"
       value_type: "atk"
-      value: 3.5
-      energy_cost: 130
-      detailed_mechanics: "消耗130点能量，召唤九龙神火，对敌方单体造成 350% 攻击力的毁灭性伤害。"
+      value: 3.15
+      energy_cost: 135
+      heal_on_turn_end: 0.25
+      detailed_mechanics: "消耗135点能量，召唤九龙神火，对敌方单体造成 315% 攻击力的毁灭性伤害，并在回合结束后恢复已损失生命值25%的血量。"

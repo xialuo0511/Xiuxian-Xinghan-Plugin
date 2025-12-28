@@ -135,8 +135,8 @@
       type: "passive"
       target: "self"
       effect: "speed_dmg_up"
-      value: 0.01
-      detailed_mechanics: "每 1 点速度提升 1% 造成的伤害。"
+      value: 0.003
+      detailed_mechanics: "每 1 点速度提升 0.3% 造成的伤害。"
 
 - name: "暗影刺客"
   level: 6
@@ -144,7 +144,7 @@
   desc: "隐藏在阴影中的杀手，出手必见血。"
   mechanics: "对低血量目标造成额外伤害。"
   lore: "曾是某个古老杀手组织的成员，死后化为怨灵，继续执行着生前的任务。它没有实体，能自由穿梭于阴影之中。它最喜欢在敌人最虚弱的时候发动致命一击，让人防不胜防。它的匕首涂有剧毒，见血封喉。"
-  base_stats: { attack: 300, defense: 60, health: 1200, resistance: 0.05, speed: 130, taunt: 50, element: "水", crit_rate: 0.4, crit_dmg: 2.0 }
+  base_stats: { attack: 220, defense: 60, health: 1200, resistance: 0.05, speed: 130, taunt: 50, element: "水", crit_rate: 0.4, crit_dmg: 2.0 }
   skills:
     basic:
       name: "影杀"
@@ -158,8 +158,8 @@
       type: "passive"
       target: "self"
       effect: "execute_bonus"
-      value: 0.5
-      detailed_mechanics: "攻击生命值低于 50% 的目标时，暴击率提升 50%。"
+      value: 0.6
+      detailed_mechanics: "攻击生命值低于 50% 的目标时，暴击率提升 60%。"
 
 - name: "铁甲巨龟"
   level: 6

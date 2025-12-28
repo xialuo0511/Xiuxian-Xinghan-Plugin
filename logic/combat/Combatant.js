@@ -300,6 +300,23 @@ export class Combatant {
                       is_counter: false
                   });
               }
+          } else if (debuff.type === 'poison_water') {
+              // 毒水：回合开始时会受到当前生命值5%的伤害
+              const dotDamage = Math.floor(this.current_hp * 0.05);
+              if (dotDamage > 0) {
+                  const oldShield = this.shield;
+                  const hpDamage = this.takeDamage(dotDamage);
+                  const shieldDamage = oldShield - this.shield;
+                  const totalDamage = hpDamage + shieldDamage;
+                  
+                  results.push({
+                      name: this.name, team: this.team, element: this.element, level: this.level || 0,
+                      id: this.id, type: 'dot_damage', debuff_type: 'poison_water',
+                      value: hpDamage,
+                      value_display: formatNumber(totalDamage),
+                      is_counter: false
+                  });
+              }
           }
       });
 

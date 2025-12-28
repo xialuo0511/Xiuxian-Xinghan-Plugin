@@ -15,6 +15,7 @@ const COUNTER_BONUS = 1.5; // 克制伤害提升
 
 const EFFECT_CONFIG = {
   'poison_dot': { name: '剧毒', is_debuff: true, icon: '☠️' },
+  'poison_water': { name: '毒水', is_debuff: true, icon: '🧪' },
   'burn_dot': { name: '灼烧', is_debuff: true, icon: '🔥' },
   'freeze': { name: '冰冻', is_debuff: true, icon: '❄️' },
   'curse_water': { name: '诅咒', is_debuff: true, icon: '💧' },
@@ -212,6 +213,42 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
             text: `${activeUnit.name} 触发【锋锐之气】，伤害提升 5% (当前 ${activeUnit.active_debuffs.find(d=>d.type==='damage_up_stack')?.value || 0} 层)`
         });
     }
+    
+    // --- 天赋/被动：回合开始触发 ---
+    if (activeUnit.passive_skills) {
+        activeUnit.passive_skills.forEach(skill => {
+             // ★ 炽火妖莲 (灼烧光环)
+             if (skill.type === 'burn_aura') {
+                 const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
+                 hostileTeam.filter(u => u.isAlive()).forEach(t => {
+                     const dmg = Math.floor(activeUnit.attack * skill.value);
+                     t.takeDamage(dmg);
+                     combatLog.push({
+                         type: 'system',
+                         text: `🔥 ${activeUnit.name} 的【热浪滚滚】灼烧了 ${t.name}，造成 ${dmg} 点伤害！`
+                     });
+                 });
+             }
+             // ★ 混沌魔眼 (混乱力场)
+             else if (skill.type === 'random_debuff_turn') {
+                 if (Math.random() < skill.value) {
+                     const hostileTeam = (activeUnit.team === 'player') ? enemyTeam : playerTeam;
+                     const targets = hostileTeam.filter(u => u.isAlive());
+                     if (targets.length > 0) {
+                         const t = targets[Math.floor(Math.random() * targets.length)];
+                         const debuffs = ['speed_down', 'defense_down', 'attack_down', 'poison_dot']; // 简化的Debuff池
+                         const picked = debuffs[Math.floor(Math.random() * debuffs.length)];
+                         // 这里简单处理，直接加个虚弱完事，或者复用 applyDebuff
+                         t.applyDebuff({ type: 'weakness', caster_id: activeUnit.id, duration: 2, value: 0 });
+                         combatLog.push({
+                             type: 'system',
+                             text: `👁️ ${activeUnit.name} 的【混乱力场】干扰了 ${t.name}，施加了虚弱效果！`
+                         });
+                     }
+                 }
+             }
+        });
+    }
 
     // 结算 activeUnit 的 Debuff (如毒)
     // ★ 关键修改：只触发效果，不扣除回合数
@@ -376,6 +413,11 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
 
     const { skillResults, debuffsApplied, extraDetails } = executeSkill(activeUnit, skillConfig, friendlyTeam, hostileTeam, isUltimate);
     
+    // ★ 炎君·丙火 (大招延迟回血标记)
+    if (skillConfig.heal_on_turn_end) {
+        activeUnit.pending_turn_end_heal = skillConfig.heal_on_turn_end;
+    }
+    
     // 行动回复能量
     activeUnit.addEnergy(activeUnit.energy_regen || 20);
 
@@ -420,20 +462,34 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
                 passiveDetails.push(`触发【${pName}】，速度提高${speedIncrease}%`);
             }
         } else if (skill.type === 'heal_turn_end') {
-             // 寻找目标：生命值最低的友方 (target='lowest_hp_ally')
-             // 注意：这里简单实现，假设 target 总是 lowest_hp_ally，如果需要支持更多 target 类型，需扩展
              const team = (activeUnit.team === 'player') ? playerTeam : enemyTeam;
              const allies = team.filter(u => u.isAlive());
-             if (allies.length > 0) {
-                 // 按血量百分比排序 (升序)
-                 allies.sort((a, b) => (a.current_hp / a.max_hp) - (b.current_hp / b.max_hp));
-                 const target = allies[0];
-                 
+             
+             let targets = [];
+             if (skill.target === 'lowest_hp_ally_and_self') {
+                 // 自身 + 最低血量队友 (如果自身就是最低，则只奶自己一次? 或者逻辑上是分别奶)
+                 // 通常理解为：奶自己 + 奶全队血量最低的（可能是自己）
+                 targets.push(activeUnit);
+                 if (allies.length > 0) {
+                     allies.sort((a, b) => (a.current_hp / a.max_hp) - (b.current_hp / b.max_hp));
+                     // 避免重复奶同一人？根据描述“为自身以及生命最低...”，应该是两次独立判定
+                     targets.push(allies[0]);
+                 }
+                 // 去重？如果最低也是自己，是否奶两次？通常是。
+             } else {
+                 // 默认 lowest_hp_ally
+                 if (allies.length > 0) {
+                     allies.sort((a, b) => (a.current_hp / a.max_hp) - (b.current_hp / b.max_hp));
+                     targets.push(allies[0]);
+                 }
+             }
+
+             targets.forEach(target => {
                  let baseHeal = 0;
                  if (skill.value_type === 'atk') {
                      baseHeal = activeUnit.attack * skill.value;
                  } else {
-                     baseHeal = activeUnit.max_hp * skill.value; // 默认按最大生命值
+                     baseHeal = activeUnit.max_hp * skill.value; 
                  }
                  
                  const healAmt = Math.floor(baseHeal);
@@ -442,7 +498,7 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
                      const pName = skill.name || '被动';
                      passiveDetails.push(`触发【${pName}】，${target.name} 回复 ${actualHeal}`);
                  }
-             }
+             });
         }
       });
     }
@@ -479,6 +535,20 @@ export async function runCombat(playerSouls, enemyNames, globalBuffs = [], maxRo
                 if (activeUnit.is_extra_turn_pending) activeUnit.is_extra_turn_pending = false;
               }
         
+              // ★ 炎君·丙火 (延迟回血结算)
+              if (activeUnit.pending_turn_end_heal) {
+                   const lostHp = activeUnit.max_hp - activeUnit.current_hp;
+                   if (lostHp > 0) {
+                       const healAmt = Math.floor(lostHp * activeUnit.pending_turn_end_heal);
+                       activeUnit.receiveHeal(healAmt);
+                       combatLog.push({
+                           type: 'system',
+                           text: `🔥 ${activeUnit.name} 沐浴神火，恢复了 ${healAmt} 点生命！`
+                       });
+                   }
+                   activeUnit.pending_turn_end_heal = 0;
+              }
+
               // ★ 关键修改：行动结束后扣除 Buff 持续时间
               activeUnit.tickBuffDuration();
               activeUnit.resetAV();
@@ -800,9 +870,49 @@ function calculateDamage(attacker, target, rawDamageInput) {
       }
   }
 
+  // --- 攻击者天赋修正 (Pre-Calculation) ---
+  let talentMultiplier = 1.0;
+  let effectiveDef = target.defense;
+  let extraCritRate = 0;
+
+  if (attacker.skills && attacker.skills.talent) {
+      const talent = attacker.skills.talent;
+      
+      // ★ 炎君·丙火 (焚天之怒)
+      if (talent.effect === 'consume_hp_dmg_up') {
+          const consume = Math.floor(attacker.current_hp * talent.cost); // 5%
+          if (consume > 0) {
+              attacker.current_hp -= consume;
+              talentMultiplier += talent.value; // +50%
+          }
+      }
+      // ★ 雷灵鸟 (雷霆急速)
+      else if (talent.effect === 'speed_dmg_up') {
+          // value: 0.003 per speed
+          talentMultiplier += attacker.speed * talent.value;
+      }
+      // ★ 狂暴猿猴 (怒意沸腾)
+      else if (talent.effect === 'berserk') {
+          const lostHpPercent = (1 - attacker.current_hp / attacker.max_hp) * 100;
+          if (lostHpPercent > 0) {
+              talentMultiplier += lostHpPercent * talent.value; // 1% dmg per 1% lost hp
+          }
+      }
+      // ★ 暗影刺客 (处决)
+      else if (talent.effect === 'execute_bonus') {
+          if ((target.current_hp / target.max_hp) < 0.5) {
+              extraCritRate += talent.value;
+          }
+      }
+      // ★ 锐金剑侍 (剑心通明)
+      else if (talent.effect === 'penetrate') {
+          effectiveDef *= (1 - talent.value);
+      }
+  }
+
   let elementalBonus = 1.0;
   let isCounter = false;
-  let globalMultiplier = 1.0;
+  let globalMultiplier = 1.0 * talentMultiplier; // 应用天赋倍率
   let reflectedDamage = 0; // 新增：记录反弹伤害
 
   // 克制判断
@@ -866,8 +976,8 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
             // --- 暴击判定 ---
             let isCrit = false;
-            // 基础暴击率 + Buff修正(如果有)
-            const critRate = attacker.crit_rate || 0; 
+            // 基础暴击率 + Buff修正(如果有) + 天赋修正
+            const critRate = (attacker.crit_rate || 0) + extraCritRate; 
             if (Math.random() < critRate) {
                 isCrit = true;
                 globalMultiplier *= (attacker.crit_dmg || 1.5);
@@ -879,7 +989,7 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
               if (attacker.attack > 10000) {
   
-                let def = target.defense * (1 - target.resistance);
+                let def = effectiveDef * (1 - target.resistance);
   
                 let baseDiff = rawDamageInput - def;
   
@@ -899,7 +1009,7 @@ function calculateDamage(attacker, target, rawDamageInput) {
   
                 const DEF_CONSTANT = 280;
   
-                let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + target.defense);
+                let defenseMultiplier = DEF_CONSTANT / (DEF_CONSTANT + effectiveDef);
   
                 let resistanceMultiplier = (1 - target.resistance);
   
@@ -918,9 +1028,50 @@ function calculateDamage(attacker, target, rawDamageInput) {
                             // 基础伤害保底
                             finalDmg = Math.max(1, finalDmg);
   
-            
-  
-              
+                            // --- 受击者天赋修正 ---
+                            if (target.skills && target.skills.talent) {
+                                const talent = target.skills.talent;
+                                // ★ 混元石魔 (石化皮肤)
+                                if (talent.effect === 'damage_reduce') {
+                                    finalDmg = Math.floor(finalDmg * (1 - talent.value));
+                                }
+                                // ★ 盾灵·戊土 (大地守护)
+                                else if (talent.effect === 'taunt_up_damage_reduce') {
+                                    finalDmg = Math.floor(finalDmg * (1 - talent.value));
+                                }
+                                // ★ 吞天巨蟒 (剧毒体质)
+                                else if (talent.effect === 'poison_contact') {
+                                    attacker.applyDebuff({
+                                        type: 'poison_dot',
+                                        caster_id: target.id,
+                                        duration: 3,
+                                        value: talent.value
+                                    });
+                                }
+                                // ★ 咒师·壬水 (寒气侵袭 - 毒水反击)
+                                else if (talent.effect === 'counter_poison') {
+                                    // 30% 概率
+                                    if (Math.random() < (talent.prob || 0.3)) {
+                                        attacker.applyDebuff({
+                                            type: 'poison_water',
+                                            caster_id: target.id,
+                                            duration: 2,
+                                            value: talent.value
+                                        });
+                                    }
+                                }
+                                // ★ 铁甲巨龟 (荆棘甲壳)
+                                else if (talent.effect === 'reflect') {
+                                     // 反弹逻辑在后面统一处理，这里暂不处理
+                                     // 但需要标记一下，或者复用 rainbow_thorns 逻辑？
+                                     // 简单起见，直接在这里追加反弹
+                                     const reflectVal = Math.floor(finalDmg * talent.value);
+                                     if (reflectVal > 0) {
+                                         attacker.takeDamage(reflectVal);
+                                         reflectedDamage += reflectVal;
+                                     }
+                                }
+                            }
   
             
   
