@@ -804,12 +804,17 @@ export class WanxiangActivity extends plugin {
       const dataStr = await tempClient.get(KEY_PREFIX + e.user_id);
       if (dataStr) {
         const runData = JSON.parse(dataStr);
+        const userData = await this.getUserData(tempClient, e.user_id);
+        
+        // 增加冷却时间逻辑：主动退出也视为失败/结束，触发冷却
+        userData.last_fail_time = Date.now();
+        
         if (runData.temp_jade > 0) {
-            const userData = await this.getUserData(tempClient, e.user_id);
             userData.jade += runData.temp_jade;
-            await this.saveUserData(tempClient, e.user_id, userData);
             e.reply(`已放弃试炼。本次获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
         } else e.reply('已放弃试炼。');
+        
+        await this.saveUserData(tempClient, e.user_id, userData);
         await tempClient.del(KEY_PREFIX + e.user_id);
       } else e.reply('你当前没有进行中的试炼。');
       await tempClient.disconnect();
