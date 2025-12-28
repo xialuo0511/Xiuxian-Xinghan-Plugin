@@ -7,6 +7,8 @@ import { getActivityStatus } from '../logic/fishing_logic.js';
 import { runCombat } from '../logic/combat/CombatEngine.js';
 import fs from 'fs';
 import path from 'path';
+import { createClient } from 'redis';
+import YAML from 'yaml';
 
 const allStarSouls = loadItemConfig('star_souls.yaml');
 const EVENT_KEY = 'wanxiang_tianji_2025_10';
@@ -243,6 +245,64 @@ export class astral_combat extends plugin {
 
   async showTeamStatus(e) {
     if (!await this.checkActivity(e)) return true;
+
+    // --- 首次访问检查逻辑 ---
+    const redisConfigPath = `${process.cwd()}/config/config/redis.yaml`;
+    let redisClient = null;
+    try {
+        const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
+        redisClient = createClient({
+            url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`
+        });
+        await redisClient.connect();
+        
+        const visitedKey = `xiuxian:wanxiang:visited:${e.user_id}`;
+        const hasVisited = await redisClient.get(visitedKey);
+        
+        if (!hasVisited) {
+            // 发放所有星魂
+            await DAL.transaction_update(e.user_id, async (player) => {
+                // 确保纳戒存在
+                // 这里调用 DAL.addNajieItem 比较合适，但 transaction_update 里通常直接操作 player 对象
+                // 由于 DAL.addNajieItem 可能涉及复杂逻辑，我们模拟 addNajieItem 的效果，或者直接调用它（如果支持）
+                // 简单起见，假设直接操作 player.najie (如果是数组或对象)
+                // 实际上 DAL.getNajieItemAmount 使用的是 player.najie，通常是 [{name, count, class, ...}]
+                // 我们循环 allStarSouls
+                
+                // 注意：这里需要确保 allStarSouls 正确加载
+                if (allStarSouls && allStarSouls.length > 0) {
+                    for (const soul of allStarSouls) {
+                        // 检查是否已有，没有则添加
+                        // 由于是“获得各一只”，我们可以简单地添加
+                        // 使用 DAL 提供的添加接口更好，但这里在 transaction 内部...
+                        // 暂且使用 DAL.addNajieItem (非事务安全，但对于发放奖励尚可接受，或者在事务外调用)
+                    }
+                }
+            });
+            
+            // 事务外逐个添加（避免复杂性）
+            if (allStarSouls && allStarSouls.length > 0) {
+                for (const soul of allStarSouls) {
+                    await DAL.addNajieItem(e.user_id, soul.name, 1, '活动');
+                }
+            }
+
+            await redisClient.set(visitedKey, 'true');
+            
+            // 发送引导图片
+            const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_guide', 'wanxiang_guide.html');
+            const img = await puppeteer.screenshot('wanxiang_guide', { tplFile: htmlPath, imgType: 'jpeg' });
+            await e.reply(img);
+            
+            await redisClient.disconnect();
+            return; // 中断后续显示，让用户先看引导
+        }
+        await redisClient.disconnect();
+    } catch (err) {
+        console.error('[Wanxiang] First Visit Check Error:', err);
+        if (redisClient) await redisClient.disconnect();
+    }
+    // ----------------------
 
     const playerData = (await DAL.getAllPlayerData(e.user_id))?.player;
     if (!playerData) {

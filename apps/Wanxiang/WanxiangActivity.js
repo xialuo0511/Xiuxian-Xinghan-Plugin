@@ -46,6 +46,11 @@ const OATHS = [
   { name: '天泽', desc: '首领的生命上限降低10%', profit: 0 }
 ];
 
+const SHOP_ITEMS = [
+    { id: 'lingshi_limited', name: '限购灵石', display_name: '2w灵石', desc: '20000灵石 (限购100次)', price: 50, limit: 100, item_name: '灵石', quantity: 20000 },
+    { id: 'lingshi_unlimited', name: '无限灵石', display_name: '2w灵石', desc: '20000灵石 (无限制)', price: 200, limit: -1, item_name: '灵石', quantity: 20000, pre_req: 'lingshi_limited' }
+];
+
 function getEnemiesText(layer, nodeType) {
   if (nodeType === 'MONSTER_TREASURE') return '盗宝妖兽 x3';
   const stage = STAGES.find(s => s.layer === layer);
@@ -74,6 +79,7 @@ export class WanxiangActivity extends plugin {
       priority: 500,
       rule: [
         { reg: /^#开启试炼.*$/, fnc: 'startRun' },
+        { reg: /^#开启无限试炼$/, fnc: 'startInfiniteRun' },
         { reg: /^#挑战$/, fnc: 'challengeLayer' },
         { reg: /^#选择赐福\s*(\d)$/, fnc: 'selectBuff' },
         { reg: /^#刷新赐福$/, fnc: 'refreshBuffChoices' },
@@ -83,7 +89,10 @@ export class WanxiangActivity extends plugin {
         { reg: /^#退出试炼$/, fnc: 'quitRun' },
         { reg: /^#天机秘术$/, fnc: 'viewSecrets' },
         { reg: /^#强化天机秘术$/, fnc: 'upgradeSecrets' },
-        { reg: /^#誓约列表$/, fnc: 'viewOaths' }
+        { reg: /^#誓约列表$/, fnc: 'viewOaths' },
+        { reg: /^#天机榜$/, fnc: 'showLeaderboard' },
+        { reg: /^#天机阁$/, fnc: 'showExchangeShop' },
+        { reg: /^#兑换.*$/, fnc: 'exchangeItem' }
       ]
     });
   }
@@ -104,13 +113,155 @@ export class WanxiangActivity extends plugin {
       }
   }
 
+  async incrementLeaderboard(client, userId, amount) {
+      if (!amount || amount <= 0) return;
+      const key = 'xiuxian:wanxiang:rank:weekly';
+      await client.zIncrBy(key, amount, userId.toString());
+  }
+
+  async showLeaderboard(e) {
+      let tempClient = null;
+      try {
+          tempClient = await getTempRedis();
+          const key = 'xiuxian:wanxiang:rank:weekly';
+          // Get top 20, desc
+          const topUsers = await tempClient.zRangeWithScores(key, 0, 19, { REV: true });
+          
+          const list = [];
+          for (const u of topUsers) {
+              const uid = u.value;
+              const score = parseInt(u.score);
+              const pData = (await DAL.getAllPlayerData(uid))?.player;
+              list.push({
+                  name: pData?.名号 || `修士${uid}`,
+                  avatar: `https://q1.qlogo.cn/g?b=qq&nk=${uid}&s=640`,
+                  score: score
+              });
+          }
+          
+          const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_leaderboard', 'wanxiang_leaderboard.html');
+          const img = await puppeteer.screenshot('wanxiang_leaderboard', { tplFile: htmlPath, list, imgType: 'jpeg' });
+          await e.reply(img);
+          await tempClient.disconnect();
+      } catch (err) {
+          if (tempClient) await tempClient.disconnect();
+          e.reply('查询排行榜失败：' + err.message);
+      }
+  }
+
+  async showExchangeShop(e) {
+      let tempClient = null;
+      try {
+          tempClient = await getTempRedis();
+          const userData = await this.getUserData(tempClient, e.user_id);
+          const history = userData.shop_history;
+          
+          const items = SHOP_ITEMS.map(item => {
+              const bought = history[item.id] || 0;
+              let locked = false;
+              let stock = '无限';
+              
+              if (item.pre_req) {
+                  const preItem = SHOP_ITEMS.find(p => p.id === item.pre_req);
+                  const preBought = history[preItem.id] || 0;
+                  if (preItem.limit > 0 && preBought < preItem.limit) locked = true;
+              }
+              
+              if (item.limit > 0) {
+                  stock = Math.max(0, item.limit - bought);
+              }
+              
+              return { ...item, name: item.display_name || item.name, stock, locked, bought: (item.limit > 0 && stock === 0) };
+          });
+          
+          const renderData = { jade: userData.jade, items };
+          const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_shop', 'wanxiang_shop.html');
+          const img = await puppeteer.screenshot('wanxiang_shop', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
+          await e.reply(img);
+          await tempClient.disconnect();
+      } catch (err) {
+          if (tempClient) await tempClient.disconnect();
+          e.reply('查询天机阁失败：' + err.message);
+      }
+  }
+
+  async exchangeItem(e) {
+      const match = e.msg.match(/^#兑换\s*(\S+)\s*(\d*)/);
+      if (!match) return;
+      const name = match[1];
+      const count = parseInt(match[2] || '1');
+      if (count <= 0) return e.reply('兑换数量必须大于0。');
+      
+      let tempClient = null;
+      try {
+          tempClient = await getTempRedis();
+          const userData = await this.getUserData(tempClient, e.user_id);
+          const history = userData.shop_history;
+          
+          const matches = SHOP_ITEMS.filter(i => i.name === name || i.display_name === name);
+          if (matches.length === 0) { await tempClient.disconnect(); return e.reply('未找到该商品。'); }
+          
+          let targetItem = null;
+          if (matches.length === 1) targetItem = matches[0];
+          else {
+              const limited = matches.find(i => i.limit > 0);
+              const unlimited = matches.find(i => i.limit === -1);
+              const bought = history[limited.id] || 0;
+              if (bought < limited.limit) targetItem = limited;
+              else targetItem = unlimited;
+          }
+          
+          if (!targetItem) { await tempClient.disconnect(); return e.reply('商品状态异常。'); }
+          
+          if (targetItem.pre_req) {
+              const preItem = SHOP_ITEMS.find(p => p.id === targetItem.pre_req);
+              const preBought = history[preItem.id] || 0;
+              if (preItem.limit > 0 && preBought < preItem.limit) {
+                  await tempClient.disconnect();
+                  return e.reply(`需先兑换完【${preItem.display_name || preItem.name}】才可解锁。`);
+              }
+          }
+          
+          const bought = history[targetItem.id] || 0;
+          if (targetItem.limit > 0 && bought + count > targetItem.limit) {
+              await tempClient.disconnect();
+              return e.reply(`库存不足，剩余可兑换 ${targetItem.limit - bought} 次。`);
+          }
+          
+          const totalCost = targetItem.price * count;
+          if (userData.jade < totalCost) {
+              await tempClient.disconnect();
+              return e.reply(`天机玉不足，需要 ${totalCost}。`);
+          }
+          
+          // Deduct Jade
+          userData.jade -= totalCost;
+          userData.shop_history[targetItem.id] = bought + count;
+          await this.saveUserData(tempClient, e.user_id, userData);
+          await tempClient.disconnect();
+          
+          // Add Item (Outside Redis loop)
+          if (targetItem.item_name === '灵石') {
+              await DAL.transaction_update(e.user_id, (p) => { p.lingshi = (p.lingshi || 0) + targetItem.quantity * count; });
+          } else {
+              await DAL.updateNajieItem(e.user_id, targetItem.item_name, '材料', targetItem.quantity * count);
+          }
+          
+          e.reply(`兑换成功！获得 ${targetItem.item_name} x${targetItem.quantity * count}。`);
+      } catch (err) {
+          if (tempClient) await tempClient.disconnect();
+          e.reply('兑换失败：' + err.message);
+      }
+  }
+
   async getUserData(client, userId) {
     const data = await client.hGetAll(USER_DATA_KEY + userId);
     return {
       jade: parseInt(data.jade || '0'),
       level: parseInt(data.level || '0'),
       cleared: data.cleared === 'true',
-      last_fail_time: parseInt(data.last_fail_time || '0')
+      last_fail_time: parseInt(data.last_fail_time || '0'),
+      shop_history: JSON.parse(data.shop_history || '{}')
     };
   }
 
@@ -119,7 +270,8 @@ export class WanxiangActivity extends plugin {
       jade: data.jade.toString(),
       level: data.level.toString(),
       cleared: (!!data.cleared).toString(),
-      last_fail_time: (data.last_fail_time || 0).toString()
+      last_fail_time: (data.last_fail_time || 0).toString(),
+      shop_history: JSON.stringify(data.shop_history || {})
     });
   }
 
@@ -174,8 +326,13 @@ export class WanxiangActivity extends plugin {
     return options;
   }
 
+  async startInfiniteRun(e) {
+      return this.startRun(e);
+  }
+
   async startRun(e) {
     const userId = e.user_id;
+    const isInfinite = e.msg.includes('无限');
     let tempClient = null;
     try {
       tempClient = await getTempRedis();
@@ -183,12 +340,20 @@ export class WanxiangActivity extends plugin {
       const playerData = (await DAL.getAllPlayerData(userId))?.player;
       if (!playerData) { await tempClient.disconnect(); return e.reply('你尚未踏入仙途。'); }
       const userData = await this.getUserData(tempClient, userId);
+      
+      if (isInfinite && !userData.cleared) {
+          await tempClient.disconnect(); 
+          return e.reply('无限试炼解锁条件：需先通关普通试炼 (20层)。');
+      }
+
       const now = Date.now();
       if (userData.last_fail_time && (now - userData.last_fail_time < 3 * 60 * 1000)) {
         const remaining = Math.ceil((3 * 60 * 1000 - (now - userData.last_fail_time)) / 1000);
-        await tempClient.disconnect(); return e.reply(`由于刚刚挑战失败，天机紊乱，请在 ${remaining} 秒后重新开始。`);
+        await tempClient.disconnect(); return e.reply(`天机紊乱，请在 ${remaining} 秒后重新开始。`);
       }
-      const inputStr = e.msg.replace('#开启试炼', '').trim();
+      
+      const replaceStr = isInfinite ? '#开启无限试炼' : '#开启试炼';
+      const inputStr = e.msg.replace(replaceStr, '').trim();
       const selectedOaths = inputStr ? inputStr.split(/[\s,，]+/).filter(Boolean) : [];
       const activeOaths = []; let totalProfit = 0;
       if (selectedOaths.length > 0) {
@@ -215,11 +380,28 @@ export class WanxiangActivity extends plugin {
         }
       }
       if (soulsState.length === 0) { await tempClient.disconnect(); return e.reply('无星魂可出战。'); }
-      const runData = { layer: 1, souls: soulsState, buffs: [], jing_yin: 0, temp_jade: 0, artifacts: [], start_time: now, refresh_count: 3, current_node: { type: 'COMBAT', name: '激战', desc: '普通的战斗试炼。' }, routes: [], user_level: userData.level, active_oaths: activeOaths, total_profit: totalProfit };
+      const runData = { 
+          layer: 1, 
+          souls: soulsState, 
+          buffs: [], 
+          jing_yin: 0, 
+          temp_jade: 0, 
+          total_jade_earned: 0,
+          artifacts: [], 
+          start_time: now, 
+          refresh_count: 3, 
+          current_node: { type: 'COMBAT', name: '激战', desc: '普通的战斗试炼。' }, 
+          routes: [], 
+          user_level: userData.level, 
+          active_oaths: activeOaths, 
+          total_profit: totalProfit,
+          mode: isInfinite ? 'infinite' : 'normal'
+      };
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); await tempClient.disconnect();
       const oathText = activeOaths.length > 0 ? `
 已激活誓约：${activeOaths.map(o => `【${o.name}】`).join('、')} (结算收益 +${(totalProfit * 100).toFixed(0)}%)` : '';
-      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点\n本层魔物：${getEnemiesText(1, 'COMBAT')}\n发送 #挑战 即可开始。`].join('\n'));
+      const modeText = isInfinite ? '【无限试炼】' : '【无尽试炼】';
+      e.reply([`【万象天机·${modeText}】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点\n本层魔物：${getEnemiesText(1, 'COMBAT')}\n发送 #挑战 即可开始。`].join('\n'));
     } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('系统错误：' + err.message); }
   }
 
@@ -570,7 +752,9 @@ export class WanxiangActivity extends plugin {
           enemies = names.map(n => {
             const original = ALL_MONSTERS.find(am => am.name === n); if (!original) return null;
             const m = JSON.parse(JSON.stringify(original));
-            let mul = 1 + (runData.layer - 1) * 0.08;
+            let mul = (runData.mode === 'infinite') 
+                ? (1.5 + (runData.layer - 1) * 0.15) 
+                : (1 + (runData.layer - 1) * 0.08);
             if (node.type === 'ELITE') mul *= 1.3;
             if (node.type === 'BOSS') { mul *= 1.5; if (activeOaths.some(o => o.name === '天泽')) mul *= 0.9; }
             m.base_stats.health = Math.floor(m.base_stats.health * mul); m.base_stats.attack = Math.floor(m.base_stats.attack * mul);
@@ -635,7 +819,15 @@ export class WanxiangActivity extends plugin {
 
       for (const s of runData.souls) { const c = result.playerTeam.find(pt => pt.name === s.name); if (c) { s.current_hp = Math.max(0, c.current_hp); s.is_dead = s.current_hp <= 0; } }
       if (result.playerWon) {
-        let jade = Math.floor((node.type === 'BOSS' ? 30 : 5) * (1 + (runData.total_profit || 0)));
+        let jade = 0;
+        if (runData.mode === 'infinite' && runData.layer > 20) {
+            let base = 5;
+            if (node.type === 'BOSS') base += 5;
+            jade = Math.floor(base * (1 + (runData.total_profit || 0)));
+            if ((runData.temp_jade + jade) > 1000) jade = Math.max(0, 1000 - runData.temp_jade);
+        } else {
+            jade = Math.floor((node.type === 'BOSS' ? 30 : 5) * (1 + (runData.total_profit || 0)));
+        }
         let gold = Math.floor((Math.random() * 20 + 10) * (activeOaths.some(o => o.name === '俭省') ? 0.5 : 1));
         let extraMsg = '', skipBuffChoice = false;
 
@@ -682,10 +874,13 @@ export class WanxiangActivity extends plugin {
         }
         
         runData.jing_yin += gold; runData.temp_jade += jade;
-        if (runData.layer >= 20) {
+        if (runData.mode !== 'infinite' && runData.layer >= 20) {
           const ud = await this.getUserData(tempClient, userId); const bonus = (runData.total_profit >= 1.0) ? 150 : 0;
           const isFirstClear = !ud.cleared;
-          ud.jade += runData.temp_jade + bonus; ud.cleared = true;
+          const totalGain = runData.temp_jade + bonus;
+          ud.jade += totalGain; ud.cleared = true;
+          await this.incrementLeaderboard(tempClient, userId, totalGain);
+          
           await this.saveUserData(tempClient, userId, ud); await tempClient.del(KEY_PREFIX + userId);
           let msg = `【试炼通关】恭喜！本次共获得 ${runData.temp_jade} 天机玉${bonus > 0 ? ` (含誓约奖 ${bonus})` : ''}。`;
           if (isFirstClear) {
@@ -713,6 +908,7 @@ export class WanxiangActivity extends plugin {
         }
       } else {
         const ud = await this.getUserData(tempClient, userId); ud.last_fail_time = Date.now(); ud.jade += runData.temp_jade;
+        await this.incrementLeaderboard(tempClient, userId, runData.temp_jade);
         await this.saveUserData(tempClient, userId, ud); await tempClient.del(KEY_PREFIX + userId);
         e.reply(`战斗失败！获得 ${runData.temp_jade} 天机玉。冷静期开始，请 3 分钟后再试。`);
       }
@@ -876,6 +1072,7 @@ export class WanxiangActivity extends plugin {
         
         if (runData.temp_jade > 0) {
             userData.jade += runData.temp_jade;
+            await this.incrementLeaderboard(tempClient, e.user_id, runData.temp_jade);
             e.reply(`已放弃试炼。本次获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
         } else e.reply('已放弃试炼。');
         

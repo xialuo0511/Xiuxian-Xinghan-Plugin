@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #1a1a1a;
+      color: #fff;
+      width: 700px;
+    }
+    .container {
+      padding: 20px;
+      background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
+      border: 2px solid #d4af37;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #d4af37;
+      padding-bottom: 10px;
+    }
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #f1c40f;
+      text-shadow: 2px 2px 4px #000;
+    }
+    .currency {
+      font-size: 20px;
+      color: #2ecc71;
+      font-weight: bold;
+    }
+    .shop-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .item-card {
+      background-color: rgba(52, 73, 94, 0.8);
+      border: 1px solid #7f8c8d;
+      border-radius: 8px;
+      padding: 15px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .item-card.locked {
+      filter: grayscale(1);
+      opacity: 0.6;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .item-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: #e67e22;
+    }
+    .item-stock {
+      font-size: 14px;
+      color: #95a5a6;
+    }
+    .item-price {
+      font-size: 18px;
+      color: #f1c40f;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .item-desc {
+      font-size: 14px;
+      color: #ecf0f1;
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #95a5a6;
+      border-top: 1px solid #7f8c8d;
+      padding-top: 10px;
+    }
+    .cmd { color: #e67e22; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">天机阁</div>
+      <div class="currency">持有天机玉: {{jade}}</div>
+    </div>
+    
+    <div class="shop-list">
+      {{each items item}}
+      <div class="item-card {{if item.locked}}locked{{/if}}">
+        <div class="item-header">
+          <div class="item-name">{{item.name}}</div>
+          <div class="item-stock">
+             {{if item.limit === -1}}无限{{else}}剩余: {{item.stock}}{{/if}}
+          </div>
+        </div>
+        <div class="item-price">💰 {{item.price}} 天机玉</div>
+        <div class="item-desc">{{if item.locked}}🔒 前置商品未兑换完{{else}}兑换 {{item.name}}{{/if}}</div>
+      </div>
+      {{/each}}
+    </div>
+
+    <div class="footer">
+      发送 <span class="cmd">#兑换 [商品名] [数量]</span> 进行兑换 (如: #兑换 灵石 1)
+    </div>
+  </div>
+</body>
+</html>
