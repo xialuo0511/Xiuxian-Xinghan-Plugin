@@ -160,6 +160,20 @@ export class WanxiangActivity extends plugin {
     } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('强化失败：' + err.message); }
   }
 
+  getRestOptions(runData) {
+    const options = [
+        { name: '休养生息', desc: '全队恢复 40% 生命值', action: 'heal' }
+    ];
+    const hasDead = runData.souls.some(s => s.is_dead);
+    if (hasDead) {
+        const count = (runData.user_level >= 10) ? 2 : 1;
+        const descStr = count > 1 ? `复活${count}名随机阵亡队友 (50%血量)` : '复活一名随机阵亡队友 (50%血量)';
+        options.push({ name: '招魂仪式', desc: descStr, action: 'revive' });
+    }
+    options.push({ name: '冥想', desc: '获得 1 次赐福刷新机会', action: 'refresh' });
+    return options;
+  }
+
   async startRun(e) {
     const userId = e.user_id;
     let tempClient = null;
@@ -311,7 +325,15 @@ export class WanxiangActivity extends plugin {
       }
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) e.reply(`你选择了【${node.name}】。\n本层魔物：${getEnemiesText(runData.layer, node.type)}\n敌人已在前方，发送 #挑战 开始战斗！`);
-      else if (node.type === 'REST') e.reply('你来到了一处隐蔽的营地，这里似乎很安全。\n\n1. 【休养生息】 全队恢复 40% 生命值\n2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)\n3. 【冥想】 获得 1 次赐福刷新机会\n\n发送 #事件选择 [序号] 确认。');
+      else if (node.type === 'REST') {
+          const restOpts = this.getRestOptions(runData);
+          let msg = '你来到了一处隐蔽的营地，这里似乎很安全。\n\n';
+          restOpts.forEach((opt, idx) => {
+              msg += `${idx + 1}. 【${opt.name}】 ${opt.desc}\n`;
+          });
+          msg += '\n发送 #事件选择 [序号] 确认。';
+          e.reply(msg);
+      }
       else if (node.type === 'EVENT') {
         const sub = runData.current_node.sub_type;
         if (sub === 'vending_machine_gold') e.reply(`你发现了一台金光闪闪的【抽奖售货机】。(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 100 天机印 (至多3次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`);
@@ -370,28 +392,36 @@ export class WanxiangActivity extends plugin {
           else { runData.jing_yin -= it.price; it.bought = true; if (it.type === 'artifact') runData.artifacts.push(it.id); else runData.buffs.push(it.id); e.reply(`购买成功！当前剩余${CURRENCY_NAME}：${runData.jing_yin}`); }
         }
       } else if (node.type === 'REST') {
-        if (selection === 1) { runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4)); }); replyMsg = '全员恢复了大量生命值。'; isDone = true; }
-        else if (selection === 2) { 
-            const dead = runData.souls.filter(s => s.is_dead); 
-            if (dead.length) { 
-                const maxRevive = (runData.user_level >= 10) ? 2 : 1;
-                const toReviveCount = Math.min(dead.length, maxRevive);
-                const revivedNames = [];
-                
-                // 随机选择复活对象
-                for (let i = 0; i < toReviveCount; i++) {
-                    const idx = Math.floor(Math.random() * dead.length);
-                    const s = dead[idx];
-                    s.is_dead = false; 
-                    s.current_hp = Math.floor(s.max_hp * 0.5); 
-                    revivedNames.push(`【${s.name}】`);
-                    dead.splice(idx, 1); // 避免重复选中
-                }
-                replyMsg = `${revivedNames.join('、')}已从冥界归来。`; 
-            } else replyMsg = '无人阵亡，你只是休息了一会儿。'; 
-            isDone = true; 
+        const restOpts = this.getRestOptions(runData);
+        if (selection >= 1 && selection <= restOpts.length) {
+            const opt = restOpts[selection - 1];
+            if (opt.action === 'heal') {
+                runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4)); }); 
+                replyMsg = '全员恢复了大量生命值。'; 
+                isDone = true;
+            } else if (opt.action === 'revive') {
+                const dead = runData.souls.filter(s => s.is_dead); 
+                if (dead.length) { 
+                    const maxRevive = (runData.user_level >= 10) ? 2 : 1;
+                    const toReviveCount = Math.min(dead.length, maxRevive);
+                    const revivedNames = [];
+                    for (let i = 0; i < toReviveCount; i++) {
+                        const idx = Math.floor(Math.random() * dead.length);
+                        const s = dead[idx];
+                        s.is_dead = false; 
+                        s.current_hp = Math.floor(s.max_hp * 0.5); 
+                        revivedNames.push(`【${s.name}】`);
+                        dead.splice(idx, 1); 
+                    }
+                    replyMsg = `${revivedNames.join('、')}已从冥界归来。`; 
+                } else replyMsg = '无人阵亡，你只是休息了一会儿。'; 
+                isDone = true; 
+            } else if (opt.action === 'refresh') {
+                runData.refresh_count++; 
+                replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。'; 
+                isDone = true; 
+            }
         }
-        else if (selection === 3) { runData.refresh_count++; replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。'; isDone = true; }
       } else if (node.type === 'EVENT') {
         const sub = node.sub_type;
         if (sub === 'vending_machine_gold' && selection === 1) {
@@ -763,11 +793,13 @@ export class WanxiangActivity extends plugin {
             options.push({ index: options.length + 1, type: 'action', name: '离开', desc: '继续前进' });
         } else if (type === 'REST') {
             nextOperation = `请选择休整方式 (发送 #事件选择 [序号])`;
-            options = [
-                { index: 1, type: 'action', name: '休养生息', desc: '全队恢复 40% 生命值' },
-                { index: 2, type: 'action', name: '招魂仪式', desc: '复活一名随机阵亡队友 (50%血量)' },
-                { index: 3, type: 'action', name: '冥想', desc: '获得 1 次赐福刷新机会' }
-            ];
+            const restOpts = this.getRestOptions(data);
+            options = restOpts.map((opt, idx) => ({
+                index: idx + 1,
+                type: 'action',
+                name: opt.name,
+                desc: opt.desc
+            }));
         } else if (type === 'EVENT') {
             nextOperation = `请选择应对方式 (发送 #事件选择 [序号])`;
             const sub = node.sub_type;
