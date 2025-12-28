@@ -46,6 +46,15 @@ const OATHS = [
   { name: '天泽', desc: '首领的生命上限降低10%', profit: 0 }
 ];
 
+function getEnemiesText(layer, nodeType) {
+  if (nodeType === 'MONSTER_TREASURE') return '盗宝妖兽 x3';
+  const stage = STAGES.find(s => s.layer === layer);
+  if (!stage || !stage.monsters) return '未知';
+  const counts = {};
+  stage.monsters.forEach(m => counts[m] = (counts[m] || 0) + 1);
+  return Object.entries(counts).map(([name, count]) => count > 1 ? `${name} x${count}` : name).join('、');
+}
+
 async function getTempRedis() {
   const redisConfigPath = `${process.cwd()}/config/config/redis.yaml`;
   const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
@@ -179,7 +188,7 @@ export class WanxiangActivity extends plugin {
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); await tempClient.disconnect();
       const oathText = activeOaths.length > 0 ? `
 已激活誓约：${activeOaths.map(o => `【${o.name}】`).join('、')} (结算收益 +${(totalProfit * 100).toFixed(0)}%)` : '';
-      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点，发送 #挑战 即可开始。`].join('\n'));
+      e.reply([`【万象天机·无尽试炼】已开启！`, `当前出战星魂：${soulsState.map(s => s.name).join('、')}`, oathText, `第 1 层为【激战】节点\n本层魔物：${getEnemiesText(1, 'COMBAT')}\n发送 #挑战 即可开始。`].join('\n'));
     } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('系统错误：' + err.message); }
   }
 
@@ -221,7 +230,7 @@ export class WanxiangActivity extends plugin {
       runData.current_node = nextRoutes[0]; runData.routes = [];
       await tempClient.set(KEY_PREFIX + e.user_id, JSON.stringify(runData));
       const icon = runData.current_node.type === 'BOSS' ? '👹' : '⚔️';
-      e.reply(`${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n⚠️ 前方感应到强大的气息！\n${icon} 已自动锁定路线：【${runData.current_node.name}】\n发送 #挑战 开始对决！`);
+      e.reply(`${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n⚠️ 前方感应到强大的气息！\n${icon} 已自动锁定路线：【${runData.current_node.name}】\n本层魔物：${getEnemiesText(runData.layer, runData.current_node.type)}\n发送 #挑战 开始对决！`);
     } else {
       await tempClient.set(KEY_PREFIX + e.user_id, JSON.stringify(runData));
       let msg = `${prefixMsg}\n\n即将进入第 ${runData.layer} 层。\n请选择前行方向：\n`;
@@ -284,7 +293,7 @@ export class WanxiangActivity extends plugin {
         runData.current_node.event_count = 0;
       }
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
-      if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) e.reply(`你选择了【${node.name}】。\n敌人已在前方，发送 #挑战 开始战斗！`);
+      if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) e.reply(`你选择了【${node.name}】。\n本层魔物：${getEnemiesText(runData.layer, node.type)}\n敌人已在前方，发送 #挑战 开始战斗！`);
       else if (node.type === 'REST') e.reply('你来到了一处隐蔽的营地，这里似乎很安全。\n\n1. 【休养生息】 全队恢复 40% 生命值\n2. 【招魂仪式】 复活一名随机阵亡队友 (50%血量)\n3. 【冥想】 获得 1 次赐福刷新机会\n\n发送 #事件选择 [序号] 确认。');
       else if (node.type === 'EVENT') {
         const sub = runData.current_node.sub_type;
