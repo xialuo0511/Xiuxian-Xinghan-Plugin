@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "checkJs": true,
+    "allowJs": true,
+    "types": [
+      "trss-yunzai"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "conductor",
+    "resources",
+    "logs",
+    "data"
+  ]
+}
