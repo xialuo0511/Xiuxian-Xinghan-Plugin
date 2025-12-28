@@ -89,13 +89,19 @@ export class WanxiangActivity extends plugin {
   }
 
   async viewOaths(e) {
-      const msg = ['=== 📜 誓约列表 ===', '开启试炼时附加誓约名即可生效 (如: #开启试炼 孤行)', ''];
-      OATHS.forEach(o => {
-          msg.push(`【${o.name}】 (收益 +${(o.profit * 100).toFixed(0)}%)`);
-          msg.push(`说明：${o.desc}`);
-          msg.push('');
-      });
-      e.reply(msg.join('\n'));
+      const renderData = {
+          oaths: OATHS.map(o => ({
+              ...o,
+              profit_display: (o.profit * 100).toFixed(0) + '%'
+          }))
+      };
+      try {
+          const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_oaths', 'wanxiang_oaths.html');
+          const img = await puppeteer.screenshot('wanxiang_oaths', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
+          await e.reply(img);
+      } catch (err) {
+          e.reply('查询失败：' + err.message);
+      }
   }
 
   async getUserData(client, userId) {

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #1a1a1a;
+      color: #fff;
+      width: 700px;
+    }
+    .container {
+      padding: 20px;
+      background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
+      border: 2px solid #d4af37;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid #d4af37;
+      padding-bottom: 15px;
+    }
+    .title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #f1c40f;
+      text-shadow: 2px 2px 4px #000;
+      letter-spacing: 4px;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: #bdc3c7;
+      margin-top: 5px;
+    }
+    .oath-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .oath-card {
+      background-color: rgba(52, 73, 94, 0.8);
+      border: 1px solid #7f8c8d;
+      border-radius: 8px;
+      padding: 15px;
+      position: relative;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .oath-card:nth-child(odd) {
+        background-color: rgba(44, 62, 80, 0.8);
+    }
+    .oath-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        border-bottom: 1px dashed #7f8c8d;
+        padding-bottom: 5px;
+    }
+    .oath-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: #e74c3c; /* 红色代表誓约的挑战性 */
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    .oath-profit {
+      font-size: 16px;
+      font-weight: bold;
+      color: #2ecc71; /* 绿色代表收益 */
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .oath-desc {
+      font-size: 14px;
+      color: #ecf0f1;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+    .footer {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 14px;
+      color: #95a5a6;
+      border-top: 1px solid #7f8c8d;
+      padding-top: 10px;
+    }
+    .command-tip {
+        color: #f39c12;
+        font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">誓约之书</div>
+      <div class="subtitle">立下誓约，挑战极限，获取更高收益</div>
+    </div>
+    
+    <div class="oath-list">
+      {{each oaths o}}
+      <div class="oath-card">
+        <div class="oath-header">
+            <div class="oath-name">【{{o.name}}】</div>
+            <div class="oath-profit">收益 +{{o.profit_display}}</div>
+        </div>
+        <div class="oath-desc">{{o.desc}}</div>
+      </div>
+      {{/each}}
+    </div>
+
+    <div class="footer">
+      <span class="command-tip">💡 使用方法：</span> 发送 <span class="command-tip">#开启试炼 [誓约名1] [誓约名2]...</span><br>
+      例如：#开启试炼 孤行 贫苦
+    </div>
+  </div>
+</body>
+</html>
