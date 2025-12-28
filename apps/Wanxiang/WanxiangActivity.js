@@ -82,9 +82,20 @@ export class WanxiangActivity extends plugin {
         { reg: /^#试炼状态$/, fnc: 'showStatus' },
         { reg: /^#退出试炼$/, fnc: 'quitRun' },
         { reg: /^#天机秘术$/, fnc: 'viewSecrets' },
-        { reg: /^#强化天机秘术$/, fnc: 'upgradeSecrets' }
+        { reg: /^#强化天机秘术$/, fnc: 'upgradeSecrets' },
+        { reg: /^#誓约列表$/, fnc: 'viewOaths' }
       ]
     });
+  }
+
+  async viewOaths(e) {
+      const msg = ['=== 📜 誓约列表 ===', '开启试炼时附加誓约名即可生效 (如: #开启试炼 孤行)', ''];
+      OATHS.forEach(o => {
+          msg.push(`【${o.name}】 (收益 +${(o.profit * 100).toFixed(0)}%)`);
+          msg.push(`说明：${o.desc}`);
+          msg.push('');
+      });
+      e.reply(msg.join('\n'));
   }
 
   async getUserData(client, userId) {
@@ -637,9 +648,14 @@ export class WanxiangActivity extends plugin {
         runData.jing_yin += gold; runData.temp_jade += jade;
         if (runData.layer >= 20) {
           const ud = await this.getUserData(tempClient, userId); const bonus = (runData.total_profit >= 1.0) ? 150 : 0;
+          const isFirstClear = !ud.cleared;
           ud.jade += runData.temp_jade + bonus; ud.cleared = true;
           await this.saveUserData(tempClient, userId, ud); await tempClient.del(KEY_PREFIX + userId);
-          e.reply(`【试炼通关】恭喜！本次共获得 ${runData.temp_jade} 天机玉${bonus > 0 ? ` (含誓约奖 ${bonus})` : ''}。`);
+          let msg = `【试炼通关】恭喜！本次共获得 ${runData.temp_jade} 天机玉${bonus > 0 ? ` (含誓约奖 ${bonus})` : ''}。`;
+          if (isFirstClear) {
+              msg += `\n\n🎉 首次通关奖励！\n已解锁【誓约挑战】模式！\n在开启试炼时可附加誓约词条 (如 #开启试炼 孤行 贫苦) 来增加难度和收益。\n发送 #誓约列表 可查看所有誓约详情。`;
+          }
+          e.reply(msg);
         } else if (skipBuffChoice) {
           runData.layer++; await this.processRouteGeneration(e, runData, tempClient, `【${node.name}】胜利！${extraMsg}\n获得${CURRENCY_NAME}：${gold}。当前：${runData.jing_yin}。`);
         } else {
