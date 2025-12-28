@@ -217,6 +217,44 @@
           text-align: center;
       }
 
+      /* 誓约展示样式 */
+      .oath-section {
+          background: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
+          border: 2px solid #e74c3c;
+          border-radius: 8px;
+          padding: 12px;
+          margin-bottom: 15px;
+          color: #ecf0f1;
+          box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+      }
+      .oath-title {
+          font-size: 20px;
+          font-weight: bold;
+          color: #e74c3c;
+          margin-bottom: 8px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(231, 76, 60, 0.3);
+          padding-bottom: 5px;
+      }
+      .oath-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+      }
+      .oath-tag {
+          background: rgba(231, 76, 60, 0.15);
+          border: 1px solid #e74c3c;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 14px;
+          text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+
   </style>
 </head>
 <body>
@@ -226,6 +264,20 @@
       <div class="title">万象天机 · 试炼记录</div>
       <div class="layer-info">当前层数：第 {{layer}} 层 (刷新机会：{{refreshCount}} 次)</div>
   </div>
+
+  {{if activeOaths && activeOaths.length > 0}}
+  <div class="oath-section">
+      <div class="oath-title">
+          <span>📜 已激活誓约</span>
+          <span style="font-size: 16px; color: #2ecc71;">结算收益 +{{totalProfit}}%</span>
+      </div>
+      <div class="oath-grid">
+          {{each activeOaths oath}}
+          <div class="oath-tag">【{{oath.name}}】</div>
+          {{/each}}
+      </div>
+  </div>
+  {{/if}}
 
   {{if currentNode}}
   <div class="node-info">

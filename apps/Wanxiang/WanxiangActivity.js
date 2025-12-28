@@ -819,6 +819,8 @@ export class WanxiangActivity extends plugin {
         refreshCount: data.refresh_count, 
         currentNode: data.current_node, 
         tempJade: data.temp_jade || 0,
+        totalProfit: ((data.total_profit || 0) * 100).toFixed(0),
+        activeOaths: data.active_oaths || [],
         nextOperation: nextOperation,
         options: options,
         pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` 
