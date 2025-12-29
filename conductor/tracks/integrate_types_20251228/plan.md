@@ -10,8 +10,8 @@
 ## 阶段 2：核心模块类型增强
 - [x] 任务：XiuxianData 类型适配 cafc5e8
     - [x] 为 `model/XiuxianData.js` 中的核心方法添加 JSDoc 类型声明。
-- [ ] 任务：应用入口类型适配
-    - [ ] 为 `apps/AdminSuper/admin.js`（作为示例）添加基础的指令处理函数类型注释。
+- [x] 任务：应用入口类型适配 ffbd622
+    - [x] 为 `apps/AdminSuper/admin.js`（作为示例）添加基础的指令处理函数类型注释。
 - [ ] 任务：Conductor - 用户手动验证 '核心模块类型增强' (Protocol in workflow.md)
 
 ## 阶段 3：最终检查
