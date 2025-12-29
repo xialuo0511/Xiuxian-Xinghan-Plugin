@@ -5,15 +5,25 @@
     "moduleResolution": "NodeNext",
     "checkJs": true,
     "allowJs": true,
+    "maxNodeModuleJsDepth": 2,
     "types": [
       "trss-yunzai"
     ]
   },
+  "include": [
+    "apps/**/*",
+    "model/**/*",
+    "logic/**/*",
+    "handlers/**/*",
+    "api/**/*",
+    "index.js"
+  ],
   "exclude": [
     "node_modules",
     "conductor",
     "resources",
     "logs",
-    "data"
+    "data",
+    "临时文件夹"
   ]
 }
