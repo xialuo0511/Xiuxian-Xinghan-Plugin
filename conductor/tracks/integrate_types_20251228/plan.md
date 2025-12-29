@@ -7,7 +7,7 @@
     - [x] 创建或更新项目根目录的 `jsconfig.json`，配置类型搜索路径。
 - [x] 任务：Conductor - 用户手动验证 '环境初始化' (Protocol in workflow.md)
 
-## 阶段 2：核心模块类型增强
+## 阶段 2：核心模块类型增强 [checkpoint: 0071dcb]
 - [x] 任务：XiuxianData 类型适配 cafc5e8
     - [x] 为 `model/XiuxianData.js` 中的核心方法添加 JSDoc 类型声明。
 - [x] 任务：应用入口类型适配 ffbd622
