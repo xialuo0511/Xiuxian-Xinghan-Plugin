@@ -14,7 +14,7 @@
     - [x] 为 `apps/AdminSuper/admin.js`（作为示例）添加基础的指令处理函数类型注释。
 - [x] 任务：Conductor - 用户手动验证 '核心模块类型增强' (Protocol in workflow.md)
 
-## 阶段 3：最终检查
+## 阶段 3：最终检查 [checkpoint: f6e1011]
 - [x] 任务：验证类型识别
     - [x] 检查 IDE 是否能够正确补全。
 - [x] 任务：全量构建/检查
