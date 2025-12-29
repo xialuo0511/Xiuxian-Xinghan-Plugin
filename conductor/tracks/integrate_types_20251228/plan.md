@@ -5,7 +5,7 @@
     - [x] 运行命令安装 `trss-yunzai-types` 作为开发依赖。
 - [x] 任务：配置文件设置 0ac501a
     - [x] 创建或更新项目根目录的 `jsconfig.json`，配置类型搜索路径。
-- [ ] 任务：Conductor - 用户手动验证 '环境初始化' (Protocol in workflow.md)
+- [x] 任务：Conductor - 用户手动验证 '环境初始化' (Protocol in workflow.md)
 
 ## 阶段 2：核心模块类型增强
 - [ ] 任务：XiuxianData 类型适配
