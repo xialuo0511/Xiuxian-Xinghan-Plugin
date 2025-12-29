@@ -46,7 +46,6 @@ export class admin extends plugin {
     if (!this.e.isMaster) {
       return;
     }
-
     const pluginPath = `${_path}/plugins/xiuxian-emulator-plugin/`;
     let oldCommitId = await this.getcommitId(pluginPath);
     const isForce = this.e.msg.includes('强制');

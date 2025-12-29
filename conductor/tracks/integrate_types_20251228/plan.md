@@ -12,7 +12,7 @@
     - [x] 为 `model/XiuxianData.js` 中的核心方法添加 JSDoc 类型声明。
 - [x] 任务：应用入口类型适配 ffbd622
     - [x] 为 `apps/AdminSuper/admin.js`（作为示例）添加基础的指令处理函数类型注释。
-- [ ] 任务：Conductor - 用户手动验证 '核心模块类型增强' (Protocol in workflow.md)
+- [x] 任务：Conductor - 用户手动验证 '核心模块类型增强' (Protocol in workflow.md)
 
 ## 阶段 3：最终检查
 - [ ] 任务：验证类型识别

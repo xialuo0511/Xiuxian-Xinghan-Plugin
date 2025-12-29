@@ -281,7 +281,7 @@ class XiuxianData {
 
   /**
    * 获取文件数据(user_qq为空查询item下的file_name文件)
-   * @param {string} file_name [player,equipment,najie]
+   * @param {string} [file_name] [player,equipment,najie]
    * @param {string|number} [user_qq]
    * @returns {any}
    */
