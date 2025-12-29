@@ -1,6 +1,6 @@
 # 计划 - 集成 TRSS-Yunzai-Types
 
-## 阶段 1：环境初始化
+## 阶段 1：环境初始化 [checkpoint: 125e256]
 - [x] 任务：安装依赖 37d3939
     - [x] 运行命令安装 `trss-yunzai-types` 作为开发依赖。
 - [x] 任务：配置文件设置 0ac501a
