@@ -37,6 +37,11 @@ export class admin extends plugin {
     return lodash.trim(branch);
   }
 
+  /**
+   * 更新插件
+   * @param {import('trss-yunzai').EventData} e 云崽事件对象
+   * @returns {Promise<boolean>}
+   */
   async checkout() {
     if (!this.e.isMaster) {
       return;
