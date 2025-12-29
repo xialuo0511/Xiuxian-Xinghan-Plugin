@@ -264,8 +264,9 @@ class XiuxianData {
 
   /**
    * 检测存档存在
-   * @param file_path_type ["player" , "association" ]
-   * @param file_name
+   * @param {keyof XiuxianData['filePathMap']} file_path_type ["player" , "association" ]
+   * @param {string|number} file_name
+   * @returns {boolean}
    */
   existData(file_path_type, file_name) {
     let file_path;
@@ -280,8 +281,9 @@ class XiuxianData {
 
   /**
    * 获取文件数据(user_qq为空查询item下的file_name文件)
-   * @param file_name  [player,equipment,najie]
-   * @param user_qq
+   * @param {string} file_name [player,equipment,najie]
+   * @param {string|number} [user_qq]
+   * @returns {any}
    */
   getData(file_name, user_qq) {
     let file_path;
@@ -309,9 +311,9 @@ class XiuxianData {
 
   /**
    * 写入数据
-   * @param file_name [player,equipment,najie]
-   * @param user_qq
-   * @param data
+   * @param {string} file_name [player,equipment,najie]
+   * @param {string|number} [user_qq]
+   * @param {any} data
    */
   setData(file_name, user_qq, data) {
     let file_path;
@@ -335,7 +337,8 @@ class XiuxianData {
 
   /**
    * 获取宗门数据
-   * @param file_name  宗门名称
+   * @param {string} file_name 宗门名称
+   * @returns {any}
    */
   getAssociation(file_name) {
     let file_path;
@@ -357,8 +360,8 @@ class XiuxianData {
 
   /**
    * 写入宗门数据
-   * @param file_name  宗门名称
-   * @param data
+   * @param {string} file_name 宗门名称
+   * @param {any} data
    */
   setAssociation(file_name, data) {
     let file_path;
