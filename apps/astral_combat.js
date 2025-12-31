@@ -331,12 +331,15 @@ export class astral_combat extends plugin {
 
     const helpCommands = [
       {
-        category: '基础指令',
+        category: '基础与活动',
         commands: [
           { cmd: '#万象天机', desc: '查看主界面及配队' },
+          { cmd: '#天机榜', desc: '查看周榜排行' },
+          { cmd: '#天机阁', desc: '打开天机玉商店' },
+          { cmd: '#兑换[物品][数量]', desc: '兑换商店物品' },
           { cmd: '#星魂图鉴', desc: '查看星魂属性' },
           { cmd: '#详细星魂图鉴', desc: '查看详细技能机制' },
-          { cmd: '#誓约列表', desc: '查看已解锁誓约详情' }
+          { cmd: '#誓约列表', desc: '查看已解锁誓约' }
         ]
       },
       {
@@ -351,6 +354,7 @@ export class astral_combat extends plugin {
         category: '试炼玩法',
         commands: [
           { cmd: '#开启试炼 [誓约名]', desc: '开启新挑战 (可选誓约)' },
+          { cmd: '#开启无限试炼', desc: '开启无尽挑战模式' },
           { cmd: '#挑战', desc: '进行下一层试炼' },
           { cmd: '#试炼状态', desc: '查看当前实时进度' },
           { cmd: '#选择路线 [序号]', desc: '选择前进的分支' },
