@@ -36,7 +36,7 @@ export class UserHome extends plugin {
       name: 'UserHome',
       dsc: '修仙模块',
       event: 'message',
-      priority: 600,
+      priority: 1,
       rule: [
         {
           reg: '^#装备(练气|装备)幻影(.*)$',
@@ -476,7 +476,7 @@ export class UserHome extends plugin {
   async equipPhantomCardHandler(e) {
     const userId = await this.preCheck(e);
     if (!userId) return;
-    
+
     const match = e.msg.match(/^#装备(练气|装备)幻影(.*)$/);
     const cardType = match[1];
     const cardName = match[2].trim();
@@ -503,13 +503,14 @@ export class UserHome extends plugin {
     let message = '【您的幻影牌面】';
     let foundAny = false;
 
-    for (const cardType of ['练气', '装备']) {
+    for (const cardType of ['练气',
+      '装备']) {
       // getPhantomCardList需要用户ID来查找他拥有的牌面
       const result = await getPhantomCardList(userId, cardType);
       if (result.success && result.cards.length > 0) {
         foundAny = true;
         message += `\n\n--- ${cardType} --- \n`;
-        const cardList = result.cards.map(card => 
+        const cardList = result.cards.map(card =>
           `- ${card.name}`
         ).join('\n');
         message += cardList;
@@ -519,7 +520,7 @@ export class UserHome extends plugin {
     if (!foundAny) {
       return e.reply('你似乎还没有任何幻影牌面。');
     }
-    
+
     e.reply(message);
   }
 }
