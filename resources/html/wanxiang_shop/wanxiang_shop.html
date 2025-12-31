@@ -14,6 +14,8 @@
           --red: #c53828;
           --highlight-bg: #fffcf0;
       }
+      
+      * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -63,6 +65,7 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      height: 100%; /* Ensure equal height in grid */
     }
     .item-card.locked {
       background: #e0e0e0;
@@ -74,19 +77,24 @@
       justify-content: space-between;
       margin-bottom: 10px;
       align-items: flex-start;
+      gap: 10px; /* Add gap between name and stock */
     }
     .item-name {
       font-size: 22px;
       font-weight: bold;
       color: #3e2723;
+      word-break: break-all; /* Prevent overflow */
+      line-height: 1.2;
     }
     .item-stock {
       font-size: 14px;
       color: #795548;
       font-family: "tttgbnumber";
       background: #efebe9;
-      padding: 2px 6px;
+      padding: 4px 8px; /* Slightly larger padding */
       border-radius: 4px;
+      white-space: nowrap; /* Prevent stock text wrapping */
+      flex-shrink: 0; /* Prevent stock tag from shrinking */
     }
     .item-price {
       font-size: 20px;
