@@ -25,6 +25,21 @@ export async function redeemCode(userId, code) {
     }
   }
 
+  // 2.1 检查有效时间
+  const now = new Date();
+  if (codeInfo.startTime) {
+    const startTime = new Date(codeInfo.startTime);
+    if (now < startTime) {
+      return { success: false, message: '该兑换码尚未生效。' };
+    }
+  }
+  if (codeInfo.endTime) {
+    const endTime = new Date(codeInfo.endTime);
+    if (now > endTime) {
+      return { success: false, message: '该兑换码已过期。' };
+    }
+  }
+
 
   // 3. 检查玩家是否已使用过此兑换码 (逻辑不变)
   const usedCodesKey = `XinghanXiuxian:used_redeem_codes:${userId}`;
