@@ -171,7 +171,13 @@ export class WanxiangActivity extends plugin {
           const remainingTime = `${days}天 ${hours}小时 ${minutes}分钟`;
           
           const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_leaderboard', 'wanxiang_leaderboard.html');
-          const img = await puppeteer.screenshot('wanxiang_leaderboard', { tplFile: htmlPath, list, remainingTime, imgType: 'jpeg' });
+          const img = await puppeteer.screenshot('wanxiang_leaderboard', { 
+              tplFile: htmlPath, 
+              list, 
+              remainingTime, 
+              pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`,
+              imgType: 'jpeg' 
+          });
           await e.reply(img);
           await tempClient.disconnect();
       } catch (err) {
@@ -205,7 +211,11 @@ export class WanxiangActivity extends plugin {
               return { ...item, name: item.display_name || item.name, stock, locked, bought: (item.limit > 0 && stock === 0) };
           });
           
-          const renderData = { jade: userData.jade, items };
+          const renderData = { 
+              jade: userData.jade, 
+              items,
+              pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+          };
           const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_shop', 'wanxiang_shop.html');
           const img = await puppeteer.screenshot('wanxiang_shop', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
           await e.reply(img);
