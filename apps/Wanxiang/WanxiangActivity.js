@@ -125,7 +125,14 @@ export class WanxiangActivity extends plugin {
           tempClient = await getTempRedis();
           const key = 'xiuxian:wanxiang:rank:weekly';
           // Get top 20, desc
-          const topUsers = await tempClient.zRevRangeWithScores(key, 0, 19);
+          // Manual ZREVRANGE for compatibility with old Redis server + new Redis client
+          const rawList = await tempClient.sendCommand(['ZREVRANGE', key, '0', '19', 'WITHSCORES']);
+          const topUsers = [];
+          if (rawList && rawList.length > 0) {
+              for (let i = 0; i < rawList.length; i += 2) {
+                  topUsers.push({ value: rawList[i], score: parseInt(rawList[i + 1]) });
+              }
+          }
           
           const list = [];
           for (const u of topUsers) {
