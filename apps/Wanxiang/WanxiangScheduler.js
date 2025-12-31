@@ -56,7 +56,7 @@ export class WanxiangScheduler extends plugin {
         try {
             client = await getTempRedis();
             const key = 'xiuxian:wanxiang:rank:weekly';
-            const users = await client.zRangeWithScores(key, 0, -1, { REV: true });
+            const users = await client.zRevRangeWithScores(key, 0, -1);
             
             if (!users || users.length === 0) {
                 logger.mark('[万象天机] 本周无人上榜。');
