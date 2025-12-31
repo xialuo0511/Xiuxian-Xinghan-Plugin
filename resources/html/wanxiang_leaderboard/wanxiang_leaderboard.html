@@ -99,6 +99,9 @@
     <div class="header">
       <div class="title">天机风云榜</div>
       <div class="subtitle">每周一上午10:00结算奖励</div>
+      {{if remainingTime}}
+      <div style="margin-top:5px; color:#2ecc71; font-weight:bold; font-size: 14px;">距离结算还剩：{{remainingTime}}</div>
+      {{/if}}
     </div>
     
     <div class="list">
@@ -107,12 +110,17 @@
       {{else}}
         {{each list item i}}
         <div class="row">
-          <div class="rank">{{i + 1}}</div>
+          <div class="rank">{{item.rank}}</div>
           <div class="avatar"><img src="{{item.avatar}}" /></div>
           <div class="info">
             <div class="name">{{item.name}}</div>
           </div>
-          <div class="score">{{item.score}} 玉</div>
+          <div style="text-align: right;">
+             <div class="score">{{item.score}} 玉</div>
+             {{if item.reward > 0}}
+             <div style="font-size: 12px; color: #f1c40f; margin-top:2px;">🏆 预期奖励: {{item.reward}}</div>
+             {{/if}}
+          </div>
         </div>
         {{/each}}
       {{/if}}

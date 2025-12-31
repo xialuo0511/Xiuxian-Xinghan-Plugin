@@ -124,7 +124,6 @@ export class WanxiangActivity extends plugin {
       try {
           tempClient = await getTempRedis();
           const key = 'xiuxian:wanxiang:rank:weekly';
-          // Get top 20, desc
           // Manual ZREVRANGE for compatibility with old Redis server + new Redis client
           const rawList = await tempClient.sendCommand(['ZREVRANGE', key, '0', '19', 'WITHSCORES']);
           const topUsers = [];
@@ -135,19 +134,44 @@ export class WanxiangActivity extends plugin {
           }
           
           const list = [];
-          for (const u of topUsers) {
+          for (let i = 0; i < topUsers.length; i++) {
+              const u = topUsers[i];
               const uid = u.value;
               const score = parseInt(u.score);
               const pData = (await DAL.getAllPlayerData(uid))?.player;
+              const rank = i + 1;
+              let reward = 0;
+              if (rank === 1) reward = 3000;
+              else if (rank === 2) reward = 2000;
+              else if (rank === 3) reward = 1200;
+              else if (rank <= 5) reward = 800;
+              else if (rank <= 10) reward = 500;
+              else reward = 300;
+
               list.push({
+                  rank: rank,
                   name: pData?.名号 || `修士${uid}`,
                   avatar: `https://q1.qlogo.cn/g?b=qq&nk=${uid}&s=640`,
-                  score: score
+                  score: score,
+                  reward: reward
               });
           }
+
+          // Calculate time until next Monday 10:00
+          const now = new Date();
+          const nextMonday = new Date();
+          nextMonday.setDate(now.getDate() + (1 + 7 - now.getDay()) % 7);
+          nextMonday.setHours(10, 0, 0, 0);
+          if (nextMonday <= now) nextMonday.setDate(nextMonday.getDate() + 7);
+          
+          const diffMs = nextMonday.getTime() - now.getTime();
+          const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+          const remainingTime = `${days}天 ${hours}小时 ${minutes}分钟`;
           
           const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_leaderboard', 'wanxiang_leaderboard.html');
-          const img = await puppeteer.screenshot('wanxiang_leaderboard', { tplFile: htmlPath, list, imgType: 'jpeg' });
+          const img = await puppeteer.screenshot('wanxiang_leaderboard', { tplFile: htmlPath, list, remainingTime, imgType: 'jpeg' });
           await e.reply(img);
           await tempClient.disconnect();
       } catch (err) {
