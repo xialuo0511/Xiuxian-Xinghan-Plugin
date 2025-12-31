@@ -3,37 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+
+      :root {
+          --bg-paper: #f4f0e6;
+          --ink-color: #2c2c2c;
+          --border-brown: #8c7b65;
+          --gold: #b58900;
+          --red: #c53828;
+          --highlight-bg: #fffcf0;
+      }
+
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Microsoft YaHei", sans-serif;
-      background-color: #1a1a1a;
-      color: #fff;
+      padding: 30px;
+      font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+      background: #e6e2d3;
+      background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+      color: var(--ink-color);
       width: 600px;
     }
     .container {
-      padding: 20px;
-      background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
-      border: 2px solid #d4af37;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
     .header {
       text-align: center;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #d4af37;
-      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--border-brown);
+      padding-bottom: 15px;
     }
     .title {
-      font-size: 32px;
+      font-size: 42px;
       font-weight: bold;
-      color: #f1c40f;
-      text-shadow: 2px 2px 4px #000;
+      color: var(--ink-color);
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
     }
     .subtitle {
-      font-size: 14px;
-      color: #95a5a6;
+      font-size: 16px;
+      color: #6d4c41;
       margin-top: 5px;
+      font-family: "Microsoft YaHei";
     }
     .list {
       display: flex;
@@ -43,54 +55,64 @@
     .row {
       display: flex;
       align-items: center;
-      background-color: rgba(52, 73, 94, 0.8);
-      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 12px 15px;
       border-radius: 6px;
-      border: 1px solid #7f8c8d;
+      border: 1px solid var(--border-brown);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    .row:nth-child(1) { background: linear-gradient(90deg, #e67e22, #f1c40f); border-color: #f1c40f; }
-    .row:nth-child(2) { background: linear-gradient(90deg, #7f8c8d, #bdc3c7); border-color: #bdc3c7; }
-    .row:nth-child(3) { background: linear-gradient(90deg, #d35400, #e67e22); border-color: #d35400; }
+    /* Top 3 Styles */
+    .row:nth-child(1) { background: #fffdf5; border: 2px solid #b58900; }
+    .row:nth-child(2) { background: #fcfcfc; border: 2px solid #95a5a6; }
+    .row:nth-child(3) { background: #fff5e6; border: 2px solid #d35400; }
     
     .rank {
       width: 40px;
-      font-size: 24px;
+      font-size: 32px;
       font-weight: bold;
       text-align: center;
       margin-right: 15px;
-      color: #fff;
-      text-shadow: 1px 1px 2px #000;
+      color: var(--ink-color);
+      font-family: "tttgbnumber";
     }
+    /* Rank colors */
+    .row:nth-child(1) .rank { color: #b58900; text-shadow: 1px 1px 0 #ffe082; }
+    .row:nth-child(2) .rank { color: #7f8c8d; }
+    .row:nth-child(3) .rank { color: #d35400; }
+
     .avatar {
-      width: 40px; height: 40px;
+      width: 48px; height: 48px;
       border-radius: 50%;
-      background: #ccc;
+      background: #fff;
       margin-right: 15px;
-      border: 2px solid #fff;
+      border: 2px solid #d4cbb8;
       overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .avatar img { width: 100%; height: 100%; }
     .info {
       flex: 1;
     }
     .name {
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .score {
       font-size: 20px;
       font-weight: bold;
-      color: #2ecc71;
-      text-align: right;
+      color: #3e2723;
     }
-    .row:nth-child(1) .score, .row:nth-child(2) .score, .row:nth-child(3) .score {
-        color: #fff; text-shadow: 1px 1px 2px #000;
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+      color: #27ae60;
+      text-align: right;
+      font-family: "tttgbnumber";
     }
     .footer {
       margin-top: 20px;
       text-align: center;
-      font-size: 12px;
-      color: #7f8c8d;
+      font-size: 14px;
+      color: #8d6e63;
+      border-top: 1px dashed var(--border-brown);
+      padding-top: 10px;
+      font-family: "Microsoft YaHei";
     }
   </style>
 </head>
@@ -100,13 +122,13 @@
       <div class="title">天机风云榜</div>
       <div class="subtitle">每周一上午10:00结算奖励</div>
       {{if remainingTime}}
-      <div style="margin-top:5px; color:#2ecc71; font-weight:bold; font-size: 14px;">距离结算还剩：{{remainingTime}}</div>
+      <div style="margin-top:8px; color:#27ae60; font-weight:bold; font-size: 16px; font-family: 'tttgbnumber';">距离结算还剩：{{remainingTime}}</div>
       {{/if}}
     </div>
     
     <div class="list">
       {{if list.length == 0}}
-      <div style="text-align:center; padding:20px; color:#999;">暂无数据</div>
+      <div style="text-align:center; padding:30px; color:#8d6e63; font-size: 18px;">暂无数据</div>
       {{else}}
         {{each list item i}}
         <div class="row">
@@ -118,7 +140,7 @@
           <div style="text-align: right;">
              <div class="score">{{item.score}} 玉</div>
              {{if item.reward > 0}}
-             <div style="font-size: 15px; color: #ffeb3b; font-weight: bold; margin-top:4px; text-shadow: 1px 1px 2px #000;">🏆 预期奖励: {{item.reward}}</div>
+             <div style="font-size: 16px; color: #f39c12; font-weight: bold; margin-top:4px; font-family: 'tttgbnumber';">🏆 预期奖励: {{item.reward}}</div>
              {{/if}}
           </div>
         </div>

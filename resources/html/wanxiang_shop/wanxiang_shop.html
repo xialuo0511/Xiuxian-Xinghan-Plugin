@@ -3,39 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+
+      :root {
+          --bg-paper: #f4f0e6;
+          --ink-color: #2c2c2c;
+          --border-brown: #8c7b65;
+          --gold: #b58900;
+          --red: #c53828;
+          --highlight-bg: #fffcf0;
+      }
+
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Microsoft YaHei", sans-serif;
-      background-color: #1a1a1a;
-      color: #fff;
+      padding: 30px;
+      font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+      background: #e6e2d3;
+      background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+      color: var(--ink-color);
       width: 700px;
     }
     .container {
-      padding: 20px;
-      background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
-      border: 2px solid #d4af37;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #d4af37;
-      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--border-brown);
+      padding-bottom: 15px;
     }
     .title {
-      font-size: 32px;
+      font-size: 42px;
       font-weight: bold;
-      color: #f1c40f;
-      text-shadow: 2px 2px 4px #000;
+      color: var(--ink-color);
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
     }
     .currency {
-      font-size: 20px;
-      color: #2ecc71;
+      font-size: 24px;
+      color: #27ae60;
       font-weight: bold;
+      font-family: "tttgbnumber";
     }
     .shop-list {
       display: grid;
@@ -43,53 +55,63 @@
       gap: 15px;
     }
     .item-card {
-      background-color: rgba(52, 73, 94, 0.8);
-      border: 1px solid #7f8c8d;
-      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--border-brown);
+      border-radius: 6px;
       padding: 15px;
       position: relative;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
     .item-card.locked {
-      filter: grayscale(1);
-      opacity: 0.6;
+      background: #e0e0e0;
+      opacity: 0.8;
+      border-color: #999;
     }
     .item-header {
       display: flex;
       justify-content: space-between;
       margin-bottom: 10px;
+      align-items: flex-start;
     }
     .item-name {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
-      color: #e67e22;
+      color: #3e2723;
     }
     .item-stock {
       font-size: 14px;
-      color: #95a5a6;
+      color: #795548;
+      font-family: "tttgbnumber";
+      background: #efebe9;
+      padding: 2px 6px;
+      border-radius: 4px;
     }
     .item-price {
-      font-size: 18px;
-      color: #f1c40f;
+      font-size: 20px;
+      color: #f39c12;
       font-weight: bold;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-family: "tttgbnumber";
     }
     .item-desc {
       font-size: 14px;
-      color: #ecf0f1;
-      line-height: 1.4;
+      color: #5d4037;
+      line-height: 1.5;
       flex-grow: 1;
+      font-family: "Microsoft YaHei";
     }
     .footer {
       margin-top: 20px;
       text-align: center;
       font-size: 14px;
-      color: #95a5a6;
-      border-top: 1px solid #7f8c8d;
+      color: #8d6e63;
+      border-top: 1px dashed var(--border-brown);
       padding-top: 10px;
+      font-family: "Microsoft YaHei";
     }
-    .cmd { color: #e67e22; font-weight: bold; }
+    .cmd { color: #c0392b; font-weight: bold; font-family: "NZBZ"; font-size: 16px; }
   </style>
 </head>
 <body>
