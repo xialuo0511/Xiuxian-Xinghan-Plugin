@@ -261,41 +261,53 @@ export class astral_combat extends plugin {
         
         if (!hasVisited) {
             // 发放所有星魂
-            await DAL.transaction_update(e.user_id, async (player) => {
-                // 确保纳戒存在
-                // 这里调用 DAL.addNajieItem 比较合适，但 transaction_update 里通常直接操作 player 对象
-                // 由于 DAL.addNajieItem 可能涉及复杂逻辑，我们模拟 addNajieItem 的效果，或者直接调用它（如果支持）
-                // 简单起见，假设直接操作 player.najie (如果是数组或对象)
-                // 实际上 DAL.getNajieItemAmount 使用的是 player.najie，通常是 [{name, count, class, ...}]
-                // 我们循环 allStarSouls
-                
-                // 注意：这里需要确保 allStarSouls 正确加载
-                if (allStarSouls && allStarSouls.length > 0) {
-                    for (const soul of allStarSouls) {
-                        // 检查是否已有，没有则添加
-                        // 由于是“获得各一只”，我们可以简单地添加
-                        // 使用 DAL 提供的添加接口更好，但这里在 transaction 内部...
-                        // 暂且使用 DAL.addNajieItem (非事务安全，但对于发放奖励尚可接受，或者在事务外调用)
-                    }
-                }
-            });
-            
-            // 事务外逐个添加（避免复杂性）
             if (allStarSouls && allStarSouls.length > 0) {
                 for (const soul of allStarSouls) {
-                    await DAL.addNajieItem(e.user_id, soul.name, 1, '活动');
+                    await DAL.updateNajieItem(e.user_id, soul.name, '活动', 1);
                 }
             }
 
             await redisClient.set(visitedKey, 'true');
             
-            // 发送引导图片
+            const guideText = [
+                '🌌 【万象天机】版本活动指引',
+                '━━━━━━━━━━━━━━━',
+                '📜 活动概览：',
+                '这是一场结合了星魂战斗与 Roguelike 爬塔的深度挑战。道友需率领星魂进入「天机试炼」，在变幻莫测的路线中寻找生机，累积「天机玉」兑换珍宝。',
+                '',
+                '🎁 新手福利：',
+                '所有基础星魂（金、木、水、火、土）已各发放一只至您的纳戒中，请查收！',
+                '',
+                '⚔️ 快速开始：',
+                '1. 【整备】发送 #星魂装备1号 剑魂·庚金 (以此类推配置4名出战者)',
+                '2. 【启程】发送 #开启试炼 踏入第1层',
+                '3. 【抉择】在战斗胜利后，谨慎选择「天机赐福」来强化你的队伍',
+                '4. 【强化】试炼结束后，前往 #天机秘术 提升永久属性',
+                '',
+                '💎 核心奖励：',
+                '• 累积「天机玉」可在 #天机阁 兑换海量灵石与进阶材料',
+                '• 每周一 10:00 结算 #天机榜，发放高额周榜奖励',
+                '',
+                '💡 提示：通关 20 层后将解锁「誓约模式」与「无限试炼」，挑战真正的天机变数！',
+                '━━━━━━━━━━━━━━━',
+                '（发送 #万象天机 随时查看主菜单与指令列表）'
+            ].join('\n');
+
+            await e.reply(guideText);
+            
+            // 发送引导图片 (Reference Card)
             const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_guide', 'wanxiang_guide.html');
-            const img = await puppeteer.screenshot('wanxiang_guide', { tplFile: htmlPath, imgType: 'jpeg' });
-            await e.reply(img);
+            if (fs.existsSync(htmlPath)) {
+                try {
+                    const img = await puppeteer.screenshot('wanxiang_guide', { tplFile: htmlPath, imgType: 'jpeg' });
+                    await e.reply(img);
+                } catch (imgErr) {
+                    // ignore
+                }
+            }
             
             await redisClient.disconnect();
-            return; // 中断后续显示，让用户先看引导
+            return; 
         }
         await redisClient.disconnect();
     } catch (err) {
