@@ -172,6 +172,7 @@ export async function transformPlayerDataForRender(rawData, e) {
 
   // 返回最终的视图模型
   return {
+    title: player.称号,
     pifu: player.练气皮肤,
     touxiang: player.zb_touxiangkuang?.[0]?.id || 0,
     head_pic: e.member.getAvatarUrl() || `https://q1.qlogo.cn/g?b=qq&s=0&nk=${usr_qq}`,

@@ -27,6 +27,10 @@ import { Read_player, __PATH } from '../Xiuxian/xiuxian.js';
 import { Read_Forum, Write_Forum } from '../Help/Forum.js';
 import { createRequire } from 'module';
 import { get_yijie_player_img } from '../ShowImeg/showData.js';
+import {
+  aggregatePlayerData,
+  transformPlayerDataForRender
+} from '../../logic/player_view_logic.js';
 
 const require = createRequire(import.meta.url);
 const { execSync } = require('child_process');
@@ -147,6 +151,10 @@ export class AdminSuper extends plugin {
         {
           reg: /^#消除今日签到/,
           fnc: 'clearTodaySignIn'
+        },
+        {
+          reg: '^#测试称号$',
+          fnc: 'testTitle'
         }
       ]
     });
@@ -1237,6 +1245,34 @@ export class AdminSuper extends plugin {
       Add_najie_thing(usrId, newThingName, newThingType, uid_tnum.usrId * N);
     });
     return e.reply('全部替换完成');
+  }
+
+  async testTitle(e) {
+    if (!e.isMaster) return;
+    let usr_qq = e.user_id;
+
+    // 聚合数据
+    const rawData = await aggregatePlayerData(usr_qq);
+    if (!rawData) {
+      e.reply('未找到你的存档');
+      return;
+    }
+
+    // 注入测试称号
+    rawData.player.称号 = '测试称号';
+
+    // 转换数据
+    const renderData = await transformPlayerDataForRender(rawData, e);
+
+    // 生成图片
+    const dataForPuppeteer = await new Show(e).get_playerData(renderData);
+    const img = await puppeteer.screenshot('player', {
+      ...dataForPuppeteer,
+      _page: {
+        deviceScaleFactor: 2
+      }
+    });
+    e.reply(img);
   }
 }
 
