@@ -3,74 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Microsoft YaHei", sans-serif;
-      background-color: #1a1a1a;
-      color: #fff;
+      padding: 30px;
+      font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+      background: #000;
+      background-image: radial-gradient(circle at 50% 50%, #151515 0%, #000 100%);
+      color: #e0e0e0;
       width: 700px;
     }
     .container {
       padding: 30px;
-      background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
-      border: 3px solid #d4af37;
+      background: rgba(255, 255, 255, 0.02);
+      border: 2px solid #b58900;
       border-radius: 12px;
-      box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 40px rgba(181, 137, 0, 0.15);
     }
     .header {
       text-align: center;
       margin-bottom: 30px;
-      border-bottom: 2px solid #d4af37;
+      border-bottom: 1px solid rgba(181, 137, 0, 0.5);
       padding-bottom: 20px;
     }
     .title {
-      font-size: 42px;
+      font-size: 48px;
       font-weight: bold;
-      color: #f1c40f;
-      text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
-      letter-spacing: 5px;
+      background: linear-gradient(to bottom, #fff 0%, #ffd700 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+      letter-spacing: 6px;
     }
     .section {
       margin-bottom: 25px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 20px;
       border-radius: 8px;
-      border-left: 5px solid #3498db;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
     }
+    .section:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-2px);
+    }
+    .section::before {
+        content: "";
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: #555;
+    }
+    
+    .section-welcome::before { background: #e74c3c; }
+    .section-team::before { background: #3498db; }
+    .section-start::before { background: #f1c40f; }
+    .section-oath::before { background: #9b59b6; }
+
     .section-title {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: bold;
-      color: #3498db;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
+    .section-welcome .section-title { color: #ff8a80; }
+    .section-team .section-title { color: #64b5f6; }
+    .section-start .section-title { color: #ffd54f; }
+    .section-oath .section-title { color: #ba68c8; }
+
     .content {
-      font-size: 16px;
-      line-height: 1.6;
-      color: #ecf0f1;
+      font-size: 18px;
+      line-height: 1.8;
+      color: #bdbdbd;
       text-align: justify;
+      font-family: "Microsoft YaHei";
     }
     .highlight {
-      color: #f1c40f;
+      color: #ffd700;
       font-weight: bold;
     }
     .cmd {
-      background: #2c3e50;
-      padding: 2px 6px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 2px 8px;
       border-radius: 4px;
-      color: #e67e22;
+      color: #4fc3f7;
       font-family: monospace;
       font-weight: bold;
+      border: 1px solid rgba(79, 195, 247, 0.3);
     }
     .footer {
       text-align: center;
-      margin-top: 30px;
-      color: #95a5a6;
+      margin-top: 40px;
+      color: #757575;
       font-size: 14px;
-      border-top: 1px dashed #7f8c8d;
-      padding-top: 15px;
+      border-top: 1px dashed #424242;
+      padding-top: 20px;
+      font-family: "Microsoft YaHei";
     }
   </style>
 </head>
@@ -80,15 +114,15 @@
       <div class="title">万象天机 · 玩法指引</div>
     </div>
 
-    <div class="section" style="border-left-color: #e74c3c;">
-      <div class="section-title" style="color: #e74c3c;">✦ 欢迎踏入天机试炼</div>
+    <div class="section section-welcome">
+      <div class="section-title">✦ 欢迎踏入天机试炼</div>
       <div class="content">
         道友既已踏入此地，便是有缘人。<br>
         作为见面礼，<span class="highlight">所有基础星魂</span>已自动发放至你的纳戒中。请前往配置你的最强阵容！
       </div>
     </div>
 
-    <div class="section">
+    <div class="section section-team">
       <div class="section-title">✦ 阵容整备</div>
       <div class="content">
         发送 <span class="cmd">#万象天机</span> 查看主界面。<br>
@@ -97,7 +131,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section section-start">
       <div class="section-title">✦ 开启试炼</div>
       <div class="content">
         发送 <span class="cmd">#开启试炼</span> 进入无尽高塔。<br>
@@ -106,7 +140,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section section-oath">
       <div class="section-title">✦ 誓约与挑战</div>
       <div class="content">
         首次通关20层后，将解锁<span class="highlight">誓约模式</span>。<br>

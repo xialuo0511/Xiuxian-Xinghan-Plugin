@@ -3,38 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.TTF");}
+
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Microsoft YaHei", sans-serif;
-      background-color: #1a1a1a;
-      color: #fff;
+      padding: 30px;
+      font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+      background: #0d0d0d;
+      background-image: repeating-linear-gradient(45deg, #0d0d0d 0, #0d0d0d 10px, #1a0000 10px, #1a0000 12px);
+      color: #e0e0e0;
       width: 700px;
     }
     .container {
-      padding: 20px;
-      background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
-      border: 2px solid #d4af37;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      padding: 25px;
+      background: rgba(20, 0, 0, 0.8);
+      border: 2px solid #b71c1c;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(183, 28, 28, 0.2);
     }
     .header {
       text-align: center;
       margin-bottom: 25px;
-      border-bottom: 1px solid #d4af37;
+      border-bottom: 1px solid #b71c1c;
       padding-bottom: 15px;
     }
     .title {
-      font-size: 36px;
+      font-size: 42px;
       font-weight: bold;
-      color: #f1c40f;
-      text-shadow: 2px 2px 4px #000;
+      background: linear-gradient(to bottom, #ff5252 0%, #b71c1c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
       letter-spacing: 4px;
     }
     .subtitle {
       font-size: 16px;
-      color: #bdc3c7;
+      color: #ff8a80;
       margin-top: 5px;
+      font-family: "Microsoft YaHei";
     }
     .oath-list {
       display: grid;
@@ -42,72 +49,67 @@
       gap: 15px;
     }
     .oath-card {
-      background: linear-gradient(135deg, rgba(52, 73, 94, 0.95) 0%, rgba(44, 62, 80, 0.95) 100%);
-      border: 1px solid #7f8c8d;
-      border-left: 6px solid #e74c3c;
-      border-radius: 8px;
-      padding: 18px;
+      background: linear-gradient(135deg, rgba(40, 0, 0, 0.9) 0%, rgba(20, 0, 0, 0.9) 100%);
+      border: 1px solid #5c0000;
+      border-left: 4px solid #ff5252;
+      border-radius: 6px;
+      padding: 15px;
       position: relative;
-      transition: all 0.3s;
       display: flex;
       flex-direction: column;
-      box-shadow: 4px 4px 15px rgba(0,0,0,0.4);
-    }
-    .oath-card:nth-child(odd) {
-        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95) 0%, rgba(34, 49, 63, 0.95) 100%);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
     .oath-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 82, 82, 0.2);
         padding-bottom: 8px;
     }
     .oath-name {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: bold;
-      color: #e74c3c; /* 红色代表誓约的挑战性 */
-      text-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+      color: #ff5252;
+      text-shadow: 0 0 5px rgba(255, 82, 82, 0.4);
     }
     .oath-profit {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
-      color: #2ecc71; /* 绿色代表收益 */
-      background: rgba(46, 204, 113, 0.15);
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(46, 204, 113, 0.3);
+      color: #69f0ae;
+      background: rgba(0, 100, 0, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #00c853;
+      font-family: "tttgbnumber";
     }
     .oath-desc {
-      font-size: 15px;
-      color: #ecf0f1;
-      line-height: 1.6;
+      font-size: 14px;
+      color: #cfd8dc;
+      line-height: 1.5;
       flex-grow: 1;
       text-align: justify;
+      font-family: "Microsoft YaHei";
     }
     .footer {
       margin-top: 30px;
       text-align: center;
-      font-size: 15px;
-      color: #95a5a6;
-      border-top: 1px solid #7f8c8d;
+      font-size: 14px;
+      color: #7f8c8d;
+      border-top: 1px dashed #5c0000;
       padding-top: 15px;
+      font-family: "Microsoft YaHei";
     }
-    .command-tip {
-        color: #f39c12;
-        font-weight: bold;
-    }
+    .command-tip { color: #ffca28; font-weight: bold; }
     .warning-tip {
-        color: #e74c3c;
-        font-weight: bold;
-        margin-top: 12px;
-        font-size: 16px;
-        background: rgba(231, 76, 60, 0.1);
+        color: #ef5350;
+        margin-top: 10px;
+        font-size: 14px;
+        background: rgba(183, 28, 28, 0.1);
         display: inline-block;
-        padding: 6px 16px;
-        border-radius: 6px;
-        border: 1px solid rgba(231, 76, 60, 0.3);
+        padding: 5px 15px;
+        border-radius: 20px;
+        border: 1px solid rgba(183, 28, 28, 0.3);
     }
   </style>
 </head>
