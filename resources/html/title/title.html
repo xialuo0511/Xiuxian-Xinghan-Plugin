@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的称号</title>
+  <link rel="stylesheet" href="{{pluResPath}}/html/title/title.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-title">称号图鉴</div>
+      <div class="header-subtitle">My Titles Collection</div>
+    </div>
+    
+    <div class="content">
+      <div class="current-title-box">
+        <span class="label">当前佩戴：</span>
+        {{if currentTitle}}
+        <span class="current-title">{{currentTitle}}</span>
+        {{else}}
+        <span class="no-title">暂无佩戴</span>
+        {{/if}}
+      </div>
+
+      <div class="title-grid">
+        {{if titles && titles.length > 0}}
+          {{each titles title}}
+          <div class="title-card {{if currentTitle == title}}active{{/if}}">
+            <div class="title-text">{{title}}</div>
+            {{if currentTitle == title}}
+            <div class="status-badge">已佩戴</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        {{else}}
+          <div class="empty-state">
+            暂无已获得的称号，快去活动或成就中获取吧！
+          </div>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="footer">
+      使用 #切换称号+称号名 进行佩戴
+    </div>
+  </div>
+</body>
+</html>

@@ -4,6 +4,9 @@ import { treasureHunt } from '../../logic/treasure_hunt_logic.js';
 // 新的数据访问层
 import * as DAL from '../../api/data-access.js';
 import { Gulid } from '../../api/api.js';
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+import path from 'path';
 
 // 业务逻辑层
 import { canPlayerAction } from '../../logic/transaction_logic.js';
@@ -45,6 +48,14 @@ export class UserHome extends plugin {
         {
           reg: '^#幻影牌面$',
           fnc: 'listPhantomCards'
+        },
+        {
+          reg: '^#我的称号$',
+          fnc: 'showTitles'
+        },
+        {
+          reg: '^#切换称号.*$',
+          fnc: 'switchTitle'
         },
         {
           reg: '^#(存|取)灵石(.*)$',
@@ -522,6 +533,62 @@ export class UserHome extends plugin {
     }
 
     e.reply(message);
+  }
+
+  async showTitles(e) {
+    const userId = await this.preCheck(e);
+    if (!userId) return;
+
+    const playerData = await DAL.getAllPlayerData(userId);
+    const player = playerData?.player;
+    if (!player) return;
+
+    const allTitles = player.all_titles || [];
+    const currentTitle = player.称号 || '';
+
+    const renderData = {
+        titles: allTitles,
+        currentTitle: currentTitle,
+        pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+
+    const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'title', 'title.html');
+    const img = await puppeteer.screenshot('title', {
+        tplFile: htmlPath,
+        ...renderData,
+        imgType: 'jpeg'
+    });
+
+    e.reply(img);
+  }
+
+  async switchTitle(e) {
+    const userId = await this.preCheck(e);
+    if (!userId) return;
+
+    const targetTitle = e.msg.replace('#切换称号', '').trim();
+    if (!targetTitle) return e.reply('请指定要切换的称号名称，例如：#切换称号 万象至尊');
+
+    const playerData = await DAL.getAllPlayerData(userId);
+    const player = playerData?.player;
+    if (!player) return;
+
+    if (targetTitle === '无' || targetTitle === '卸下') {
+        await DAL.transaction_update(userId, (p) => {
+            p.称号 = '';
+        });
+        return e.reply('已卸下当前称号。');
+    }
+
+    const allTitles = player.all_titles || [];
+    if (!allTitles.includes(targetTitle)) {
+        return e.reply(`你尚未拥有称号【${targetTitle}】。`);
+    }
+
+    await DAL.transaction_update(userId, (p) => {
+        p.称号 = targetTitle;
+    });
+    e.reply(`成功佩戴称号【${targetTitle}】！`);
   }
 }
 
