@@ -49,7 +49,8 @@ const OATHS = [
 const SHOP_ITEMS = [
     { id: 'lingshi_limited', name: '限购灵石', display_name: '2w灵石', desc: '20000灵石 (限购100次)', price: 50, limit: 100, item_name: '灵石', quantity: 20000 },
     { id: 'lingshi_unlimited', name: '无限灵石', display_name: '2w灵石', desc: '20000灵石 (无限制)', price: 200, limit: -1, item_name: '灵石', quantity: 20000, pre_req: 'lingshi_limited' },
-    { id: 'title_wanxiang_zhizun', name: '万象至尊', display_name: '称号【万象至尊】', desc: '活动限定称号，彰显尊贵身份', price: 3500, limit: 1, item_name: '万象至尊', type: 'title', quantity: 1 }
+    { id: 'title_wanxiang_zhizun', name: '万象至尊', display_name: '称号【万象至尊】', desc: '活动限定称号，彰显尊贵身份', price: 3500, limit: 1, item_name: '万象至尊', type: 'title', quantity: 1 },
+    { id: 'qixing_xuanyuan_dan', name: '七星玄元丹', desc: '极其珍贵的丹药 (限购20次)', price: 1000, limit: 20, item_name: '七星玄元丹', item_class: '丹药', quantity: 1 }
 ];
 
 function getEnemiesText(layer, nodeType) {
@@ -294,7 +295,8 @@ export class WanxiangActivity extends plugin {
                   }
               });
           } else {
-              await DAL.updateNajieItem(e.user_id, targetItem.item_name, '材料', targetItem.quantity * count);
+              const itemClass = targetItem.item_class || '材料';
+              await DAL.updateNajieItem(e.user_id, targetItem.item_name, itemClass, targetItem.quantity * count);
           }
           
           e.reply(`兑换成功！获得 ${targetItem.item_name} x${targetItem.quantity * count}。`);
