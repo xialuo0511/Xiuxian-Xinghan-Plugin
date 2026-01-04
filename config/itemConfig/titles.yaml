@@ -1,0 +1,34 @@
+- name: 万象至尊
+  desc: 在【万象天机】活动天机阁中兑换获得
+  category: 活动
+  rarity: 5
+
+- name: 测试称号
+  desc: 系统管理员测试专用称号
+  category: 特殊
+  rarity: 1
+
+- name: 仙道初成
+  desc: 成功突破至筑基期
+  category: 境界
+  rarity: 2
+
+- name: 一方霸主
+  desc: 创建宗门并成为宗主
+  category: 宗门
+  rarity: 4
+
+- name: 财源广进
+  desc: 灵石资产超过1亿
+  category: 成就
+  rarity: 3
+
+- name: 欧皇在世
+  desc: 在抽奖活动中获得特等奖
+  category: 运势
+  rarity: 5
+
+- name: 肝帝
+  desc: 连续签到365天
+  category: 毅力
+  rarity: 4

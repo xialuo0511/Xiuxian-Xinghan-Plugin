@@ -29,6 +29,8 @@ import { Add_仙宠 } from '../Pokemon/Pokemon.js';
 import { redeemCode } from '../../logic/remdeem_logic.js';
 import { enchantItem, openItem } from '../../logic/item_advanced_logic.js';
 import { equipPhantomCard, getPhantomCardList } from '../../logic/phantom_logic.js';
+import { loadItemConfig } from '../../model/ConfigLoader.js';
+
 
 /**
  * 修仙模块 - 物品和货币操作
@@ -535,33 +537,66 @@ export class UserHome extends plugin {
     e.reply(message);
   }
 
-  async showTitles(e) {
-    const userId = await this.preCheck(e);
-    if (!userId) return;
-
-    const playerData = await DAL.getAllPlayerData(userId);
-    const player = playerData?.player;
-    if (!player) return;
-
-    const allTitles = player.all_titles || [];
-    const currentTitle = player.称号 || '';
-
-    const renderData = {
-        titles: allTitles,
-        currentTitle: currentTitle,
-        pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
-    };
-
-    const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'title', 'title.html');
-    const img = await puppeteer.screenshot('title', {
-        tplFile: htmlPath,
-        ...renderData,
-        imgType: 'jpeg'
-    });
-
-    e.reply(img);
-  }
-
+    async showTitles(e) {
+      const userId = await this.preCheck(e);
+      if (!userId) return;
+  
+      const playerData = await DAL.getAllPlayerData(userId);
+      const player = playerData?.player;
+      if (!player) return;
+  
+      const allTitlesConfig = loadItemConfig('titles.yaml') || [];
+      const unlockedTitles = player.all_titles || [];
+      const currentTitle = player.称号 || '';
+  
+      // 1. 处理配置中的称号
+      const titlesList = allTitlesConfig.map(t => {
+          const isUnlocked = unlockedTitles.includes(t.name);
+          return {
+              ...t,
+              isUnlocked: isUnlocked,
+              isEquipped: currentTitle === t.name
+          };
+      });
+  
+      // 2. 处理已解锁但未在配置中的称号（兼容旧数据）
+      unlockedTitles.forEach(tName => {
+          if (!titlesList.find(item => item.name === tName)) {
+              titlesList.push({
+                  name: tName,
+                  desc: '未收录的神秘称号',
+                  category: '特殊',
+                  rarity: 1,
+                  isUnlocked: true,
+                  isEquipped: currentTitle === tName
+              });
+          }
+      });
+  
+      // 排序：已佩戴 > 已解锁 > 稀有度 > 未解锁
+      titlesList.sort((a, b) => {
+          if (a.isEquipped) return -1;
+          if (b.isEquipped) return 1;
+          if (a.isUnlocked && !b.isUnlocked) return -1;
+          if (!a.isUnlocked && b.isUnlocked) return 1;
+          return b.rarity - a.rarity;
+      });
+  
+      const renderData = {
+          titles: titlesList,
+          currentTitle: currentTitle,
+          pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+      };
+  
+      const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'title', 'title.html');
+      const img = await puppeteer.screenshot('title', {
+          tplFile: htmlPath,
+          ...renderData,
+          imgType: 'jpeg'
+      });
+  
+      e.reply(img);
+    }
   async switchTitle(e) {
     const userId = await this.preCheck(e);
     if (!userId) return;
@@ -574,19 +609,19 @@ export class UserHome extends plugin {
     if (!player) return;
 
     if (targetTitle === '无' || targetTitle === '卸下') {
-        await DAL.transaction_update(userId, (p) => {
-            p.称号 = '';
-        });
-        return e.reply('已卸下当前称号。');
+      await DAL.transaction_update(userId, (p) => {
+        p.称号 = '';
+      });
+      return e.reply('已卸下当前称号。');
     }
 
     const allTitles = player.all_titles || [];
     if (!allTitles.includes(targetTitle)) {
-        return e.reply(`你尚未拥有称号【${targetTitle}】。`);
+      return e.reply(`你尚未拥有称号【${targetTitle}】。`);
     }
 
     await DAL.transaction_update(userId, (p) => {
-        p.称号 = targetTitle;
+      p.称号 = targetTitle;
     });
     e.reply(`成功佩戴称号【${targetTitle}】！`);
   }

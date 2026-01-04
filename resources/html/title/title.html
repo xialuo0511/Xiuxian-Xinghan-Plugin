@@ -4,45 +4,254 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的称号</title>
-  <link rel="stylesheet" href="{{pluResPath}}/html/title/title.css">
+  <style>
+      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
+      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.ttf");}
+
+      :root {
+          --bg-dark: #121212;
+          --border-gold: #d4af37;
+          --text-main: #e0e0e0;
+          --text-sub: #a0a0a0;
+          --gold: #ffd700;
+          --red: #ff5252;
+      }
+
+      body {
+          margin: 0;
+          padding: 30px;
+          background: #000;
+          background-image: radial-gradient(circle at 50% 10%, #222 0%, #000 100%);
+          font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+          color: var(--text-main);
+          width: 800px;
+      }
+
+      .container {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          border: 2px solid var(--border-gold);
+          border-radius: 12px;
+          padding: 25px;
+          background: rgba(255, 255, 255, 0.02);
+          box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+      }
+
+      .header {
+          text-align: center;
+          margin-bottom: 10px;
+          border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+          padding-bottom: 15px;
+      }
+
+      .header-title {
+          font-size: 48px;
+          font-weight: bold;
+          background: linear-gradient(to bottom, #fff 0%, #ffd700 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+      }
+
+      .header-subtitle {
+          font-size: 18px;
+          color: var(--text-sub);
+          margin-top: 5px;
+          letter-spacing: 4px;
+          font-family: "tttgbnumber";
+      }
+
+      .current-title-box {
+          background: rgba(30, 30, 30, 0.8);
+          border: 1px solid var(--border-gold);
+          border-radius: 8px;
+          padding: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 10px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      }
+
+      .label {
+          font-size: 20px;
+          margin-right: 15px;
+          color: var(--gold);
+      }
+
+      .current-title {
+          font-size: 32px;
+          font-weight: bold;
+          color: #fff;
+          text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      }
+
+      .no-title {
+          font-size: 20px;
+          color: #777;
+          font-style: italic;
+      }
+
+      .title-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+      }
+
+      .title-card {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 15px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.2s;
+      }
+
+      .title-card.equipped {
+          background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0,0,0,0));
+          border-color: var(--gold);
+          box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+      }
+
+      .title-card.locked {
+          opacity: 0.6;
+          background: rgba(0, 0, 0, 0.3);
+          border-style: dashed;
+      }
+
+      .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+      }
+
+      .title-text {
+          font-size: 22px;
+          color: #fff;
+          font-weight: bold;
+      }
+      .equipped .title-text { color: var(--gold); text-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+      .locked .title-text { color: #888; }
+
+      .rarity {
+          font-size: 14px;
+          color: var(--gold);
+          font-family: "tttgbnumber";
+      }
+
+      .desc {
+          font-size: 14px;
+          color: var(--text-sub);
+          line-height: 1.4;
+          flex-grow: 1;
+          font-family: "Microsoft YaHei";
+          margin-bottom: 8px;
+      }
+
+      .meta-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 12px;
+          color: #666;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          padding-top: 8px;
+          font-family: "Microsoft YaHei";
+      }
+
+      .category-tag {
+          background: rgba(255, 255, 255, 0.1);
+          padding: 2px 6px;
+          border-radius: 4px;
+          color: #aaa;
+      }
+
+      .status-badge {
+          font-weight: bold;
+          padding: 2px 8px;
+          border-radius: 4px;
+      }
+      .status-equipped { background: var(--gold); color: #000; }
+      .status-unlocked { color: var(--green); border: 1px solid #4caf50; color: #4caf50; }
+      .status-locked { border: 1px solid #777; color: #777; }
+
+      .footer {
+          margin-top: 20px;
+          text-align: center;
+          font-size: 14px;
+          color: #666;
+          border-top: 1px dashed #444;
+          padding-top: 15px;
+          font-family: "Microsoft YaHei";
+      }
+      .cmd { color: var(--gold); font-weight: bold; font-family: "NZBZ"; font-size: 16px; }
+  </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <div class="header-title">称号图鉴</div>
-      <div class="header-subtitle">My Titles Collection</div>
+      <div class="header-subtitle">Titles Collection</div>
     </div>
     
-    <div class="content">
-      <div class="current-title-box">
-        <span class="label">当前佩戴：</span>
-        {{if currentTitle}}
-        <span class="current-title">{{currentTitle}}</span>
-        {{else}}
-        <span class="no-title">暂无佩戴</span>
-        {{/if}}
-      </div>
+    <div class="current-title-box">
+      <span class="label">当前佩戴</span>
+      {{if currentTitle}}
+      <span class="current-title">{{currentTitle}}</span>
+      {{else}}
+      <span class="no-title">暂无佩戴</span>
+      {{/if}}
+    </div>
 
-      <div class="title-grid">
-        {{if titles && titles.length > 0}}
-          {{each titles title}}
-          <div class="title-card {{if currentTitle == title}}active{{/if}}">
-            <div class="title-text">{{title}}</div>
-            {{if currentTitle == title}}
-            <div class="status-badge">已佩戴</div>
-            {{/if}}
+    <div class="title-grid">
+      {{if titles && titles.length > 0}}
+        {{each titles t}}
+        <div class="title-card {{if t.isEquipped}}equipped{{else if !t.isUnlocked}}locked{{/if}}">
+          <div class="card-header">
+            <div class="title-text">{{t.name}}</div>
+            <div class="rarity">
+                {{if t.rarity == 5}}★★★★★
+                {{else if t.rarity == 4}}★★★★
+                {{else if t.rarity == 3}}★★★
+                {{else if t.rarity == 2}}★★
+                {{else}}★
+                {{/if}}
+            </div>
           </div>
-          {{/each}}
-        {{else}}
-          <div class="empty-state">
-            暂无已获得的称号，快去活动或成就中获取吧！
+          
+          <div class="desc">
+              {{if t.isUnlocked}}
+                  {{t.desc}}
+              {{else}}
+                  <span style="color: #d84315;">🔒 {{t.desc}}</span>
+              {{/if}}
           </div>
-        {{/if}}
-      </div>
+
+          <div class="meta-info">
+              <span class="category-tag">{{t.category}}</span>
+              {{if t.isEquipped}}
+                  <span class="status-badge status-equipped">已佩戴</span>
+              {{else if t.isUnlocked}}
+                  <span class="status-badge status-unlocked">已解锁</span>
+              {{else}}
+                  <span class="status-badge status-locked">未解锁</span>
+              {{/if}}
+          </div>
+        </div>
+        {{/each}}
+      {{else}}
+        <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 40px; color: #777;">
+          暂无称号数据
+        </div>
+      {{/if}}
     </div>
 
     <div class="footer">
-      使用 #切换称号+称号名 进行佩戴
+      使用 <span class="cmd">#切换称号 [称号名]</span> 进行佩戴
     </div>
   </div>
 </body>
