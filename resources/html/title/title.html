@@ -63,14 +63,13 @@
           margin-bottom: 5px;
       }
 
+      /* 简化当前佩戴显示 */
       .current-title-display {
-          font-size: 32px;
+          font-size: 34px;
           font-weight: bold;
-          background: linear-gradient(to bottom, #ffffff 0%, #ffd700 50%, #ff8c00 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-          letter-spacing: 4px;
+          color: #b8860b; /* 暗金色 */
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+          letter-spacing: 2px;
           padding: 5px 0;
       }
 
@@ -120,19 +119,27 @@
           flex: 1;
       }
 
+      .title-name-box {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 4px;
+      }
+
       .title-name {
           font-size: 24px;
           font-weight: bold;
           color: #6a3906;
-          margin-bottom: 4px;
       }
       
-      /* 万象至尊专属金色文字 */
-      .name-special {
-          background: linear-gradient(to bottom, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+      .badge-limited {
+          background: #c62828;
+          color: #fff;
+          font-size: 12px;
+          padding: 1px 6px;
+          border-radius: 4px;
           font-weight: bold;
+          font-family: sans-serif;
       }
 
       .title-desc {
@@ -189,7 +196,12 @@
       {{each titles t}}
       <div class="title-item {{if t.isEquipped}}equipped{{else if !t.isUnlocked}}locked{{/if}}">
         <div class="title-info">
-          <div class="title-name {{if t.name == '万象至尊'}}name-special{{/if}}">{{t.name}}</div>
+          <div class="title-name-box">
+            <div class="title-name">{{t.name}}</div>
+            {{if t.isLimited}}
+            <span class="badge-limited">限定</span>
+            {{/if}}
+          </div>
           <div class="title-desc">
             {{if t.isUnlocked}}
               {{t.desc}}
