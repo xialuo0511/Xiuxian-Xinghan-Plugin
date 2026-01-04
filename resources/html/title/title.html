@@ -14,214 +14,329 @@
       }
 
       body {
-          width: 600px;
+          width: 700px;
           margin: 0;
           padding: 20px;
-          background-color: #e6e2d3;
-          background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
+          /* 仿古纸张背景 */
+          background-color: #f4e4bc;
+          background-image: 
+              linear-gradient(rgba(255, 255, 255, 0.5) 2px, transparent 2px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.5) 2px, transparent 2px),
+              linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+          background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
           font-family: "NZBZ", sans-serif;
           color: #4a2c1a;
       }
 
       .container {
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
-      }
-
-      .card-base {
-          background: rgba(253, 250, 245, 0.88);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border: 2px solid #a88763;
+          background: rgba(255, 253, 240, 0.95);
+          border: 4px solid #8b5a2b; /* 深木色边框 */
           border-radius: 12px;
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-          padding: 20px;
+          padding: 25px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          position: relative;
       }
+      
+      /* 装饰性角标 */
+      .corner-decoration {
+          position: absolute;
+          width: 40px; height: 40px;
+          border: 4px solid #8b5a2b;
+          z-index: 1;
+      }
+      .corner-tl { top: -4px; left: -4px; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+      .corner-tr { top: -4px; right: -4px; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+      .corner-bl { bottom: -4px; left: -4px; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+      .corner-br { bottom: -4px; right: -4px; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
 
       .header {
           text-align: center;
-          border-bottom: 1px solid #d2b48c;
-          padding-bottom: 10px;
-          margin-bottom: 15px;
+          margin-bottom: 25px;
+          position: relative;
       }
 
       .title-main {
-          font-size: 36px;
-          color: #6a3906;
+          font-size: 42px;
+          color: #5d4037;
           font-weight: bold;
+          text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+          background: linear-gradient(to bottom, #8b5a2b, #5d4037);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+      }
+      
+      .divider {
+          height: 2px;
+          background: radial-gradient(circle, #8b5a2b 0%, transparent 100%);
+          margin: 10px 0;
+          opacity: 0.6;
       }
 
+      /* 当前佩戴展示区 - 牌匾风格 */
       .current-title-section {
+          background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMzZTI3MjMiLz48L3N2Zz4='); /* 深木色背景 */
+          background-size: cover;
+          border: 2px solid #5d4037;
+          border-radius: 8px;
+          padding: 20px;
           text-align: center;
-          margin-bottom: 10px;
+          margin-bottom: 25px;
+          box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+          position: relative;
+          overflow: hidden;
+      }
+      .current-title-section::before {
+          content: "";
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 45%, transparent 50%);
+          pointer-events: none;
       }
 
       .label-sm {
           font-size: 16px;
-          color: #7a5533;
-          margin-bottom: 5px;
+          color: #d7ccc8;
+          margin-bottom: 8px;
+          font-family: sans-serif;
+          letter-spacing: 2px;
       }
 
-      /* 简化当前佩戴显示 */
       .current-title-display {
-          font-size: 34px;
+          font-size: 36px;
           font-weight: bold;
-          color: #b8860b; /* 暗金色 */
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-          letter-spacing: 2px;
+          color: #ffd700;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+          letter-spacing: 4px;
           padding: 5px 0;
+          font-family: "NZBZ";
+          /* 模拟金属光泽 */
+          background: linear-gradient(to bottom, #fff8e1 0%, #ffd700 50%, #ff6f00 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
       }
 
       .no-title {
           font-size: 24px;
-          color: #999;
+          color: #a1887f;
           font-style: italic;
       }
 
-      .section-title {
-          font-size: 20px;
-          color: #6a3906;
-          border-bottom: 1px solid #d2b48c;
-          padding-bottom: 5px;
-          margin: 10px 0;
-          text-align: center;
+      .section-label {
+          font-size: 22px;
+          color: #5d4037;
+          margin-bottom: 15px;
+          padding-left: 10px;
+          border-left: 5px solid #c62828; /* 红色装饰条 */
+          font-weight: bold;
       }
 
-      .title-list {
+      .title-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+      }
+
+      /* 称号卡片 - 玉牌/木牌风格 */
+      .title-card {
+          background: #fffbf0;
+          border: 1px solid #d7ccc8;
+          border-radius: 6px;
+          padding: 12px;
+          position: relative;
+          transition: transform 0.2s;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      }
+      
+      .title-card.equipped {
+          background: #fff8e1; /* 淡金色背景 */
+          border: 2px solid #ffca28;
+          box-shadow: 0 4px 10px rgba(255, 202, 40, 0.2);
+      }
+      
+      .title-card.locked {
+          background: #eceff1;
+          border-color: #cfd8dc;
+          color: #90a4ae;
       }
 
-      .title-item {
-          background: rgba(255, 255, 255, 0.4);
-          border: 1px solid rgba(168, 135, 99, 0.3);
-          border-radius: 8px;
-          padding: 12px 15px;
+      .card-top {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          position: relative;
+          margin-bottom: 8px;
+          padding-bottom: 6px;
+          border-bottom: 1px dashed #d7ccc8;
       }
 
-      .title-item.equipped {
-          border: 2px solid #d4af37;
-          background: rgba(255, 215, 0, 0.05);
-      }
-
-      .title-item.locked {
-          filter: grayscale(1);
-          opacity: 0.7;
-      }
-
-      .title-info {
-          flex: 1;
-      }
-
-      .title-name-box {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 4px;
-      }
-
-      .title-name {
-          font-size: 24px;
+      .card-name {
+          font-size: 20px;
           font-weight: bold;
-          color: #6a3906;
+          color: #3e2723;
       }
-      
+      .equipped .card-name { color: #bf360c; }
+      .locked .card-name { color: #78909c; }
+
       .badge-limited {
           background: #c62828;
-          color: #fff;
-          font-size: 12px;
-          padding: 1px 6px;
-          border-radius: 4px;
-          font-weight: bold;
-          font-family: sans-serif;
+          color: white;
+          font-size: 10px;
+          padding: 1px 4px;
+          border-radius: 2px;
+          margin-left: 5px;
+          vertical-align: middle;
       }
 
-      .title-desc {
+      .rarity-stars {
+          font-size: 12px;
+          color: #ffca28;
+          font-family: "tttgbnumber";
+      }
+      .locked .rarity-stars { filter: grayscale(1); }
+
+      .card-desc {
+          font-size: 13px;
+          color: #5d4037;
+          line-height: 1.4;
+          flex: 1;
+          font-family: sans-serif;
+      }
+      .locked .card-desc { color: #78909c; font-style: italic; }
+
+      .card-footer {
+          margin-top: 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 12px;
+      }
+
+      .category-tag {
+          background: #efebe9;
+          color: #795548;
+          padding: 2px 6px;
+          border-radius: 4px;
+      }
+
+      /* 印章风格的状态标 */
+      .status-stamp {
+          font-family: "NZBZ";
+          font-size: 16px;
+          transform: rotate(-10deg);
+          border: 2px solid;
+          padding: 2px 6px;
+          border-radius: 4px;
+          opacity: 0.8;
+      }
+      
+      .status-equipped {
+          color: #c62828; /* 印泥红 */
+          border-color: #c62828;
+          font-weight: bold;
+      }
+      
+      .status-unlocked {
+          color: #2e7d32;
+          border-color: #2e7d32;
+      }
+      
+      .status-locked {
+          color: #9e9e9e;
+          border-color: #9e9e9e;
           font-size: 14px;
-          color: #7a5533;
-          font-family: sans-serif;
+          border: 1px dashed;
       }
-
-      .title-status {
-          text-align: right;
-          margin-left: 15px;
-      }
-
-      .badge {
-          font-size: 12px;
-          padding: 2px 8px;
-          border-radius: 4px;
-          font-family: sans-serif;
-          font-weight: bold;
-      }
-
-      .badge-equipped { background: #d4af37; color: #fff; }
-      .badge-unlocked { color: #2e7d32; border: 1px solid #2e7d32; }
-      .badge-locked { color: #757575; border: 1px solid #757575; }
 
       .footer {
+          margin-top: 30px;
           text-align: center;
-          font-size: 12px;
-          color: #8c6f4d;
-          margin-top: 10px;
+          font-size: 14px;
+          color: #8d6e63;
+          border-top: 1px dashed #a1887f;
+          padding-top: 15px;
+          font-family: sans-serif;
       }
-      .cmd-hint { color: #c53828; font-weight: bold; }
+      .cmd-hint { 
+          color: #bf360c; 
+          font-weight: bold; 
+          background: #ffccbc;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-family: "tttgbnumber";
+      }
   </style>
 </head>
 <body>
 <div class="container">
-  <div class="card-base">
-    <div class="header">
-      <div class="title-main">称号图鉴</div>
-    </div>
+  <!-- 装饰角标 -->
+  <div class="corner-decoration corner-tl"></div>
+  <div class="corner-decoration corner-tr"></div>
+  <div class="corner-decoration corner-bl"></div>
+  <div class="corner-decoration corner-br"></div>
 
-    <div class="current-title-section">
-      <div class="label-sm">—— 当前佩戴 ——</div>
-      {{if currentTitle}}
-      <div class="current-title-display">{{currentTitle}}</div>
-      {{else}}
-      <div class="no-title">暂无佩戴</div>
-      {{/if}}
-    </div>
+  <div class="header">
+    <div class="title-main">称号图鉴</div>
+    <div class="divider"></div>
+  </div>
 
-    <div class="section-title">收录称号</div>
-    
-    <div class="title-list">
+  <div class="current-title-section">
+    <div class="label-sm">—— 当前佩戴 ——</div>
+    {{if currentTitle}}
+    <div class="current-title-display">{{currentTitle}}</div>
+    {{else}}
+    <div class="no-title">暂无佩戴</div>
+    {{/if}}
+  </div>
+
+  <div class="section-label">收录名录</div>
+  
+  <div class="title-grid">
+    {{if titles && titles.length > 0}}
       {{each titles t}}
-      <div class="title-item {{if t.isEquipped}}equipped{{else if !t.isUnlocked}}locked{{/if}}">
-        <div class="title-info">
-          <div class="title-name-box">
-            <div class="title-name">{{t.name}}</div>
-            {{if t.isLimited}}
-            <span class="badge-limited">限定</span>
-            {{/if}}
+      <div class="title-card {{if t.isEquipped}}equipped{{else if !t.isUnlocked}}locked{{/if}}">
+        <div class="card-top">
+          <div>
+            <span class="card-name">{{t.name}}</span>
+            {{if t.isLimited}}<span class="badge-limited">限定</span>{{/if}}
           </div>
-          <div class="title-desc">
-            {{if t.isUnlocked}}
-              {{t.desc}}
-            {{else}}
-              获取方式：{{t.desc}}
-            {{/if}}
+          <div class="rarity-stars">
+              {{if t.rarity == 5}}★★★★★
+              {{else if t.rarity == 4}}★★★★
+              {{else if t.rarity == 3}}★★★
+              {{else if t.rarity == 2}}★★
+              {{else}}★
+              {{/if}}
           </div>
         </div>
-        <div class="title-status">
-          {{if t.isEquipped}}
-          <span class="badge badge-equipped">已佩戴</span>
-          {{else if t.isUnlocked}}
-          <span class="badge badge-unlocked">已解锁</span>
+        
+        <div class="card-desc">
+          {{if t.isUnlocked}}
+            {{t.desc}}
           {{else}}
-          <span class="badge badge-locked">未解锁</span>
+            获取方式：{{t.desc}}
+          {{/if}}
+        </div>
+
+        <div class="card-footer">
+          <span class="category-tag">{{t.category}}</span>
+          
+          {{if t.isEquipped}}
+            <span class="status-stamp status-equipped">已佩戴</span>
+          {{else if t.isUnlocked}}
+            <span class="status-stamp status-unlocked">已解锁</span>
+          {{else}}
+            <span class="status-stamp status-locked">未解锁</span>
           {{/if}}
         </div>
       </div>
       {{/each}}
-    </div>
+    {{else}}
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #8d6e63;">
+        暂无称号数据
+      </div>
+    {{/if}}
   </div>
 
   <div class="footer">
