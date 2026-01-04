@@ -103,7 +103,8 @@ export class WanxiangActivity extends plugin {
           oaths: OATHS.map(o => ({
               ...o,
               profit_display: (o.profit * 100).toFixed(0) + '%'
-          }))
+          })),
+          pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
       };
       try {
           const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_oaths', 'wanxiang_oaths.html');
@@ -337,7 +338,8 @@ export class WanxiangActivity extends plugin {
           if (userData.level >= u.id) status = 'unlocked';
           else if (userData.level === u.id - 1) status = 'next';
           return { ...u, status, isUnlocked: status === 'unlocked' };
-        })
+        }),
+        pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
       };
       const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_secrets.html');
       const img = await puppeteer.screenshot('wanxiang_secrets', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
