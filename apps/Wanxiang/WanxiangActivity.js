@@ -47,10 +47,10 @@ const OATHS = [
 ];
 
 const SHOP_ITEMS = [
-    { id: 'lingshi_limited', name: '限购灵石', display_name: '2w灵石', desc: '20000灵石 (限购100次)', price: 50, limit: 100, item_name: '灵石', quantity: 20000 },
-    { id: 'lingshi_unlimited', name: '无限灵石', display_name: '2w灵石', desc: '20000灵石 (无限制)', price: 200, limit: -1, item_name: '灵石', quantity: 20000, pre_req: 'lingshi_limited' },
-    { id: 'title_wanxiang_zhizun', name: '万象至尊', display_name: '称号【万象至尊】', desc: '活动限定称号，彰显尊贵身份', price: 3500, limit: 1, item_name: '万象至尊', type: 'title', quantity: 1 },
-    { id: 'qixing_xuanyuan_dan', name: '七星玄元丹', desc: '极其珍贵的丹药 (限购20次)', price: 1000, limit: 20, item_name: '七星玄元丹', item_class: '丹药', quantity: 1 }
+  { id: 'lingshi_limited', name: '限购灵石', display_name: '2w灵石', desc: '20000灵石 (限购100次)', price: 50, limit: 100, item_name: '灵石', quantity: 20000 },
+  { id: 'lingshi_unlimited', name: '无限灵石', display_name: '2w灵石', desc: '20000灵石 (无限制)', price: 200, limit: -1, item_name: '灵石', quantity: 20000, pre_req: 'lingshi_limited' },
+  { id: 'title_wanxiang_zhizun', name: '万象至尊', display_name: '称号【万象至尊】', desc: '活动限定称号，彰显尊贵身份', price: 3500, limit: 1, item_name: '万象至尊', type: 'title', quantity: 1 },
+  { id: 'qixing_xuanyuan_dan', name: '七星玄元丹', desc: '极其珍贵的丹药 (限购20次)', price: 1000, limit: 20, item_name: '七星玄元丹', item_class: '丹药', quantity: 1 }
 ];
 
 function getEnemiesText(layer, nodeType) {
@@ -94,216 +94,217 @@ export class WanxiangActivity extends plugin {
         { reg: /^#誓约列表$/, fnc: 'viewOaths' },
         { reg: /^#天机榜$/, fnc: 'showLeaderboard' },
         { reg: /^#天机阁$/, fnc: 'showExchangeShop' },
-        { reg: /^#兑换.*$/, fnc: 'exchangeItem' }
+        { reg: /^#天机兑换.*$/, fnc: 'exchangeItem' }
       ]
     });
   }
 
   async viewOaths(e) {
-      const renderData = {
-          oaths: OATHS.map(o => ({
-              ...o,
-              profit_display: (o.profit * 100).toFixed(0) + '%'
-          })),
-          pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
-      };
-      try {
-          const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_oaths', 'wanxiang_oaths.html');
-          const img = await puppeteer.screenshot('wanxiang_oaths', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
-          await e.reply(img);
-      } catch (err) {
-          e.reply('查询失败：' + err.message);
-      }
+    const renderData = {
+      oaths: OATHS.map(o => ({
+        ...o,
+        profit_display: (o.profit * 100).toFixed(0) + '%'
+      })),
+      pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+    try {
+      const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_oaths', 'wanxiang_oaths.html');
+      const img = await puppeteer.screenshot('wanxiang_oaths', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
+      await e.reply(img);
+    } catch (err) {
+      e.reply('查询失败：' + err.message);
+    }
   }
 
   async incrementLeaderboard(client, userId, amount) {
-      if (!amount || amount <= 0) return;
-      const key = 'xiuxian:wanxiang:rank:weekly';
-      await client.zIncrBy(key, amount, userId.toString());
+    if (!amount || amount <= 0) return;
+    const key = 'xiuxian:wanxiang:rank:weekly';
+    await client.zIncrBy(key, amount, userId.toString());
   }
 
   async showLeaderboard(e) {
-      let tempClient = null;
-      try {
-          tempClient = await getTempRedis();
-          const key = 'xiuxian:wanxiang:rank:weekly';
-          // Manual ZREVRANGE for compatibility with old Redis server + new Redis client
-          const rawList = await tempClient.sendCommand(['ZREVRANGE', key, '0', '19', 'WITHSCORES']);
-          const topUsers = [];
-          if (rawList && rawList.length > 0) {
-              for (let i = 0; i < rawList.length; i += 2) {
-                  topUsers.push({ value: rawList[i], score: parseInt(rawList[i + 1]) });
-              }
-          }
-          
-          const list = [];
-          for (let i = 0; i < topUsers.length; i++) {
-              const u = topUsers[i];
-              const uid = u.value;
-              const score = parseInt(u.score);
-              const pData = (await DAL.getAllPlayerData(uid))?.player;
-              const rank = i + 1;
-              let reward = 0;
-              if (rank === 1) reward = 3000;
-              else if (rank === 2) reward = 2000;
-              else if (rank === 3) reward = 1200;
-              else if (rank <= 5) reward = 800;
-              else if (rank <= 10) reward = 500;
-              else reward = 300;
-
-              list.push({
-                  rank: rank,
-                  name: pData?.名号 || `修士${uid}`,
-                  avatar: `https://q1.qlogo.cn/g?b=qq&nk=${uid}&s=640`,
-                  score: score,
-                  reward: reward
-              });
-          }
-
-          // Calculate time until next Monday 10:00
-          const now = new Date();
-          const nextMonday = new Date();
-          nextMonday.setDate(now.getDate() + (1 + 7 - now.getDay()) % 7);
-          nextMonday.setHours(10, 0, 0, 0);
-          if (nextMonday <= now) nextMonday.setDate(nextMonday.getDate() + 7);
-          
-          const diffMs = nextMonday.getTime() - now.getTime();
-          const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-          const remainingTime = `${days}天 ${hours}小时 ${minutes}分钟`;
-          
-          const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_leaderboard', 'wanxiang_leaderboard.html');
-          const img = await puppeteer.screenshot('wanxiang_leaderboard', { 
-              tplFile: htmlPath, 
-              list, 
-              remainingTime, 
-              pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`,
-              imgType: 'jpeg' 
-          });
-          await e.reply(img);
-          await tempClient.disconnect();
-      } catch (err) {
-          if (tempClient) await tempClient.disconnect();
-          e.reply('查询排行榜失败：' + err.message);
+    let tempClient = null;
+    try {
+      tempClient = await getTempRedis();
+      const key = 'xiuxian:wanxiang:rank:weekly';
+      // Manual ZREVRANGE for compatibility with old Redis server + new Redis client
+      const rawList = await tempClient.sendCommand(['ZREVRANGE', key, '0', '19', 'WITHSCORES']);
+      const topUsers = [];
+      if (rawList && rawList.length > 0) {
+        for (let i = 0; i < rawList.length; i += 2) {
+          topUsers.push({ value: rawList[i], score: parseInt(rawList[i + 1]) });
+        }
       }
+
+      const list = [];
+      for (let i = 0; i < topUsers.length; i++) {
+        const u = topUsers[i];
+        const uid = u.value;
+        const score = parseInt(u.score);
+        const pData = (await DAL.getAllPlayerData(uid))?.player;
+        const rank = i + 1;
+        let reward = 0;
+        if (rank === 1) reward = 3000;
+        else if (rank === 2) reward = 2000;
+        else if (rank === 3) reward = 1200;
+        else if (rank <= 5) reward = 800;
+        else if (rank <= 10) reward = 500;
+        else reward = 300;
+
+        list.push({
+          rank: rank,
+          name: pData?.名号 || `修士${uid}`,
+          avatar: `https://q1.qlogo.cn/g?b=qq&nk=${uid}&s=640`,
+          score: score,
+          reward: reward
+        });
+      }
+
+      // Calculate time until next Monday 10:00
+      const now = new Date();
+      const nextMonday = new Date();
+      nextMonday.setDate(now.getDate() + (1 + 7 - now.getDay()) % 7);
+      nextMonday.setHours(10, 0, 0, 0);
+      if (nextMonday <= now) nextMonday.setDate(nextMonday.getDate() + 7);
+
+      const diffMs = nextMonday.getTime() - now.getTime();
+      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      const remainingTime = `${days}天 ${hours}小时 ${minutes}分钟`;
+
+      const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_leaderboard', 'wanxiang_leaderboard.html');
+      const img = await puppeteer.screenshot('wanxiang_leaderboard', {
+        tplFile: htmlPath,
+        list,
+        remainingTime,
+        pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`,
+        imgType: 'jpeg'
+      });
+      await e.reply(img);
+      await tempClient.disconnect();
+    } catch (err) {
+      if (tempClient) await tempClient.disconnect();
+      e.reply('查询排行榜失败：' + err.message);
+    }
   }
 
   async showExchangeShop(e) {
-      let tempClient = null;
-      try {
-          tempClient = await getTempRedis();
-          const userData = await this.getUserData(tempClient, e.user_id);
-          const history = userData.shop_history;
-          
-          const items = SHOP_ITEMS.map(item => {
-              const bought = history[item.id] || 0;
-              let locked = false;
-              let stock = '无限';
-              
-              if (item.pre_req) {
-                  const preItem = SHOP_ITEMS.find(p => p.id === item.pre_req);
-                  const preBought = history[preItem.id] || 0;
-                  if (preItem.limit > 0 && preBought < preItem.limit) locked = true;
-              }
-              
-              if (item.limit > 0) {
-                  stock = Math.max(0, item.limit - bought);
-              }
-              
-              return { ...item, name: item.display_name || item.name, stock, locked, bought: (item.limit > 0 && stock === 0) };
-          });
-          
-          const renderData = { 
-              jade: userData.jade, 
-              items,
-              pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
-          };
-          const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_shop', 'wanxiang_shop.html');
-          const img = await puppeteer.screenshot('wanxiang_shop', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
-          await e.reply(img);
-          await tempClient.disconnect();
-      } catch (err) {
-          if (tempClient) await tempClient.disconnect();
-          e.reply('查询天机阁失败：' + err.message);
-      }
+    let tempClient = null;
+    try {
+      tempClient = await getTempRedis();
+      const userData = await this.getUserData(tempClient, e.user_id);
+      const history = userData.shop_history;
+
+      const items = SHOP_ITEMS.map(item => {
+        const bought = history[item.id] || 0;
+        let locked = false;
+        let stock = '无限';
+
+        if (item.pre_req) {
+          const preItem = SHOP_ITEMS.find(p => p.id === item.pre_req);
+          const preBought = history[preItem.id] || 0;
+          if (preItem.limit > 0 && preBought < preItem.limit) locked = true;
+        }
+
+        if (item.limit > 0) {
+          stock = Math.max(0, item.limit - bought);
+        }
+
+        return { ...item, name: item.display_name || item.name, stock, locked, bought: (item.limit > 0 && stock === 0) };
+      });
+
+      const renderData = {
+        jade: userData.jade,
+        items,
+        pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+      };
+      const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_shop', 'wanxiang_shop.html');
+      const img = await puppeteer.screenshot('wanxiang_shop', { tplFile: htmlPath, ...renderData, imgType: 'jpeg' });
+      await e.reply(img);
+      await tempClient.disconnect();
+    } catch (err) {
+      if (tempClient) await tempClient.disconnect();
+      e.reply('查询天机阁失败：' + err.message);
+    }
   }
 
   async exchangeItem(e) {
-      const match = e.msg.match(/^#兑换\s*(\S+)\s*(\d*)/);
-      if (!match) return;
-      const name = match[1];
-      const count = parseInt(match[2] || '1');
-      if (count <= 0) return e.reply('兑换数量必须大于0。');
-      
-      let tempClient = null;
-      try {
-          tempClient = await getTempRedis();
-          const userData = await this.getUserData(tempClient, e.user_id);
-          const history = userData.shop_history;
-          
-          const matches = SHOP_ITEMS.filter(i => i.name === name || i.display_name === name);
-          if (matches.length === 0) { await tempClient.disconnect(); return e.reply('未找到该商品。'); }
-          
-          let targetItem = null;
-          if (matches.length === 1) targetItem = matches[0];
-          else {
-              const limited = matches.find(i => i.limit > 0);
-              const unlimited = matches.find(i => i.limit === -1);
-              const bought = history[limited.id] || 0;
-              if (bought < limited.limit) targetItem = limited;
-              else targetItem = unlimited;
-          }
-          
-          if (!targetItem) { await tempClient.disconnect(); return e.reply('商品状态异常。'); }
-          
-          if (targetItem.pre_req) {
-              const preItem = SHOP_ITEMS.find(p => p.id === targetItem.pre_req);
-              const preBought = history[preItem.id] || 0;
-              if (preItem.limit > 0 && preBought < preItem.limit) {
-                  await tempClient.disconnect();
-                  return e.reply(`需先兑换完【${preItem.display_name || preItem.name}】才可解锁。`);
-              }
-          }
-          
-          const bought = history[targetItem.id] || 0;
-          if (targetItem.limit > 0 && bought + count > targetItem.limit) {
-              await tempClient.disconnect();
-              return e.reply(`库存不足，剩余可兑换 ${targetItem.limit - bought} 次。`);
-          }
-          
-          const totalCost = targetItem.price * count;
-          if (userData.jade < totalCost) {
-              await tempClient.disconnect();
-              return e.reply(`天机玉不足，需要 ${totalCost}。`);
-          }
-          
-          // Deduct Jade
-          userData.jade -= totalCost;
-          userData.shop_history[targetItem.id] = bought + count;
-          await this.saveUserData(tempClient, e.user_id, userData);
-          await tempClient.disconnect();
-          
-          // Add Item (Outside Redis loop)
-          if (targetItem.item_name === '灵石') {
-              await DAL.transaction_update(e.user_id, (p) => { p.lingshi = (p.lingshi || 0) + targetItem.quantity * count; });
-          } else if (targetItem.type === 'title') {
-              await DAL.transaction_update(e.user_id, (player) => {
-                  if (!player.all_titles) player.all_titles = [];
-                  if (!player.all_titles.includes(targetItem.item_name)) {
-                      player.all_titles.push(targetItem.item_name);
-                  }
-              });
-          } else {
-              const itemClass = targetItem.item_class || '材料';
-              await DAL.updateNajieItem(e.user_id, targetItem.item_name, itemClass, targetItem.quantity * count);
-          }
-          
-          e.reply(`兑换成功！获得 ${targetItem.item_name} x${targetItem.quantity * count}。`);
-      } catch (err) {
-          if (tempClient) await tempClient.disconnect();
-          e.reply('兑换失败：' + err.message);
+    // 支持两种格式：#天机兑换物品名*数量 或 #天机兑换物品名 数量
+    const match = e.msg.match(/^#天机兑换\s*(\S+?)(?:[*×x]|\s+)(\d+)\s*$/) || e.msg.match(/^#天机兑换\s*(\S+)\s*$/);
+    if (!match) return;
+    const name = match[1];
+    const count = parseInt(match[2] || '1');
+    if (count <= 0) return e.reply('兑换数量必须大于0。');
+
+    let tempClient = null;
+    try {
+      tempClient = await getTempRedis();
+      const userData = await this.getUserData(tempClient, e.user_id);
+      const history = userData.shop_history;
+
+      const matches = SHOP_ITEMS.filter(i => i.name === name || i.display_name === name);
+      if (matches.length === 0) { await tempClient.disconnect(); return e.reply('未找到该商品。'); }
+
+      let targetItem = null;
+      if (matches.length === 1) targetItem = matches[0];
+      else {
+        const limited = matches.find(i => i.limit > 0);
+        const unlimited = matches.find(i => i.limit === -1);
+        const bought = history[limited.id] || 0;
+        if (bought < limited.limit) targetItem = limited;
+        else targetItem = unlimited;
       }
+
+      if (!targetItem) { await tempClient.disconnect(); return e.reply('商品状态异常。'); }
+
+      if (targetItem.pre_req) {
+        const preItem = SHOP_ITEMS.find(p => p.id === targetItem.pre_req);
+        const preBought = history[preItem.id] || 0;
+        if (preItem.limit > 0 && preBought < preItem.limit) {
+          await tempClient.disconnect();
+          return e.reply(`需先兑换完【${preItem.display_name || preItem.name}】才可解锁。`);
+        }
+      }
+
+      const bought = history[targetItem.id] || 0;
+      if (targetItem.limit > 0 && bought + count > targetItem.limit) {
+        await tempClient.disconnect();
+        return e.reply(`库存不足，剩余可兑换 ${targetItem.limit - bought} 次。`);
+      }
+
+      const totalCost = targetItem.price * count;
+      if (userData.jade < totalCost) {
+        await tempClient.disconnect();
+        return e.reply(`天机玉不足，需要 ${totalCost}。`);
+      }
+
+      // Deduct Jade
+      userData.jade -= totalCost;
+      userData.shop_history[targetItem.id] = bought + count;
+      await this.saveUserData(tempClient, e.user_id, userData);
+      await tempClient.disconnect();
+
+      // Add Item (Outside Redis loop)
+      if (targetItem.item_name === '灵石') {
+        await DAL.transaction_update(e.user_id, (p) => { p.lingshi = (p.lingshi || 0) + targetItem.quantity * count; });
+      } else if (targetItem.type === 'title') {
+        await DAL.transaction_update(e.user_id, (player) => {
+          if (!player.all_titles) player.all_titles = [];
+          if (!player.all_titles.includes(targetItem.item_name)) {
+            player.all_titles.push(targetItem.item_name);
+          }
+        });
+      } else {
+        const itemClass = targetItem.item_class || '材料';
+        await DAL.updateNajieItem(e.user_id, targetItem.item_name, itemClass, targetItem.quantity * count);
+      }
+
+      e.reply(`兑换成功！获得 ${targetItem.item_name} x${targetItem.quantity * count}。`);
+    } catch (err) {
+      if (tempClient) await tempClient.disconnect();
+      e.reply('兑换失败：' + err.message);
+    }
   }
 
   async getUserData(client, userId) {
@@ -367,20 +368,20 @@ export class WanxiangActivity extends plugin {
 
   getRestOptions(runData) {
     const options = [
-        { name: '休养生息', desc: '全队恢复 40% 生命值', action: 'heal' }
+      { name: '休养生息', desc: '全队恢复 40% 生命值', action: 'heal' }
     ];
     const hasDead = runData.souls.some(s => s.is_dead);
     if (hasDead) {
-        const count = (runData.user_level >= 10) ? 2 : 1;
-        const descStr = count > 1 ? `复活${count}名随机阵亡队友 (50%血量)` : '复活一名随机阵亡队友 (50%血量)';
-        options.push({ name: '招魂仪式', desc: descStr, action: 'revive' });
+      const count = (runData.user_level >= 10) ? 2 : 1;
+      const descStr = count > 1 ? `复活${count}名随机阵亡队友 (50%血量)` : '复活一名随机阵亡队友 (50%血量)';
+      options.push({ name: '招魂仪式', desc: descStr, action: 'revive' });
     }
     options.push({ name: '冥想', desc: '获得 1 次赐福刷新机会', action: 'refresh' });
     return options;
   }
 
   async startInfiniteRun(e) {
-      return this.startRun(e);
+    return this.startRun(e);
   }
 
   async startRun(e) {
@@ -393,10 +394,10 @@ export class WanxiangActivity extends plugin {
       const playerData = (await DAL.getAllPlayerData(userId))?.player;
       if (!playerData) { await tempClient.disconnect(); return e.reply('你尚未踏入仙途。'); }
       const userData = await this.getUserData(tempClient, userId);
-      
+
       if (isInfinite && !userData.cleared) {
-          await tempClient.disconnect(); 
-          return e.reply('无限试炼解锁条件：需先通关普通试炼 (20层)。');
+        await tempClient.disconnect();
+        return e.reply('无限试炼解锁条件：需先通关普通试炼 (20层)。');
       }
 
       const now = Date.now();
@@ -404,7 +405,7 @@ export class WanxiangActivity extends plugin {
         const remaining = Math.ceil((3 * 60 * 1000 - (now - userData.last_fail_time)) / 1000);
         await tempClient.disconnect(); return e.reply(`天机紊乱，请在 ${remaining} 秒后重新开始。`);
       }
-      
+
       const replaceStr = isInfinite ? '#开启无限试炼' : '#开启试炼';
       const inputStr = e.msg.replace(replaceStr, '').trim();
       const selectedOaths = inputStr ? inputStr.split(/[\s,，]+/).filter(Boolean) : [];
@@ -433,22 +434,22 @@ export class WanxiangActivity extends plugin {
         }
       }
       if (soulsState.length === 0) { await tempClient.disconnect(); return e.reply('无星魂可出战。'); }
-      const runData = { 
-          layer: 1, 
-          souls: soulsState, 
-          buffs: [], 
-          jing_yin: 0, 
-          temp_jade: 0, 
-          total_jade_earned: 0,
-          artifacts: [], 
-          start_time: now, 
-          refresh_count: 3, 
-          current_node: { type: 'COMBAT', name: '激战', desc: '普通的战斗试炼。' }, 
-          routes: [], 
-          user_level: userData.level, 
-          active_oaths: activeOaths, 
-          total_profit: totalProfit,
-          mode: isInfinite ? 'infinite' : 'normal'
+      const runData = {
+        layer: 1,
+        souls: soulsState,
+        buffs: [],
+        jing_yin: 0,
+        temp_jade: 0,
+        total_jade_earned: 0,
+        artifacts: [],
+        start_time: now,
+        refresh_count: 3,
+        current_node: { type: 'COMBAT', name: '激战', desc: '普通的战斗试炼。' },
+        routes: [],
+        user_level: userData.level,
+        active_oaths: activeOaths,
+        total_profit: totalProfit,
+        mode: isInfinite ? 'infinite' : 'normal'
       };
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); await tempClient.disconnect();
       const oathText = activeOaths.length > 0 ? `
@@ -468,8 +469,8 @@ export class WanxiangActivity extends plugin {
       { type: 'MONSTER_TREASURE', name: '盗宝妖兽', desc: '胆小的妖兽，带着宝物四处流窜，击败可获得大量天机印。', weight: 10 }
     ];
     if (activeOaths.some(o => o.name === '寻妖') && layer < 5) {
-        const t = availableTypes.find(t => t.type === 'MONSTER_TREASURE');
-        if (t) t.weight = 30;
+      const t = availableTypes.find(t => t.type === 'MONSTER_TREASURE');
+      if (t) t.weight = 30;
     }
     if (layer % 5 === 4) {
       options.push({ type: 'REST', name: '修整', desc: '一处安全的营地，可恢复状态。', weight: 0 });
@@ -561,13 +562,13 @@ export class WanxiangActivity extends plugin {
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) e.reply(`你选择了【${node.name}】。\n本层魔物：${getEnemiesText(runData.layer, node.type)}\n敌人已在前方，发送 #挑战 开始战斗！`);
       else if (node.type === 'REST') {
-          const restOpts = this.getRestOptions(runData);
-          let msg = '你来到了一处隐蔽的营地，这里似乎很安全。\n\n';
-          restOpts.forEach((opt, idx) => {
-              msg += `${idx + 1}. 【${opt.name}】 ${opt.desc}\n`;
-          });
-          msg += '\n发送 #事件选择 [序号] 确认。';
-          e.reply(msg);
+        const restOpts = this.getRestOptions(runData);
+        let msg = '你来到了一处隐蔽的营地，这里似乎很安全。\n\n';
+        restOpts.forEach((opt, idx) => {
+          msg += `${idx + 1}. 【${opt.name}】 ${opt.desc}\n`;
+        });
+        msg += '\n发送 #事件选择 [序号] 确认。';
+        e.reply(msg);
       }
       else if (node.type === 'EVENT') {
         const sub = runData.current_node.sub_type;
@@ -629,33 +630,33 @@ export class WanxiangActivity extends plugin {
       } else if (node.type === 'REST') {
         const restOpts = this.getRestOptions(runData);
         if (selection >= 1 && selection <= restOpts.length) {
-            const opt = restOpts[selection - 1];
-            if (opt.action === 'heal') {
-                runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4)); }); 
-                replyMsg = '全员恢复了大量生命值。'; 
-                isDone = true;
-            } else if (opt.action === 'revive') {
-                const dead = runData.souls.filter(s => s.is_dead); 
-                if (dead.length) { 
-                    const maxRevive = (runData.user_level >= 10) ? 2 : 1;
-                    const toReviveCount = Math.min(dead.length, maxRevive);
-                    const revivedNames = [];
-                    for (let i = 0; i < toReviveCount; i++) {
-                        const idx = Math.floor(Math.random() * dead.length);
-                        const s = dead[idx];
-                        s.is_dead = false; 
-                        s.current_hp = Math.floor(s.max_hp * 0.5); 
-                        revivedNames.push(`【${s.name}】`);
-                        dead.splice(idx, 1); 
-                    }
-                    replyMsg = `${revivedNames.join('、')}已从冥界归来。`; 
-                } else replyMsg = '无人阵亡，你只是休息了一会儿。'; 
-                isDone = true; 
-            } else if (opt.action === 'refresh') {
-                runData.refresh_count++; 
-                replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。'; 
-                isDone = true; 
-            }
+          const opt = restOpts[selection - 1];
+          if (opt.action === 'heal') {
+            runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.min(s.max_hp, s.current_hp + Math.floor(s.max_hp * 0.4)); });
+            replyMsg = '全员恢复了大量生命值。';
+            isDone = true;
+          } else if (opt.action === 'revive') {
+            const dead = runData.souls.filter(s => s.is_dead);
+            if (dead.length) {
+              const maxRevive = (runData.user_level >= 10) ? 2 : 1;
+              const toReviveCount = Math.min(dead.length, maxRevive);
+              const revivedNames = [];
+              for (let i = 0; i < toReviveCount; i++) {
+                const idx = Math.floor(Math.random() * dead.length);
+                const s = dead[idx];
+                s.is_dead = false;
+                s.current_hp = Math.floor(s.max_hp * 0.5);
+                revivedNames.push(`【${s.name}】`);
+                dead.splice(idx, 1);
+              }
+              replyMsg = `${revivedNames.join('、')}已从冥界归来。`;
+            } else replyMsg = '无人阵亡，你只是休息了一会儿。';
+            isDone = true;
+          } else if (opt.action === 'refresh') {
+            runData.refresh_count++;
+            replyMsg = '你的思维变得更加敏捷了 (+1 刷新次数)。';
+            isDone = true;
+          }
         }
       } else if (node.type === 'EVENT') {
         const sub = node.sub_type;
@@ -666,17 +667,17 @@ export class WanxiangActivity extends plugin {
           const filterPool = (rarity) => BUFFS.filter(b => b.rarity === rarity && b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
           if (r < 0.05) { runData.jing_yin += 500; replyMsg = '运气爆棚！你获得了 500 天机印！'; }
           else {
-              let b = null;
-              if (r < 0.07) b = filterPool(4)[0] || filterPool(3)[0];
-              else if (r < 0.1) b = filterPool(3)[0];
-              else if (r < 0.7) b = filterPool(2)[0] || filterPool(1)[0];
-              if (b) { runData.buffs.push(b.id); const stars = '★'.repeat(b.rarity || 1); replyMsg = `获得赐福：[${stars}] 【${b.name}】\n效果：${b.desc}`; } 
-              else replyMsg = '空空如也...什么都没抽到。';
+            let b = null;
+            if (r < 0.07) b = filterPool(4)[0] || filterPool(3)[0];
+            else if (r < 0.1) b = filterPool(3)[0];
+            else if (r < 0.7) b = filterPool(2)[0] || filterPool(1)[0];
+            if (b) { runData.buffs.push(b.id); const stars = '★'.repeat(b.rarity || 1); replyMsg = `获得赐福：[${stars}] 【${b.name}】\n效果：${b.desc}`; }
+            else replyMsg = '空空如也...什么都没抽到。';
           }
-          if (node.event_count >= 3) isDone = true; else { 
-              await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); 
-              e.reply(`${replyMsg}\n(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 100 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
-              return; 
+          if (node.event_count >= 3) isDone = true; else {
+            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+            e.reply(`${replyMsg}\n(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 100 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`);
+            return;
           }
         } else if (sub === 'vending_machine_weird' && selection === 1) {
           if (node.event_count >= 3) return e.reply('售货机里的东西已经被掏空了。');
@@ -685,46 +686,46 @@ export class WanxiangActivity extends plugin {
           if (r < 0.1) { runData.souls.forEach(s => s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.9))); replyMsg = '诡异的烟雾让你感到虚弱 (当前生命值-10%)。'; }
           else if (r < 0.2) { runData.souls.forEach(s => s.current_hp = Math.min(s.max_hp, Math.floor(s.current_hp * 1.1))); replyMsg = '一股暖流涌入，全体星魂恢复了 10% 生命值。'; }
           else if (r < 0.4) { runData.extra_atk_pct = (runData.extra_atk_pct || 0) + 1.0; replyMsg = '一名星魂杀气大增 (总攻击+100%)！'; }
-          else if (r < 0.6) { 
-              const oath = OATHS[Math.floor(Math.random() * OATHS.length)]; 
-              runData.active_oaths.push({ ...oath, profit: oath.profit + 0.1 }); 
-              replyMsg = `受到额外的天机干扰：获得誓约【${oath.name}】效果！\n效果说明：${oath.desc}，且使该局结算收益额外提高 10%！`; 
+          else if (r < 0.6) {
+            const oath = OATHS[Math.floor(Math.random() * OATHS.length)];
+            runData.active_oaths.push({ ...oath, profit: oath.profit + 0.1 });
+            replyMsg = `受到额外的天机干扰：获得誓约【${oath.name}】效果！\n效果说明：${oath.desc}，且使该局结算收益额外提高 10%！`;
           } else {
-              const bPool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
-              const b = bPool[0];
-              if (b) { runData.buffs.push(b.id); const stars = '★'.repeat(b.rarity || 1); replyMsg = `获得赐福：[${stars}] 【${b.name}】\n效果：${b.desc}`; } 
-              else replyMsg = '售货机发出了奇怪的咔哒声，但什么都没发生。';
+            const bPool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
+            const b = bPool[0];
+            if (b) { runData.buffs.push(b.id); const stars = '★'.repeat(b.rarity || 1); replyMsg = `获得赐福：[${stars}] 【${b.name}】\n效果：${b.desc}`; }
+            else replyMsg = '售货机发出了奇怪的咔哒声，但什么都没发生。';
           }
-          if (node.event_count >= 3) isDone = true; else { 
-              await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); 
-              e.reply(`${replyMsg}\n(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 25 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`); 
-              return; 
+          if (node.event_count >= 3) isDone = true; else {
+            await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
+            e.reply(`${replyMsg}\n(当前${CURRENCY_NAME}：${runData.jing_yin})\n\n1. 【抽奖一次】 消耗 25 天机印 (还剩 ${3 - node.event_count} 次)\n2. 【离开】\n\n发送 #事件选择 [序号] 确认。`);
+            return;
           }
         } else if (sub === 'vending_machine' && (selection === 1 || selection === 2)) {
-           if (selection === 1) {
-               runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.8)); });
-               const pool = BUFFS.filter(b => b.rarity <= 2 && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
-               const picked = pool.slice(0, 3);
-               picked.forEach(b => runData.buffs.push(b.id));
-               replyMsg = `支付了生命能量，你获得了：${picked.map(b => `【${b.name}】`).join('、')}！`;
-           } else {
-               if (Math.random() < 0.5) {
-                   const pool = BUFFS.filter(b => b.rarity === 3 && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
-                   const b = pool[Math.floor(Math.random() * pool.length)] || BUFFS[0];
-                   runData.buffs.push(b.id);
-                   replyMsg = `咔哒一声！售货机被砸开了，你捡到了【${b.name}】！`;
-               } else {
-                   runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.8)); });
-                   replyMsg = '售货机纹丝不动，反震力让你感到气血翻腾 (生命值-20%)。';
-               }
-           }
-           isDone = true;
+          if (selection === 1) {
+            runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.8)); });
+            const pool = BUFFS.filter(b => b.rarity <= 2 && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id)).sort(() => Math.random() - 0.5);
+            const picked = pool.slice(0, 3);
+            picked.forEach(b => runData.buffs.push(b.id));
+            replyMsg = `支付了生命能量，你获得了：${picked.map(b => `【${b.name}】`).join('、')}！`;
+          } else {
+            if (Math.random() < 0.5) {
+              const pool = BUFFS.filter(b => b.rarity === 3 && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+              const b = pool[Math.floor(Math.random() * pool.length)] || BUFFS[0];
+              runData.buffs.push(b.id);
+              replyMsg = `咔哒一声！售货机被砸开了，你捡到了【${b.name}】！`;
+            } else {
+              runData.souls.forEach(s => { if (!s.is_dead) s.current_hp = Math.max(1, Math.floor(s.current_hp * 0.8)); });
+              replyMsg = '售货机纹丝不动，反震力让你感到气血翻腾 (生命值-20%)。';
+            }
+          }
+          isDone = true;
         } else if (sub === 'gamble_all' && selection === 1) { runData.souls.forEach(s => s.current_hp = 1); runData.gamble_buff = true; replyMsg = '契约成立！你感到力量在燃烧，但生命已如风中残烛。'; isDone = true; }
         else if (sub === 'ultimate_boost' && selection === 1) { runData.souls.forEach(s => { s.is_dead = false; s.current_hp = s.max_hp; const b = BUFFS.find(b => b.type === 'soul_exclusive' && b.exclusive_soul === s.name && b.rarity === 3); if (b && !runData.buffs.includes(b.id)) runData.buffs.push(b.id); }); replyMsg = '圣光洗礼！全员复活并获得了专属强化！'; isDone = true; }
         else if (sub === 'soul_enhance' && selection === 1) { const b = BUFFS.find(b => b.type === 'soul_exclusive' && runData.souls.some(s => s.name === b.exclusive_soul) && !runData.buffs.includes(b.id)); if (b) { runData.buffs.push(b.id); replyMsg = `老者传授了你【${b.name}】的奥秘！`; } else replyMsg = '老者摇了摇头，转过身去。'; isDone = true; }
         else { replyMsg = '你谨慎地离开了。'; isDone = true; }
       }
-      if (isDone) { runData.layer++; await this.processRouteGeneration(e, runData, tempClient, replyMsg); } 
+      if (isDone) { runData.layer++; await this.processRouteGeneration(e, runData, tempClient, replyMsg); }
       else await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
       await tempClient.disconnect();
     } catch (err) { if (tempClient) await tempClient.disconnect(); }
@@ -738,7 +739,7 @@ export class WanxiangActivity extends plugin {
       if (!runData?.current_node) { if (tempClient) await tempClient.disconnect(); return e.reply('请先选择路线。'); }
       const node = runData.current_node;
       if (!['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(node.type)) { if (tempClient) await tempClient.disconnect(); return e.reply('当前节点不可进行挑战。'); }
-      
+
       const activeOaths = runData.active_oaths || [];
       const battleSouls = [];
       for (const s of runData.souls) {
@@ -746,20 +747,20 @@ export class WanxiangActivity extends plugin {
         const conf = ALL_SOULS.find(as => as.name === s.name);
         if (conf) {
           const bc = JSON.parse(JSON.stringify(conf)); let hpMul = 1.0, atkMul = 1.0, defMul = 1.0, speedMul = 1.0;
-          UPGRADES.forEach(u => { 
-            if (runData.user_level >= u.id) { 
-              if (u.type === 'atk_flat') bc.base_stats.attack += u.value; 
-              if (u.type === 'hp_pct') hpMul += u.value; 
+          UPGRADES.forEach(u => {
+            if (runData.user_level >= u.id) {
+              if (u.type === 'atk_flat') bc.base_stats.attack += u.value;
+              if (u.type === 'hp_pct') hpMul += u.value;
               if (u.type === 'atk_pct') atkMul += u.value;
               if (u.type === 'def_pct') defMul += u.value;
               if (u.type === 'speed_pct') speedMul += u.value;
               if (u.type === 'damage_immune') bc.damage_immune_chance = u.value;
-            } 
+            }
           });
           if (activeOaths.some(o => o.name === '禁术')) { delete bc.skills.ultimate; atkMul += 0.2; }
           if (activeOaths.some(o => o.name === '血契')) { hpMul -= 0.5; atkMul += 0.2; }
           if (runData.gamble_buff) { hpMul *= 2; atkMul *= 2; bc.crit_rate = (bc.crit_rate || 0) + 1.0; bc.base_stats.energy_regen = (bc.base_stats.energy_regen || 20) * 1.25; }
-          bc.base_stats.health = Math.floor(bc.base_stats.health * hpMul); 
+          bc.base_stats.health = Math.floor(bc.base_stats.health * hpMul);
           bc.base_stats.attack = Math.floor(bc.base_stats.attack * atkMul);
           bc.base_stats.defense = Math.floor(bc.base_stats.defense * defMul);
           bc.base_stats.speed = Math.floor(bc.base_stats.speed * speedMul);
@@ -791,41 +792,41 @@ export class WanxiangActivity extends plugin {
           battleSouls.push(bc);
         }
       }
-      
+
       const hasCoercion = (runData.user_level || 0) >= 5;
       let enemies = [];
       if (node.type === 'MONSTER_TREASURE') {
-          for (let i = 0; i < 3; i++) {
-              const tm = { id: `t_${i}`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } };
-              if (hasCoercion) tm.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
-              enemies.push(tm);
-          }
+        for (let i = 0; i < 3; i++) {
+          const tm = { id: `t_${i}`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } };
+          if (hasCoercion) tm.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
+          enemies.push(tm);
+        }
       } else {
-          const names = STAGES.find(s => s.layer === runData.layer)?.monsters || [];
-          enemies = names.map(n => {
-            const original = ALL_MONSTERS.find(am => am.name === n); if (!original) return null;
-            const m = JSON.parse(JSON.stringify(original));
-            let mul = (runData.mode === 'infinite') 
-                ? (1.5 + (runData.layer - 1) * 0.15) 
-                : (1 + (runData.layer - 1) * 0.08);
-            if (node.type === 'ELITE') mul *= 1.3;
-            if (node.type === 'BOSS') { mul *= 1.5; if (activeOaths.some(o => o.name === '天泽')) mul *= 0.9; }
-            m.base_stats.health = Math.floor(m.base_stats.health * mul); m.base_stats.attack = Math.floor(m.base_stats.attack * mul);
-            if (activeOaths.some(o => o.name === '坚毅')) m.initial_shields = Math.floor(m.base_stats.health * 0.3);
-            if (hasCoercion) { m.initial_debuffs = m.initial_debuffs || []; m.initial_debuffs.push({ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }); }
-            return m;
-          }).filter(Boolean);
-          if (Math.random() < 0.05) {
-              const em = { id: `t_extra`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } };
-              if (hasCoercion) em.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
-              enemies.push(em);
-          }
+        const names = STAGES.find(s => s.layer === runData.layer)?.monsters || [];
+        enemies = names.map(n => {
+          const original = ALL_MONSTERS.find(am => am.name === n); if (!original) return null;
+          const m = JSON.parse(JSON.stringify(original));
+          let mul = (runData.mode === 'infinite')
+            ? (1.5 + (runData.layer - 1) * 0.15)
+            : (1 + (runData.layer - 1) * 0.08);
+          if (node.type === 'ELITE') mul *= 1.3;
+          if (node.type === 'BOSS') { mul *= 1.5; if (activeOaths.some(o => o.name === '天泽')) mul *= 0.9; }
+          m.base_stats.health = Math.floor(m.base_stats.health * mul); m.base_stats.attack = Math.floor(m.base_stats.attack * mul);
+          if (activeOaths.some(o => o.name === '坚毅')) m.initial_shields = Math.floor(m.base_stats.health * 0.3);
+          if (hasCoercion) { m.initial_debuffs = m.initial_debuffs || []; m.initial_debuffs.push({ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }); }
+          return m;
+        }).filter(Boolean);
+        if (Math.random() < 0.05) {
+          const em = { id: `t_extra`, name: '盗宝妖兽', base_stats: { health: 500 * runData.layer, attack: 1, defense: 50, speed: 150, resistance: 0, taunt: 100, element: '无' }, is_treasure: true, skills: { basic: { name: '观望', type: 'damage', value: 0, target: 'single_enemy' } } };
+          if (hasCoercion) em.initial_debuffs = [{ type: 'force_dmg_one', value: 1, duration: 1, caster_id: 'system' }];
+          enemies.push(em);
+        }
       }
-      
+
       e.reply(`【${node.name}】第 ${runData.layer} 层挑战开始！\n战斗进行中...`);
       const maxR = (node.type === 'BOSS' || node.type === 'MONSTER_TREASURE') ? 20 : 10;
       const result = await runCombat(battleSouls, enemies, runData.buffs, maxR);
-      
+
       const slices = []; let currentSlice = [], rCount = 0;
       for (const entry of result.log) {
         if (entry.type === 'turn') { rCount++; if (rCount > 8) { slices.push(currentSlice); currentSlice = []; rCount = 1; } }
@@ -874,12 +875,12 @@ export class WanxiangActivity extends plugin {
       if (result.playerWon) {
         let jade = 0;
         if (runData.mode === 'infinite' && runData.layer > 20) {
-            let base = 5;
-            if (node.type === 'BOSS') base += 5;
-            jade = Math.floor(base * (1 + (runData.total_profit || 0)));
-            if ((runData.temp_jade + jade) > 1000) jade = Math.max(0, 1000 - runData.temp_jade);
+          let base = 5;
+          if (node.type === 'BOSS') base += 5;
+          jade = Math.floor(base * (1 + (runData.total_profit || 0)));
+          if ((runData.temp_jade + jade) > 1000) jade = Math.max(0, 1000 - runData.temp_jade);
         } else {
-            jade = Math.floor((node.type === 'BOSS' ? 30 : 5) * (1 + (runData.total_profit || 0)));
+          jade = Math.floor((node.type === 'BOSS' ? 30 : 5) * (1 + (runData.total_profit || 0)));
         }
         let gold = Math.floor((Math.random() * 20 + 10) * (activeOaths.some(o => o.name === '俭省') ? 0.5 : 1));
         let extraMsg = '', skipBuffChoice = false;
@@ -889,43 +890,43 @@ export class WanxiangActivity extends plugin {
         let treasureBuffsNames = [];
 
         defeatedTreasures.forEach(() => {
-            if (Math.random() < 0.7) {
-                treasureGoldTotal += 50;
-            } else {
-                const pool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
-                if (pool.length > 0) {
-                    let targetRarity = 1;
-                    const r = Math.random();
-                    if (r < 0.02) targetRarity = 4;
-                    else if (r < 0.15) targetRarity = 3;
-                    else if (r < 0.45) targetRarity = 2;
-                    const b = pool.filter(p => p.rarity === targetRarity).sort(() => Math.random() - 0.5)[0] || pool[0];
-                    runData.buffs.push(b.id);
-                    treasureBuffsNames.push(b.name);
-                }
+          if (Math.random() < 0.7) {
+            treasureGoldTotal += 50;
+          } else {
+            const pool = BUFFS.filter(b => b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+            if (pool.length > 0) {
+              let targetRarity = 1;
+              const r = Math.random();
+              if (r < 0.02) targetRarity = 4;
+              else if (r < 0.15) targetRarity = 3;
+              else if (r < 0.45) targetRarity = 2;
+              const b = pool.filter(p => p.rarity === targetRarity).sort(() => Math.random() - 0.5)[0] || pool[0];
+              runData.buffs.push(b.id);
+              treasureBuffsNames.push(b.name);
             }
+          }
         });
 
         if (node.type === 'MONSTER_TREASURE') {
-            const killed = defeatedTreasures.length;
-            gold = killed === 3 ? 300 : 250; 
-            gold += treasureGoldTotal;
-            extraMsg = `\n【妖兽猎人】击败妖兽：${killed}/3`;
-            if (treasureGoldTotal > 0) extraMsg += `\n额外获得：${treasureGoldTotal} 天机印`;
-            if (treasureBuffsNames.length > 0) extraMsg += `\n额外获得赐福：${treasureBuffsNames.join('、')}`;
-            skipBuffChoice = true;
-            if (killed === 3) {
-                const pool = BUFFS.filter(b => (b.rarity === 3 || b.rarity === 4) && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
-                if (pool.length > 0) { const b = pool[Math.floor(Math.random() * pool.length)]; runData.buffs.push(b.id); extraMsg += `\n【完美通关】获得高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`; }
-            }
+          const killed = defeatedTreasures.length;
+          gold = killed === 3 ? 300 : 250;
+          gold += treasureGoldTotal;
+          extraMsg = `\n【妖兽猎人】击败妖兽：${killed}/3`;
+          if (treasureGoldTotal > 0) extraMsg += `\n额外获得：${treasureGoldTotal} 天机印`;
+          if (treasureBuffsNames.length > 0) extraMsg += `\n额外获得赐福：${treasureBuffsNames.join('、')}`;
+          skipBuffChoice = true;
+          if (killed === 3) {
+            const pool = BUFFS.filter(b => (b.rarity === 3 || b.rarity === 4) && b.type !== 'soul_exclusive' && b.type !== 'artifact_passive' && !runData.buffs.includes(b.id));
+            if (pool.length > 0) { const b = pool[Math.floor(Math.random() * pool.length)]; runData.buffs.push(b.id); extraMsg += `\n【完美通关】获得高级赐福：[${'★'.repeat(b.rarity)}] 【${b.name}】！`; }
+          }
         } else {
-            if (defeatedTreasures.length > 0) {
-                gold += treasureGoldTotal;
-                if (treasureGoldTotal > 0) extraMsg += `\n额外击败妖兽，获得 ${treasureGoldTotal} 天机印！`;
-                if (treasureBuffsNames.length > 0) extraMsg += `\n额外击败妖兽，获得赐福：${treasureBuffsNames.join('、')}！`;
-            }
+          if (defeatedTreasures.length > 0) {
+            gold += treasureGoldTotal;
+            if (treasureGoldTotal > 0) extraMsg += `\n额外击败妖兽，获得 ${treasureGoldTotal} 天机印！`;
+            if (treasureBuffsNames.length > 0) extraMsg += `\n额外击败妖兽，获得赐福：${treasureBuffsNames.join('、')}！`;
+          }
         }
-        
+
         runData.jing_yin += gold; runData.temp_jade += jade;
         if (runData.mode !== 'infinite' && runData.layer >= 20) {
           const ud = await this.getUserData(tempClient, userId); const bonus = (runData.total_profit >= 1.0) ? 150 : 0;
@@ -933,11 +934,11 @@ export class WanxiangActivity extends plugin {
           const totalGain = runData.temp_jade + bonus;
           ud.jade += totalGain; ud.cleared = true;
           await this.incrementLeaderboard(tempClient, userId, totalGain);
-          
+
           await this.saveUserData(tempClient, userId, ud); await tempClient.del(KEY_PREFIX + userId);
           let msg = `【试炼通关】恭喜！本次共获得 ${runData.temp_jade} 天机玉${bonus > 0 ? ` (含誓约奖 ${bonus})` : ''}。`;
           if (isFirstClear) {
-              msg += `\n\n🎉 首次通关奖励！\n已解锁【誓约挑战】模式！\n在开启试炼时可附加誓约词条 (如 #开启试炼 孤行 贫苦) 来增加难度和收益。\n发送 #誓约列表 可查看所有誓约详情。`;
+            msg += `\n\n🎉 首次通关奖励！\n已解锁【誓约挑战】模式！\n在开启试炼时可附加誓约词条 (如 #开启试炼 孤行 贫苦) 来增加难度和收益。\n发送 #誓约列表 可查看所有誓约详情。`;
           }
           e.reply(msg);
         } else if (skipBuffChoice) {
@@ -949,8 +950,8 @@ export class WanxiangActivity extends plugin {
           const pool = BUFFS.filter(b => b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id) && w[b.rarity] > 0);
           const ch = [];
           for (let i = 0; i < 3 && pool.length > 0; i++) {
-              let t = pool.reduce((acc, b) => acc + w[b.rarity], 0); let r = Math.random() * t;
-              for (let j = 0; j < pool.length; j++) { r -= w[pool[j].rarity]; if (r <= 0) { ch.push(pool[j]); pool.splice(j, 1); break; } }
+            let t = pool.reduce((acc, b) => acc + w[b.rarity], 0); let r = Math.random() * t;
+            for (let j = 0; j < pool.length; j++) { r -= w[pool[j].rarity]; if (r <= 0) { ch.push(pool[j]); pool.splice(j, 1); break; } }
           }
           runData.pending_buffs = ch.map(c => c.id);
           await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
@@ -982,8 +983,8 @@ export class WanxiangActivity extends plugin {
       const pool = BUFFS.filter(b => b.type !== 'artifact_passive' && b.type !== 'soul_exclusive' && !runData.buffs.includes(b.id) && weights[b.rarity] > 0);
       const choices = [];
       for (let i = 0; i < 3 && pool.length > 0; i++) {
-          let t = pool.reduce((acc, b) => acc + weights[b.rarity], 0); let r = Math.random() * t;
-          for (let j = 0; j < pool.length; j++) { r -= weights[pool[j].rarity]; if (r <= 0) { choices.push(pool[j]); pool.splice(j, 1); break; } }
+        let t = pool.reduce((acc, b) => acc + weights[b.rarity], 0); let r = Math.random() * t;
+        for (let j = 0; j < pool.length; j++) { r -= weights[pool[j].rarity]; if (r <= 0) { choices.push(pool[j]); pool.splice(j, 1); break; } }
       }
       runData.pending_buffs = choices.map(c => c.id);
       await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData));
@@ -1003,7 +1004,7 @@ export class WanxiangActivity extends plugin {
       if (!runData?.pending_buffs?.length || !selection || selection > runData.pending_buffs.length) { await tempClient.disconnect(); return; }
       const bid = runData.pending_buffs[selection - 1]; const b = BUFFS.find(bf => bf.id === bid);
       runData.buffs.push(bid); runData.remaining_picks--; runData.pending_buffs.splice(selection - 1, 1);
-      if (runData.remaining_picks <= 0) { runData.pending_buffs = []; await this.processRouteGeneration(e, runData, tempClient, `成功选择了【${b.name}】！`); } 
+      if (runData.remaining_picks <= 0) { runData.pending_buffs = []; await this.processRouteGeneration(e, runData, tempClient, `成功选择了【${b.name}】！`); }
       else { await tempClient.set(KEY_PREFIX + userId, JSON.stringify(runData)); e.reply(`成功选择了【${b.name}】！\n★ 还可以再选择 ${runData.remaining_picks} 个赐福：\n`); }
       await tempClient.disconnect();
     } catch (err) { if (tempClient) await tempClient.disconnect(); }
@@ -1015,7 +1016,7 @@ export class WanxiangActivity extends plugin {
       tempClient = await getTempRedis(); const dataStr = await tempClient.get(KEY_PREFIX + userId); await tempClient.disconnect();
       if (!dataStr) return e.reply('你当前没有进行中的试炼。');
       const data = JSON.parse(dataStr);
-      
+
       let nextOperation = "未知状态";
       let options = [];
 
@@ -1023,8 +1024,8 @@ export class WanxiangActivity extends plugin {
         nextOperation = "请选择赐福 (发送 #选择赐福 [序号])";
         if ((data.refresh_count || 0) > 0) nextOperation += " 或 #刷新赐福";
         options = data.pending_buffs.map((bid, i) => {
-            const b = BUFFS.find(bf => bf.id === bid) || { name: bid, desc: '未知赐福', rarity: 1 };
-            return { index: i + 1, type: 'buff', name: b.name, desc: b.desc, rarity: b.rarity };
+          const b = BUFFS.find(bf => bf.id === bid) || { name: bid, desc: '未知赐福', rarity: 1 };
+          return { index: i + 1, type: 'buff', name: b.name, desc: b.desc, rarity: b.rarity };
         });
       } else if (data.routes && data.routes.length > 0) {
         nextOperation = "请选择前进路线 (发送 #选择路线 [序号])";
@@ -1035,76 +1036,76 @@ export class WanxiangActivity extends plugin {
         if (['COMBAT', 'ELITE', 'BOSS', 'MONSTER_TREASURE'].includes(type)) {
           nextOperation = `当前位于【${node.name}】，请发送 #挑战 开始战斗`;
         } else if (type === 'SHOP') {
-            nextOperation = `请选择购买商品或离开 (发送 #事件选择 [序号])`;
-            options = (data.shop_items || []).map((it, i) => ({ index: i + 1, type: 'shop_item', name: it.name, desc: it.desc, price: it.price, bought: it.bought, rarity: it.rarity }));
-            const refreshCount = data.shop_refresh_count || 0;
-            options.push({ index: options.length + 1, type: 'action', name: '刷新商品', desc: refreshCount > 0 ? `消耗刷新次数 (剩余${refreshCount}次)` : '次数已用尽', disabled: refreshCount <= 0 });
-            options.push({ index: options.length + 1, type: 'action', name: '离开', desc: '继续前进' });
+          nextOperation = `请选择购买商品或离开 (发送 #事件选择 [序号])`;
+          options = (data.shop_items || []).map((it, i) => ({ index: i + 1, type: 'shop_item', name: it.name, desc: it.desc, price: it.price, bought: it.bought, rarity: it.rarity }));
+          const refreshCount = data.shop_refresh_count || 0;
+          options.push({ index: options.length + 1, type: 'action', name: '刷新商品', desc: refreshCount > 0 ? `消耗刷新次数 (剩余${refreshCount}次)` : '次数已用尽', disabled: refreshCount <= 0 });
+          options.push({ index: options.length + 1, type: 'action', name: '离开', desc: '继续前进' });
         } else if (type === 'REST') {
-            nextOperation = `请选择休整方式 (发送 #事件选择 [序号])`;
-            const restOpts = this.getRestOptions(data);
-            options = restOpts.map((opt, idx) => ({
-                index: idx + 1,
-                type: 'action',
-                name: opt.name,
-                desc: opt.desc
-            }));
+          nextOperation = `请选择休整方式 (发送 #事件选择 [序号])`;
+          const restOpts = this.getRestOptions(data);
+          options = restOpts.map((opt, idx) => ({
+            index: idx + 1,
+            type: 'action',
+            name: opt.name,
+            desc: opt.desc
+          }));
         } else if (type === 'EVENT') {
-            nextOperation = `请选择应对方式 (发送 #事件选择 [序号])`;
-            const sub = node.sub_type;
-            if (sub === 'vending_machine_gold') {
-                options = [
-                    { index: 1, type: 'action', name: '抽奖一次', desc: `消耗 100 天机印 (剩余 ${3 - (node.event_count || 0)} 次)` },
-                    { index: 2, type: 'action', name: '离开', desc: '不感兴趣' }
-                ];
-            } else if (sub === 'vending_machine_weird') {
-                options = [
-                    { index: 1, type: 'action', name: '抽奖一次', desc: `消耗 25 天机印 (剩余 ${3 - (node.event_count || 0)} 次)` },
-                    { index: 2, type: 'action', name: '离开', desc: '不感兴趣' }
-                ];
-            } else if (sub === 'gamble_all') {
-                options = [
-                    { index: 1, type: 'action', name: '放手一搏', desc: '消耗 99% 当前生命值，大幅强化星魂属性' },
-                    { index: 2, type: 'action', name: '无视', desc: '太危险了' }
-                ];
-            } else if (sub === 'ultimate_boost') {
-                options = [
-                    { index: 1, type: 'action', name: '顶级强化', desc: '复活全员并满状态，获得全员专属三星赐福' },
-                    { index: 2, type: 'action', name: '离开', desc: '不需要帮助' }
-                ];
-            } else if (sub === 'soul_enhance') {
-                options = [
-                    { index: 1, type: 'action', name: '虚心求教', desc: '获得一个针对已有星魂强化的三星赐福' },
-                    { index: 2, type: 'action', name: '无视', desc: '离开' }
-                ];
-            } else { // vending_machine (standard)
-                options = [
-                    { index: 1, type: 'action', name: '购买补给', desc: '消耗 20% 当前生命值，获得 3 个普通赐福' },
-                    { index: 2, type: 'action', name: '暴力破解', desc: '试图砸开它 (50%获得随机3星赐福，50%受伤)' },
-                    { index: 3, type: 'action', name: '离开', desc: '离开' }
-                ];
-            }
+          nextOperation = `请选择应对方式 (发送 #事件选择 [序号])`;
+          const sub = node.sub_type;
+          if (sub === 'vending_machine_gold') {
+            options = [
+              { index: 1, type: 'action', name: '抽奖一次', desc: `消耗 100 天机印 (剩余 ${3 - (node.event_count || 0)} 次)` },
+              { index: 2, type: 'action', name: '离开', desc: '不感兴趣' }
+            ];
+          } else if (sub === 'vending_machine_weird') {
+            options = [
+              { index: 1, type: 'action', name: '抽奖一次', desc: `消耗 25 天机印 (剩余 ${3 - (node.event_count || 0)} 次)` },
+              { index: 2, type: 'action', name: '离开', desc: '不感兴趣' }
+            ];
+          } else if (sub === 'gamble_all') {
+            options = [
+              { index: 1, type: 'action', name: '放手一搏', desc: '消耗 99% 当前生命值，大幅强化星魂属性' },
+              { index: 2, type: 'action', name: '无视', desc: '太危险了' }
+            ];
+          } else if (sub === 'ultimate_boost') {
+            options = [
+              { index: 1, type: 'action', name: '顶级强化', desc: '复活全员并满状态，获得全员专属三星赐福' },
+              { index: 2, type: 'action', name: '离开', desc: '不需要帮助' }
+            ];
+          } else if (sub === 'soul_enhance') {
+            options = [
+              { index: 1, type: 'action', name: '虚心求教', desc: '获得一个针对已有星魂强化的三星赐福' },
+              { index: 2, type: 'action', name: '无视', desc: '离开' }
+            ];
+          } else { // vending_machine (standard)
+            options = [
+              { index: 1, type: 'action', name: '购买补给', desc: '消耗 20% 当前生命值，获得 3 个普通赐福' },
+              { index: 2, type: 'action', name: '暴力破解', desc: '试图砸开它 (50%获得随机3星赐福，50%受伤)' },
+              { index: 3, type: 'action', name: '离开', desc: '离开' }
+            ];
+          }
         } else {
           nextOperation = "请继续探索 (发送 #选择路线 [序号] 或 #事件选择 [序号])";
         }
       }
 
-      const renderData = { 
-        layer: data.layer, 
+      const renderData = {
+        layer: data.layer,
         souls: data.souls.map(s => ({
           ...s,
           hp_percent: s.max_hp > 0 ? Math.floor(Math.max(0, s.current_hp) / s.max_hp * 100) : 0
-        })), 
-        buffs: data.buffs.map(id => BUFFS.find(b => b.id === id) || { name: id }), 
-        artifacts: data.artifacts.map(id => BUFFS.find(b => b.id === id) || { name: id }), 
-        refreshCount: data.refresh_count, 
-        currentNode: data.current_node, 
+        })),
+        buffs: data.buffs.map(id => BUFFS.find(b => b.id === id) || { name: id }),
+        artifacts: data.artifacts.map(id => BUFFS.find(b => b.id === id) || { name: id }),
+        refreshCount: data.refresh_count,
+        currentNode: data.current_node,
         tempJade: data.temp_jade || 0,
         totalProfit: ((data.total_profit || 0) * 100).toFixed(0),
         activeOaths: data.active_oaths || [],
         nextOperation: nextOperation,
         options: options,
-        pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/` 
+        pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
       };
       const dFP = await new Show(e).get_imgData('wanxiang_status', renderData);
       const img = await puppeteer.screenshot('wanxiang_status', dFP); await e.reply(img);
@@ -1119,16 +1120,16 @@ export class WanxiangActivity extends plugin {
       if (dataStr) {
         const runData = JSON.parse(dataStr);
         const userData = await this.getUserData(tempClient, e.user_id);
-        
+
         // 增加冷却时间逻辑：主动退出也视为失败/结束，触发冷却
         userData.last_fail_time = Date.now();
-        
+
         if (runData.temp_jade > 0) {
-            userData.jade += runData.temp_jade;
-            await this.incrementLeaderboard(tempClient, e.user_id, runData.temp_jade);
-            e.reply(`已放弃试炼。本次获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
+          userData.jade += runData.temp_jade;
+          await this.incrementLeaderboard(tempClient, e.user_id, runData.temp_jade);
+          e.reply(`已放弃试炼。本次获得 ${runData.temp_jade} ${META_CURRENCY_NAME}。`);
         } else e.reply('已放弃试炼。');
-        
+
         await this.saveUserData(tempClient, e.user_id, userData);
         await tempClient.del(KEY_PREFIX + e.user_id);
       } else e.reply('你当前没有进行中的试炼。');
