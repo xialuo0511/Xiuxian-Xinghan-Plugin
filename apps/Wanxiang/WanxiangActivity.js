@@ -20,6 +20,35 @@ const USER_DATA_KEY = 'xiuxian:wanxiang:userdata:';
 const CURRENCY_NAME = '天机印';
 const META_CURRENCY_NAME = '天机玉';
 
+// ===== 活动时间配置 =====
+const ACTIVITY_CONFIG = {
+  eventKey: 'wanxiang_tianji_2026_01',
+  startTime: new Date('2026-01-06 10:00:00').getTime(),
+  endTime: new Date('2026-03-01 23:59:59').getTime()
+};
+
+/**
+ * 检查活动是否开启
+ * @returns {{ active: boolean, message: string }}
+ */
+function checkActivityStatus() {
+  const now = Date.now();
+  if (now < ACTIVITY_CONFIG.startTime) {
+    const startDate = new Date(ACTIVITY_CONFIG.startTime);
+    return {
+      active: false,
+      message: `【万象天机】活动尚未开启！\n开启时间：${startDate.getFullYear()}年${startDate.getMonth() + 1}月${startDate.getDate()}日 ${startDate.getHours()}:00`
+    };
+  }
+  if (now > ACTIVITY_CONFIG.endTime) {
+    return {
+      active: false,
+      message: '【万象天机】活动已结束，感谢参与！'
+    };
+  }
+  return { active: true, message: '' };
+}
+
 const UPGRADES = [
   { id: 1, name: '锋锐之印', desc: '所有星魂基础攻击力 +5', cost: 30, type: 'atk_flat', value: 5 },
   { id: 2, name: '强韧之躯', desc: '所有星魂基础生命值 +10%', cost: 30, type: 'hp_pct', value: 0.10 },
@@ -190,6 +219,12 @@ export class WanxiangActivity extends plugin {
   }
 
   async showExchangeShop(e) {
+    // 检查活动是否开启
+    const activityStatus = checkActivityStatus();
+    if (!activityStatus.active) {
+      return e.reply(activityStatus.message);
+    }
+
     let tempClient = null;
     try {
       tempClient = await getTempRedis();
@@ -230,6 +265,12 @@ export class WanxiangActivity extends plugin {
   }
 
   async exchangeItem(e) {
+    // 检查活动是否开启
+    const activityStatus = checkActivityStatus();
+    if (!activityStatus.active) {
+      return e.reply(activityStatus.message);
+    }
+
     // 支持两种格式：#天机兑换物品名*数量 或 #天机兑换物品名 数量
     const match = e.msg.match(/^#天机兑换\s*(\S+?)(?:[*×x]|\s+)(\d+)\s*$/) || e.msg.match(/^#天机兑换\s*(\S+)\s*$/);
     if (!match) return;
@@ -351,6 +392,12 @@ export class WanxiangActivity extends plugin {
   }
 
   async upgradeSecrets(e) {
+    // 检查活动是否开启
+    const activityStatus = checkActivityStatus();
+    if (!activityStatus.active) {
+      return e.reply(activityStatus.message);
+    }
+
     let tempClient = null;
     try {
       tempClient = await getTempRedis();
@@ -385,6 +432,12 @@ export class WanxiangActivity extends plugin {
   }
 
   async startRun(e) {
+    // 检查活动是否开启
+    const activityStatus = checkActivityStatus();
+    if (!activityStatus.active) {
+      return e.reply(activityStatus.message);
+    }
+
     const userId = e.user_id;
     const isInfinite = e.msg.includes('无限');
     let tempClient = null;
