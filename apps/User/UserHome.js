@@ -286,7 +286,7 @@ export class UserHome extends plugin {
     // 根据返回结果回复用户
     const player = (await DAL.getAllPlayerData(userId))?.player;
     e.reply([`【${player.名号}】`,
-      result.message]);
+    result.message]);
   }
 
   /**
@@ -471,6 +471,9 @@ export class UserHome extends plugin {
           result = await enchantItem(userId, parts[0], parts[1]);
         }
         break;
+      case '寻宝':
+        result = await treasureHunt(userId, argumentStr);
+        break;
       default:
         result = {
           success: false,
@@ -537,66 +540,66 @@ export class UserHome extends plugin {
     e.reply(message);
   }
 
-    async showTitles(e) {
-      const userId = await this.preCheck(e);
-      if (!userId) return;
-  
-      const playerData = await DAL.getAllPlayerData(userId);
-      const player = playerData?.player;
-      if (!player) return;
-  
-      const allTitlesConfig = loadItemConfig('titles.yaml') || [];
-      const unlockedTitles = player.all_titles || [];
-      const currentTitle = player.称号 || '';
-  
-      // 1. 处理配置中的称号
-      const titlesList = allTitlesConfig.map(t => {
-          const isUnlocked = unlockedTitles.includes(t.name);
-          return {
-              ...t,
-              isUnlocked: isUnlocked,
-              isEquipped: currentTitle === t.name
-          };
-      });
-  
-      // 2. 处理已解锁但未在配置中的称号（兼容旧数据）
-      unlockedTitles.forEach(tName => {
-          if (!titlesList.find(item => item.name === tName)) {
-              titlesList.push({
-                  name: tName,
-                  desc: '未收录的神秘称号',
-                  category: '特殊',
-                  rarity: 1,
-                  isUnlocked: true,
-                  isEquipped: currentTitle === tName
-              });
-          }
-      });
-  
-      // 排序：已佩戴 > 已解锁 > 稀有度 > 未解锁
-      titlesList.sort((a, b) => {
-          if (a.isEquipped) return -1;
-          if (b.isEquipped) return 1;
-          if (a.isUnlocked && !b.isUnlocked) return -1;
-          if (!a.isUnlocked && b.isUnlocked) return 1;
-          return b.rarity - a.rarity;
-      });
-  
-      const renderData = {
-          titles: titlesList,
-          currentTitle: currentTitle,
-          pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+  async showTitles(e) {
+    const userId = await this.preCheck(e);
+    if (!userId) return;
+
+    const playerData = await DAL.getAllPlayerData(userId);
+    const player = playerData?.player;
+    if (!player) return;
+
+    const allTitlesConfig = loadItemConfig('titles.yaml') || [];
+    const unlockedTitles = player.all_titles || [];
+    const currentTitle = player.称号 || '';
+
+    // 1. 处理配置中的称号
+    const titlesList = allTitlesConfig.map(t => {
+      const isUnlocked = unlockedTitles.includes(t.name);
+      return {
+        ...t,
+        isUnlocked: isUnlocked,
+        isEquipped: currentTitle === t.name
       };
-  
-      const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'title', 'title.html');
-      const img = await puppeteer.screenshot('title', {
-          tplFile: htmlPath,
-          ...renderData,
-          imgType: 'jpeg'
-      });
-  
-      e.reply(img);
-    }
+    });
+
+    // 2. 处理已解锁但未在配置中的称号（兼容旧数据）
+    unlockedTitles.forEach(tName => {
+      if (!titlesList.find(item => item.name === tName)) {
+        titlesList.push({
+          name: tName,
+          desc: '未收录的神秘称号',
+          category: '特殊',
+          rarity: 1,
+          isUnlocked: true,
+          isEquipped: currentTitle === tName
+        });
+      }
+    });
+
+    // 排序：已佩戴 > 已解锁 > 稀有度 > 未解锁
+    titlesList.sort((a, b) => {
+      if (a.isEquipped) return -1;
+      if (b.isEquipped) return 1;
+      if (a.isUnlocked && !b.isUnlocked) return -1;
+      if (!a.isUnlocked && b.isUnlocked) return 1;
+      return b.rarity - a.rarity;
+    });
+
+    const renderData = {
+      titles: titlesList,
+      currentTitle: currentTitle,
+      pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+
+    const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'title', 'title.html');
+    const img = await puppeteer.screenshot('title', {
+      tplFile: htmlPath,
+      ...renderData,
+      imgType: 'jpeg'
+    });
+
+    e.reply(img);
+  }
   async switchTitle(e) {
     const userId = await this.preCheck(e);
     if (!userId) return;
