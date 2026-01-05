@@ -17,6 +17,12 @@ export async function startActivityNotification(task) {
   if (task.context) {
     msgBody += `\n📜 活动详情：\n${task.context}\n`;
   }
+
+  // 万象天机活动特殊提示
+  if (task.name === '万象天机') {
+    msgBody += '\n💡 首次参与请先发送【#万象天机】领取星魂并查看活动指引！\n';
+  }
+
   msgBody += '\n请各位道友尽快参与~';
 
   // 将特殊标记和消息文本拼接起来
