@@ -1,261 +1,414 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>修仙签到日历</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-      @font-face {
-          font-family: 'HYWenHei';
-          src: url('https://sf6-cdn-tos.douyinstatic.com/obj/ies-music/1655954624223431/HYWenHei-85W.ttf');
-      }
-      body {
-          font-family: 'HYWenHei', sans-serif;
-          background-image: url("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.pptbz.com%2Fpptpic%2FUploadFiles_6909%2F201204%2F2012041411155948.jpg&refer=http%3A%2F%2Fwww.pptbz.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1672502400&t=a82f3d73e72c1c385a4e58b350438f36");
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-      }
-      .calendar-container {
-          background: rgba(255, 253, 247, 0.85);
-          backdrop-filter: blur(5px);
-          border: 2px solid #8B4513;
-          box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      }
-      .day-cell {
-          border: 1px solid #D2B48C;
-          transition: all 0.3s ease;
-      }
-      .day-header {
-          color: #8B4513;
-      }
-      .checked-in {
-          background-color: rgba(138, 201, 134, 0.5);
-          position: relative;
-      }
-      .today-check-in {
-          background-color: rgba(60, 179, 113, 0.7);
-          border: 2px solid #2E8B57;
-          transform: scale(1.05);
-      }
-      .check-mark {
-          position: absolute;
-          top: 4px;
-          right: 4px;
-          width: 20px;
-          height: 20px;
-          opacity: 0.9;
-      }
-      .cumulative-rewards-section {
-          /* 与“本次签到收获”部分保持风格一致 */
-          margin-top: 1.5rem; /* mt-6 */
-          padding-top: 1rem; /* pt-4 */
-          border-top: 2px dashed #D2B48C;
-      }
-      .progress-bar-wrapper {
-          position: relative;
-          padding: 0.5rem 0; /* 给图标留出上下空间 */
-      }
-      .progress-bar {
-          height: 10px;
-          background-color: rgba(139, 69, 19, 0.3); /* #8B4513 with opacity */
-          border-radius: 5px;
-          overflow: hidden;
-      }
-      .progress-bar-filler {
-          height: 100%;
-          background: linear-gradient(90deg, #fceabb, #f8b500);
-          box-shadow: 0 0 5px rgba(248, 181, 0, 0.7);
-          border-radius: 5px;
-          transition: width 0.8s ease-in-out;
-      }
-      .reward-icon:hover {
-          transform: translate(-50%, -50%) scale(1.2);
-      }
+    /* ===== 字体定义 ===== */
+    @font-face {
+      font-family: 'HYWenHei';
+      src: url('{{pluResPath}}font/HYWenHei-55W.ttf');
+    }
 
-      .reward-node {
-          position: absolute;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 2;
-          display: flex; /* 使用flex布局 */
-          flex-direction: column; /* 垂直排列 */
-          align-items: center; /* 水平居中 */
-          cursor: pointer;
-          transition: all 0.2s ease;
-      }
-      .reward-node.claimed {
-          filter: grayscale(1) opacity(0.7);
-      }
-      .reward-node:hover {
-          /* 悬浮时稍微放大，并取消置灰效果，看得更清楚 */
-          transform: translate(-50%, -50%) scale(1.1);
-          filter: none;
-          opacity: 1;
-      }
-      .reward-icon {
-          font-size: 24px;
-          line-height: 1; /* 确保图标紧凑 */
-          filter: drop-shadow(0 0 3px rgba(255, 223, 105, 0.8));
-      }
-      .reward-day-text {
-          font-size: 12px;
-          color: #8B4513; /* 使用主题棕色 */
-          font-weight: bold;
-          margin-top: 2px; /* 与图标的间距 */
-          line-height: 1;
-      }
-      .reward-tooltip {
-          visibility: hidden;
-          width: 120px;
-          background-color: rgba(0, 0, 0, 0.7);
-          color: #fff;
-          text-align: center;
-          border-radius: 6px;
-          padding: 5px 0;
-          position: absolute;
-          z-index: 1;
-          bottom: 150%;
-          left: 50%;
-          margin-left: -60px;
-          opacity: 0;
-          transition: opacity 0.3s;
-      }
-      .reward-node:hover .reward-tooltip { /* 注意选择器变化 */
-          visibility: visible;
-          opacity: 1;
-      }
+    /* ===== 基础重置和布局类 ===== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'HYWenHei', 'Microsoft YaHei', sans-serif;
+      /* 使用渐变背景替代外部图片，确保离线可用 */
+      background: linear-gradient(135deg, #f5f0e6 0%, #e8dcc8 50%, #d4c4a8 100%);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #f5f0e6;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* ===== 容器样式 ===== */
+    .calendar-container {
+      background: rgba(255, 253, 247, 0.9);
+      backdrop-filter: blur(5px);
+      border: 2px solid #8B4513;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      width: 600px;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+    }
+
+    /* ===== 头部样式 ===== */
+    .header {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .header h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #6a3906;
+      letter-spacing: 0.1em;
+    }
+
+    .header p {
+      font-size: 1.125rem;
+      color: #8B4513;
+    }
+
+    /* ===== 日历网格 ===== */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.25rem;
+    }
+
+    .day-header {
+      color: #8B4513;
+      text-align: center;
+      font-weight: 700;
+      padding: 0.5rem;
+    }
+
+    .day-cell {
+      border: 1px solid #D2B48C;
+      transition: all 0.3s ease;
+      padding: 0.5rem;
+      height: 5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .day-cell .day-number {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #6a3906;
+    }
+
+    .checked-in {
+      background-color: rgba(138, 201, 134, 0.5);
+    }
+
+    .today-check-in {
+      background-color: rgba(60, 179, 113, 0.7);
+      border: 2px solid #2E8B57;
+      transform: scale(1.05);
+    }
+
+    .check-mark {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      opacity: 0.9;
+    }
+
+    /* ===== 累计奖励区域 ===== */
+    .cumulative-rewards-section {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-top: 2px dashed #D2B48C;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #6a3906;
+    }
+
+    .section-stats {
+      font-size: 1rem;
+      color: #8B4513;
+    }
+
+    .section-stats .highlight {
+      font-weight: 700;
+      color: #d97706;
+    }
+
+    .section-stats .highlight-pink {
+      font-weight: 700;
+      color: #ec4899;
+    }
+
+    /* ===== 进度条 ===== */
+    .progress-bar-wrapper {
+      position: relative;
+      padding: 1.5rem 0 0.5rem 0;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background-color: rgba(139, 69, 19, 0.3);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar-filler {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.8s ease-in-out;
+    }
+
+    .progress-bar-filler.personal {
+      background: linear-gradient(90deg, #fceabb, #f8b500);
+      box-shadow: 0 0 5px rgba(248, 181, 0, 0.7);
+    }
+
+    .progress-bar-filler.coop {
+      background: linear-gradient(90deg, #ec4899, #f472b6);
+      box-shadow: 0 0 5px rgba(236, 72, 153, 0.7);
+    }
+
+    /* ===== 奖励节点 ===== */
+    .reward-node {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .reward-node.claimed {
+      filter: grayscale(1) opacity(0.7);
+    }
+
+    .reward-node:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+      filter: none;
+      opacity: 1;
+    }
+
+    .reward-icon {
+      font-size: 24px;
+      line-height: 1;
+      filter: drop-shadow(0 0 3px rgba(255, 223, 105, 0.8));
+    }
+
+    .reward-day-text {
+      font-size: 12px;
+      color: #8B4513;
+      font-weight: bold;
+      margin-top: 2px;
+      line-height: 1;
+    }
+
+    /* ===== 奖励展示区域 ===== */
+    .rewards-section {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-top: 2px dashed #D2B48C;
+    }
+
+    .rewards-section h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #6a3906;
+      margin-bottom: 0.5rem;
+    }
+
+    .rewards-content {
+      font-size: 1rem;
+      color: #8B4513;
+    }
+
+    .rewards-content p {
+      margin: 0.25rem 0;
+    }
+
+    .rewards-content .value {
+      font-weight: 700;
+      color: #15803d;
+    }
+
+    .rewards-content .value-yellow {
+      font-weight: 700;
+      color: #a16207;
+    }
+
+    .rewards-content .bonus-text {
+      font-size: 0.875rem;
+      font-style: italic;
+      color: #a16207;
+      margin-top: 0.5rem;
+    }
+
+    /* ===== 额外奖励区域 ===== */
+    .extra-rewards-section {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-top: 2px dashed #D2B48C;
+      background: rgba(252, 229, 174, 0.2);
+    }
+
+    .extra-rewards-section h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #6a3906;
+      margin-bottom: 0.5rem;
+    }
+
+    .extra-rewards-section .subtitle {
+      font-size: 0.875rem;
+      font-weight: 400;
+    }
   </style>
 </head>
-<body class="p-4 bg-gray-100 flex items-center justify-center min-h-screen">
-<div id="capture" class="calendar-container w-[600px] rounded-lg p-6">
-  <div class="header text-center mb-4">
-    <h1 class="text-3xl font-bold text-[#6a3906] tracking-wider">仙途签到簿</h1>
-    <p id="calendar-title" class="text-lg text-[#8B4513]"></p>
-  </div>
 
-  <div id="calendar-grid" class="grid grid-cols-7 gap-1">
-  </div>
+<body>
+  <div id="capture" class="calendar-container">
+    <div class="header">
+      <h1>仙途签到簿</h1>
+      <p id="calendar-title"></p>
+    </div>
 
-  <div class="cumulative-rewards-section p-4">
-    <div class="flex justify-between items-center mb-2">
-      <h2 class="text-xl font-semibold text-[#6a3906]">本月修行路</h2>
-      <span class="text-base text-[#8B4513]">本月累计: <span class="font-bold text-amber-600">{{personal_progress.count}}</span> / {{personal_progress.total_days_in_month}} 天</span>
+    <div id="calendar-grid" class="calendar-grid">
     </div>
-    <div class="progress-bar-wrapper">
-      <div class="progress-bar">
-        <div class="progress-bar-filler" style="width: {{(personal_progress.count / personal_progress.total_days_in_month) * 100}}%; background: linear-gradient(90deg, #fceabb, #f8b500);"></div>
-      </div>
-      {{each personal_progress.tiers tier}}
-      <div class="reward-node" style="left: {{tier.position}}%;">
-        <span class="reward-icon {{if tier.isClaimed}}claimed{{/if}}">🎁</span>
-        <span class="reward-day-text">{{tier.days}}天</span>
-      </div>
-      {{/each}}
-    </div>
-  </div>
 
-  {{if show_coop_signin}}
-  <div class="cumulative-rewards-section p-4">
-    <div class="flex justify-between items-center mb-2">
-      <h2 class="text-xl font-semibold text-[#6a3906]">仙侣同心</h2>
-      <span class="text-base text-[#8B4513]">本月协同: <span class="font-bold text-pink-500">{{coop_progress.count}}</span>/ {{personal_progress.total_days_in_month}} 天</span>
-    </div>
-    <div class="progress-bar-wrapper">
-      <div class="progress-bar">
-        <div class="progress-bar-filler" style="width: {{(coop_progress.count / coop_progress.total_days_in_month) * 100}}%; background: linear-gradient(90deg, #ec4899, #f472b6);"></div>
+    <div class="cumulative-rewards-section">
+      <div class="section-header">
+        <h2 class="section-title">本月修行路</h2>
+        <span class="section-stats">本月累计: <span class="highlight">{{personal_progress.count}}</span> /
+          {{personal_progress.total_days_in_month}} 天</span>
       </div>
-      {{each coop_progress.tiers tier}}
-      <div class="reward-node" style="left: {{tier.position}}%;">
-        <span class="reward-icon {{if tier.isClaimed}}claimed{{/if}}">❤️</span>
-        <span class="reward-day-text">{{tier.days}}天</span>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar">
+          <div class="progress-bar-filler personal"
+            style="width: {{(personal_progress.count / personal_progress.total_days_in_month) * 100}}%;"></div>
+        </div>
+        {{each personal_progress.tiers tier}}
+        <div class="reward-node {{if tier.isClaimed}}claimed{{/if}}" style="left: {{tier.position}}%;">
+          <span class="reward-icon">🎁</span>
+          <span class="reward-day-text">{{tier.days}}天</span>
+        </div>
+        {{/each}}
       </div>
-      {{/each}}
     </div>
-  </div>
-  {{/if}}
-  <div class="rewards-section mt-6 p-4 border-t-2 border-dashed border-[#D2B48C]">
-    <h2 class="text-xl font-semibold text-[#6a3906] mb-2">签到成功！本次收获:</h2>
-    <div class="text-base text-[#8B4513] space-y-1">
-      <p>连续签到: <span class="font-bold text-green-700">{{consecutiveDays}}</span> 天</p>
-      <p>获得修为: <span class="font-bold text-green-700">{{dailyRewards.修为}}</span></p>
-      <p>获得秘境之匙: <span class="font-bold text-green-700">{{dailyRewards.秘境之匙}}</span> 个</p>
-      {{if dailyRewards.message.length > 0}}
-      <p class="text-sm italic text-yellow-700 mt-2">{{dailyRewards.message[0]}}</p>
-      {{/if}}
+
+    {{if show_coop_signin}}
+    <div class="cumulative-rewards-section">
+      <div class="section-header">
+        <h2 class="section-title">仙侣同心</h2>
+        <span class="section-stats">本月协同: <span class="highlight-pink">{{coop_progress.count}}</span> /
+          {{personal_progress.total_days_in_month}} 天</span>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar">
+          <div class="progress-bar-filler coop"
+            style="width: {{(coop_progress.count / coop_progress.total_days_in_month) * 100}}%;"></div>
+        </div>
+        {{each coop_progress.tiers tier}}
+        <div class="reward-node {{if tier.isClaimed}}claimed{{/if}}" style="left: {{tier.position}}%;">
+          <span class="reward-icon">❤️</span>
+          <span class="reward-day-text">{{tier.days}}天</span>
+        </div>
+        {{/each}}
+      </div>
     </div>
+    {{/if}}
+
+    <div class="rewards-section">
+      <h2>签到成功！本次收获:</h2>
+      <div class="rewards-content">
+        <p>连续签到: <span class="value">{{consecutiveDays}}</span> 天</p>
+        <p>获得修为: <span class="value">{{dailyRewards.修为}}</span></p>
+        <p>获得秘境之匙: <span class="value">{{dailyRewards.秘境之匙}}</span> 个</p>
+        {{if dailyRewards.message.length > 0}}
+        <p class="bonus-text">{{dailyRewards.message[0]}}</p>
+        {{/if}}
+      </div>
+    </div>
+
     {{if extraRewardsInfo && extraRewardsInfo.items.length > 0}}
-    <div class="rewards-section mt-4 p-4 border-t-2 border-dashed border-[#D2B48C]" style="background: rgba(252, 229, 174, 0.2);">
-      <h2 class="text-xl font-semibold text-[#6a3906] mb-2">
-        🎉 额外收获
-        <span class="text-sm font-normal">({{extraRewardsInfo.messages.join('、')}})</span>
-      </h2>
-      <div class="text-base text-[#8B4513] space-y-1">
+    <div class="extra-rewards-section">
+      <h2>🎉 额外收获 <span class="subtitle">({{extraRewardsInfo.messages.join('、')}})</span></h2>
+      <div class="rewards-content">
         {{each extraRewardsInfo.items item}}
-        <p>获得 {{item.name}}: <span class="font-bold text-yellow-700">{{item.amount || item.数量}}</span></p>
+        <p>获得 {{item.name}}: <span class="value-yellow">{{item.amount || item.数量}}</span></p>
         {{/each}}
       </div>
     </div>
     {{/if}}
   </div>
-</div>
 
-<script>
-  const year = {{year}};
-  const month = {{month}}; // 1-12
-  const today = {{today}};
-  const checkedInDays = {{checkedInDays}};
+  <script>
+    const year = {{ year }};
+    const month = {{ month }};
+    const today = {{ today }};
+    const checkedInDays = {{ checkedInDays }};
 
-  const calendarTitle = document.getElementById('calendar-title');
-  const calendarGrid = document.getElementById('calendar-grid');
+    const calendarTitle = document.getElementById('calendar-title');
+    const calendarGrid = document.getElementById('calendar-grid');
 
-  function renderCalendar() {
-    calendarTitle.textContent = `${year}年 ${month}月`;
-    calendarGrid.innerHTML = '';
+    function renderCalendar() {
+      calendarTitle.textContent = `${year}年 ${month}月`;
+      calendarGrid.innerHTML = '';
 
-    const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
-    daysOfWeek.forEach(day => {
-      const dayHeader = document.createElement('div');
-      dayHeader.className = 'day-header text-center font-bold p-2';
-      dayHeader.textContent = day;
-      calendarGrid.appendChild(dayHeader);
-    });
+      const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
+      daysOfWeek.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'day-header';
+        dayHeader.textContent = day;
+        calendarGrid.appendChild(dayHeader);
+      });
 
-    const firstDay = new Date(year, month - 1, 1).getDay();
-    const daysInMonth = new Date(year, month, 0).getDate();
+      const firstDay = new Date(year, month - 1, 1).getDay();
+      const daysInMonth = new Date(year, month, 0).getDate();
 
-    for (let i = 0; i < firstDay; i++) {
-      const emptyCell = document.createElement('div');
-      emptyCell.className = 'day-cell p-2 h-20';
-      calendarGrid.appendChild(emptyCell);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dayCell = document.createElement('div');
-      dayCell.className = 'day-cell p-2 h-20 flex flex-col items-center justify-center relative';
-
-      const dayNumber = document.createElement('span');
-      dayNumber.textContent = day;
-      dayNumber.className = 'text-lg font-semibold text-[#6a3906]';
-      dayCell.appendChild(dayNumber);
-
-      if (checkedInDays.includes(day)) {
-        dayCell.classList.add('checked-in');
-        const checkMark = document.createElement('img');
-        checkMark.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E8B57'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E";
-        checkMark.className = 'check-mark';
-        dayCell.appendChild(checkMark);
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'day-cell';
+        calendarGrid.appendChild(emptyCell);
       }
 
-      if (day === today) {
-        dayCell.classList.add('today-check-in');
-      }
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'day-cell';
 
-      calendarGrid.appendChild(dayCell);
+        const dayNumber = document.createElement('span');
+        dayNumber.textContent = day;
+        dayNumber.className = 'day-number';
+        dayCell.appendChild(dayNumber);
+
+        if (checkedInDays.includes(day)) {
+          dayCell.classList.add('checked-in');
+          const checkMark = document.createElement('img');
+          checkMark.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E8B57'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E";
+          checkMark.className = 'check-mark';
+          dayCell.appendChild(checkMark);
+        }
+
+        if (day === today) {
+          dayCell.classList.add('today-check-in');
+        }
+
+        calendarGrid.appendChild(dayCell);
+      }
     }
-  }
-  renderCalendar();
-</script>
+    renderCalendar();
+  </script>
 </body>
+
 </html>
