@@ -697,4 +697,14 @@ export default class Game extends base {
       ...myData
     };
   }
+
+  // 万象天机活动公告
+  async get_wanxiang_announcementData(myData) {
+    this.model = 'wanxiang_announcement';
+    return {
+      ...this.screenData,
+      saveId: 'wanxiang_announcement',
+      ...myData
+    };
+  }
 }

@@ -155,10 +155,33 @@ export class AdminSuper extends plugin {
         {
           reg: '^#测试称号$',
           fnc: 'testTitle'
+        },
+        {
+          reg: '^#活动详情万象天机$',
+          fnc: 'showWanxiangAnnouncement'
         }
       ]
     });
     this.xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
+  }
+
+  /**
+   * 显示万象天机活动公告
+   */
+  async showWanxiangAnnouncement(e) {
+    try {
+      const renderData = {
+        pluResPath: `file://${process.cwd().replace(/\\\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+      };
+      const dataForPuppeteer = await new Show(e).get_wanxiang_announcementData(renderData);
+      const img = await puppeteer.screenshot('wanxiang_announcement', {
+        ...dataForPuppeteer,
+        imgType: 'jpeg'
+      });
+      await e.reply(img);
+    } catch (err) {
+      e.reply('生成活动公告失败：' + err.message);
+    }
   }
 
   async clearTodaySignIn(e) {
@@ -1301,17 +1324,17 @@ async function clearNajieThing(thingType, thingName) {
           '精',
           '绝',
           '顶'].map(async pinji => {
-          const thingNum = await exist_najie_thing(
-            usrId,
-            thingName,
-            thingType,
-            pinji
-          );
-          if (thingNum) {
-            Add_najie_thing(usrId, thingName, thingType, -thingNum, pinji);
-            thingNumber += thingNum;
-          }
-        });
+            const thingNum = await exist_najie_thing(
+              usrId,
+              thingName,
+              thingType,
+              pinji
+            );
+            if (thingNum) {
+              Add_najie_thing(usrId, thingName, thingType, -thingNum, pinji);
+              thingNumber += thingNum;
+            }
+          });
       }
 
       return { [usrId]: thingNumber };

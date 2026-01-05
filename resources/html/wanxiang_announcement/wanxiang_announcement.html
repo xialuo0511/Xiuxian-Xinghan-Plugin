@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万象天机 · 活动公告</title>
+    <style>
+        @font-face {
+            font-family: 'HYWenHei';
+            src: url('{{pluResPath}}font/HYWenHei-55W.ttf');
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'HYWenHei', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+            padding: 20px;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 700px;
+            margin: 0 auto;
+            background: rgba(20, 20, 40, 0.95);
+            border: 3px solid #4a0080;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, #2d0a4e 0%, #4a1080 50%, #2d0a4e 100%);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid #8b5cf6;
+            position: relative;
+        }
+
+        .header::before {
+            content: '✦';
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #ffd700;
+            animation: pulse 2s infinite;
+        }
+
+        .header::after {
+            content: '✦';
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #ffd700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .header h1 {
+            font-size: 42px;
+            background: linear-gradient(to bottom, #ffd700, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            letter-spacing: 8px;
+        }
+
+        .header h2 {
+            font-size: 18px;
+            color: #c4b5fd;
+            margin-top: 10px;
+            letter-spacing: 4px;
+        }
+
+        /* 活动时间 */
+        .time-box {
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .time-box .label {
+            color: #a78bfa;
+            font-size: 14px;
+        }
+
+        .time-box .time {
+            font-size: 20px;
+            color: #ffd700;
+            margin-top: 5px;
+        }
+
+        /* 内容区域 */
+        .content {
+            padding: 25px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: #a78bfa;
+            border-left: 4px solid #8b5cf6;
+            padding-left: 12px;
+            margin-bottom: 15px;
+        }
+
+        .section-desc {
+            color: #c9c9c9;
+            font-size: 14px;
+            line-height: 1.8;
+            padding: 15px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .section-desc em {
+            color: #ddd6fe;
+            font-style: italic;
+        }
+
+        /* 星魂卡片 */
+        .souls-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .soul-card {
+            background: rgba(30, 30, 60, 0.8);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .soul-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .soul-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .soul-name {
+            font-size: 13px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .soul-element {
+            font-size: 11px;
+            color: #a78bfa;
+            margin-top: 4px;
+        }
+
+        .soul-desc {
+            font-size: 10px;
+            color: #888;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        /* 节点类型 */
+        .nodes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .node-item {
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .node-icon {
+            font-size: 24px;
+        }
+
+        .node-info {
+            flex: 1;
+        }
+
+        .node-name {
+            font-size: 14px;
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .node-desc {
+            font-size: 11px;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        /* 商店表格 */
+        .shop-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .shop-table th {
+            background: rgba(139, 92, 246, 0.3);
+            color: #ffd700;
+            padding: 10px;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .shop-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            font-size: 13px;
+        }
+
+        .shop-table tr:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .price-jade {
+            color: #a78bfa;
+            font-weight: bold;
+        }
+
+        .limit-tag {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        /* 誓约列表 */
+        .oaths-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .oath-item {
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .oath-name {
+            font-size: 13px;
+            color: #e0e0e0;
+        }
+
+        .oath-profit {
+            font-size: 12px;
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        /* 指令列表 */
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .cmd-item {
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 3px solid #8b5cf6;
+        }
+
+        .cmd-name {
+            font-size: 13px;
+            color: #ffd700;
+            font-family: 'Consolas', monospace;
+        }
+
+        .cmd-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* 阶段表格 */
+        .stages-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .stages-table th {
+            background: rgba(139, 92, 246, 0.3);
+            color: #ffd700;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .stages-table td {
+            padding: 8px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            text-align: center;
+        }
+
+        .boss-name {
+            color: #f87171;
+            font-weight: bold;
+        }
+
+        /* 注意事项 */
+        .notice-list {
+            list-style: none;
+            padding: 15px;
+            background: rgba(234, 179, 8, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .notice-list li {
+            padding: 6px 0;
+            font-size: 13px;
+            color: #fcd34d;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .notice-list li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+        }
+
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #2d0a4e 0%, #4a1080 50%, #2d0a4e 100%);
+            border-top: 2px solid #8b5cf6;
+        }
+
+        .footer h2 {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .footer p {
+            font-size: 14px;
+            color: #a78bfa;
+        }
+
+        .highlight-box {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.3), rgba(139, 92, 246, 0.2));
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .highlight-box span {
+            font-size: 16px;
+            color: #ffd700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>✨ 万象天机 ✨</h1>
+            <h2>寻星觅魂 · 穷极天机</h2>
+        </div>
+
+        <!-- 活动时间 -->
+        <div class="time-box">
+            <div class="label">⏰ 活动时间</div>
+            <div class="time">2026年1月6日 10:00 ～ 2026年3月1日 23:59</div>
+        </div>
+
+        <div class="content">
+            <!-- 活动简介 -->
+            <div class="section">
+                <h3 class="section-title">📜 活动背景</h3>
+                <div class="section-desc">
+                    <em>「天机万象，皆有定数。然修道之人，以心测天，借星魂之力，可窥得造化之玄妙。」</em>
+                    <br><br>
+                    亿万年前，一位大能在陨落前将毕生修为凝练成五道战魂，封印于万象天机塔中。如今封印渐解，天机重启，唯有通过层层试炼的修士，方能获得这些上古战魂的认可！
+                </div>
+            </div>
+
+            <!-- 核心玩法 -->
+            <div class="section">
+                <h3 class="section-title">🎮 核心玩法</h3>
+                <div class="section-desc">
+                    <strong>万象天机</strong> 是一款 <strong style="color: #a78bfa;">Roguelike 爬塔玩法</strong>，每次试炼都是一场独特的冒险！
+                    <br><br>
+                    🌟 <strong>星魂</strong> - 装备五行战魂出战<br>
+                    📜 <strong>赐福</strong> - 每场战斗后可选择增益效果<br>
+                    🏆 <strong>天机印</strong> - 试炼中获取，可购买赐福<br>
+                    💎 <strong>天机玉</strong> - 通关奖励，可兑换珍稀道具
+                </div>
+            </div>
+
+            <!-- 五行星魂 -->
+            <div class="section">
+                <h3 class="section-title">🌟 五行星魂</h3>
+                <div class="souls-grid">
+                    <div class="soul-card">
+                        <div class="soul-icon">⚔️</div>
+                        <div class="soul-name">剑魂·庚金</div>
+                        <div class="soul-element">金之杀伐</div>
+                        <div class="soul-desc">高爆发<br>单体输出</div>
+                    </div>
+                    <div class="soul-card">
+                        <div class="soul-icon">🛡️</div>
+                        <div class="soul-name">盾灵·戊土</div>
+                        <div class="soul-element">土之守护</div>
+                        <div class="soul-desc">护盾辅助<br>全队减伤</div>
+                    </div>
+                    <div class="soul-card">
+                        <div class="soul-icon">💚</div>
+                        <div class="soul-name">药仙·乙木</div>
+                        <div class="soul-element">木之长生</div>
+                        <div class="soul-desc">群体治疗<br>持续回复</div>
+                    </div>
+                    <div class="soul-card">
+                        <div class="soul-icon">🌊</div>
+                        <div class="soul-name">咒师·壬水</div>
+                        <div class="soul-element">水之控场</div>
+                        <div class="soul-desc">群体控制<br>削弱敌人</div>
+                    </div>
+                    <div class="soul-card">
+                        <div class="soul-icon">🔥</div>
+                        <div class="soul-name">炎君·丙火</div>
+                        <div class="soul-element">火之毁灭</div>
+                        <div class="soul-desc">极致爆发<br>暴击加成</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 试炼层级 -->
+            <div class="section">
+                <h3 class="section-title">🗺️ 试炼层级</h3>
+                <table class="stages-table">
+                    <tr>
+                        <th>阶段</th>
+                        <th>层数</th>
+                        <th>首领</th>
+                    </tr>
+                    <tr>
+                        <td>初入试炼</td>
+                        <td>1-5层</td>
+                        <td class="boss-name">炽火妖莲</td>
+                    </tr>
+                    <tr>
+                        <td>元素试炼</td>
+                        <td>6-10层</td>
+                        <td class="boss-name">吞天巨蟒</td>
+                    </tr>
+                    <tr>
+                        <td>机制高压</td>
+                        <td>11-15层</td>
+                        <td class="boss-name">混元石魔</td>
+                    </tr>
+                    <tr>
+                        <td>无尽深渊</td>
+                        <td>16-20层</td>
+                        <td class="boss-name">混沌魔眼</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 节点类型 -->
+            <div class="section">
+                <h3 class="section-title">🎯 节点类型</h3>
+                <div class="nodes-grid">
+                    <div class="node-item">
+                        <span class="node-icon">⚔️</span>
+                        <div class="node-info">
+                            <div class="node-name">激战</div>
+                            <div class="node-desc">普通战斗，获得赐福</div>
+                        </div>
+                    </div>
+                    <div class="node-item">
+                        <span class="node-icon">💀</span>
+                        <div class="node-info">
+                            <div class="node-name">精英</div>
+                            <div class="node-desc">强敌，高级赐福</div>
+                        </div>
+                    </div>
+                    <div class="node-item">
+                        <span class="node-icon">👹</span>
+                        <div class="node-info">
+                            <div class="node-name">首领</div>
+                            <div class="node-desc">阶段BOSS</div>
+                        </div>
+                    </div>
+                    <div class="node-item">
+                        <span class="node-icon">💎</span>
+                        <div class="node-info">
+                            <div class="node-name">盗宝妖兽</div>
+                            <div class="node-desc">大量天机印</div>
+                        </div>
+                    </div>
+                    <div class="node-item">
+                        <span class="node-icon">🎲</span>
+                        <div class="node-info">
+                            <div class="node-name">奇遇</div>
+                            <div class="node-desc">随机事件</div>
+                        </div>
+                    </div>
+                    <div class="node-item">
+                        <span class="node-icon">⛺</span>
+                        <div class="node-info">
+                            <div class="node-name">修整</div>
+                            <div class="node-desc">恢复/复活</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 天机阁 -->
+            <div class="section">
+                <h3 class="section-title">🏪 天机阁 · 兑换商店</h3>
+                <table class="shop-table">
+                    <tr>
+                        <th>商品</th>
+                        <th>价格</th>
+                        <th>限购</th>
+                    </tr>
+                    <tr>
+                        <td>2万灵石</td>
+                        <td class="price-jade">50 💎</td>
+                        <td><span class="limit-tag">100次</span></td>
+                    </tr>
+                    <tr>
+                        <td>2万灵石(无限)</td>
+                        <td class="price-jade">200 💎</td>
+                        <td>∞</td>
+                    </tr>
+                    <tr>
+                        <td>七星玄元丹</td>
+                        <td class="price-jade">1000 💎</td>
+                        <td><span class="limit-tag">20次</span></td>
+                    </tr>
+                    <tr>
+                        <td>万象至尊称号</td>
+                        <td class="price-jade">3500 💎</td>
+                        <td><span class="limit-tag">1次</span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 誓约系统 -->
+            <div class="section">
+                <h3 class="section-title">📿 誓约挑战 <span style="font-size: 12px; color: #888;">(通关20层解锁)</span></h3>
+                <div class="oaths-grid">
+                    <div class="oath-item">
+                        <span class="oath-name">🔥 孤行 - 只上阵2名星魂</span>
+                        <span class="oath-profit">+50%</span>
+                    </div>
+                    <div class="oath-item">
+                        <span class="oath-name">⚡ 禁术 - 无法使用终结技</span>
+                        <span class="oath-profit">+40%</span>
+                    </div>
+                    <div class="oath-item">
+                        <span class="oath-name">💀 血契 - 生命-50%</span>
+                        <span class="oath-profit">+30%</span>
+                    </div>
+                    <div class="oath-item">
+                        <span class="oath-name">📦 贫苦 - 无法获得天机印</span>
+                        <span class="oath-profit">+30%</span>
+                    </div>
+                    <div class="oath-item">
+                        <span class="oath-name">🛡️ 坚毅 - 敌方开局有护盾</span>
+                        <span class="oath-profit">+30%</span>
+                    </div>
+                    <div class="oath-item">
+                        <span class="oath-name">⬇️ 压制 - 首回合伤害为1</span>
+                        <span class="oath-profit">+30%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 常用指令 -->
+            <div class="section">
+                <h3 class="section-title">📋 常用指令</h3>
+                <div class="commands-grid">
+                    <div class="cmd-item">
+                        <span class="cmd-name">#开启试炼</span>
+                        <span class="cmd-desc">开始普通试炼</span>
+                    </div>
+                    <div class="cmd-item">
+                        <span class="cmd-name">#选择路线 [序号]</span>
+                        <span class="cmd-desc">选择方向</span>
+                    </div>
+                    <div class="cmd-item">
+                        <span class="cmd-name">#挑战</span>
+                        <span class="cmd-desc">进入战斗</span>
+                    </div>
+                    <div class="cmd-item">
+                        <span class="cmd-name">#选择赐福 [序号]</span>
+                        <span class="cmd-desc">选择增益</span>
+                    </div>
+                    <div class="cmd-item">
+                        <span class="cmd-name">#试炼状态</span>
+                        <span class="cmd-desc">查看进度</span>
+                    </div>
+                    <div class="cmd-item">
+                        <span class="cmd-name">#天机阁</span>
+                        <span class="cmd-desc">打开商店</span>
+                    </div>
+                    <div class="cmd-item">
+                        <span class="cmd-name">#天机榜</span>
+                        <span class="cmd-desc">查看排行</span>
+                    </div>
+                    <div class="cmd-item">
+                        <span class="cmd-name">#誓约列表</span>
+                        <span class="cmd-desc">查看誓约</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注意事项 -->
+            <div class="section">
+                <h3 class="section-title">⚠️ 注意事项</h3>
+                <ul class="notice-list">
+                    <li>试炼失败后需等待 3分钟 冷却</li>
+                    <li>星魂阵亡后当局无法复活（特殊节点除外）</li>
+                    <li>退出试炼不会获得任何奖励</li>
+                    <li>誓约需通关20层后才能选择</li>
+                    <li>首次参与将获赠全套五位星魂</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="footer">
+            <h2>🌌 愿诸位道友，穷尽万象，领悟天机！</h2>
+            <p>活动期间限定，错过不再！</p>
+            <div class="highlight-box">
+                <span>🌅 2026年1月6日 10:00 准时开启</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
