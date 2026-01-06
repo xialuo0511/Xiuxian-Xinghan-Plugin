@@ -19,14 +19,24 @@ export class NotifierTask extends plugin {
 
   async pushInfo(id, isGroup, msg) {
     if (!id || !msg) return;
-    try {
-      if (isGroup) {
-        await Bot.pickGroup(Number(id)).sendMsg(msg);
-      } else {
-        await Bot.pickUser(Number(id)).sendMsg(msg);
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        if (isGroup) {
+          await Bot.pickGroup(Number(id)).sendMsg(msg);
+        } else {
+          await Bot.pickUser(Number(id)).sendMsg(msg);
+        }
+        return; // 发送成功，直接返回
+      } catch (error) {
+        retries--;
+        if (retries === 0) {
+          logger.error(`[通知器] 发送消息到 ${id} 失败 (已重试3次):`, error);
+        } else {
+          logger.warn(`[通知器] 发送消息到 ${id} 失败，剩余重试次数 ${retries}: ${error.message}`);
+          await new Promise(resolve => setTimeout(resolve, 1500)); // 等待1.5秒后重试
+        }
       }
-    } catch (error) {
-      logger.error(`[通知器] 发送消息到 ${id} 失败:`, error);
     }
   }
 
@@ -51,7 +61,7 @@ export class NotifierTask extends plugin {
 
         // 1. 判断是否需要 @全体成员
         if (typeof messageContent === 'string' && messageContent.startsWith(AT_ALL_FLAG)) {
-          finalMsg.push({ type: 'at', data: { qq: 'all' } });
+          finalMsg.push(segment.at('all'));
           messageContent = messageContent.substring(AT_ALL_FLAG.length); // 移除标记
         }
         // 只有在非@全体成员时，才@单个用户
@@ -69,27 +79,27 @@ export class NotifierTask extends plugin {
         } else {
           // 普通文本
           let textToSend = messageContent;
-          
+
           // 修复：处理异常的消息对象格式，防止 "converter is not a function"
           if (typeof messageContent === 'object' && messageContent !== null) {
-              // 如果不是标准Segment（即没有 type 字段）
-              if (!messageContent.type) {
-                  // 尝试从常见结构中提取文本
-                  if (messageContent.data && messageContent.data.message) {
-                      textToSend = messageContent.data.message;
-                  } else if (messageContent.text) {
-                      textToSend = messageContent.text;
-                  } else if (messageContent.content) {
-                      textToSend = messageContent.content;
-                  } else {
-                      // 实在无法识别结构，转为字符串以确保能发出且不报错
-                      try {
-                          textToSend = JSON.stringify(messageContent);
-                      } catch (e) {
-                          textToSend = String(messageContent);
-                      }
-                  }
+            // 如果不是标准Segment（即没有 type 字段）
+            if (!messageContent.type) {
+              // 尝试从常见结构中提取文本
+              if (messageContent.data && messageContent.data.message) {
+                textToSend = messageContent.data.message;
+              } else if (messageContent.text) {
+                textToSend = messageContent.text;
+              } else if (messageContent.content) {
+                textToSend = messageContent.content;
+              } else {
+                // 实在无法识别结构，转为字符串以确保能发出且不报错
+                try {
+                  textToSend = JSON.stringify(messageContent);
+                } catch (e) {
+                  textToSend = String(messageContent);
+                }
               }
+            }
           }
           finalMsg.push(textToSend);
         }
