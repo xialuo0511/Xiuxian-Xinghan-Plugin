@@ -56,20 +56,22 @@ export class NotifierTask extends plugin {
 
         logger.info(`[星瀚修仙-通知器] 收到通知，准备发送给 ${notification.group_id || notification.user_id}`);
 
-
-        let finalMsg = [];
+        let needAtAll = false;
 
         // 1. 判断是否需要 @全体成员
         if (typeof messageContent === 'string' && messageContent.startsWith(AT_ALL_FLAG)) {
-          finalMsg.push(segment.at('all'));
+          needAtAll = true;
           messageContent = messageContent.substring(AT_ALL_FLAG.length); // 移除标记
         }
-        // 只有在非@全体成员时，才@单个用户
-        else if (notification.user_id) {
+
+        let finalMsg = [];
+
+        // 2. 只有在非@全体成员时，才@单个用户
+        if (!needAtAll && notification.user_id) {
           finalMsg.push(segment.at(notification.user_id));
         }
 
-        // 2. 判断消息主体是图片还是文本
+        // 3. 判断消息主体是图片还是文本
         if (typeof messageContent === 'object' && messageContent.render) {
           // 渲染图片
           const tempE = { user_id: notification.user_id, group_id: notification.group_id };
@@ -104,11 +106,20 @@ export class NotifierTask extends plugin {
           finalMsg.push(textToSend);
         }
 
-        // 3. 统一发送
+        // 4. 先发送主消息（纯文本/图片），不包含@全体
         if (notification.group_id) {
           await this.pushInfo(notification.group_id, true, finalMsg);
         } else if (notification.user_id) {
           await this.pushInfo(notification.user_id, false, finalMsg);
+        }
+
+        // 5. 如果需要@全体，单独发送（失败不影响主消息）
+        if (needAtAll && notification.group_id) {
+          try {
+            await Bot.pickGroup(Number(notification.group_id)).sendMsg([segment.at('all')]);
+          } catch (atAllError) {
+            logger.warn(`[通知器] @全体成员失败 (可能是次数限制或风控): ${atAllError.message}`);
+          }
         }
 
       } catch (error) {
