@@ -1,5 +1,10 @@
 import * as DAL from '../api/data-access.js';
 import { createNewClient } from '../workers/redis-client.js';
+import { loadItemConfig } from '../model/ConfigLoader.js';
+
+// 加载渔获配置，创建渔获物品名称集合（用于区分渔获和鱼竿/鱼饵）
+const allCatches = loadItemConfig('fishing_items.yaml');
+const catchableItemNames = new Set(allCatches.map(c => c.name));
 
 /**
  * 执行指定活动key的物品和临时数据清理任务
@@ -28,9 +33,30 @@ export async function cleanupExpiredItems(task) {
       for (const playerKey of keys) {
         const userId = playerKey.split(':').pop();
 
-        // 1. 清理纳戒中的过期物品
+        // 1. 统计渔获并兑换灵石，然后清理纳戒中的过期物品
         await DAL.transaction_update(userId, (player, equipment, najie) => {
+          let totalFishCount = 0;
           let itemsRemovedCount = 0;
+
+          // 先统计渔获数量（仅统计渔获，不含鱼竿、鱼饵）
+          for (const category in najie) {
+            if (Array.isArray(najie[category])) {
+              for (const item of najie[category]) {
+                if (item && item.eventKey === eventKeyToClean && catchableItemNames.has(item.name)) {
+                  totalFishCount += item.数量 || 0;
+                }
+              }
+            }
+          }
+
+          // 计算并发放灵石奖励（5只鱼 = 1w灵石）
+          const lingshiReward = Math.floor(totalFishCount / 5) * 10000;
+          if (lingshiReward > 0) {
+            player.灵石 = (player.灵石 || 0) + lingshiReward;
+            console.log(`[活动结算] 玩家 ${userId} 共有 ${totalFishCount} 个渔获，兑换获得 ${lingshiReward} 灵石。`);
+          }
+
+          // 清理所有活动物品
           for (const category in najie) {
             if (Array.isArray(najie[category])) {
               najie[category] = najie[category].filter(item => {
