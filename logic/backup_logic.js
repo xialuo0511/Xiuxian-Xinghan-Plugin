@@ -268,45 +268,66 @@ export async function RestoreBackup(backupId) {
         let restoredCount = 0;
         let errorCount = 0;
 
-        for (const [key, data] of Object.entries(backupData.data)) {
-            try {
-                const { type, value } = data;
+        const entries = Object.entries(backupData.data);
+        const total = entries.length;
+        const BATCH_SIZE = 50;  // 每批处理 50 个键
+        const DELAY_MS = 100;   // 每批之间延迟 100ms
 
-                // 先删除现有键
-                await redisClient.del(key);
+        console.log(`[备份] 开始还原 ${total} 个键，分批处理...`);
 
-                // 根据类型还原
-                switch (type) {
-                    case 'string':
-                        await redisClient.set(key, value);
-                        break;
-                    case 'hash':
-                        if (Object.keys(value).length > 0) {
-                            await redisClient.hSet(key, value);
-                        }
-                        break;
-                    case 'list':
-                        if (value.length > 0) {
-                            await redisClient.rPush(key, value);
-                        }
-                        break;
-                    case 'set':
-                        if (value.length > 0) {
-                            await redisClient.sAdd(key, value);
-                        }
-                        break;
-                    case 'zset':
-                        if (value.length > 0) {
-                            const items = value.map(v => ({ score: v.score, value: v.value }));
-                            await redisClient.zAdd(key, items);
-                        }
-                        break;
+        for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+            const batch = entries.slice(i, i + BATCH_SIZE);
+
+            for (const [key, data] of batch) {
+                try {
+                    const { type, value } = data;
+
+                    // 先删除现有键
+                    await redisClient.del(key);
+
+                    // 根据类型还原
+                    switch (type) {
+                        case 'string':
+                            await redisClient.set(key, value);
+                            break;
+                        case 'hash':
+                            if (value && Object.keys(value).length > 0) {
+                                await redisClient.hSet(key, value);
+                            }
+                            break;
+                        case 'list':
+                            if (value && value.length > 0) {
+                                await redisClient.rPush(key, value);
+                            }
+                            break;
+                        case 'set':
+                            if (value && value.length > 0) {
+                                await redisClient.sAdd(key, value);
+                            }
+                            break;
+                        case 'zset':
+                            if (value && value.length > 0) {
+                                const items = value.map(v => ({ score: v.score, value: v.value }));
+                                await redisClient.zAdd(key, items);
+                            }
+                            break;
+                    }
+
+                    restoredCount++;
+                } catch (err) {
+                    console.error(`[备份] 还原键 ${key} 失败:`, err.message);
+                    errorCount++;
                 }
+            }
 
-                restoredCount++;
-            } catch (err) {
-                console.error(`[备份] 还原键 ${key} 失败:`, err.message);
-                errorCount++;
+            // 批次间延迟，防止内存压力
+            if (i + BATCH_SIZE < entries.length) {
+                await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+            }
+
+            // 每 500 个键输出进度
+            if ((i + BATCH_SIZE) % 500 === 0 || i + BATCH_SIZE >= entries.length) {
+                console.log(`[备份] 还原进度: ${Math.min(i + BATCH_SIZE, total)}/${total}`);
             }
         }
 
