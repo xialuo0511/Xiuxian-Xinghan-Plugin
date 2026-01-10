@@ -15,76 +15,50 @@ body {
     margin: 0;
     padding: 20px;
     /* 背景图由内联样式动态设置 */
-    background-color: #2b0a0a;
+    background-color: #1a0505;
     /* 深红背景兜底 */
     background-size: cover;
     background-position: center;
     font-family: "tttgbnumber", sans-serif;
     color: #F5E6D3;
     /* 米色文字，适应深色背景 */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 /* --- 主容器 --- */
 .panel-container {
-    background: rgba(60, 10, 10, 0.9);
-    /* 深红且高不透明度 */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px solid #DAA520;
-    /* 金色边框 */
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-    /* 金色发光阴影 */
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
+    background: transparent;
+    /* 透明，展示背景图 */
+
+    /* 移除之前的深色背景，改为仅布局容器 */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 5px;
 }
 
-/* 装饰性角标 */
-.panel-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 30px;
-    height: 30px;
-    border-top: 3px solid #FFD700;
-    border-left: 3px solid #FFD700;
-    border-radius: 18px 0 0 0;
-}
-
-.panel-container::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 30px;
-    height: 30px;
-    border-bottom: 3px solid #FFD700;
-    border-right: 3px solid #FFD700;
-    border-radius: 0 0 18px 0;
-}
-
-/* --- 顶部信息 --- */
+/* --- 顶部信息 (Glassmorphism) --- */
 .header-section {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding-bottom: 20px;
+    padding: 20px;
     border-bottom: 2px solid #FFD700;
-    /* 金色分割线 */
-    background: linear-gradient(180deg, rgba(139, 0, 0, 0.3) 0%, rgba(60, 10, 10, 0) 100%);
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 10px;
+    /* 磨砂玻璃效果 */
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 5, 5, 0.6));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 .avatar {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    border: 3px solid #FFD700;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
     flex-shrink: 0;
 }
 
@@ -98,7 +72,7 @@ body {
 .info-bar-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
 }
 
 .info-label {
@@ -106,26 +80,27 @@ body {
     font-size: 22px;
     color: #FFD700;
     /* 金色标签 */
-    width: 80px;
-    text-shadow: 0 0 3px #B22222;
+    width: 100px;
+    text-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
+    text-align: right;
 }
 
 .progress-bar-container {
-    width: 100%;
-    height: 26px;
-    background-color: rgba(50, 0, 0, 0.5);
-    border-radius: 13px;
-    padding: 4px;
-    border: 1px solid #800000;
+    flex-grow: 1;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .progress-bar {
     height: 100%;
-    border-radius: 9px;
+    border-radius: 8px;
     position: relative;
     transition: width 0.5s ease-in-out;
-    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 8px currentColor;
 }
 
 .progress-text {
@@ -133,10 +108,10 @@ body {
     width: 100%;
     text-align: center;
     color: #fff;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
     text-shadow: 1px 1px 2px #000;
-    line-height: 18px;
+    line-height: 20px;
     z-index: 2;
 }
 
@@ -147,13 +122,12 @@ body {
 
 .grid-title {
     font-family: "NZBZ", sans-serif;
-    font-size: 30px;
+    font-size: 32px;
     text-align: center;
     color: #FFD700;
     margin-bottom: 20px;
-    text-shadow: 0 0 5px #ff4500;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
-    padding-bottom: 10px;
+    text-shadow: 0 0 10px #ff4500;
+    letter-spacing: 4px;
 }
 
 .item-grid {
@@ -164,35 +138,34 @@ body {
 }
 
 .item-card {
-    background: linear-gradient(135deg, rgba(80, 20, 20, 0.8), rgba(40, 10, 10, 0.9));
-    border: 1px solid #DAA520;
-    border-radius: 8px;
-    padding: 10px;
+    /* 卡片 Glassmorphism */
+    background: rgba(40, 5, 5, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    border: 1px solid rgba(218, 165, 32, 0.4);
+    border-radius: 12px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
-
-/* .item-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-} */
 
 .item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #DAA520;
-    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    padding-bottom: 6px;
     margin-bottom: 8px;
 }
 
 .item-name {
     font-family: "NZBZ", sans-serif;
-    font-size: 17px;
+    font-size: 18px;
     color: #FFD700;
-    text-shadow: 0 0 2px #000;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
 .item-category {
@@ -201,14 +174,15 @@ body {
     padding: 2px 6px;
     border-radius: 4px;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .item-details {
-    font-size: 14px;
-    line-height: 1.7;
+    font-size: 13px;
+    line-height: 1.6;
     flex-grow: 1;
-    color: #F5E6D3;
+    color: #eee;
 }
 
 .item-footer {
@@ -218,7 +192,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px dashed rgba(218, 165, 32, 0.3);
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 /* 锁定状态样式 */
@@ -229,20 +203,18 @@ body {
 }
 
 .lock-status.locked {
-    color: #ff6b6b;
-    /* 更亮的红色 */
+    color: #ff5252;
 }
 
 .lock-status.unlocked {
-    color: #2ecc71;
-    /* 更亮的绿色 */
+    color: #69f0ae;
 }
 
 .lock-status svg {
     width: 14px;
     height: 14px;
     margin-right: 4px;
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
 }
 
 /* --- 分页与页脚 --- */
@@ -251,31 +223,35 @@ body {
     margin-top: 25px;
     font-size: 16px;
     color: #FFD700;
-    text-shadow: 0 0 2px #000;
+    text-shadow: 0 0 4px #000;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    align-self: center;
 }
 
 .footer {
     text-align: center;
     font-size: 12px;
-    color: #DAA520;
+    color: rgba(255, 255, 255, 0.6);
     margin-top: 15px;
-    text-shadow: 1px 1px 2px #000;
 }
 
 .item-desc {
     font-size: 12px;
-    color: #dcdde1;
-    /* 浅灰色 */
+    color: #ccc;
     padding-top: 6px;
     margin-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    line-height: 1.5;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    line-height: 1.4;
+    font-style: italic;
 }
 
 .item-expiration {
     font-size: 12px;
-    color: #ff7675;
-    /* 柔和红色 */
+    color: #ff5252;
     font-weight: bold;
     margin-top: 5px;
     text-align: left;
