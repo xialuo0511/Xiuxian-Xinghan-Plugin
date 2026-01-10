@@ -7,7 +7,6 @@ import YAML from 'yaml';
 import { loadItemConfig } from '../model/ConfigLoader.js';
 import { GetPlayerCurrentSkin } from './skin_logic.js';
 
-
 const versionData = config.getdefSet('version', 'version');
 
 /**
@@ -154,14 +153,23 @@ export async function prepareNajieRenderData(userId, options = {}) {
     }
   }
 
+  // 确保注入了 pifu 和 head_pic
+  // 按照 UserStart/transformPlayerDataForRender 的逻辑，需要获取头像链接
+  // 这里暂时复用逻辑，但 najie.html 需要 {{pifu}} 和 {{head_pic}}
+  // pifu 从 player 数据取
+  // head_pic 在najie.html里之前使用 https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}
+  // 我们保持这个逻辑，或者为了统一也可以生成 head_pic
+  // 简单起见，我们在 html 里已经通过 {{user_id}} 引用了 QQ 头像
+
   return {
     status: 'success',
     renderData: {
       skinConfig: skinConfig,
-      pifu: player.练气皮肤,
+      pifu: player.练气皮肤 || 'default', // 确保有默认值
       user_id: userId,
       player: player,
       najie: najie,
+      head_pic: `https://q1.qlogo.cn/g?b=qq&s=0&nk=${userId}`, // 注入 head_pic 兼容 html
       paginatedItems: paginatedData.items,
       pagination: paginatedData.pagination,
       strand_hp: Strand(player.当前血量, player.血量上限),
