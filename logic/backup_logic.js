@@ -19,7 +19,7 @@ const DEFAULT_CONFIG = {
         cron: '0 4 * * *'  // 默认每天 4:00
     },
     maxBackups: 30,
-    keyPattern: 'xiuxian:*'
+    keyPatterns: ['xiuxian:*', 'XinghanXiuxian:*']
 };
 
 /**
@@ -87,12 +87,22 @@ export async function CreateBackup() {
         EnsureBackupDir();
 
         const config = GetBackupConfig();
-        const pattern = config.keyPattern || 'xiuxian:*';
+        // 支持多个键模式
+        const patterns = config.keyPatterns || config.keyPattern
+            ? (Array.isArray(config.keyPatterns) ? config.keyPatterns : [config.keyPattern])
+            : ['xiuxian:*', 'XinghanXiuxian:*'];
 
         // 获取所有匹配的键
-        const keys = await redisClient.keys(pattern);
+        let allKeys = [];
+        for (const pattern of patterns) {
+            const keys = await redisClient.keys(pattern);
+            allKeys = allKeys.concat(keys);
+        }
 
-        if (keys.length === 0) {
+        // 去重
+        allKeys = [...new Set(allKeys)];
+
+        if (allKeys.length === 0) {
             return { success: false, message: '没有找到需要备份的数据' };
         }
 
@@ -100,11 +110,11 @@ export async function CreateBackup() {
         const backupData = {
             version: '1.0',
             timestamp: new Date().toISOString(),
-            keyCount: keys.length,
+            keyCount: allKeys.length,
             data: {}
         };
 
-        for (const key of keys) {
+        for (const key of allKeys) {
             try {
                 // 获取键的类型
                 const type = await redisClient.type(key);
@@ -150,7 +160,7 @@ export async function CreateBackup() {
 
         return {
             success: true,
-            message: `备份成功！共 ${keys.length} 个键，文件大小 ${sizeKB} KB`,
+            message: `备份成功！共 ${allKeys.length} 个键，文件大小 ${sizeKB} KB`,
             filename
         };
 

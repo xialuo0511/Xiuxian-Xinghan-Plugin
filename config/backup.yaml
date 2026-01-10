@@ -9,5 +9,7 @@ schedule:
 # 最多保留的备份数量
 maxBackups: 30
 
-# 需要备份的键模式
-keyPattern: "xiuxian:*"
+# 需要备份的键模式（支持多个）
+keyPatterns:
+  - "xiuxian:*"
+  - "XinghanXiuxian:*"
