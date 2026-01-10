@@ -40,9 +40,6 @@ export class SkinSystem extends plugin {
     /**
      * 展示玩家拥有的皮肤
      */
-    /**
-     * 展示玩家拥有的皮肤
-     */
     async showMySkins(e) {
         if (!e.isGroup) {
             return e.reply('请在群聊中使用此指令');
@@ -69,12 +66,13 @@ export class SkinSystem extends plugin {
             allSkins: processedSkins,
             currentSkinId: currentSkinId,
             ownedSkins: ownedSkins,
-            user_id: userId
+            user_id: userId,
+            tplFile: './plugins/xiuxian-emulator-plugin/resources/html/skin/skin_list.html'
         };
 
         // 渲染图片
-        const dataForPuppeteer = await new Show(e).get_imgData('skin/skin_list', renderData);
-        const img = await puppeteer.screenshot('skin/skin_list', { ...dataForPuppeteer });
+        const dataForPuppeteer = await new Show(e).get_imgData('skin_list', renderData);
+        const img = await puppeteer.screenshot('skin_list', { ...dataForPuppeteer });
         await e.reply(img);
     }
 
