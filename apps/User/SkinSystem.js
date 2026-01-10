@@ -53,10 +53,21 @@ export class SkinSystem extends plugin {
         const { ownedSkins, currentSkinId } = await SkinLogic.GetPlayerSkins(userId);
         const allSkins = SkinLogic.GetAllSkins();
 
-        // 预处理皮肤列表，标记状态
+        // 预处理皮肤列表，标记状态，并补充缺省颜色
         const processedSkins = allSkins.map(skin => {
+            // 默认颜色配置
+            const defaultColors = {
+                primary: '#6a3906',
+                secondary: '#a88763',
+                background: '#fdfaf5', // 默认浅色背景
+                text: '#4a2c1a',
+                border: '#d2b48c',
+                accent: '#7a5533'
+            };
+
             return {
                 ...skin,
+                colors: { ...defaultColors, ...(skin.colors || {}) },
                 isOwned: ownedSkins.some(owned => owned.id === skin.id),
                 isCurrent: skin.id === currentSkinId
             };

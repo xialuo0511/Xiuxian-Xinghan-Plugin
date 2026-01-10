@@ -16,21 +16,24 @@
         }
 
         body {
+            /* 修正宽度和背景逻辑，填补右侧空白 */
             width: 900px;
             margin: 0;
             padding: 20px;
-            /* 深色修仙背景 */
+            box-sizing: border-box;
+            /* 包含padding在宽度内 */
             background-color: #0f0f0f;
+            /* 移除 fixed attachment 以防 Puppeteer 渲染问题，直接铺满 */
             background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
             url('file:///{{pluResPath}}/img/background.jpg');
             background-size: cover;
-            background-attachment: fixed;
+            background-position: center;
             font-family: "tttgbnumber", sans-serif;
             color: #F5E6D3;
+            min-height: 100vh;
         }
 
         .container {
-            /* 整体容器增加边距 */
             padding: 10px;
         }
 
@@ -41,7 +44,6 @@
             padding: 20px 0;
         }
 
-        /* 标题背景装饰 */
         .header::after {
             content: "";
             position: absolute;
@@ -62,6 +64,7 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.3);
             background: linear-gradient(180deg, #FFD700 30%, #ff8c00 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -81,7 +84,6 @@
         }
 
         .skin-card {
-            /* 卡片高级磨砂质感 */
             background: rgba(30, 30, 35, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -89,20 +91,17 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
         }
 
-        /* 装备中状态 */
         .skin-card.active {
             border: 1px solid #FFD700;
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.15);
             background: linear-gradient(160deg, rgba(40, 30, 20, 0.8), rgba(30, 25, 25, 0.8));
         }
 
-        /* 选中标记角标 */
         .active-badge {
             position: absolute;
             top: 0;
@@ -118,7 +117,6 @@
         }
 
         .preview-area {
-            /* 缩小预览图高度 */
             height: 160px;
             background-color: #1a1a1a;
             position: relative;
@@ -126,29 +124,66 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* 预览背景模式 */
-        .preview-mini-layout {
-            width: 100%;
-            height: 100%;
+        /* 迷你卡片预览 */
+        .mini-card-wrapper {
+            width: 140px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            /* 如果有预览图 previewBg 则用图，否则用 skin.colors.background */
             background-size: cover;
             background-position: center;
-            opacity: 0.85;
-            transition: transform 0.3s;
         }
 
-        .skin-card:hover .preview-mini-layout {
-            transform: scale(1.05);
-            opacity: 1;
+        .mini-card-layout {
+            padding: 8px;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
+
+        .mini-header {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .mini-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .mini-title-bar {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .mini-stat-bar {
+            width: 80%;
+            height: 3px;
+            border-radius: 1.5px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+
 
         .info-area {
             padding: 16px;
             display: flex;
             flex-direction: column;
             flex: 1;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .header-row {
@@ -202,13 +237,11 @@
             font-size: 12px;
             color: #888;
             line-height: 1.5;
-            /* 描述文字限制行数 */
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-bottom: auto;
-            /* Push footer down */
         }
 
         .skin-meta {
@@ -260,9 +293,24 @@
                 {{/if}}
 
                 <div class="preview-area">
-                    <!-- 预览背景：优先使用 previewBg，或者 fallback 颜色 -->
-                    <div class="preview-mini-layout"
-                        style="{{if skin.previewBg}}background-image: url('{{skin.previewBg}}'){{else}}background: {{skin.colors.background || 'linear-gradient(45deg, #333, #444)'}}{{/if}};">
+                    <!-- 使用 Mini Layout 模拟预览 -->
+                    <div class="mini-card-wrapper"
+                        style="{{if skin.previewBg}}background-image: url('{{skin.previewBg}}'){{else}}background: {{skin.colors.background}}{{/if}}; border: 1px solid {{skin.colors.border}};">
+
+                        <!-- 如果是 Glassmorphism 风格，添加模糊 -->
+                        {{if !skin.previewBg}}
+                        <div class="mini-card-layout" style="backdrop-filter: blur(5px);">
+                            <div class="mini-header">
+                                <div class="mini-avatar" style="border-color: {{skin.colors.secondary}};"></div>
+                                <div class="mini-title-bar" style="background: {{skin.colors.text}}; opacity: 0.8;">
+                                </div>
+                            </div>
+                            <div class="mini-stat-bar" style="background: {{skin.colors.primary}}; margin-top: 10px;">
+                            </div>
+                            <div class="mini-stat-bar"
+                                style="background: {{skin.colors.secondary}}; margin-top: 5px; width: 60%"></div>
+                        </div>
+                        {{/if}}
                     </div>
                 </div>
 
