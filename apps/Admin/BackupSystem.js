@@ -1,6 +1,9 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import * as BackupLogic from '../../logic/backup_logic.js';
 
+// 使用模块级变量存储待确认请求（跨实例持久化）
+const pendingRestores = {};
+
 export class BackupSystem extends plugin {
     constructor() {
         super({
@@ -35,9 +38,6 @@ export class BackupSystem extends plugin {
                 }
             ]
         });
-
-        // 存储待确认的还原请求 { masterId: { backupId, timestamp } }
-        this.pendingRestores = {};
     }
 
     /**
@@ -112,9 +112,9 @@ export class BackupSystem extends plugin {
             return e.reply(`❌ 未找到编号为 ${backupId} 的备份`);
         }
 
-        // 存储待确认请求
+        // 存储待确认请求（使用模块级变量）
         const masterId = e.user_id;
-        this.pendingRestores[masterId] = {
+        pendingRestores[masterId] = {
             backupId: backupId,
             timestamp: Date.now()
         };
@@ -123,8 +123,8 @@ export class BackupSystem extends plugin {
 
         // 30秒后自动清除待确认状态
         setTimeout(() => {
-            if (this.pendingRestores[masterId]?.backupId === backupId) {
-                delete this.pendingRestores[masterId];
+            if (pendingRestores[masterId]?.backupId === backupId) {
+                delete pendingRestores[masterId];
             }
         }, 30000);
 
@@ -147,8 +147,8 @@ export class BackupSystem extends plugin {
         const backupId = parseInt(match[1], 10);
         const masterId = e.user_id;
 
-        // 检查是否有待确认的请求
-        const pending = this.pendingRestores[masterId];
+        // 检查是否有待确认的请求（使用模块级变量）
+        const pending = pendingRestores[masterId];
         if (!pending) {
             return e.reply('❌ 没有待确认的还原请求，请先发送 #还原备份编号');
         }
@@ -159,12 +159,12 @@ export class BackupSystem extends plugin {
 
         // 检查是否超时（30秒）
         if (Date.now() - pending.timestamp > 30000) {
-            delete this.pendingRestores[masterId];
+            delete pendingRestores[masterId];
             return e.reply('❌ 确认超时，请重新发送 #还原备份编号');
         }
 
         // 清除待确认状态
-        delete this.pendingRestores[masterId];
+        delete pendingRestores[masterId];
 
         await e.reply('正在还原备份，请稍候...');
 

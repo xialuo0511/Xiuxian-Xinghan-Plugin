@@ -66,16 +66,18 @@ function EnsureBackupDir() {
 }
 
 /**
- * 生成备份文件名
+ * 生成备份文件名（使用本地时间）
  * @returns {string}
  */
 function GenerateBackupFilename() {
     const now = new Date();
-    const timestamp = now.toISOString()
-        .replace(/[-:]/g, '')
-        .replace('T', '_')
-        .replace(/\.\d{3}Z$/, '');
-    return `xiuxian_backup_${timestamp}.json`;
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    return `xiuxian_backup_${year}${month}${day}_${hours}${minutes}${seconds}.json`;
 }
 
 /**
