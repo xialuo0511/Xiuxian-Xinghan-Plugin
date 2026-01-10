@@ -18,7 +18,7 @@ export class SkinSystem extends plugin {
                     fnc: 'showMySkins'
                 },
                 {
-                    reg: '^#装备皮肤(.+)$',
+                    reg: '^#切换皮肤(.+)$',
                     fnc: 'equipSkin'
                 },
                 {
@@ -65,7 +65,7 @@ export class SkinSystem extends plugin {
         }
 
         msg.push('\n───────────────');
-        msg.push('\n发送 #装备皮肤xxx 可切换皮肤');
+        msg.push('\n发送 #切换皮肤xxx 可切换皮肤');
 
         await e.reply(msg.join('\n'));
     }
@@ -83,9 +83,9 @@ export class SkinSystem extends plugin {
             return e.reply('请先发送 #踏入仙途 创建角色');
         }
 
-        const skinName = e.msg.replace(/^#装备皮肤/, '').trim();
+        const skinName = e.msg.replace(/^#切换皮肤/, '').trim();
         if (!skinName) {
-            return e.reply('请输入皮肤名称，例如：#装备皮肤龙马精神');
+            return e.reply('请输入皮肤名称，例如：#切换皮肤龙马精神');
         }
 
         // 通过名称查找皮肤

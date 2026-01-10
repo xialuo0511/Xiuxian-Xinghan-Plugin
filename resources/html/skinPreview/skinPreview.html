@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <style type="text/css">
@@ -7,6 +8,7 @@
       font-family: "tttgbnumber";
       src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
     }
+
     @font-face {
       font-family: "NZBZ";
       src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
@@ -14,35 +16,139 @@
 
     /* 皮肤变量 */
     :root {
-      --skin-primary: {{skinConfig.colors.primary}};
-      --skin-secondary: {{skinConfig.colors.secondary}};
-      --skin-background: {{skinConfig.colors.background}};
-      --skin-text: {{skinConfig.colors.text}};
-      --skin-border: {{skinConfig.colors.border}};
-      --skin-accent: {{skinConfig.colors.accent}};
+      --skin-primary: {
+          {
+          skinConfig.colors.primary
+        }
+      }
+
+      ;
+
+      --skin-secondary: {
+          {
+          skinConfig.colors.secondary
+        }
+      }
+
+      ;
+
+      --skin-background: {
+          {
+          skinConfig.colors.background
+        }
+      }
+
+      ;
+
+      --skin-text: {
+          {
+          skinConfig.colors.text
+        }
+      }
+
+      ;
+
+      --skin-border: {
+          {
+          skinConfig.colors.border
+        }
+      }
+
+      ;
+
+      --skin-accent: {
+          {
+          skinConfig.colors.accent
+        }
+      }
+
+      ;
     }
 
     body {
       width: 600px;
       margin: 0;
       padding: 20px;
-      background: linear-gradient(135deg, 
-        {{if skinConfig.id == 'horse_year_2026'}}
-        #8B0000 0%, #C41E3A 50%, #8B0000 100%
-        {{else}}
-        #f5f0e8 0%, #e8e0d5 100%
-        {{/if}}
-      );
-      font-family: "tttgbnumber", sans-serif;
-      color: var(--skin-text);
+
+      background: linear-gradient(135deg,
+        {
+          {
+          if skinConfig.id=='horse_year_2026'
+        }
+      }
+
+      #8B0000 0%, #C41E3A 50%, #8B0000 100% {
+          {
+          else
+        }
+      }
+
+      #f5f0e8 0%, #e8e0d5 100% {
+          {
+          /if
+        }
+      });
+    font-family: "tttgbnumber",
+    sans-serif;
+    color: var(--skin-text);
     }
 
     .panel-container {
       background: var(--skin-background);
       backdrop-filter: blur(10px);
-      border: {{if skinConfig.styles.panelBorder}}{{skinConfig.styles.panelBorder}}{{else}}2px solid var(--skin-border){{/if}};
+
+      border: {
+          {
+          if skinConfig.styles.panelBorder
+        }
+      }
+
+        {
+          {
+          skinConfig.styles.panelBorder
+        }
+      }
+
+        {
+          {
+          else
+        }
+      }
+
+      2px solid var(--skin-border) {
+          {
+          /if
+        }
+      }
+
+      ;
       border-radius: 15px;
-      box-shadow: {{if skinConfig.styles.panelShadow}}{{skinConfig.styles.panelShadow}}{{else}}0 8px 16px rgba(0, 0, 0, 0.3){{/if}};
+
+      box-shadow: {
+          {
+          if skinConfig.styles.panelShadow
+        }
+      }
+
+        {
+          {
+          skinConfig.styles.panelShadow
+        }
+      }
+
+        {
+          {
+          else
+        }
+      }
+
+      0 8px 16px rgba(0, 0, 0, 0.3) {
+          {
+          /if
+        }
+      }
+
+      ;
       padding: 20px;
     }
 
@@ -50,17 +156,78 @@
       text-align: center;
       margin-bottom: 20px;
       padding-bottom: 15px;
-      border-bottom: {{if skinConfig.styles.headerBorder}}{{skinConfig.styles.headerBorder}}{{else}}2px dashed var(--skin-border){{/if}};
+
+      border-bottom: {
+          {
+          if skinConfig.styles.headerBorder
+        }
+      }
+
+        {
+          {
+          skinConfig.styles.headerBorder
+        }
+      }
+
+        {
+          {
+          else
+        }
+      }
+
+      2px dashed var(--skin-border) {
+          {
+          /if
+        }
+      }
+
+      ;
     }
 
     .skin-title {
       font-family: "NZBZ", sans-serif;
       font-size: 32px;
-      color: {{if skinConfig.styles.titleColor}}{{skinConfig.styles.titleColor}}{{else}}var(--skin-primary){{/if}};
+
+      color: {
+          {
+          if skinConfig.styles.titleColor
+        }
+      }
+
+        {
+          {
+          skinConfig.styles.titleColor
+        }
+      }
+
+        {
+          {
+          else
+        }
+      }
+
+      var(--skin-primary) {
+          {
+          /if
+        }
+      }
+
+      ;
       margin-bottom: 8px;
-      {{if skinConfig.id == 'horse_year_2026'}}
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-      {{/if}}
+
+        {
+          {
+          if skinConfig.id=='horse_year_2026'
+        }
+      }
+
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+
+        {
+          {
+          /if
+        }
+      }
     }
 
     .skin-desc {
@@ -75,8 +242,57 @@
     }
 
     .preview-card {
-      background: {{if skinConfig.styles.cardBackground}}{{skinConfig.styles.cardBackground}}{{else}}rgba(255, 255, 255, 0.4){{/if}};
-      border: {{if skinConfig.styles.cardBorder}}{{skinConfig.styles.cardBorder}}{{else}}1px solid var(--skin-border){{/if}};
+      background: {
+          {
+          if skinConfig.styles.cardBackground
+        }
+      }
+
+        {
+          {
+          skinConfig.styles.cardBackground
+        }
+      }
+
+        {
+          {
+          else
+        }
+      }
+
+      rgba(255, 255, 255, 0.4) {
+          {
+          /if
+        }
+      }
+
+      ;
+
+      border: {
+          {
+          if skinConfig.styles.cardBorder
+        }
+      }
+
+        {
+          {
+          skinConfig.styles.cardBorder
+        }
+      }
+
+        {
+          {
+          else
+        }
+      }
+
+      1px solid var(--skin-border) {
+          {
+          /if
+        }
+      }
+
+      ;
       border-radius: 10px;
       padding: 15px;
     }
@@ -84,7 +300,32 @@
     .card-title {
       font-family: "NZBZ", sans-serif;
       font-size: 18px;
-      color: {{if skinConfig.styles.labelColor}}{{skinConfig.styles.labelColor}}{{else}}var(--skin-primary){{/if}};
+
+      color: {
+          {
+          if skinConfig.styles.labelColor
+        }
+      }
+
+        {
+          {
+          skinConfig.styles.labelColor
+        }
+      }
+
+        {
+          {
+          else
+        }
+      }
+
+      var(--skin-primary) {
+          {
+          /if
+        }
+      }
+
+      ;
       margin-bottom: 10px;
       padding-bottom: 8px;
       border-bottom: 1px solid var(--skin-border);
@@ -105,12 +346,24 @@
     }
 
     .progress-bar.hp {
-      background: {{skinConfig.colors.progressHp}};
+      background: {
+          {
+          skinConfig.colors.progressHp
+        }
+      }
+
+      ;
       width: 65%;
     }
 
     .progress-bar.mana {
-      background: {{skinConfig.colors.progressMana}};
+      background: {
+          {
+          skinConfig.colors.progressMana
+        }
+      }
+
+      ;
       width: 40%;
     }
 
@@ -136,7 +389,7 @@
       width: 40px;
       height: 40px;
       border-radius: 8px;
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -154,7 +407,12 @@
       color: var(--skin-accent);
     }
 
-    {{if skinConfig.id == 'horse_year_2026'}}
+      {
+        {
+        if skinConfig.id=='horse_year_2026'
+      }
+    }
+
     /* 马年特效 */
     .panel-container::before {
       content: "🐴";
@@ -164,61 +422,70 @@
       font-size: 24px;
       opacity: 0.6;
     }
-    {{/if}}
+
+      {
+        {
+        /if
+      }
+    }
   </style>
 </head>
+
 <body>
-<div class="panel-container" id="capture">
-  <div class="preview-header">
-    <div class="skin-title">{{skinConfig.name}}</div>
-    <div class="skin-desc">{{skinConfig.desc}}</div>
-  </div>
+  <div class="panel-container" id="capture">
+    <div class="preview-header">
+      <div class="skin-title">{{skinConfig.name}}</div>
+      <div class="skin-desc">{{skinConfig.desc}}</div>
+    </div>
 
-  <div class="preview-content">
-    <div class="preview-card">
-      <div class="card-title">进度条样式</div>
-      <div>生命值</div>
-      <div class="progress-bar-container">
-        <div class="progress-bar hp">
-          <div class="progress-text">65%</div>
+    <div class="preview-content">
+      <div class="preview-card">
+        <div class="card-title">进度条样式</div>
+        <div>生命值</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar hp">
+            <div class="progress-text">65%</div>
+          </div>
+        </div>
+        <div>灵力值</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar mana">
+            <div class="progress-text">40%</div>
+          </div>
         </div>
       </div>
-      <div>灵力值</div>
-      <div class="progress-bar-container">
-        <div class="progress-bar mana">
-          <div class="progress-text">40%</div>
+
+      <div class="preview-card">
+        <div class="card-title">配色方案</div>
+        <div class="color-palette">
+          <div class="color-swatch" style="background: {{skinConfig.colors.primary}}">主</div>
+          <div class="color-swatch" style="background: {{skinConfig.colors.secondary}}">副</div>
+          <div class="color-swatch" style="background: {{skinConfig.colors.border}}">边</div>
+          <div class="color-swatch" style="background: {{skinConfig.colors.accent}}">点</div>
+        </div>
+      </div>
+
+      <div class="preview-card" style="grid-column: span 2;">
+        <div class="card-title">示例物品卡片</div>
+        <div style="display: flex; gap: 10px;">
+          <div
+            style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--skin-border);">
+            <div style="font-weight: bold; color: var(--skin-primary);">灵石×10000</div>
+            <div style="font-size: 12px; margin-top: 5px;">数量: 1</div>
+          </div>
+          <div
+            style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--skin-border);">
+            <div style="font-weight: bold; color: var(--skin-primary);">回春丹</div>
+            <div style="font-size: 12px; margin-top: 5px;">数量: 5</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="preview-card">
-      <div class="card-title">配色方案</div>
-      <div class="color-palette">
-        <div class="color-swatch" style="background: {{skinConfig.colors.primary}}">主</div>
-        <div class="color-swatch" style="background: {{skinConfig.colors.secondary}}">副</div>
-        <div class="color-swatch" style="background: {{skinConfig.colors.border}}">边</div>
-        <div class="color-swatch" style="background: {{skinConfig.colors.accent}}">点</div>
-      </div>
-    </div>
-
-    <div class="preview-card" style="grid-column: span 2;">
-      <div class="card-title">示例物品卡片</div>
-      <div style="display: flex; gap: 10px;">
-        <div style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--skin-border);">
-          <div style="font-weight: bold; color: var(--skin-primary);">灵石×10000</div>
-          <div style="font-size: 12px; margin-top: 5px;">数量: 1</div>
-        </div>
-        <div style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--skin-border);">
-          <div style="font-weight: bold; color: var(--skin-primary);">回春丹</div>
-          <div style="font-size: 12px; margin-top: 5px;">数量: 5</div>
-        </div>
-      </div>
+    <div class="preview-footer">
+      皮肤预览 · 发送 #切换皮肤{{skinConfig.name}} 使用此皮肤
     </div>
   </div>
-
-  <div class="preview-footer">
-    皮肤预览 · 发送 #装备皮肤{{skinConfig.name}} 使用此皮肤
-  </div>
-</div>
 </body>
+
 </html>
