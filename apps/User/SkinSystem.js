@@ -40,6 +40,9 @@ export class SkinSystem extends plugin {
     /**
      * 展示玩家拥有的皮肤
      */
+    /**
+     * 展示玩家拥有的皮肤
+     */
     async showMySkins(e) {
         if (!e.isGroup) {
             return e.reply('请在群聊中使用此指令');
@@ -51,23 +54,28 @@ export class SkinSystem extends plugin {
         }
 
         const { ownedSkins, currentSkinId } = await SkinLogic.GetPlayerSkins(userId);
+        const allSkins = SkinLogic.GetAllSkins();
 
-        // 构建消息
-        let msg = ['═══ 我的皮肤 ═══\n'];
-        msg.push(`当前使用: 【${SkinLogic.GetSkinConfig(currentSkinId)?.name || '默认经典'}】\n`);
-        msg.push('───────────────');
+        // 预处理皮肤列表，标记状态
+        const processedSkins = allSkins.map(skin => {
+            return {
+                ...skin,
+                isOwned: ownedSkins.some(owned => owned.id === skin.id),
+                isCurrent: skin.id === currentSkinId
+            };
+        });
 
-        for (const skin of ownedSkins) {
-            const isCurrent = skin.id === currentSkinId ? ' ✓' : '';
-            const isLimit = skin.eventKey ? ' [限定]' : '';
-            msg.push(`\n【${skin.name}】${isLimit}${isCurrent}`);
-            msg.push(`  ${skin.desc}`);
-        }
+        const renderData = {
+            allSkins: processedSkins,
+            currentSkinId: currentSkinId,
+            ownedSkins: ownedSkins,
+            user_id: userId
+        };
 
-        msg.push('\n───────────────');
-        msg.push('\n发送 #切换皮肤xxx 可切换皮肤');
-
-        await e.reply(msg.join('\n'));
+        // 渲染图片
+        const dataForPuppeteer = await new Show(e).get_imgData('skin/skin_list', renderData);
+        const img = await puppeteer.screenshot('skin/skin_list', { ...dataForPuppeteer });
+        await e.reply(img);
     }
 
     /**

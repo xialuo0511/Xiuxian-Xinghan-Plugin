@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+    <link href="#" rel="shortcut icon" />
+    <style>
+        @font-face {
+            font-family: "tttgbnumber";
+            src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+        }
+
+        @font-face {
+            font-family: "NZBZ";
+            src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+        }
+
+        body {
+            width: 800px;
+            margin: 0;
+            padding: 20px;
+            /* 深色修仙背景 */
+            background-image: url('file:///{{pluResPath}}/img/background.jpg');
+            /* 如果没有 background.jpg，用纳戒/player类似的通用图，或者纯色 */
+            background-color: #1a0505;
+            background-size: cover;
+            font-family: "tttgbnumber", sans-serif;
+            color: #F5E6D3;
+        }
+
+        .container {
+            background: rgba(30, 5, 5, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid #DAA520;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #DAA520;
+        }
+
+        .title {
+            font-family: "NZBZ", sans-serif;
+            font-size: 40px;
+            color: #FFD700;
+            text-shadow: 0 0 10px #ff4500;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .skin-card {
+            background: rgba(60, 60, 60, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .skin-card.active {
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            background: rgba(40, 60, 40, 0.5);
+        }
+
+        .skin-card.locked {
+            filter: grayscale(0.8);
+            opacity: 0.7;
+        }
+
+        .preview-area {
+            height: 300px;
+            /* 调整高度以展示皮肤效果 */
+            background-color: #000;
+            background-size: cover;
+            background-position: center top;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 模拟练气面板的小预览 */
+        .preview-mini-layout {
+            width: 80%;
+            height: 80%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            /* 这里可以直接加载皮肤对应的背景图 */
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .status-badge.current {
+            background: #28a745;
+            color: #fff;
+            box-shadow: 0 0 5px #00ff00;
+        }
+
+        .status-badge.limited {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #dc3545;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .info-area {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .skin-name {
+            font-family: "NZBZ", sans-serif;
+            font-size: 22px;
+            color: #FFD700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 2px #000;
+        }
+
+        .skin-desc {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 1.4;
+            height: 34px;
+            /* 两行高度 */
+            overflow: hidden;
+        }
+
+        .skin-id {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="capture">
+        <div class="header">
+            <h1 class="title">我的衣柜</h1>
+            <div class="subtitle">当前拥有 {{ownedSkins.length}} / {{allSkins.length}} 套皮肤</div>
+        </div>
+
+        <div class="skin-grid">
+            {{each allSkins skin}}
+            <div class="skin-card {{if skin.id == currentSkinId}}active{{/if}}">
+                <div class="preview-area">
+                    <!-- 
+                  预览图逻辑：
+                  如果有 skin.previewImg 则使用配置图
+                  否则使用皮肤背景色/图作为示意
+               -->
+                    <div class="preview-mini-layout"
+                        style="{{if skin.previewBg}}background-image: url('{{skin.previewBg}}'){{else}}background-color: {{skin.colors.background || '#333'}}{{/if}};">
+                        <!-- 这里可以放一个小的头像框示意 -->
+                        <div
+                            style="width: 50px; height: 50px; border:2px solid {{skin.colors.secondary}}; border-radius:50%; margin: 20px auto;">
+                        </div>
+                        <div style="text-align:center; font-size:12px; color:{{skin.colors.text}}">{{skin.name}}</div>
+                    </div>
+
+                    {{if skin.id == currentSkinId}}
+                    <div class="status-badge current">当前使用</div>
+                    {{/if}}
+
+                    {{if skin.eventKey}}
+                    <div class="status-badge limited">限定</div>
+                    {{/if}}
+                </div>
+                <div class="info-area">
+                    <div class="skin-name">{{skin.name}}</div>
+                    <div class="skin-desc">{{skin.desc}}</div>
+                    <div class="skin-id">ID: {{skin.id}}</div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="footer">
+            发送 #切换皮肤 + 皮肤名称 即可更换主题
+        </div>
+    </div>
+</body>
+
+</html>
