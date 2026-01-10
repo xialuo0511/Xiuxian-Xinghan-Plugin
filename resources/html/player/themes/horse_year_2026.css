@@ -1,3 +1,9 @@
+/* ======================================== */
+/* 龙马精神 - 练气面板主题 (2026马年限定) */
+/* 参考纳戒设计风格，统一 Glassmorphism 质感 */
+/* ======================================== */
+
+/* --- 字体定义 --- */
 @font-face {
     font-family: "tttgbnumber";
     src: url("../../../font/tttgbnumber.ttf");
@@ -8,38 +14,37 @@
     src: url("../../../font/NZBZ.TTF");
 }
 
+/* --- 基础样式 --- */
 body {
     width: 600px;
     margin: 0;
     padding: 20px;
-    /* 动态背景由 player.html 内联样式控制 */
-    /* 兜底背景色，使用极深的红黑色 */
+    box-sizing: border-box;
+    /* 背景图由内联样式动态设置 */
     background-color: #1a0505;
     background-size: cover;
-    background-position: center center;
+    background-position: center;
     font-family: "tttgbnumber", sans-serif;
-    color: #fff;
-    /* 增加文字阴影以提高在任何背景上的可读性 */
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    color: #F5E6D3;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-/* --- 容器与卡片通用样式 (Glassmorphism) --- */
+/* --- 主容器 --- */
 .panel-container {
+    background: transparent;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    /* 移除外层容器背景，让背景图完全展示 */
     padding: 5px;
 }
 
+/* --- 卡片通用样式 (Glassmorphism) --- */
 .card-base,
 .details-card {
-    /* 半透明深红磨砂玻璃效果 */
-    background: linear-gradient(135deg, rgba(40, 5, 5, 0.75), rgba(60, 10, 10, 0.65));
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 5, 5, 0.6));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    /* 金色边框 */
+    border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 16px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     padding: 20px;
@@ -47,154 +52,116 @@ body {
     overflow: hidden;
 }
 
-/* 新年装饰：卡片角落的云纹/结 */
-.card-base::before,
-.details-card::before {
-    content: "";
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 215, 0, 0.2);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-}
-
-/* --- 头部区域重构 (Grid布局) --- */
+/* --- 头部区域 (Flexbox 简化布局) --- */
 .main-header {
-    display: grid;
-    /* 左侧头像 */
-    grid-template-columns: 140px 1fr;
-    /* 右侧布局：Name+Power, Title, Progress */
-    grid-template-rows: auto auto 1fr;
-    gap: 8px 20px;
+    display: flex;
     align-items: center;
+    gap: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #FFD700;
 }
 
 .avatar-frame {
-    grid-row: 1 / 4;
-    /* 跨越所有行 */
-    grid-column: 1;
-    width: 140px;
-    height: 140px;
-    /* 移除旧的背景图框，改用CSS装饰 */
+    width: 100px;
+    height: 100px;
     background-image: none !important;
-    border: 2px solid #FFD700;
+    border: 3px solid #FFD700;
     border-radius: 50%;
-    padding: 5px;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    padding: 3px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
+    flex-shrink: 0;
 }
 
 .avatar-image {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 2px solid #fff;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.header-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .player-name {
-    grid-column: 2;
-    grid-row: 1;
     font-family: "NZBZ", sans-serif;
-    font-size: 38px;
+    font-size: 36px;
     color: #FFD700;
-    /* 金色 */
     text-shadow: 0 0 10px rgba(255, 69, 0, 0.6);
     line-height: 1;
-    justify-self: start;
-    align-self: end;
+}
+
+.player-title {
+    font-family: "NZBZ", sans-serif;
+    font-size: 20px;
+    color: #ffaa00;
+    letter-spacing: 2px;
+    padding: 3px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    width: fit-content;
 }
 
 .power-display {
-    grid-column: 2;
-    grid-row: 1;
     font-family: "NZBZ", sans-serif;
-    font-size: 20px;
+    font-size: 18px;
     color: #eee;
     background: linear-gradient(90deg, #d32f2f, transparent);
     padding: 4px 15px;
     border-radius: 4px;
-    /* 左侧圆角，右侧透明 */
     border-left: 3px solid #ffeb3b;
-    justify-self: end;
-    /* 放到最右侧 */
-    align-self: end;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    /* 对齐名字底部 */
-}
-
-.player-title {
-    grid-column: 2;
-    grid-row: 2;
-    font-family: "NZBZ", sans-serif;
-    font-size: 24px;
-    color: #ffaa00;
-    letter-spacing: 2px;
-    padding: 2px 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    justify-self: start;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    margin: 5px 0;
     width: fit-content;
 }
 
+/* --- 进度条区域 --- */
 .realm-progress-section {
-    grid-column: 1 / -1;
-    /* 移动端下移，这里保留跨列可能更好？ */
-    /* Wait, avatar spans 3 rows. So progress section should be Col 2 Row 3? 
-       Avatar height 140px. 
-       Name+Title rows might be small. 
-       If Progress section is in Col 2 Row 3, it might be squeezed.
-       But if Grid Row 3 expands, Avatar stays centered?
-       User said "Right side empty".
-       Expanding Progress to Col 2 only is fine, creates balance with Avatar left.
-       Avatar | Name + Power
-       Avatar | Title
-       Avatar | Progress
-    */
-    grid-column: 2;
-    grid-row: 3;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 5px;
-    padding-top: 5px;
+    gap: 12px;
+    margin-top: 15px;
+    padding-top: 15px;
     border-top: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
 .progress-card {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 6px;
-    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .progress-title {
-    font-size: 13px;
-    color: #ffda79;
-    margin-bottom: 4px;
+    font-family: "NZBZ", sans-serif;
+    font-size: 14px;
+    color: #FFD700;
+    margin-bottom: 6px;
+    text-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
 }
 
 .progress-bar-container {
-    height: 14px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 7px;
+    height: 18px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 9px;
+    padding: 2px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 .progress-bar {
-    border-radius: 7px;
-    box-shadow: 0 0 5px currentColor;
     height: 100%;
+    border-radius: 7px;
+    box-shadow: 0 0 8px currentColor;
+    transition: width 0.3s ease;
 }
 
-/* 进度条颜色 */
 .pb-hp {
     background: linear-gradient(to right, #ff8383, #f81e1e);
 }
@@ -211,36 +178,44 @@ body {
     background: linear-gradient(to right, #BA55D3, #8A2BE2);
 }
 
-
 .progress-text {
-    line-height: 14px;
-    font-size: 10px;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+    line-height: 18px;
+    top: 0;
+    left: 0;
 }
 
 /* --- 信息网格 --- */
 .info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    /* 改为2列，更清晰 */
-    gap: 12px;
+    gap: 10px;
 }
 
 .info-item {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 8px;
-    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 12px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .info-label {
+    font-family: "NZBZ", sans-serif;
     color: #FFD700;
-    font-size: 13px;
-    width: 80px;
+    font-size: 14px;
+    width: 75px;
     text-align: right;
     flex-shrink: 0;
-    margin-right: 10px;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+    margin-right: 12px;
+    text-shadow: 0 0 5px rgba(255, 69, 0, 0.3);
 }
 
 .info-value {
@@ -249,10 +224,9 @@ body {
     font-weight: bold;
 }
 
-/* 特殊处理跨列项目 */
 .info-item[style*="column"] {
     grid-column: 1 / -1 !important;
-    background: rgba(255, 215, 0, 0.1);
+    background: rgba(255, 215, 0, 0.08);
     border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
@@ -260,7 +234,6 @@ body {
     color: #FFD700;
     font-style: italic;
 }
-
 
 /* --- 属性区 --- */
 .details-section {
@@ -271,34 +244,40 @@ body {
 
 .details-card-title {
     font-family: "NZBZ", sans-serif;
-    font-size: 20px;
+    font-size: 22px;
     color: #FFD700;
     text-align: left;
-    margin-bottom: 12px;
-    padding-left: 10px;
+    margin-bottom: 15px;
+    padding-left: 12px;
     border-left: 4px solid #d32f2f;
     background: linear-gradient(90deg, rgba(211, 47, 47, 0.2), transparent);
+    text-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
 }
 
 .stat-line {
     font-size: 15px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: #eee;
     display: flex;
     align-items: center;
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
 }
 
 .stat-line svg {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
-    margin-right: 8px;
+    margin-right: 10px;
     fill: #FFD700;
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
 }
 
 .stat-line sup {
     color: #ff4500;
-    margin-left: 2px;
+    margin-left: 3px;
+    font-size: 12px;
 }
 
 /* --- 装备区 --- */
@@ -309,47 +288,46 @@ body {
 }
 
 .equipment-item {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(168, 135, 99, 0.3);
-    border-radius: 8px;
-    padding: 8px;
+    background: rgba(40, 5, 5, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(218, 165, 32, 0.4);
+    border-radius: 12px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    align-items: start;
-    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .equipment-name {
     font-family: "NZBZ", sans-serif;
-    font-size: 15px;
+    font-size: 16px;
     color: #FFD700;
-    margin-bottom: 4px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    width: 100%;
-    text-align: left;
-    padding-bottom: 2px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
 .equipment-stats {
     font-size: 12px;
-    color: #ccc;
-    line-height: 1.4;
-    text-align: left;
+    color: #eee;
+    line-height: 1.5;
 }
 
 .equipment-item[style*="column"] {
     grid-column: 1 / -1;
-    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    /* 居中 */
-    gap: 20px;
-    /* 增加间距 */
+    gap: 25px;
+    padding: 15px 20px;
 }
 
+/* --- 页脚 --- */
 .footer {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 10px;
     text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 10px;
 }
