@@ -64,16 +64,17 @@ body {
 /* --- 头部区域重构 (Grid布局) --- */
 .main-header {
     display: grid;
-    /* 左侧头像，右侧信息 */
+    /* 左侧头像 */
     grid-template-columns: 140px 1fr;
-    grid-template-rows: auto auto auto 1fr;
-    gap: 5px 20px;
+    /* 右侧布局：Name+Power, Title, Progress */
+    grid-template-rows: auto auto 1fr;
+    gap: 8px 20px;
     align-items: center;
 }
 
 .avatar-frame {
     grid-row: 1 / 4;
-    /* 跨越前三行 */
+    /* 跨越所有行 */
     grid-column: 1;
     width: 140px;
     height: 140px;
@@ -105,28 +106,13 @@ body {
     /* 金色 */
     text-shadow: 0 0 10px rgba(255, 69, 0, 0.6);
     line-height: 1;
-    align-self: end;
-}
-
-.player-title {
-    grid-column: 2;
-    grid-row: 2;
-    font-family: "NZBZ", sans-serif;
-    font-size: 24px;
-    /* 稍微调小 */
-    color: #ffaa00;
-    letter-spacing: 2px;
-    padding: 2px 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
     justify-self: start;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    margin: 5px 0;
+    align-self: end;
 }
 
 .power-display {
     grid-column: 2;
-    grid-row: 3;
+    grid-row: 1;
     font-family: "NZBZ", sans-serif;
     font-size: 20px;
     color: #eee;
@@ -135,50 +121,100 @@ body {
     border-radius: 4px;
     /* 左侧圆角，右侧透明 */
     border-left: 3px solid #ffeb3b;
+    justify-self: end;
+    /* 放到最右侧 */
+    align-self: end;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    /* 对齐名字底部 */
+}
+
+.player-title {
+    grid-column: 2;
+    grid-row: 2;
+    font-family: "NZBZ", sans-serif;
+    font-size: 24px;
+    color: #ffaa00;
+    letter-spacing: 2px;
+    padding: 2px 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
     justify-self: start;
-    align-self: start;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    margin: 5px 0;
+    width: fit-content;
 }
 
 .realm-progress-section {
     grid-column: 1 / -1;
-    /* 跨越两列 */
-    grid-row: 4;
+    /* 移动端下移，这里保留跨列可能更好？ */
+    /* Wait, avatar spans 3 rows. So progress section should be Col 2 Row 3? 
+       Avatar height 140px. 
+       Name+Title rows might be small. 
+       If Progress section is in Col 2 Row 3, it might be squeezed.
+       But if Grid Row 3 expands, Avatar stays centered?
+       User said "Right side empty".
+       Expanding Progress to Col 2 only is fine, creates balance with Avatar left.
+       Avatar | Name + Power
+       Avatar | Title
+       Avatar | Progress
+    */
+    grid-column: 2;
+    grid-row: 3;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 15px;
-    padding-top: 15px;
+    gap: 10px;
+    margin-top: 5px;
+    padding-top: 5px;
     border-top: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
 .progress-card {
     background: rgba(0, 0, 0, 0.2);
-    padding: 8px;
-    border-radius: 8px;
+    padding: 6px;
+    border-radius: 6px;
 }
 
 .progress-title {
-    font-size: 14px;
+    font-size: 13px;
     color: #ffda79;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .progress-bar-container {
-    height: 16px;
+    height: 14px;
     background: rgba(0, 0, 0, 0.4);
-    border-radius: 8px;
+    border-radius: 7px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .progress-bar {
-    border-radius: 8px;
+    border-radius: 7px;
     box-shadow: 0 0 5px currentColor;
-    /* 发光效果 */
+    height: 100%;
 }
 
+/* 进度条颜色 */
+.pb-hp {
+    background: linear-gradient(to right, #ff8383, #f81e1e);
+}
+
+.pb-exp {
+    background: linear-gradient(to right, #02e4f8, #0077ff);
+}
+
+.pb-body {
+    background: linear-gradient(to right, #fae99b, #e89b24);
+}
+
+.pb-job {
+    background: linear-gradient(to right, #BA55D3, #8A2BE2);
+}
+
+
 .progress-text {
-    line-height: 16px;
-    font-size: 11px;
+    line-height: 14px;
+    font-size: 10px;
 }
 
 /* --- 信息网格 --- */
@@ -303,9 +339,13 @@ body {
 
 .equipment-item[style*="column"] {
     grid-column: 1 / -1;
+    display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    /* 居中 */
+    gap: 20px;
+    /* 增加间距 */
 }
 
 .footer {

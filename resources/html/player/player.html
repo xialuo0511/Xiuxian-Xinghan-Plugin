@@ -29,8 +29,7 @@
         <div class="progress-card">
           <div class="progress-title">生命</div>
           <div class="progress-bar-container">
-            <div class="progress-bar"
-              style="background: linear-gradient(to right, {{strand_hp.leftColor}}, {{strand_hp.rightColor}}); width: {{strand_hp.num}}%">
+            <div class="progress-bar pb-hp" style="width: {{strand_hp.num}}%">
             </div>
             <div class="progress-text">{{player.当前血量}} / {{player.血量上限}}</div>
           </div>
@@ -38,8 +37,7 @@
         <div class="progress-card">
           <div class="progress-title">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
           <div class="progress-bar-container">
-            <div class="progress-bar"
-              style="background: linear-gradient(to right, {{strand_lianqi.leftColor}}, {{strand_lianqi.rightColor}}); width: {{strand_lianqi.num}}%">
+            <div class="progress-bar pb-exp" style="width: {{strand_lianqi.num}}%">
             </div>
             <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
           </div>
@@ -47,8 +45,7 @@
         <div class="progress-card">
           <div class="progress-title">{{rank_llianti}}{{if player.血气 >= expmax_llianti}} [可破体] {{/if}}</div>
           <div class="progress-bar-container">
-            <div class="progress-bar"
-              style="background: linear-gradient(to right, {{strand_llianti.leftColor}}, {{strand_llianti.rightColor}}); width: {{strand_llianti.num}}%">
+            <div class="progress-bar pb-body" style="width: {{strand_llianti.num}}%">
             </div>
             <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
           </div>
@@ -56,8 +53,7 @@
         <div class="progress-card">
           <div class="progress-title">{{rank_liandan}}</div>
           <div class="progress-bar-container">
-            <div class="progress-bar"
-              style="background: linear-gradient(to right, {{strand_liandan.leftColor}}, {{strand_liandan.rightColor}}); width: {{strand_liandan.num}}%">
+            <div class="progress-bar pb-job" style="width: {{strand_liandan.num}}%">
             </div>
             <div class="progress-text">{{player.occupation_exp}} / {{expmax_liandan}}</div>
           </div>

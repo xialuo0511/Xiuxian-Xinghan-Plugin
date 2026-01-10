@@ -241,3 +241,20 @@ body {
     color: #fff;
     text-shadow: 1px 1px 2px #000;
 }
+
+/* 进度条颜色兼容 */
+.pb-hp {
+    background: linear-gradient(to right, #ff8383, #f81e1e);
+}
+
+.pb-exp {
+    background: linear-gradient(to right, #02e4f8, #0077ff);
+}
+
+.pb-body {
+    background: linear-gradient(to right, #fae99b, #e89b24);
+}
+
+.pb-job {
+    background: linear-gradient(to right, #BA55D3, #8A2BE2);
+}
