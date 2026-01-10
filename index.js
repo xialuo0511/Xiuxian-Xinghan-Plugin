@@ -3,10 +3,14 @@ import { fork } from 'child_process';
 import path from 'path';
 import Config from './model/Config.js';
 import chalk from 'chalk';
+import { scheduleBackup } from './logic/backup_scheduler.js';
 
 const versionData = Config.getdefSet('version', 'version');
 logger.info(`__________________________`);
 logger.info(chalk.yellow(`【星瀚修仙】${versionData[0].version}「${versionData[0].name}」初始化`));
+
+// 初始化定时备份
+scheduleBackup();
 
 const __dirname = path.resolve();
 const pluginRoot = path.join(__dirname, 'plugins', 'xiuxian-emulator-plugin');
