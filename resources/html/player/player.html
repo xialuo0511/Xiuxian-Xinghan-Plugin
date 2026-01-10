@@ -4,15 +4,8 @@
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <link href="#" rel="shortcut icon" />
+  {{@skinStyle}}
   <style>
-    :root {
-        {
-          {
-          @skinCss
-        }
-      }
-    }
-
     @font-face {
       font-family: "tttgbnumber";
       src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
@@ -79,7 +72,7 @@
     .player-name {
       font-family: "NZBZ", sans-serif;
       font-size: 32px;
-      color: #6a3906;
+      color: var(--skin-primary, #6a3906);
       margin-top: 5px;
     }
 
@@ -216,7 +209,7 @@
       width: 18px;
       height: 18px;
       margin-right: 8px;
-      fill: #7a5533;
+      fill: var(--skin-accent, #7a5533);
     }
 
     .equipment-grid {

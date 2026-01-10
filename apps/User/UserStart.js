@@ -130,21 +130,24 @@ export class UserStart extends plugin {
     // 加载玩家的皮肤配置
     const SkinLogic = await import('../../logic/skin_logic.js');
     const skinConfig = await SkinLogic.GetPlayerCurrentSkin(usr_qq);
+    console.log(`[SkinDebug] User: ${usr_qq}, Skin: ${skinConfig?.id}, Name: ${skinConfig?.name}`);
     renderData.skinConfig = skinConfig;
 
-    // 生成皮肤CSS变量
+    // 生成皮肤CSS样式块
     if (skinConfig && skinConfig.colors) {
       const c = skinConfig.colors;
-      renderData.skinCss = `
+      renderData.skinStyle = `<style>
+      :root {
         --skin-primary: ${c.primary || '#6a3906'};
         --skin-secondary: ${c.secondary || '#a88763'};
         --skin-background: ${c.background || 'rgba(253, 250, 245, 0.88)'};
         --skin-text: ${c.text || '#4a2c1a'};
         --skin-border: ${c.border || '#d2b48c'};
         --skin-accent: ${c.accent || '#7a5533'};
-      `;
+      }
+      </style>`;
     } else {
-      renderData.skinCss = '';
+      renderData.skinStyle = '';
     }
 
     // 生成图片并回复
