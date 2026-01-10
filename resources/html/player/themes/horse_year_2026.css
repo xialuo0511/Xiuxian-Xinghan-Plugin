@@ -184,9 +184,9 @@ body {
 /* --- 信息网格 --- */
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    /* 改为3列，更紧凑 */
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    /* 改为2列，更清晰 */
+    gap: 12px;
 }
 
 .info-item {
@@ -198,9 +198,13 @@ body {
 }
 
 .info-label {
-    color: #aaa;
-    font-size: 12px;
-    margin-right: 5px;
+    color: #FFD700;
+    font-size: 13px;
+    width: 80px;
+    text-align: right;
+    flex-shrink: 0;
+    margin-right: 10px;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
 .info-value {
@@ -249,6 +253,9 @@ body {
 }
 
 .stat-line svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
     margin-right: 8px;
     fill: #FFD700;
 }
