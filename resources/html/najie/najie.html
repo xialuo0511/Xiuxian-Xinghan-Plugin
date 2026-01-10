@@ -1,343 +1,136 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <link href="#" rel="shortcut icon" />
-  <style type="text/css">
-      /* --- 字体定义 --- */
-      @font-face {
-          font-family: "tttgbnumber";
-          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
-      }
-
-      @font-face {
-          font-family: "NZBZ";
-          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
-      }
-
-      /* --- 基础样式 --- */
-      body {
-          width: 800px;
-          margin: 0;
-          padding: 20px;
-          background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
-          background-size: cover;
-          background-position: center;
-          font-family: "tttgbnumber", sans-serif;
-          color: #4a2c1a;
-      }
-
-      /* --- 主容器 --- */
-      .panel-container {
-          background: rgba(253, 250, 245, 0.88);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          border: 2px solid #a88763;
-          border-radius: 15px;
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-          padding: 20px;
-      }
-
-      /* --- 顶部信息 --- */
-      .header-section {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-          padding-bottom: 20px;
-          border-bottom: 2px dashed #d2b48c;
-      }
-
-      .avatar {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          border: 3px solid #c8a87e;
-          flex-shrink: 0;
-      }
-
-      .info-bars {
-          flex-grow: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-      }
-
-      .info-bar-row {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-      }
-
-      .info-label {
-          font-family: "NZBZ", sans-serif;
-          font-size: 20px;
-          color: #7a5533;
-          width: 80px;
-      }
-
-      .progress-bar-container {
-          width: 100%;
-          height: 26px;
-          background-color: rgba(0, 0, 0, 0.15);
-          border-radius: 13px;
-          padding: 4px;
-          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
-      }
-
-      .progress-bar {
-          height: 100%;
-          border-radius: 9px;
-          position: relative;
-          transition: width 0.5s ease-in-out;
-      }
-
-      .progress-text {
-          position: absolute;
-          width: 100%;
-          text-align: center;
-          color: white;
-          font-size: 14px;
-          font-weight: bold;
-          text-shadow: 1px 1px 1px #000;
-          line-height: 18px;
-      }
-
-      /* --- 物品展示区 --- */
-      .content-section {
-          padding-top: 20px;
-      }
-
-      .grid-title {
-          font-family: "NZBZ", sans-serif;
-          font-size: 28px;
-          text-align: center;
-          color: #6a3906;
-          margin-bottom: 15px;
-      }
-
-      .item-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr); /* 每行4个物品 */
-          gap: 15px;
-          min-height: 480px; /* 固定高度防止图片抖动 */
-      }
-
-      .item-card {
-          background: rgba(255, 255, 255, 0.4);
-          border: 1px solid #d2b48c;
-          border-radius: 8px;
-          padding: 10px;
-          display: flex;
-          flex-direction: column;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .item-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid #d2b48c;
-          padding-bottom: 5px;
-          margin-bottom: 5px;
-      }
-
-      .item-name {
-          font-family: "NZBZ", sans-serif;
-          font-size: 16px;
-          color: #6a3906;
-      }
-
-      .item-category {
-          font-size: 12px;
-          color: white;
-          padding: 2px 6px;
-          border-radius: 4px;
-          text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-      }
-
-      .item-details {
-          font-size: 14px;
-          line-height: 1.7;
-          flex-grow: 1;
-      }
-
-      .item-footer {
-          margin-top: auto;
-          padding-top: 8px;
-          font-size: 13px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-      }
-
-      /* 【新增】锁定状态样式 */
-      .lock-status {
-          display: flex;
-          align-items: center;
-          font-weight: bold;
-      }
-
-      .lock-status.locked {
-          color: #c0392b; /* 红色 */
-      }
-
-      .lock-status.unlocked {
-          color: #27ae60; /* 绿色 */
-      }
-
-      .lock-status svg {
-          width: 14px;
-          height: 14px;
-          margin-right: 4px;
-      }
-
-      /* --- 分页与页脚 --- */
-      .pagination {
-          text-align: center;
-          margin-top: 20px;
-          font-size: 16px;
-          color: #7a5533;
-      }
-
-      .footer {
-          text-align: center;
-          font-size: 12px;
-          color: #a88763;
-          margin-top: 10px;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-      }
-
-      .item-desc {
-          font-size: 12px; /* 字体可以小一些 */
-          color: #888; /* 使用灰色以区分其他属性 */
-          padding-top: 6px;
-          margin-top: 6px;
-          border-top: 1px solid #eee; /* 在上方增加一条细分隔线 */
-          line-height: 1.5; /* 增加行高，方便阅读长文本 */
-      }
-
-      .item-expiration {
-          font-size: 12px;
-          color: #e74c3c; /* 使用醒目的红色 */
-          font-weight: bold;
-          margin-top: 5px;
-          text-align: left;
-      }
+  <link rel="stylesheet"
+    href="file:///{{pluResPath}}/html/najie/themes/{{if skinConfig}}{{skinConfig.id}}{{else}}default{{/if}}.css" />
+  <style>
+    body {
+      background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
+    }
   </style>
 </head>
+
 <body>
-<div class="panel-container" id="capture">
-  <div class="header-section">
-    <img class="avatar" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'"
-         src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}" />
-    <div class="info-bars">
-      <div class="info-bar-row">
-        <span class="info-label">{{player.名号}}</span>
-        <div class="progress-bar-container">
-          <div class="progress-bar" style="background: linear-gradient(to right, #e57373, #d32f2f);"
-               {{strand_hp.style}}>
-            <div class="progress-text">生命: {{player.当前血量}} / {{player.血量上限}}</div>
+  <div class="panel-container" id="capture">
+    <div class="header-section">
+      <img class="avatar" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'" src="{{head_pic}}" />
+      <!-- 注意：head_pic 在 UserStart/Home里可能是 head_pic, 纳戒logic里没看到head_pic -->
+      <!-- 检查 prepareNajieRenderData: 没看到 head_pic 注入。 -->
+      <!-- 原始 najie.html: src="https://q1.qlogo.cn/g?b=qq&s=0&nk={{user_id}}" -->
+      <!-- 我应该保留原始的 src -->
+
+      <div class="info-bars">
+        <div class="info-bar-row">
+          <span class="info-label">{{player.名号}}</span>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="background: linear-gradient(to right, #e57373, #d32f2f);"
+              {{strand_hp.style}}>
+              <div class="progress-text">生命: {{player.当前血量}} / {{player.血量上限}}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="info-bar-row">
-        <span class="info-label">纳戒 L{{najie.等级}}</span>
-        <div class="progress-bar-container">
-          <div class="progress-bar" style="background: linear-gradient(to right, #64B5F6, #1976D2);"
-               {{strand_lingshi.style}}>
-            <div class="progress-text">灵石: {{najie.灵石}} / {{najie.灵石上限}}</div>
+        <div class="info-bar-row">
+          <span class="info-label">纳戒 L{{najie.等级}}</span>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="background: linear-gradient(to right, #64B5F6, #1976D2);"
+              {{strand_lingshi.style}}>
+              <div class="progress-text">灵石: {{najie.灵石}} / {{najie.灵石上限}}</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="content-section">
-    <div class="grid-title">洞天宝库</div>
-    <div class="item-grid">
-      {{each paginatedItems item}}
-      <div class="item-card">
-        <div class="item-header">
-          <span class="item-name">{{item.name}}</span>
-          <span class="item-category" style="background-color: {{colorMap[item.category] || '#95a5a6'}};">
-            {{item.category}}
-          </span>
-        </div>
-        <div class="item-details">
-          {{if item.category == "装备"}}
-          <div>攻击: {{item.atk}}</div>
-          <div>防御: {{item.def}}</div>
-          <div>血量: {{item.HP}}</div>
-          <div>附魔: {{item.fumo || '无'}}</div>
-          <div>暴击: {{(item.bao * 100).toFixed(0)}}%</div>
-          {{else if item.category == "丹药"}}
-          {{if item.exp > 0}}
-          <div>增加修为: {{item.exp}}</div>
-          {{/if}}
-          {{if item.HPp > 0}}
-          <div>生命恢复: {{item.HPp*100}}%</div>
-          {{/if}}
-          {{if item.maxHP > 0}}
-          <div>生命上限+: {{item.maxHP}}</div>
-          {{/if}}
-          {{if item.maxDef > 0}}
-          <div>防御上限+: {{item.maxDef}}</div>
-          {{/if}}
-          {{if item.maxAtK > 0}}
-          <div>攻击上限+: {{item.maxAtK}}</div>
-          {{/if}}
-          {{if item.xingyun > 0}}
-          <div>增加幸运: {{(item.xingyun*100).toFixed(1)}}%</div>
-          {{/if}}
-          {{if item.xueqi > 0}}
-          <div>增加血气: {{item.xueqi}}</div>
-          {{/if}}
-          {{else if item.category == "仙宠"}}
-          <div>等级: [{{item.等级}}/{{item.等级上限}}]</div>
-          <div>攻防血加成: [{{item.atk}}/{{item.def}}/{{item.HP}}]</div>
-          <div>{{item.type}}加成: {{(item.加成*100).toFixed(1)}}%</div>
-          <div>绑定: {{if item.灵魂绑定==1}}存在{{else}}无{{/if}}</div>
-          {{else}}
-          <div>&nbsp;</div> <!-- 其他类型占位 -->
-          {{/if}}
-        </div>
-        {{if item.endTime}}
-        <div class="item-expiration">
-          <span>过期时间: {{item.endTime}}</span>
-        </div>
-        {{/if}}
-        {{if item.desc}}
-        <div class="item-desc">{{item.desc}}</div>
-        {{/if}}
-        <div class="item-footer">
-          <span>数量: {{item.数量}}</span>
-          {{if item.islockd == 1}}
-          <div class="lock-status locked">
-            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-            </svg>
-            <span>已锁定</span>
+    <div class="content-section">
+      <div class="grid-title">洞天宝库</div>
+      <div class="item-grid">
+        {{each paginatedItems item}}
+        <div class="item-card">
+          <div class="item-header">
+            <span class="item-name">{{item.name}}</span>
+            <span class="item-category" style="background-color: {{colorMap[item.category] || '#95a5a6'}};">
+              {{item.category}}
+            </span>
           </div>
-          {{else}}
-          <div class="lock-status unlocked">
-            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h2c0-1.65 1.35-3 3-3s3 1.35 3 3v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-            </svg>
-            <span>{{item.出售价}}灵石</span>
+          <div class="item-details">
+            {{if item.category == "装备"}}
+            <div>攻击: {{item.atk}}</div>
+            <div>防御: {{item.def}}</div>
+            <div>血量: {{item.HP}}</div>
+            <div>附魔: {{item.fumo || '无'}}</div>
+            <div>暴击: {{(item.bao * 100).toFixed(0)}}%</div>
+            {{else if item.category == "丹药"}}
+            {{if item.exp > 0}}
+            <div>增加修为: {{item.exp}}</div>
+            {{/if}}
+            {{if item.HPp > 0}}
+            <div>生命恢复: {{item.HPp*100}}%</div>
+            {{/if}}
+            {{if item.maxHP > 0}}
+            <div>生命上限+: {{item.maxHP}}</div>
+            {{/if}}
+            {{if item.maxDef > 0}}
+            <div>防御上限+: {{item.maxDef}}</div>
+            {{/if}}
+            {{if item.maxAtK > 0}}
+            <div>攻击上限+: {{item.maxAtK}}</div>
+            {{/if}}
+            {{if item.xingyun > 0}}
+            <div>增加幸运: {{(item.xingyun*100).toFixed(1)}}%</div>
+            {{/if}}
+            {{if item.xueqi > 0}}
+            <div>增加血气: {{item.xueqi}}</div>
+            {{/if}}
+            {{else if item.category == "仙宠"}}
+            <div>等级: [{{item.等级}}/{{item.等级上限}}]</div>
+            <div>攻防血加成: [{{item.atk}}/{{item.def}}/{{item.HP}}]</div>
+            <div>{{item.type}}加成: {{(item.加成*100).toFixed(1)}}%</div>
+            <div>绑定: {{if item.灵魂绑定==1}}存在{{else}}无{{/if}}</div>
+            {{else}}
+            <div>&nbsp;</div> <!-- 其他类型占位 -->
+            {{/if}}
+          </div>
+          {{if item.endTime}}
+          <div class="item-expiration">
+            <span>过期时间: {{item.endTime}}</span>
           </div>
           {{/if}}
+          {{if item.desc}}
+          <div class="item-desc">{{item.desc}}</div>
+          {{/if}}
+          <div class="item-footer">
+            <span>数量: {{item.数量}}</span>
+            {{if item.islockd == 1}}
+            <div class="lock-status locked">
+              <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+              </svg>
+              <span>已锁定</span>
+            </div>
+            {{else}}
+            <div class="lock-status unlocked">
+              <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h2c0-1.65 1.35-3 3-3s3 1.35 3 3v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+              </svg>
+              <span>{{item.出售价}}灵石</span>
+            </div>
+            {{/if}}
+          </div>
         </div>
+        {{/each}}
       </div>
-      {{/each}}
     </div>
-  </div>
 
-  <div class="pagination">
-    第 {{pagination.currentPage}} / {{pagination.totalPages}} 页 (共 {{pagination.totalItems}} 件物品)
+    <div class="pagination">
+      第 {{pagination.currentPage}} / {{pagination.totalPages}} 页 (共 {{pagination.totalItems}} 件物品)
+    </div>
+    <div class="footer">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
   </div>
-  <div class="footer">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
-</div>
 </body>
+
 </html>

@@ -1,0 +1,228 @@
+/* --- 字体定义 --- */
+@font-face {
+    font-family: "tttgbnumber";
+    src: url("../../../font/tttgbnumber.ttf");
+}
+
+@font-face {
+    font-family: "NZBZ";
+    src: url("../../../font/NZBZ.TTF");
+}
+
+/* --- 基础样式 --- */
+body {
+    width: 800px;
+    margin: 0;
+    padding: 20px;
+    /* 背景图由内联样式动态设置 */
+    background-size: cover;
+    background-position: center;
+    font-family: "tttgbnumber", sans-serif;
+    color: #4a2c1a;
+}
+
+/* --- 主容器 --- */
+.panel-container {
+    background: rgba(253, 250, 245, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid #a88763;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+}
+
+/* --- 顶部信息 --- */
+.header-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px dashed #d2b48c;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #c8a87e;
+    flex-shrink: 0;
+}
+
+.info-bars {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-label {
+    font-family: "NZBZ", sans-serif;
+    font-size: 20px;
+    color: #7a5533;
+    width: 80px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 26px;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 13px;
+    padding: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 9px;
+    position: relative;
+    transition: width 0.5s ease-in-out;
+}
+
+.progress-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #000;
+    line-height: 18px;
+}
+
+/* --- 物品展示区 --- */
+.content-section {
+    padding-top: 20px;
+}
+
+.grid-title {
+    font-family: "NZBZ", sans-serif;
+    font-size: 28px;
+    text-align: center;
+    color: #6a3906;
+    margin-bottom: 15px;
+}
+
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 每行4个物品 */
+    gap: 15px;
+    min-height: 480px;
+    /* 固定高度防止图片抖动 */
+}
+
+.item-card {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid #d2b48c;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d2b48c;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.item-name {
+    font-family: "NZBZ", sans-serif;
+    font-size: 16px;
+    color: #6a3906;
+}
+
+.item-category {
+    font-size: 12px;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.item-details {
+    font-size: 14px;
+    line-height: 1.7;
+    flex-grow: 1;
+}
+
+.item-footer {
+    margin-top: auto;
+    padding-top: 8px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 【新增】锁定状态样式 */
+.lock-status {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.lock-status.locked {
+    color: #c0392b;
+    /* 红色 */
+}
+
+.lock-status.unlocked {
+    color: #27ae60;
+    /* 绿色 */
+}
+
+.lock-status svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+}
+
+/* --- 分页与页脚 --- */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #7a5533;
+}
+
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: #a88763;
+    margin-top: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.item-desc {
+    font-size: 12px;
+    /* 字体可以小一些 */
+    color: #888;
+    /* 使用灰色以区分其他属性 */
+    padding-top: 6px;
+    margin-top: 6px;
+    border-top: 1px solid #eee;
+    /* 在上方增加一条细分隔线 */
+    line-height: 1.5;
+    /* 增加行高，方便阅读长文本 */
+}
+
+.item-expiration {
+    font-size: 12px;
+    color: #e74c3c;
+    /* 使用醒目的红色 */
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: left;
+}

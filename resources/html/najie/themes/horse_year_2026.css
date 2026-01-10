@@ -1,0 +1,282 @@
+/* --- 字体定义 --- */
+@font-face {
+    font-family: "tttgbnumber";
+    src: url("../../../font/tttgbnumber.ttf");
+}
+
+@font-face {
+    font-family: "NZBZ";
+    src: url("../../../font/NZBZ.TTF");
+}
+
+/* --- 基础样式 --- */
+body {
+    width: 800px;
+    margin: 0;
+    padding: 20px;
+    /* 背景图由内联样式动态设置 */
+    background-color: #2b0a0a;
+    /* 深红背景兜底 */
+    background-size: cover;
+    background-position: center;
+    font-family: "tttgbnumber", sans-serif;
+    color: #F5E6D3;
+    /* 米色文字，适应深色背景 */
+}
+
+/* --- 主容器 --- */
+.panel-container {
+    background: rgba(60, 10, 10, 0.9);
+    /* 深红且高不透明度 */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid #DAA520;
+    /* 金色边框 */
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    /* 金色发光阴影 */
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 装饰性角标 */
+.panel-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    border-top: 3px solid #FFD700;
+    border-left: 3px solid #FFD700;
+    border-radius: 18px 0 0 0;
+}
+
+.panel-container::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border-bottom: 3px solid #FFD700;
+    border-right: 3px solid #FFD700;
+    border-radius: 0 0 18px 0;
+}
+
+/* --- 顶部信息 --- */
+.header-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #FFD700;
+    /* 金色分割线 */
+    background: linear-gradient(180deg, rgba(139, 0, 0, 0.3) 0%, rgba(60, 10, 10, 0) 100%);
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #FFD700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    flex-shrink: 0;
+}
+
+.info-bars {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.info-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.info-label {
+    font-family: "NZBZ", sans-serif;
+    font-size: 22px;
+    color: #FFD700;
+    /* 金色标签 */
+    width: 80px;
+    text-shadow: 0 0 3px #B22222;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 26px;
+    background-color: rgba(50, 0, 0, 0.5);
+    border-radius: 13px;
+    padding: 4px;
+    border: 1px solid #800000;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 9px;
+    position: relative;
+    transition: width 0.5s ease-in-out;
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.progress-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+    line-height: 18px;
+    z-index: 2;
+}
+
+/* --- 物品展示区 --- */
+.content-section {
+    padding-top: 10px;
+}
+
+.grid-title {
+    font-family: "NZBZ", sans-serif;
+    font-size: 30px;
+    text-align: center;
+    color: #FFD700;
+    margin-bottom: 20px;
+    text-shadow: 0 0 5px #ff4500;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    padding-bottom: 10px;
+}
+
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    min-height: 480px;
+}
+
+.item-card {
+    background: linear-gradient(135deg, rgba(80, 20, 20, 0.8), rgba(40, 10, 10, 0.9));
+    border: 1px solid #DAA520;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+/* .item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+} */
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #DAA520;
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+}
+
+.item-name {
+    font-family: "NZBZ", sans-serif;
+    font-size: 17px;
+    color: #FFD700;
+    text-shadow: 0 0 2px #000;
+}
+
+.item-category {
+    font-size: 12px;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.item-details {
+    font-size: 14px;
+    line-height: 1.7;
+    flex-grow: 1;
+    color: #F5E6D3;
+}
+
+.item-footer {
+    margin-top: auto;
+    padding-top: 8px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed rgba(218, 165, 32, 0.3);
+}
+
+/* 锁定状态样式 */
+.lock-status {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.lock-status.locked {
+    color: #ff6b6b;
+    /* 更亮的红色 */
+}
+
+.lock-status.unlocked {
+    color: #2ecc71;
+    /* 更亮的绿色 */
+}
+
+.lock-status svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+/* --- 分页与页脚 --- */
+.pagination {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 16px;
+    color: #FFD700;
+    text-shadow: 0 0 2px #000;
+}
+
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: #DAA520;
+    margin-top: 15px;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.item-desc {
+    font-size: 12px;
+    color: #dcdde1;
+    /* 浅灰色 */
+    padding-top: 6px;
+    margin-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    line-height: 1.5;
+}
+
+.item-expiration {
+    font-size: 12px;
+    color: #ff7675;
+    /* 柔和红色 */
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: left;
+}

@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs'; // 引入拼音库
 import YAML from 'yaml';
 import { loadItemConfig } from '../model/ConfigLoader.js';
+import { GetPlayerCurrentSkin } from './skin_logic.js';
 
 
 const versionData = config.getdefSet('version', 'version');
@@ -35,8 +36,13 @@ function paginateItems(najie, options = {}) {
   } = options;
 
   const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
-  const file = fs.readFileSync(configPath, 'utf8');
-  let activitySchedule = YAML.parse(file);
+  let activitySchedule = null;
+  try {
+    if (fs.existsSync(configPath)) {
+      const file = fs.readFileSync(configPath, 'utf8');
+      activitySchedule = YAML.parse(file);
+    }
+  } catch (e) { }
 
   let allItems = [];
   for (const category in najie) {
@@ -118,6 +124,8 @@ export async function prepareNajieRenderData(userId, options = {}) {
     return { status: 'error', message: '无法获取玩家信息。' };
   }
 
+  const skinConfig = await GetPlayerCurrentSkin(userId);
+
   const defaultColors = loadItemConfig('category_colors.yaml');
   let colorMap = {};
   defaultColors.forEach(item => {
@@ -149,6 +157,7 @@ export async function prepareNajieRenderData(userId, options = {}) {
   return {
     status: 'success',
     renderData: {
+      skinConfig: skinConfig,
       pifu: player.练气皮肤,
       user_id: userId,
       player: player,
