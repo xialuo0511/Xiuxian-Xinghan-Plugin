@@ -19,7 +19,11 @@ export class BackupSystem extends plugin {
                 },
                 {
                     reg: '^#还原备份(\\d+)$',
-                    fnc: 'restoreBackup'
+                    fnc: 'requestRestoreBackup'
+                },
+                {
+                    reg: '^#确认还原(\\d+)$',
+                    fnc: 'confirmRestoreBackup'
                 },
                 {
                     reg: '^#删除备份(\\d+)$',
@@ -31,6 +35,9 @@ export class BackupSystem extends plugin {
                 }
             ]
         });
+
+        // 存储待确认的还原请求 { masterId: { backupId, timestamp } }
+        this.pendingRestores = {};
     }
 
     /**
@@ -84,9 +91,9 @@ export class BackupSystem extends plugin {
     }
 
     /**
-     * 还原备份
+     * 请求还原备份（第一步：等待确认）
      */
-    async restoreBackup(e) {
+    async requestRestoreBackup(e) {
         if (!e.isMaster) {
             return e.reply('仅管理员可使用此指令');
         }
@@ -98,11 +105,66 @@ export class BackupSystem extends plugin {
 
         const backupId = parseInt(match[1], 10);
 
-        // 二次确认
-        await e.reply(`⚠️ 即将还原备份 [${backupId}]，此操作将覆盖当前数据！\n请在10秒内再次发送 #确认还原${backupId} 以确认`);
+        // 检查备份是否存在
+        const backups = BackupLogic.ListBackups();
+        const backup = backups.find(b => b.id === backupId);
+        if (!backup) {
+            return e.reply(`❌ 未找到编号为 ${backupId} 的备份`);
+        }
 
-        // 设置一个临时标记（简化处理，直接执行）
-        // 实际生产中应该添加确认机制
+        // 存储待确认请求
+        const masterId = e.user_id;
+        this.pendingRestores[masterId] = {
+            backupId: backupId,
+            timestamp: Date.now()
+        };
+
+        await e.reply(`⚠️ 即将还原备份 [${backupId}]\n📅 ${backup.timestamp}\n📦 ${backup.size}\n\n此操作将覆盖当前数据！\n请在 30 秒内发送 #确认还原${backupId} 以确认`);
+
+        // 30秒后自动清除待确认状态
+        setTimeout(() => {
+            if (this.pendingRestores[masterId]?.backupId === backupId) {
+                delete this.pendingRestores[masterId];
+            }
+        }, 30000);
+
+        return true;
+    }
+
+    /**
+     * 确认还原备份（第二步：真正执行）
+     */
+    async confirmRestoreBackup(e) {
+        if (!e.isMaster) {
+            return e.reply('仅管理员可使用此指令');
+        }
+
+        const match = e.msg.match(/^#确认还原(\d+)$/);
+        if (!match) {
+            return e.reply('格式错误，请使用：#确认还原1');
+        }
+
+        const backupId = parseInt(match[1], 10);
+        const masterId = e.user_id;
+
+        // 检查是否有待确认的请求
+        const pending = this.pendingRestores[masterId];
+        if (!pending) {
+            return e.reply('❌ 没有待确认的还原请求，请先发送 #还原备份编号');
+        }
+
+        if (pending.backupId !== backupId) {
+            return e.reply(`❌ 确认编号不匹配，待确认的是备份 [${pending.backupId}]`);
+        }
+
+        // 检查是否超时（30秒）
+        if (Date.now() - pending.timestamp > 30000) {
+            delete this.pendingRestores[masterId];
+            return e.reply('❌ 确认超时，请重新发送 #还原备份编号');
+        }
+
+        // 清除待确认状态
+        delete this.pendingRestores[masterId];
 
         await e.reply('正在还原备份，请稍候...');
 
