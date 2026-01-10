@@ -1,408 +1,429 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="content-type" />
   <link href="#" rel="shortcut icon" />
   <style>
-      @font-face {
-          font-family: "tttgbnumber";
-          src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+    /* 皮肤CSS变量 */
+    :root {
+        {
+          {
+          @skinCss
+        }
       }
+    }
 
-      @font-face {
-          font-family: "NZBZ";
-          src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
-      }
+    @font-face {
+      font-family: "tttgbnumber";
+      src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+    }
 
-      body {
-          width: 600px;
-          margin: 0;
-          padding: 20px;
-          background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
-          background-size: cover;
-          background-position: center center;
-          font-family: "tttgbnumber", sans-serif;
-          color: #4a2c1a;
-      }
+    @font-face {
+      font-family: "NZBZ";
+      src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+    }
 
-      .panel-container {
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
-      }
+    body {
+      width: 600px;
+      margin: 0;
+      padding: 20px;
+      background-image: url('file:///{{pluResPath}}/img/player_pifu/{{pifu}}.jpg');
+      background-size: cover;
+      background-position: center center;
+      font-family: "tttgbnumber", sans-serif;
+      color: var(--skin-text, #4a2c1a);
+    }
 
-      .card-base {
-          background: rgba(253, 250, 245, 0.88);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border: 2px solid #a88763;
-          border-radius: 12px;
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-          padding: 15px;
-      }
+    .panel-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-      .main-header {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-      }
+    .card-base {
+      background: rgba(253, 250, 245, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 2px solid var(--skin-secondary, #a88763);
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      padding: 15px;
+    }
 
-      .avatar-frame {
-          width: 180px;
-          height: 180px;
-          background-image: url("file:///{{pluResPath}}/img/touxiang/{{touxiang}}.png");
-          background-size: 100% 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 20px;
-          box-sizing: border-box;
-      }
+    .main-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
 
-      .avatar-image {
-          width: 120px;
-          height: 120px;
-          border-radius: 50%;
-          border: 3px solid #c8a87e;
-      }
+    .avatar-frame {
+      width: 180px;
+      height: 180px;
+      background-image: url("file:///{{pluResPath}}/img/touxiang/{{touxiang}}.png");
+      background-size: 100% 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
 
-      .player-name {
-          font-family: "NZBZ", sans-serif;
-          font-size: 32px;
-          color: #6a3906;
-          margin-top: 5px;
-      }
+    .avatar-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #c8a87e;
+    }
 
-      .player-title {
-          font-family: "NZBZ", sans-serif;
-          font-size: 32px;
-          color: #b8860b; /* 暗金色，清晰且有质感 */
-          font-weight: bold;
-          margin-top: 8px;
-          margin-bottom: 5px;
-          letter-spacing: 4px;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-          padding: 2px 20px;
-          border-top: 1px solid rgba(184, 134, 11, 0.2);
-          border-bottom: 1px solid rgba(184, 134, 11, 0.2);
-          text-align: center;
-      }
+    .player-name {
+      font-family: "NZBZ", sans-serif;
+      font-size: 32px;
+      color: var(--skin-primary, #6a3906);
+      margin-top: 5px;
+    }
 
-      .power-display {
-          padding: 5px 20px;
-          font-family: "NZBZ", sans-serif;
-          font-size: 24px;
-          background: linear-gradient(145deg, #c8a87e, #a88763);
-          color: #fff;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-          border-radius: 8px;
-          border: 1px solid #8c6f4d;
-      }
+    .player-title {
+      font-family: "NZBZ", sans-serif;
+      font-size: 32px;
+      color: #b8860b;
+      /* 暗金色，清晰且有质感 */
+      font-weight: bold;
+      margin-top: 8px;
+      margin-bottom: 5px;
+      letter-spacing: 4px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      padding: 2px 20px;
+      border-top: 1px solid rgba(184, 134, 11, 0.2);
+      border-bottom: 1px solid rgba(184, 134, 11, 0.2);
+      text-align: center;
+    }
 
-      .realm-progress-section {
-          width: 100%;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          margin-top: 10px;
-      }
+    .power-display {
+      padding: 5px 20px;
+      font-family: "NZBZ", sans-serif;
+      font-size: 24px;
+      background: linear-gradient(145deg, #c8a87e, #a88763);
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      border: 1px solid #8c6f4d;
+    }
 
-      .progress-card {
-          text-align: left;
-      }
+    .realm-progress-section {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-      .progress-title {
-          font-size: 16px;
-          font-weight: 600;
-          color: #7a5533;
-      }
+    .progress-card {
+      text-align: left;
+    }
 
-      .progress-bar-container {
-          width: 100%;
-          height: 20px;
-          background-color: rgba(0, 0, 0, 0.1);
-          border-radius: 10px;
-          margin-top: 4px;
-          position: relative;
-      }
+    .progress-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #7a5533;
+    }
 
-      .progress-bar {
-          height: 100%;
-          border-radius: 10px;
-          transition: width 0.5s ease-in-out;
-      }
+    .progress-bar-container {
+      width: 100%;
+      height: 20px;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      margin-top: 4px;
+      position: relative;
+    }
 
-      .progress-text {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          line-height: 20px;
-          text-align: center;
-          color: white;
-          font-size: 12px;
-          font-weight: bold;
-          text-shadow: 1px 1px 1px #000;
-          z-index: 2;
-      }
+    .progress-bar {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.5s ease-in-out;
+    }
 
-      .info-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px 20px;
-          text-align: left;
-          font-size: 16px;
-          padding: 0 10px;
-      }
+    .progress-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      line-height: 20px;
+      text-align: center;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      text-shadow: 1px 1px 1px #000;
+      z-index: 2;
+    }
 
-      .info-item {
-          display: flex;
-      }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 20px;
+      text-align: left;
+      font-size: 16px;
+      padding: 0 10px;
+    }
 
-      .info-label {
-          font-weight: 600;
-          color: #7a5533;
-          width: 85px;
-          flex-shrink: 0;
-      }
+    .info-item {
+      display: flex;
+    }
 
-      .info-value {
-          color: #4a2c1a;
-      }
+    .info-label {
+      font-weight: 600;
+      color: #7a5533;
+      width: 85px;
+      flex-shrink: 0;
+    }
 
-      .details-section {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 15px;
-      }
+    .info-value {
+      color: #4a2c1a;
+    }
 
-      .details-card {
-          background: rgba(253, 250, 245, 0.85);
-          border-radius: 8px;
-          padding: 15px;
-          border: 1px solid rgba(168, 135, 99, 0.5);
-      }
+    .details-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
 
-      .details-card-title {
-          font-family: "NZBZ", sans-serif;
-          font-size: 20px;
-          text-align: center;
-          color: #6a3906;
-          margin-bottom: 10px;
-          border-bottom: 1px solid #d2b48c;
-          padding-bottom: 5px;
-      }
+    .details-card {
+      background: rgba(253, 250, 245, 0.85);
+      border-radius: 8px;
+      padding: 15px;
+      border: 1px solid rgba(168, 135, 99, 0.5);
+    }
 
-      .stat-line {
-          display: flex;
-          align-items: center;
-          font-size: 16px;
-          margin-bottom: 8px;
-      }
+    .details-card-title {
+      font-family: "NZBZ", sans-serif;
+      font-size: 20px;
+      text-align: center;
+      color: #6a3906;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #d2b48c;
+      padding-bottom: 5px;
+    }
 
-      .stat-line svg {
-          width: 18px;
-          height: 18px;
-          margin-right: 8px;
-          fill: #7a5533;
-      }
+    .stat-line {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
 
-      .equipment-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-      }
+    .stat-line svg {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      fill: #7a5533;
+    }
 
-      .equipment-item {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 6px;
-          padding: 10px;
-          border: 1px solid rgba(168, 135, 99, 0.3);
-          text-align: center;
-      }
+    .equipment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
 
-      .equipment-name {
-          font-family: "NZBZ", sans-serif;
-          font-size: 16px;
-          color: #6a3906;
-          margin-bottom: 5px;
-          height: 35px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-      }
+    .equipment-item {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      padding: 10px;
+      border: 1px solid rgba(168, 135, 99, 0.3);
+      text-align: center;
+    }
 
-      .equipment-stats {
-          text-align: left;
-          font-size: 13px;
-          color: #4a2c1a;
-          line-height: 1.5;
-      }
+    .equipment-name {
+      font-family: "NZBZ", sans-serif;
+      font-size: 16px;
+      color: #6a3906;
+      margin-bottom: 5px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .footer {
-          text-align: center;
-          font-size: 12px;
-          color: #fff;
-          text-shadow: 1px 1px 2px #000;
-      }
+    .equipment-stats {
+      text-align: left;
+      font-size: 13px;
+      color: #4a2c1a;
+      line-height: 1.5;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
   </style>
 </head>
+
 <body>
-<div class="panel-container" id="capture">
-  <div class="card-base main-header">
-    <div class="avatar-frame">
-      <img class="avatar-image" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'"
-           src="{{head_pic}}" />
+  <div class="panel-container" id="capture">
+    <div class="card-base main-header">
+      <div class="avatar-frame">
+        <img class="avatar-image" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'"
+          src="{{head_pic}}" />
+      </div>
+      <div class="player-name">{{player.名号}}</div>
+      {{if title}}
+      <div class="player-title">{{title}}</div>
+      {{/if}}
+      <div class="power-display">战力 {{PowerMini}}</div>
+      <div class="realm-progress-section">
+        <div class="progress-card">
+          <div class="progress-title">生命</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar"
+              style="background: linear-gradient(to right, {{strand_hp.leftColor}}, {{strand_hp.rightColor}}); width: {{strand_hp.num}}%">
+            </div>
+            <div class="progress-text">{{player.当前血量}} / {{player.血量上限}}</div>
+          </div>
+        </div>
+        <div class="progress-card">
+          <div class="progress-title">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar"
+              style="background: linear-gradient(to right, {{strand_lianqi.leftColor}}, {{strand_lianqi.rightColor}}); width: {{strand_lianqi.num}}%">
+            </div>
+            <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
+          </div>
+        </div>
+        <div class="progress-card">
+          <div class="progress-title">{{rank_llianti}}{{if player.血气 >= expmax_llianti}} [可破体] {{/if}}</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar"
+              style="background: linear-gradient(to right, {{strand_llianti.leftColor}}, {{strand_llianti.rightColor}}); width: {{strand_llianti.num}}%">
+            </div>
+            <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
+          </div>
+        </div>
+        <div class="progress-card">
+          <div class="progress-title">{{rank_liandan}}</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar"
+              style="background: linear-gradient(to right, {{strand_liandan.leftColor}}, {{strand_liandan.rightColor}}); width: {{strand_liandan.num}}%">
+            </div>
+            <div class="progress-text">{{player.occupation_exp}} / {{expmax_liandan}}</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="player-name">{{player.名号}}</div>
-    {{if title}}
-    <div class="player-title">{{title}}</div>
-    {{/if}}
-    <div class="power-display">战力 {{PowerMini}}</div>
-    <div class="realm-progress-section">
-      <div class="progress-card">
-        <div class="progress-title">生命</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar"
-               style="background: linear-gradient(to right, {{strand_hp.leftColor}}, {{strand_hp.rightColor}}); width: {{strand_hp.num}}%"></div>
-          <div class="progress-text">{{player.当前血量}} / {{player.血量上限}}</div>
-        </div>
-      </div>
-      <div class="progress-card">
-        <div class="progress-title">{{rank_lianqi}}{{if player.修为 >= expmax_lianqi}} [可突破] {{/if}}</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar"
-               style="background: linear-gradient(to right, {{strand_lianqi.leftColor}}, {{strand_lianqi.rightColor}}); width: {{strand_lianqi.num}}%"></div>
-          <div class="progress-text">{{player.修为}} / {{expmax_lianqi}}</div>
-        </div>
-      </div>
-      <div class="progress-card">
-        <div class="progress-title">{{rank_llianti}}{{if player.血气 >= expmax_llianti}} [可破体] {{/if}}</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar"
-               style="background: linear-gradient(to right, {{strand_llianti.leftColor}}, {{strand_llianti.rightColor}}); width: {{strand_llianti.num}}%"></div>
-          <div class="progress-text">{{player.血气}} / {{expmax_llianti}}</div>
-        </div>
-      </div>
-      <div class="progress-card">
-        <div class="progress-title">{{rank_liandan}}</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar"
-               style="background: linear-gradient(to right, {{strand_liandan.leftColor}}, {{strand_liandan.rightColor}}); width: {{strand_liandan.num}}%"></div>
-          <div class="progress-text">{{player.occupation_exp}} / {{expmax_liandan}}</div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="card-base">
-    <div class="info-grid">
-      <div class="info-item"><span class="info-label">QQ：</span><span class="info-value">{{user_id}}</span></div>
-      <div class="info-item"><span class="info-label">性别：</span><span class="info-value">{{['未知','女','男','扶她'][player.sex]}}</span>
+    <div class="card-base">
+      <div class="info-grid">
+        <div class="info-item"><span class="info-label">QQ：</span><span class="info-value">{{user_id}}</span></div>
+        <div class="info-item"><span class="info-label">性别：</span><span
+            class="info-value">{{['未知','女','男','扶她'][player.sex]}}</span>
+        </div>
+        <div class="info-item"><span class="info-label">宗门：</span><span
+            class="info-value">【{{this_association.宗门名称}}】</span></div>
+        <div class="info-item"><span class="info-label">职位：</span><span class="info-value">{{if this_association.宗门名称 !=
+            "无"}}[{{this_association.职位}}]{{else}}无{{/if}}</span>
+        </div>
+        <div class="info-item"><span class="info-label">道侣：</span><span class="info-value">【{{婚姻状况}}】</span></div>
+        <div class="info-item"><span class="info-label">灵石：</span><span class="info-value">{{lingshi}}</span></div>
+        <div class="info-item"><span class="info-label">状态：</span><span class="info-value">【{{player_action}}】</span>
+        </div>
+        <div class="info-item"><span class="info-label">道法仙术：</span><span class="info-value">【{{daofa}}】</span></div>
+        <div class="info-item" style="grid-column: 1 / -1;"><span class="info-label">道宣：</span><span
+            class="info-value text-sm italic">"{{player.宣言}}"</span></div>
       </div>
-      <div class="info-item"><span class="info-label">宗门：</span><span
-        class="info-value">【{{this_association.宗门名称}}】</span></div>
-      <div class="info-item"><span class="info-label">职位：</span><span class="info-value">{{if this_association.宗门名称 != "无"}}[{{this_association.职位}}]{{else}}无{{/if}}</span>
-      </div>
-      <div class="info-item"><span class="info-label">道侣：</span><span class="info-value">【{{婚姻状况}}】</span></div>
-      <div class="info-item"><span class="info-label">灵石：</span><span class="info-value">{{lingshi}}</span></div>
-      <div class="info-item"><span class="info-label">状态：</span><span class="info-value">【{{player_action}}】</span>
-      </div>
-      <div class="info-item"><span class="info-label">道法仙术：</span><span class="info-value">【{{daofa}}】</span></div>
-      <div class="info-item" style="grid-column: 1 / -1;"><span class="info-label">道宣：</span><span
-        class="info-value text-sm italic">"{{player.宣言}}"</span></div>
     </div>
-  </div>
 
-  <div class="details-section">
-    <div class="details-card">
-      <div class="details-card-title">斗法属性</div>
-      <div class="stat-line">
-        <svg viewBox="0 0 24 24">
-          <path
-            d="M19.7,3.3C17.5,1,14.5,0,11.5,0S5.5,1,3.3,3.3C1,5.5,0,8.5,0,11.5S1,17.5,3.3,19.7c2.2,2.2,5.2,3.3,8.2,3.3s6-1,8.2-3.3c2.2-2.2,3.3-5.2,3.3-8.2S22,5.5,19.7,3.3z M17.4,17.4c-1.8,1.8-4.2,2.8-6.9,2.8s-5.1-1-6.9-2.8C1.8,15.6,0.8,13.2,0.8,10.5S1.8,5.4,3.6,3.6c1.8-1.8,4.2-2.8,6.9-2.8s5.1,1,6.9,2.8c1.8,1.8,2.8,4.2,2.8,6.9S19.2,15.6,17.4,17.4z M10.4,14.2h3.2v-3H16L11.5,6L7,11.2h3.4V14.2z" />
-        </svg>
-        攻击：{{player_atk}}<sup>{{player_atk2}}</sup></div>
-      <div class="stat-line">
-        <svg viewBox="0 0 24 24">
-          <path
-            d="M12,1L3,5v6c0,5.55,3.84,10.74,9,12c5.16-1.26,9-6.45,9-12V5L12,1z M12,11.99h7c-0.53,4.12-3.28,7.79-7,8.94V12H5V6.3l7-3.11V11.99z" />
-        </svg>
-        防御：{{player_def}}<sup>{{player_def2}}</sup></div>
-      <div class="stat-line">
-        <svg viewBox="0 0 24 24">
-          <path
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-        暴击：{{bao}}
+    <div class="details-section">
+      <div class="details-card">
+        <div class="details-card-title">斗法属性</div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M19.7,3.3C17.5,1,14.5,0,11.5,0S5.5,1,3.3,3.3C1,5.5,0,8.5,0,11.5S1,17.5,3.3,19.7c2.2,2.2,5.2,3.3,8.2,3.3s6-1,8.2-3.3c2.2-2.2,3.3-5.2,3.3-8.2S22,5.5,19.7,3.3z M17.4,17.4c-1.8,1.8-4.2,2.8-6.9,2.8s-5.1-1-6.9-2.8C1.8,15.6,0.8,13.2,0.8,10.5S1.8,5.4,3.6,3.6c1.8-1.8,4.2-2.8,6.9-2.8s5.1,1,6.9,2.8c1.8,1.8,2.8,4.2,2.8,6.9S19.2,15.6,17.4,17.4z M10.4,14.2h3.2v-3H16L11.5,6L7,11.2h3.4V14.2z" />
+          </svg>
+          攻击：{{player_atk}}<sup>{{player_atk2}}</sup>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12,1L3,5v6c0,5.55,3.84,10.74,9,12c5.16-1.26,9-6.45,9-12V5L12,1z M12,11.99h7c-0.53,4.12-3.28,7.79-7,8.94V12H5V6.3l7-3.11V11.99z" />
+          </svg>
+          防御：{{player_def}}<sup>{{player_def2}}</sup>
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          暴击：{{bao}}
+        </div>
+        <div class="stat-line">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8s3.59-8,8-8s8,3.59,8,8S16.41,20,12,20z M12.5,7H11v6l5.25,3.15L17,14.92l-4.5-2.67V7z" />
+          </svg>
+          暴伤：{{(player.暴击伤害*100).toFixed(0)}}%
+        </div>
       </div>
-      <div class="stat-line">
-        <svg viewBox="0 0 24 24">
-          <path
-            d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8s3.59-8,8-8s8,3.59,8,8S16.41,20,12,20z M12.5,7H11v6l5.25,3.15L17,14.92l-4.5-2.67V7z" />
-        </svg>
-        暴伤：{{(player.暴击伤害*100).toFixed(0)}}%
+      <div class="details-card">
+        <div class="details-card-title">天命属性</div>
+        <div class="stat-line">灵根：【{{linggen.type}}】{{linggen.name}}</div>
+        <div class="stat-line">修炼加成：{{talent}}%</div>
+        <div class="stat-line">职业：[{{occupation}}]</div>
+        <div class="stat-line">幸运：{{(player.幸运*100).toFixed(1)}}%</div>
       </div>
     </div>
-    <div class="details-card">
-      <div class="details-card-title">天命属性</div>
-      <div class="stat-line">灵根：【{{linggen.type}}】{{linggen.name}}</div>
-      <div class="stat-line">修炼加成：{{talent}}%</div>
-      <div class="stat-line">职业：[{{occupation}}]</div>
-      <div class="stat-line">幸运：{{(player.幸运*100).toFixed(1)}}%</div>
-    </div>
-  </div>
 
-  <div class="card-base">
-    <div class="details-card-title">装备仙宠</div>
-    <div class="equipment-grid">
-      <div class="equipment-item">
-        <div class="equipment-name">{{equipment.武器.name}}</div>
-        <div class="equipment-stats">
-          <div>攻击: {{(equipment.武器.atk)}} | 防御: {{(equipment.武器.def)}}</div>
-          <div>血量: {{(equipment.武器.HP)}} | 暴击: {{equipment.武器.bao}}</div>
-          <div>评级：【{{武器评级}}】</div>
+    <div class="card-base">
+      <div class="details-card-title">装备仙宠</div>
+      <div class="equipment-grid">
+        <div class="equipment-item">
+          <div class="equipment-name">{{equipment.武器.name}}</div>
+          <div class="equipment-stats">
+            <div>攻击: {{(equipment.武器.atk)}} | 防御: {{(equipment.武器.def)}}</div>
+            <div>血量: {{(equipment.武器.HP)}} | 暴击: {{equipment.武器.bao}}</div>
+            <div>评级：【{{武器评级}}】</div>
+          </div>
         </div>
-      </div>
-      <div class="equipment-item">
-        <div class="equipment-name">{{equipment.护具.name}}</div>
-        <div class="equipment-stats">
-          <div>攻击: {{(equipment.护具.atk)}} | 防御: {{(equipment.护具.def)}}</div>
-          <div>血量: {{(equipment.护具.HP)}} | 暴击: {{equipment.护具.bao}}</div>
-          <div>评级：【{{护具评级}}】</div>
+        <div class="equipment-item">
+          <div class="equipment-name">{{equipment.护具.name}}</div>
+          <div class="equipment-stats">
+            <div>攻击: {{(equipment.护具.atk)}} | 防御: {{(equipment.护具.def)}}</div>
+            <div>血量: {{(equipment.护具.HP)}} | 暴击: {{equipment.护具.bao}}</div>
+            <div>评级：【{{护具评级}}】</div>
+          </div>
         </div>
-      </div>
-      <div class="equipment-item">
-        <div class="equipment-name">{{equipment.法宝.name}}</div>
-        <div class="equipment-stats">
-          <div>攻击: {{(equipment.法宝.atk)}} | 防御: {{(equipment.法宝.def)}}</div>
-          <div>血量: {{(equipment.法宝.HP)}} | 暴击: {{equipment.法宝.bao}}</div>
-          <div>评级：【{{法宝评级}}】</div>
+        <div class="equipment-item">
+          <div class="equipment-name">{{equipment.法宝.name}}</div>
+          <div class="equipment-stats">
+            <div>攻击: {{(equipment.法宝.atk)}} | 防御: {{(equipment.法宝.def)}}</div>
+            <div>血量: {{(equipment.法宝.HP)}} | 暴击: {{equipment.法宝.bao}}</div>
+            <div>评级：【{{法宝评级}}】</div>
+          </div>
         </div>
-      </div>
-      <div class="equipment-item">
-        <div class="equipment-name">{{equipment.项链.name}}</div>
-        <div class="equipment-stats">
-          <div>{{equipment.项链.属性}}属性加成: {{(equipment.项链.加成*100).toFixed(1)}}%</div>
+        <div class="equipment-item">
+          <div class="equipment-name">{{equipment.项链.name}}</div>
+          <div class="equipment-stats">
+            <div>{{equipment.项链.属性}}属性加成: {{(equipment.项链.加成*100).toFixed(1)}}%</div>
+          </div>
         </div>
-      </div>
-      <div class="equipment-item" style="grid-column: 1 / -1;">
-        {{if !仙宠.name || 仙宠.name == "暂无"}}
-        <div class="equipment-name" style="line-height: 70px;">【仙宠暂无】</div>
-        {{else}}
-        <div class="equipment-name">【{{仙宠.品级}}】{{仙宠.name}}</div>
-        <div class="equipment-stats" style="text-align:center;">
-          <span>等级：{{仙宠.等级}} | </span>
-          <span>{{仙宠.type}}加成: {{(仙宠.加成*100).toFixed(1)}}%</span>
+        <div class="equipment-item" style="grid-column: 1 / -1;">
+          {{if !仙宠.name || 仙宠.name == "暂无"}}
+          <div class="equipment-name" style="line-height: 70px;">【仙宠暂无】</div>
+          {{else}}
+          <div class="equipment-name">【{{仙宠.品级}}】{{仙宠.name}}</div>
+          <div class="equipment-stats" style="text-align:center;">
+            <span>等级：{{仙宠.等级}} | </span>
+            <span>{{仙宠.type}}加成: {{(仙宠.加成*100).toFixed(1)}}%</span>
+          </div>
+          {{/if}}
         </div>
-        {{/if}}
       </div>
     </div>
-  </div>
 
-  <div class="footer">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
-</div>
+    <div class="footer">版本:{{修仙版本[0].version}}「{{修仙版本[0].name}}」 by:屑洛(2531606029)</div>
+  </div>
 </body>
+
 </html>

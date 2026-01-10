@@ -126,6 +126,27 @@ export class UserStart extends plugin {
 
     // 将原始数据转换为用于渲染的视图模型
     const renderData = await transformPlayerDataForRender(rawData, e);
+
+    // 加载玩家的皮肤配置
+    const SkinLogic = await import('../../logic/skin_logic.js');
+    const skinConfig = await SkinLogic.GetPlayerCurrentSkin(usr_qq);
+    renderData.skinConfig = skinConfig;
+
+    // 生成皮肤CSS变量
+    if (skinConfig && skinConfig.colors) {
+      const c = skinConfig.colors;
+      renderData.skinCss = `
+        --skin-primary: ${c.primary || '#6a3906'};
+        --skin-secondary: ${c.secondary || '#a88763'};
+        --skin-background: ${c.background || 'rgba(253, 250, 245, 0.88)'};
+        --skin-text: ${c.text || '#4a2c1a'};
+        --skin-border: ${c.border || '#d2b48c'};
+        --skin-accent: ${c.accent || '#7a5533'};
+      `;
+    } else {
+      renderData.skinCss = '';
+    }
+
     // 生成图片并回复
     const dataForPuppeteer = await new Show(e).get_playerData(renderData);
     const img = await puppeteer.screenshot('player', {
