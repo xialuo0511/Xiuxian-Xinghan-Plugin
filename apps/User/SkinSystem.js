@@ -3,7 +3,7 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import * as SkinLogic from '../../logic/skin_logic.js';
 import * as DAL from '../../api/data-access.js';
-import { existplayer } from '../Xiuxian/xiuxian.js';
+// 使用DAL的existPlayer函数
 
 export class SkinSystem extends plugin {
     constructor() {
@@ -46,7 +46,9 @@ export class SkinSystem extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) {
+            return e.reply('请先发送 #踏入仙途 创建角色');
+        }
 
         const { ownedSkins, currentSkinId } = await SkinLogic.GetPlayerSkins(userId);
 
@@ -77,7 +79,9 @@ export class SkinSystem extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) {
+            return e.reply('请先发送 #踏入仙途 创建角色');
+        }
 
         const skinName = e.msg.replace(/^#装备皮肤/, '').trim();
         if (!skinName) {
@@ -103,7 +107,9 @@ export class SkinSystem extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) {
+            return e.reply('请先发送 #踏入仙途 创建角色');
+        }
 
         const skinName = e.msg.replace(/^#测试皮肤/, '').trim();
         if (!skinName) {
@@ -177,7 +183,7 @@ export class SkinSystem extends plugin {
         }
 
         // 检查目标玩家是否存在
-        if (!await existplayer(targetUserId)) {
+        if (!await DAL.existPlayer(targetUserId)) {
             return e.reply('目标玩家不存在');
         }
 
