@@ -1,0 +1,45 @@
+# 皮肤配置文件
+# 定义所有可用的皮肤主题
+
+# 默认皮肤（所有玩家自带）
+- id: "default"
+  name: "默认经典"
+  desc: "经典修仙风格，古朴典雅"
+  isDefault: true
+  colors:
+    primary: "#6a3906"
+    secondary: "#a88763"
+    background: "rgba(253, 250, 245, 0.88)"
+    text: "#4a2c1a"
+    border: "#d2b48c"
+    accent: "#7a5533"
+    progressHp: "linear-gradient(to right, #e57373, #d32f2f)"
+    progressMana: "linear-gradient(to right, #64B5F6, #1976D2)"
+
+# 马年春节限定皮肤
+- id: "horse_year_2026"
+  name: "龙马精神"
+  desc: "2026马年春节限定主题，红金配色，祥瑞满满"
+  eventKey: "newyear_manian_2026"
+  colors:
+    primary: "#C41E3A"
+    secondary: "#FFD700"
+    background: "rgba(139, 0, 0, 0.88)"
+    text: "#F5E6D3"
+    border: "#DAA520"
+    accent: "#FF6347"
+    progressHp: "linear-gradient(to right, #FF6B6B, #C41E3A)"
+    progressMana: "linear-gradient(to right, #FFD700, #DAA520)"
+  styles:
+    panelBorder: "3px solid #DAA520"
+    panelShadow: "0 8px 24px rgba(218, 165, 32, 0.4), inset 0 1px 0 rgba(255, 215, 0, 0.3)"
+    headerBorder: "2px dashed #FFD700"
+    cardBackground: "rgba(139, 0, 0, 0.6)"
+    cardBorder: "1px solid #DAA520"
+    titleColor: "#FFD700"
+    labelColor: "#FFD700"
+
+# 预留：更多皮肤
+# - id: "ice_crystal"
+#   name: "冰晶雪域"
+#   desc: "寒冬主题，冷冽清透"
