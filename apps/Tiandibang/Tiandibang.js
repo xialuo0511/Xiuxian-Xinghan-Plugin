@@ -364,7 +364,8 @@ export class Tiandibang extends plugin {
             const img = await puppeteer.screenshot('tiandibang_leaderboard', {
                 tplFile: htmlPath,
                 ...renderData,
-                imgType: 'jpeg'
+                scale: 2,
+                imgType: 'png'
             });
             e.reply(img);
         } catch (err) {
@@ -421,7 +422,8 @@ export class Tiandibang extends plugin {
             const img = await puppeteer.screenshot('tiandibang_shop', {
                 tplFile: htmlPath,
                 ...renderData,
-                imgType: 'jpeg'
+                scale: 2,
+                imgType: 'png'
             });
             e.reply(img);
         } catch (err) {

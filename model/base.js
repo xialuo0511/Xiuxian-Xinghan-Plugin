@@ -22,6 +22,10 @@ export default class base {
       tplFile: `./plugins/xiuxian-emulator-plugin/resources/html/${this.model}/${this.model}.html`,
       /** 绝对路径 */
       pluResPath: `${this._path}/plugins/xiuxian-emulator-plugin/resources/`,
+      /** 高清截图参数 */
+      scale: 2, // 2倍分辨率，提高清晰度
+      quality: 90, // JPEG质量
+      imgType: 'png' // PNG格式保留更多细节
     };
   }
 }
