@@ -75,6 +75,11 @@ const 圣体概率 = 0.01;
 const 变异灵根概率 = 1 - 体质概率 - 伪灵根概率 - 真灵根概率 - 天灵根概率 - 圣体概率;
 
 
+// 检查存档是否存在（兼容层）
+export async function existplayer(usr_qq) {
+  return await DAL.existPlayer(usr_qq);
+}
+
 //检查异界存档是否存在，存在返回true;
 export async function yijie_existplayer(usr_qq) {
   let exist_player;
@@ -567,7 +572,7 @@ export async function Add_player_学习功法(usr_qq, gongfa_name) {
 
 export async function Reduse_player_学习功法(usr_qq, gongfa_name) {
   let player = await Read_player(usr_qq);
-  Array.prototype.remove = function(v) {
+  Array.prototype.remove = function (v) {
     for (let i = 0, j = 0; i < this.length; i++) {
       if (this[i] != v) {
         this[j++] = this[i];
@@ -1647,7 +1652,7 @@ export async function ForwardMsg(e, data) {
 
 //对象数组排序
 export function sortBy(field) {//从大到小,b和a反一下就是从小到大
-  return function(b, a) {
+  return function (b, a) {
     return a[field] - b[field];
   };
 }
