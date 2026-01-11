@@ -6,6 +6,7 @@ import Help2 from '../../model/shituhelp.js';
 import Help3 from '../../model/huodonghelp.js';
 import yijieHelp from '../../model/yijie.js';
 import md5 from 'md5';
+import path from 'path';
 
 let helpData = {
   md5: '',
@@ -58,9 +59,32 @@ export class BotHelp extends plugin {
         {
           reg: '^#异界帮助$',
           fnc: 'yijiehelp',
+        },
+        {
+          reg: '^#更新日志$',
+          fnc: 'showUpdateLog',
         }
       ],
     });
+  }
+
+  async showUpdateLog(e) {
+    // 渲染数据
+    const renderData = {
+      pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
+    };
+
+    const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'help', 'update_log.html');
+
+    // 生成图片
+    const img = await puppeteer.screenshot('help', {
+      tplFile: htmlPath,
+      ...renderData,
+      imgType: 'jpeg',
+      quality: 90
+    });
+
+    await e.reply(img);
   }
 
   async yijiehelp(e) {

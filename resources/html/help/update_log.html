@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修仙模拟器 v3.1 更新绘卷</title>
+    <style>
+        @font-face {
+            font-family: 'NZBZ';
+            src: url('../../font/NZBZ.TTF');
+        }
+
+        @font-face {
+            font-family: 'NumberFont';
+            src: url('../../font/tttgbnumber.ttf');
+        }
+
+        :root {
+            --primary-gold: #D4AF37;
+            --secondary-gold: #C5A028;
+            --bg-dark: #1a1a1d;
+            --text-light: #e0e0e0;
+            --panel-bg: rgba(30, 30, 35, 0.95);
+            --border-color: #4a4a4a;
+            --highlight-red: #c0392b;
+            --scroll-paper: #fdf5e6;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #121212 url('../../img/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'NZBZ', 'Microsoft YaHei', sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .scroll-container {
+            width: 800px;
+            background: var(--scroll-paper);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            padding: 40px;
+            background-image: url('../../img/paper_texture.png');
+            /* Optional texture */
+            overflow: hidden;
+            border: 2px solid #dcdcdc;
+        }
+
+        /* Top and Bottom Scroll Rails */
+        .scroll-rail-top,
+        .scroll-rail-bottom {
+            position: absolute;
+            left: -20px;
+            right: -20px;
+            height: 40px;
+            background: linear-gradient(90deg, #8B4513, #A0522D, #8B4513);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .scroll-rail-top {
+            top: -20px;
+        }
+
+        .scroll-rail-bottom {
+            bottom: -20px;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            border-bottom: 2px solid var(--highlight-red);
+            padding-bottom: 20px;
+        }
+
+        .version-badge {
+            background-color: var(--highlight-red);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .title {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin: 10px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+
+        /* Content Sections */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #8B4513;
+            border-left: 5px solid var(--highlight-red);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(90deg, #8B4513, transparent);
+            margin-left: 15px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-item.new {
+            border-left-color: #27ae60;
+        }
+
+        .feature-item.update {
+            border-left-color: #2980b9;
+        }
+
+        .feature-item.fix {
+            border-left-color: #e67e22;
+        }
+
+        .tag {
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 15px;
+            min-width: 60px;
+            text-align: center;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .tag.new {
+            background-color: #27ae60;
+        }
+
+        .tag.update {
+            background-color: #2980b9;
+        }
+
+        .tag.fix {
+            background-color: #e67e22;
+        }
+
+        .feature-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .feature-content p {
+            margin: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px dashed #bdc3c7;
+            padding-top: 20px;
+        }
+
+        .stamp {
+            position: absolute;
+            bottom: 60px;
+            right: 60px;
+            width: 120px;
+            height: 120px;
+            border: 3px solid #c0392b;
+            border-radius: 8px;
+            color: #c0392b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            transform: rotate(-15deg);
+            background: rgba(255, 255, 255, 0.7);
+            font-weight: bold;
+            box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.3);
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .inner-stamp {
+            border: 1px solid #c0392b;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Decorative Elements */
+        .cloud-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#dcdcdc 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scroll-container">
+        <div class="scroll-rail-top"></div>
+        <div class="cloud-pattern"></div>
+
+        <div class="header">
+            <span class="version-badge">Version 3.1.0</span>
+            <h1 class="title">春岁绘卷 · 天榜争锋</h1>
+            <div class="subtitle">Spring Scroll & Heaven Rank Update</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">重磅更新</div>
+            <ul class="feature-list">
+                <li class="feature-item new">
+                    <span class="tag new">新玩法</span>
+                    <div class="feature-content">
+                        <h4>天地榜 2.0 系统重制</h4>
+                        <p>全新的视觉化战报系统，告别枯燥文字。引入六大段位体系（凡俗至化神），每周结算并发放重磅奖励。</p>
+                    </div>
+                </li>
+                <li class="feature-item new">
+                    <span class="tag new">新功能</span>
+                    <div class="feature-content">
+                        <h4>天地堂 & 积分兑换</h4>
+                        <p>天地榜专属商店开业！使用赛季积分兑换稀有道具、丹药及限定称号。每周日开放兑换。</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">功能优化</div>
+            <ul class="feature-list">
+                <li class="feature-item update">
+                    <span class="tag update">优化</span>
+                    <div class="feature-content">
+                        <h4>视觉体验全面升级</h4>
+                        <p>全线实装高清渲染技术（HDPI），文字图片清晰度提升 200%。重绘了天地榜、排行榜、商店等核心界面。</p>
+                    </div>
+                </li>
+                <li class="feature-item update">
+                    <span class="tag update">优化</span>
+                    <div class="feature-content">
+                        <h4>称号系统扩展</h4>
+                        <p>新增【天榜连胜王】【天榜至尊】【榜上有名】等荣誉称号。修复了称号兑换后不立即生效的问题。</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">问题修复</div>
+            <ul class="feature-list">
+                <li class="feature-item fix">
+                    <span class="tag fix">修复</span>
+                    <div class="feature-content">
+                        <h4>天象系统修复</h4>
+                        <p>修复了天象卡在“永久”状态的问题，现在天象将正常进行 3-7 天的随机轮转。</p>
+                    </div>
+                </li>
+                <li class="feature-item fix">
+                    <span class="tag fix">修复</span>
+                    <div class="feature-content">
+                        <h4>底层性能优化</h4>
+                        <p>修复 Redis 连接导致的命令错误，优化了模块加载逻辑，解决了部分插件冲突导致的启动失败问题。</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>修仙模拟器制作组 敬上</p>
+            <p>2026 春节特别版</p>
+        </div>
+
+        <div class="stamp">
+            <div class="inner-stamp">
+                <span>版本</span>
+                <span>验证</span>
+            </div>
+        </div>
+
+        <div class="scroll-rail-bottom"></div>
+    </div>
+</body>
+
+</html>
