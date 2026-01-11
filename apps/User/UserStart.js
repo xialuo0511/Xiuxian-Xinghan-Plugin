@@ -48,8 +48,7 @@ export class UserStart extends plugin {
           fnc: 'Show_player'
         },
         {
-          // 这一步需要插入到实际签到逻辑中，而不是导入处。
-          // 先读取文件找到签到逻辑函数 sign
+          reg: '^#修仙签到$',
           fnc: 'daily_gift'
         },
         {
