@@ -95,6 +95,7 @@ export class Tiandibang extends plugin {
         const renderData = {
             userId: userId,
             name: player.名号,
+            playerLevel: player.修为境界 || '练气初期',
             jifen: tiandibang.jifen,
             duanwei: duanwei.name,
             duanweiColor: duanwei.color,
