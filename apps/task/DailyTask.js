@@ -1,5 +1,7 @@
 import plugin from '../../../../lib/plugins/plugin.js';
-import { getTaskStatusText } from '../../logic/daily_task_logic.js';
+import { getTaskRenderData } from '../../logic/daily_task_logic.js';
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import path from 'path';
 
 export class DailyTask extends plugin {
     constructor() {
@@ -22,7 +24,22 @@ export class DailyTask extends plugin {
             return;
         }
         const usr_qq = e.user_id;
-        const msg = await getTaskStatusText(usr_qq);
-        await e.reply(msg);
+
+        // 1. 获取渲染数据
+        const data = await getTaskRenderData(usr_qq);
+
+        // 2. 准备模板路径
+        const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'daily_task', 'daily_task.html');
+
+        // 3. 渲染
+        const img = await puppeteer.screenshot('daily_task', {
+            tplFile: htmlPath,
+            ...data,
+            imgType: 'jpeg',
+            quality: 90
+        });
+
+        // 4. 回复图片
+        await e.reply(img);
     }
 }

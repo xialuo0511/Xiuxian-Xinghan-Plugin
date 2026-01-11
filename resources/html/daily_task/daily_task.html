@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <title>每日任务</title>
+    <link rel="stylesheet" href="./daily_task.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-left">
+                <div class="title">每日任务</div>
+                <div class="subtitle">{{date_str}} · {{week_day}}</div>
+            </div>
+            <div class="header-right">
+                <div class="points-label">今日积分</div>
+                <div class="points-value">
+                    <span class="current">{{total_points}}</span>
+                    <span class="max">/ {{max_points}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar Section -->
+        <div class="main-progress">
+            <div class="progress-track">
+                <div class="progress-fill" style="width: {{points_percent}}%;"></div>
+            </div>
+        </div>
+
+        <!-- Rewards Section -->
+        <div class="rewards-section">
+            {{each rewards reward}}
+            <div
+                class="reward-node {{if reward.is_claimed}}claimed{{/if}} {{if reward.can_claim}}active{{/if}} {{if reward.is_reached}}reached{{/if}}">
+                <div class="node-point">{{reward.points}}</div>
+                <div class="node-icon">
+                    <!-- 宝箱图标或物品图标 -->
+                    <img src="https://syc-1255529515.cos.ap-shanghai.myqcloud.com/xiuxian/img/icon_chest_{{if reward.is_claimed}}open{{else}}closed{{/if}}.png"
+                        onerror="this.src='https://syc-1255529515.cos.ap-shanghai.myqcloud.com/xiuxian/img/icon_chest_closed.png'" />
+                </div>
+                <div class="reward-items">
+                    {{each reward.items item}}
+                    <span class="item-tag">{{item.name}}×{{item.count}}</span>
+                    {{/each}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+        <!-- Task List Section -->
+        <div class="task-grid">
+            {{each tasks task}}
+            <div class="task-card {{if task.progress_percent >= 100}}completed{{/if}}">
+                <div class="task-icon">
+                    <img src="{{task.icon}}" onerror="this.style.display='none'" />
+                </div>
+                <div class="task-info">
+                    <div class="task-header">
+                        <span class="task-name">{{task.name}}</span>
+                        {{if task.is_unlimited}}
+                        <span class="tag-unlimited">无限</span>
+                        {{/if}}
+                    </div>
+                    <div class="task-desc">{{task.desc}}</div>
+                    <div class="task-progress-bar">
+                        <div class="bar-fill" style="width: {{task.progress_percent}}%;"></div>
+                    </div>
+                    <div class="task-footer">
+                        <span class="progress-text">{{task.progress_text}}</span>
+                        <span class="points-text">+{{task.points_per_time}}积分/次</span>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</body>
+
+</html>

@@ -5,14 +5,10 @@ import { Add_najie_thing } from '../apps/Xiuxian/xiuxian.js';
  * 每日任务配置
  */
 const DAILY_TASKS = {
-    'sign_in': { name: '签到一次', points: 10, target: 1, limit: 1 },
-    'explore': { name: '探索秘境/沉迷', points: 20, target: 10, limit: 1 }, // 每次结算算一次，累计10次给分？或者每次给2分？文档说“探索10次秘境... +20”，意味着是一个累积任务
-    // 修正文档理解：探索10次秘境/沉迷1次 => +20。 意味着 探索满10次 给20分，或者 沉迷结算1次 给20分。
-    // 为了简化逻辑，我们设定一个任务 code 'explore_count'，每次探索+1，沉迷一次+10（假设沉迷等同于多次或一次大额）。
-    // 但文档表格写的是： | 探索10次秘境/沉迷1次 | +20 | 结算才加 |
-    // 我们可以拆分成两个触发条件，共享一个任务状态。
-    'duel': { name: '以武会友', points: 15, target: 1, limit: 1 },
-    'sell': { name: '出售获得20w灵石', points: 20, target: 1, limit: 5 }, // "每20w一次"，这里limit设为5次（因为总分上限150，大致推算）
+    'sign_in': { name: '每日签到', points: 10, target: 1, limit: 1, desc: '每日签到领取奖励', icon: 'http://q1.qlogo.cn/g?b=qq&nk=10000&s=100' }, // 使用通用图标或后续替换
+    'explore': { name: '探索秘境', points: 20, target: 10, limit: 999, desc: '探索秘境或沉迷', icon: 'https://syc-1255529515.cos.ap-shanghai.myqcloud.com/xiuxian/img/task_explore.png' },
+    'duel': { name: '切磋比试', points: 15, target: 1, limit: 999, desc: '与其他玩家切磋', icon: 'https://syc-1255529515.cos.ap-shanghai.myqcloud.com/xiuxian/img/task_duel.png' },
+    'sell': { name: '经商致富', points: 20, target: 1, limit: 999, desc: '出售获得20w灵石', icon: 'https://syc-1255529515.cos.ap-shanghai.myqcloud.com/xiuxian/img/task_trade.png' },
 };
 
 /**
@@ -83,7 +79,7 @@ export async function updateTaskProgress(userId, taskType, value = 1) {
     const stats = await getDailyStats(userId);
     const taskState = stats.tasks[taskType] || { count: 0, completed_times: 0 };
 
-    // 检查是否已达上限
+    // 检查是否已达上限 (999视为无限)
     if (taskState.completed_times >= config.limit) return;
 
     // 特殊处理 'sell' (出售灵石)，它是累积型的，每20w算一次
@@ -91,7 +87,9 @@ export async function updateTaskProgress(userId, taskType, value = 1) {
         taskState.count += value;
         const target = 200000;
         // 计算新增完成次数
-        const newCompletions = Math.floor(taskState.count / target) - taskState.completed_times;
+        const totalCompleted = Math.floor(taskState.count / target);
+        const newCompletions = totalCompleted - taskState.completed_times;
+
         if (newCompletions > 0) {
             const addTimes = Math.min(newCompletions, config.limit - taskState.completed_times);
             if (addTimes > 0) {
@@ -102,12 +100,12 @@ export async function updateTaskProgress(userId, taskType, value = 1) {
         }
     }
     // 特殊处理 'explore' (探索10次 或 沉迷1次)
-    // 这里我们假设 value 传进来的是次数。
-    // 如果是沉迷，可以直接传 value=10 来触发一次完成 (如果沉迷算10次探索的话，文档写的是“探索10次/沉迷1次”，可能意味着沉迷一次直接达标)
     else if (taskType === 'explore') {
         taskState.count += value;
         // 每达到target算一次完成
-        const newCompletions = Math.floor(taskState.count / config.target) - taskState.completed_times;
+        const totalCompleted = Math.floor(taskState.count / config.target);
+        const newCompletions = totalCompleted - taskState.completed_times;
+
         if (newCompletions > 0) {
             const addTimes = Math.min(newCompletions, config.limit - taskState.completed_times);
             if (addTimes > 0) {
@@ -138,21 +136,12 @@ async function checkAndDistributeRewards(userId, stats) {
     const playerData = await DAL.getAllPlayerData(userId);
     const player = playerData.player;
 
-    // 道法仙术持有者：双倍奖励？ 文档说“道法仙术持有者：双倍奖励”。这里是指积分获取双倍还是奖励双倍？
-    // 通常是指最终获得的物品翻倍，或者积分翻倍。
-    // “规则说明：每日上限150积分... 道法仙术持有者：双倍奖励”。看起来像是奖励物品翻倍。
-    // 我们先按奖励数量翻倍处理。
-    const isSpecial = false; // 暂时无法判定是否持有道法仙术，预留接口。如果全都是双倍，数值会崩。
-    // 假设“道法仙术”是某种特殊道具或状态，这里先不实现判断，或者默认为false。
-    // 待确认：道法仙术是什么？可能是 VIP？
-
     for (const rewardConfig of REWARDS) {
         if (stats.points >= rewardConfig.points && !stats.rewards_claimed.includes(rewardConfig.points)) {
             // 发放奖励
             let msg = `\n【每日任务】今日积分达到 ${stats.points}，获得：`;
             for (const item of rewardConfig.rewards) {
                 let count = item.count;
-                // if (isSpecial) count *= 2; 
                 if (item.name === '灵石') {
                     // 使用事务安全增加灵石
                     await DAL.transaction_update(userId, (player) => {
@@ -169,13 +158,6 @@ async function checkAndDistributeRewards(userId, stats) {
             // 标记已领取
             stats.rewards_claimed.push(rewardConfig.points);
 
-            // 发送通知 (尝试使用 sendMsg，如果是在群里触发的最好，但这里可能是后台触发)
-            // 我们可以尝试缓存一条消息，或者直接通过redis推送到 UserTask 通知器（如果有的话）
-            // 简单起见，且由于 updateTaskProgress 通常在用户交互中调用，我们可以不返回消息，而是依赖调用者提示，
-            // 或者在这里直接调用 Bot 发送及私聊 (有点侵入性)。
-            // 更好的方式：返回给调用者 triggeredRewards 列表。
-
-            // 但为了“自动发放，无需领取”，我们需要通知用户。
             try {
                 // 尝试通知用户
                 let notifyMsg = msg;
@@ -188,42 +170,81 @@ async function checkAndDistributeRewards(userId, stats) {
 }
 
 /**
- * 获取用于展示的文本详情
+ * 获取任务渲染数据
  */
-export async function getTaskStatusText(userId) {
+export async function getTaskRenderData(userId) {
     const stats = await getDailyStats(userId);
-    let msg = `📅 [每日任务] ${getTodayDate()}\n`;
-    msg += `当前积分：${stats.points} / 150\n`;
-    msg += `------------------------------\n`;
+    const date = new Date();
 
-    // 任务列表
-    for (const key in DAILY_TASKS) {
+    // 任务列表视图数据
+    const taskList = Object.keys(DAILY_TASKS).map(key => {
         const conf = DAILY_TASKS[key];
         const state = stats.tasks[key] || { count: 0, completed_times: 0 };
-        const isDone = state.completed_times >= conf.limit;
 
-        let progress = '';
+        let progressStr = '';
+        let percentage = 0;
+
         if (key === 'sell') {
-            progress = `${state.count}/20w`; // 简化显示
+            const currentRound = state.count % 200000;
+            progressStr = `${(currentRound / 10000).toFixed(1)}W/20W`;
+            percentage = Math.min(100, (currentRound / 200000) * 100);
+            if (state.completed_times > 0 && currentRound === 0) percentage = 100; // 刚完成一轮
         } else if (key === 'explore') {
-            progress = `${state.count}/${conf.target}`;
+            const currentRound = state.count % 10;
+            progressStr = `${currentRound}/${conf.target}`;
+            percentage = Math.min(100, (currentRound / conf.target) * 100);
+            if (state.completed_times > 0 && currentRound === 0) percentage = 100;
         } else {
-            progress = `${state.count}/${conf.target}`;
+            progressStr = `${state.count}/${conf.target}`;
+            percentage = Math.min(100, (state.count / conf.target) * 100);
         }
 
-        msg += `${isDone ? '✅' : '⬜'} ${conf.name} (${state.completed_times}/${conf.limit})\n`;
-        // msg += `   进度: ${progress}  奖励: ${conf.points}积分\n`;
-    }
+        return {
+            key: key,
+            name: conf.name,
+            desc: conf.desc,
+            icon: conf.icon || '', // 可以在前端设置默认图标
+            points_per_time: conf.points,
+            completed_times: state.completed_times,
+            limit: conf.limit,
+            progress_text: progressStr,
+            progress_percent: percentage,
+            is_unlimited: conf.limit > 100 // 标记是否为无限任务
+        };
+    });
 
+    // 奖励进度条数据
+    const maxPoints = 150;
+    const rewards = REWARDS.map(r => ({
+        points: r.points,
+        is_claimed: stats.rewards_claimed.includes(r.points),
+        can_claim: stats.points >= r.points && !stats.rewards_claimed.includes(r.points), // 虽然是自动发放，但可用于UI高亮
+        is_reached: stats.points >= r.points,
+        items: r.rewards
+    }));
+
+    return {
+        date_str: `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`,
+        week_day: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()],
+        total_points: stats.points,
+        max_points: maxPoints,
+        points_percent: Math.min(100, (stats.points / maxPoints) * 100),
+        tasks: taskList,
+        rewards: rewards
+    };
+}
+
+/**
+ * 文本模式 (保留作为备用或调试)
+ */
+export async function getTaskStatusText(userId) {
+    const data = await getTaskRenderData(userId);
+    let msg = `📅 [每日任务] ${data.date_str}\n`;
+    msg += `当前积分：${data.total_points} / ${data.max_points}\n`;
     msg += `------------------------------\n`;
-    msg += `🎁 积分奖励：\n`;
-    for (const rw of REWARDS) {
-        const claimed = stats.rewards_claimed.includes(rw.points);
-        const canClaim = stats.points >= rw.points && !claimed;
-        let statusIcon = claimed ? '已发放' : (canClaim ? '待发放' : `${rw.points}分`);
-        if (canClaim) statusIcon = '发放中...'; // 实际上是自动发放的
 
-        msg += `${claimed ? '✅' : '🔒'} ${statusIcon}: ${rw.rewards.map(r => r.name + 'x' + r.count).join(',')}\n`;
+    for (const task of data.tasks) {
+        msg += `${task.completed_times > 0 ? '✅' : '⬜'} ${task.name} (${task.completed_times})\n`;
     }
 
     return msg;
