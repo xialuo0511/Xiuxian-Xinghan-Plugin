@@ -328,7 +328,7 @@ export class Tiandibang extends plugin {
     }
 
     /**
-     * 显示赛季排行榜
+     * 显示赛季排行榜（图片版）
      */
     async showLeaderboard(e) {
         if (!e.isGroup) {
@@ -338,28 +338,42 @@ export class Tiandibang extends plugin {
         const season = await tiandibangLogic.getCurrentSeason();
         const leaderboard = await tiandibangLogic.getLeaderboard(0, 9);
 
-        const msg = [
-            `═══ 天地榜 · 第${season}赛季 ═══`,
-            ``
-        ];
+        // 渲染数据
+        const renderData = {
+            season,
+            leaderboard,
+            pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+        };
 
-        for (const entry of leaderboard) {
-            const medal = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `${entry.rank}.`;
-            msg.push(`${medal} ${entry.name} | ${entry.duanwei.name} | ${entry.jifen}分`);
+        const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'tiandibang_leaderboard', 'tiandibang_leaderboard.html');
+        if (!fs.existsSync(htmlPath)) {
+            // 回退文本
+            const msg = [`═══ 天地榜 · 第${season}赛季 ═══`, ``];
+            for (const entry of leaderboard) {
+                const medal = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `${entry.rank}.`;
+                msg.push(`${medal} ${entry.name} | ${entry.duanwei.name} | ${entry.jifen}分`);
+            }
+            if (leaderboard.length === 0) msg.push('暂无玩家上榜');
+            msg.push(``, `发送【#报名天地榜】参与挑战`);
+            return e.reply(msg.join('\n'));
         }
 
-        if (leaderboard.length === 0) {
-            msg.push('暂无玩家上榜');
+        try {
+            const dataForPuppeteer = await new Show(e).get_imgData('tiandibang_leaderboard', renderData);
+            const img = await puppeteer.screenshot('tiandibang_leaderboard', {
+                tplFile: htmlPath,
+                ...renderData,
+                imgType: 'jpeg'
+            });
+            e.reply(img);
+        } catch (err) {
+            console.error('[TiandiBang] 排行榜图片渲染错误:', err);
+            e.reply('排行榜图片生成失败，请稍后再试');
         }
-
-        msg.push(``);
-        msg.push(`发送【#报名天地榜】参与挑战`);
-
-        e.reply(msg.join('\n'));
     }
 
     /**
-     * 天地堂商店
+     * 天地堂商店（图片版）
      */
     async showShop(e) {
         if (!e.isGroup) {
@@ -376,22 +390,43 @@ export class Tiandibang extends plugin {
 
         const commodities = data.tianditang || [];
 
-        const msg = [
-            `═══ 天地堂 ═══`,
-            `你的积分：${tiandibang.jifen}`,
-            `荣耀点：${tiandibang.glory_points} | 天地令：${tiandibang.tiandi_tokens}`,
-            ``
-        ];
+        // 渲染数据
+        const renderData = {
+            jifen: tiandibang.jifen,
+            gloryPoints: tiandibang.glory_points,
+            tiandiTokens: tiandibang.tiandi_tokens,
+            commodities: commodities,
+            pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+        };
 
-        for (const item of commodities) {
-            msg.push(`${item.name} - ${item.积分}积分`);
+        const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'tiandibang_shop', 'tiandibang_shop.html');
+        if (!fs.existsSync(htmlPath)) {
+            // 回退文本
+            const msg = [
+                `═══ 天地堂 ═══`,
+                `你的积分：${tiandibang.jifen}`,
+                `荣耀点：${tiandibang.glory_points} | 天地令：${tiandibang.tiandi_tokens}`,
+                ``
+            ];
+            for (const item of commodities) {
+                msg.push(`${item.name} - ${item.积分}积分`);
+            }
+            msg.push(``, `发送【#积分兑换+物品名】进行兑换`, `（仅周日可兑换）`);
+            return e.reply(msg.join('\n'));
         }
 
-        msg.push(``);
-        msg.push(`发送【#积分兑换+物品名】进行兑换`);
-        msg.push(`（仅周日可兑换）`);
-
-        e.reply(msg.join('\n'));
+        try {
+            const dataForPuppeteer = await new Show(e).get_imgData('tiandibang_shop', renderData);
+            const img = await puppeteer.screenshot('tiandibang_shop', {
+                tplFile: htmlPath,
+                ...renderData,
+                imgType: 'jpeg'
+            });
+            e.reply(img);
+        } catch (err) {
+            console.error('[TiandiBang] 商店图片渲染错误:', err);
+            e.reply('商店图片生成失败，请稍后再试');
+        }
     }
 
     /**

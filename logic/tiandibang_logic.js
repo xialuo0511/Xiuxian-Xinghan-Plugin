@@ -296,17 +296,21 @@ export async function updateBattleResult(userId, isWin, baseJifen, baseLingshi) 
  * 获取排行榜
  */
 export async function getLeaderboard(start = 0, end = 9) {
-    const results = await redis.zRangeWithScores(LEADERBOARD_KEY, start, end, { REV: true });
+    // 使用 zRevRange 获取倒序排行，带分数
+    // 返回格式通常为 [member1, score1, member2, score2, ...]
+    const rawResults = await redis.zRevRange(LEADERBOARD_KEY, start, end, 'WITHSCORES');
 
     const leaderboard = [];
-    for (let i = 0; i < results.length; i++) {
-        const userId = results[i].value;
-        const jifen = results[i].score;
+    if (!rawResults || rawResults.length === 0) return leaderboard;
+
+    for (let i = 0; i < rawResults.length; i += 2) {
+        const userId = rawResults[i];
+        const jifen = parseInt(rawResults[i + 1]);
         const data = await DAL.getAllPlayerData(userId);
         const player = data?.player;
 
         leaderboard.push({
-            rank: start + i + 1,
+            rank: start + (i / 2) + 1,
             userId,
             name: player?.名号 || '未知',
             jifen,
