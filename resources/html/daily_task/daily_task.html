@@ -5,15 +5,19 @@
     <meta charset="utf-8">
     <title>每日任务</title>
     <link rel="stylesheet" href="{{pluResPath}}html/daily_task/daily_task.css">
-    <link rel="stylesheet" href="{{pluResPath}}html/help/help.css"> <!-- 借用部分通用样式 -->
 </head>
 
 <body>
+    <!-- 背景层：玩家头像幻影 -->
+    <div class="bg-phantom" style="background-image: url('{{player_avatar}}');"></div>
+    <!-- 渐变叠加层 -->
+    <div class="bg-overlay"></div>
+
     <div class="container">
         <!-- Header Section -->
         <div class="header">
             <div class="header-left">
-                <div class="title">每日任务</div>
+                <div class="title">每日修行</div>
                 <div class="subtitle">{{date_str}} · {{week_day}}</div>
             </div>
             <div class="header-right">
@@ -37,9 +41,8 @@
             {{each rewards reward}}
             <div
                 class="reward-node {{if reward.is_claimed}}claimed{{/if}} {{if reward.can_claim}}active{{/if}} {{if reward.is_reached}}reached{{/if}}">
-                <div class="node-point">{{reward.points}}</div>
+                <div class="node-point">{{reward.points}}分</div>
                 <div class="node-icon">
-                    <!-- 宝箱图标或物品图标 -->
                     <img src="https://syc-1255529515.cos.ap-shanghai.myqcloud.com/xiuxian/img/icon_chest_{{if reward.is_claimed}}open{{else}}closed{{/if}}.png"
                         onerror="this.src='https://syc-1255529515.cos.ap-shanghai.myqcloud.com/xiuxian/img/icon_chest_closed.png'" />
                 </div>

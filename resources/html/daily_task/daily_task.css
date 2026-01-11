@@ -1,59 +1,111 @@
+/* 每日任务面板 - 亮色修仙风格 + 玻璃态 */
+/* 基于 ui-ux-pro-max: Glassmorphism + Luxury Gold */
+
+@font-face {
+    font-family: 'NZBZ';
+    src: url('../../font/NZBZ.ttf');
+}
+
 @font-face {
     font-family: 'HYWenHei';
     src: url('../../font/HYWenHei-85W.ttf');
 }
 
 :root {
-    --bg-color: #1a1a1a;
-    --card-bg: rgba(255, 255, 255, 0.05);
-    --text-primary: #e0e0e0;
-    --text-secondary: #a0a0a0;
-    --accent-gold: #d4af37;
-    --accent-cyan: #00e5ff;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --success-color: #4caf50;
+    /* 奢华金色系 */
+    --gold-primary: #D4AF37;
+    --gold-light: #F4E4BC;
+    --gold-dark: #B8860B;
+
+    /* 亮色背景系 */
+    --bg-cream: #FDFBF7;
+    --bg-ivory: #FAF8F5;
+
+    /* 文本色 */
+    --text-primary: #2D2A26;
+    --text-secondary: #6B6560;
+    --text-muted: #9A958E;
+
+    /* 玻璃态 */
+    --glass-white: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-shadow: rgba(180, 160, 130, 0.15);
+
+    /* 状态色 */
+    --success: #4CAF50;
+    --accent-cyan: #26A69A;
 }
 
 body {
     margin: 0;
     padding: 0;
-    font-family: 'HYWenHei', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    width: 800px;
-    /* background-image: url('../../img/background.jpg'); */
+    font-family: 'HYWenHei', '微软雅黑', sans-serif;
+    width: 720px;
+    min-height: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 背景层：玩家头像幻影 */
+.bg-phantom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-size: cover;
     background-position: center;
+    filter: blur(40px) saturate(1.2);
+    transform: scale(1.2);
+    opacity: 0.4;
+    z-index: 0;
 }
 
+/* 渐变叠加层 */
+.bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+            rgba(253, 251, 247, 0.92) 0%,
+            rgba(250, 248, 245, 0.88) 50%,
+            rgba(244, 228, 188, 0.85) 100%);
+    z-index: 1;
+}
+
+/* 主容器 */
 .container {
-    padding: 30px;
-    background: rgba(10, 10, 15, 0.9);
-    min-height: 600px;
-    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 10;
+    padding: 28px 32px;
 }
 
-/* Header */
+/* 头部区域 */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 .header-left .title {
-    font-size: 32px;
-    font-weight: bold;
-    color: var(--accent-gold);
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    font-family: 'NZBZ', sans-serif;
+    font-size: 36px;
+    color: var(--gold-dark);
+    text-shadow:
+        0 1px 2px rgba(255, 255, 255, 0.8),
+        0 2px 8px rgba(212, 175, 55, 0.3);
+    letter-spacing: 4px;
 }
 
 .header-left .subtitle {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--text-secondary);
-    margin-top: 5px;
+    margin-top: 4px;
 }
 
 .header-right {
@@ -61,145 +113,170 @@ body {
 }
 
 .points-label {
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: 12px;
+    color: var(--text-muted);
 }
 
 .points-value {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
 }
 
 .points-value .current {
     color: var(--accent-cyan);
+    text-shadow: 0 0 8px rgba(38, 166, 154, 0.3);
 }
 
 .points-value .max {
-    color: var(--text-secondary);
+    color: var(--text-muted);
     font-size: 18px;
 }
 
-/* Main Progress Bar */
+/* 主进度条 */
 .main-progress {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    margin-bottom: 30px;
-    overflow: hidden;
-    position: relative;
+    background: var(--glass-white);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 16px var(--glass-shadow);
 }
 
 .progress-track {
-    width: 100%;
-    height: 100%;
+    height: 10px;
+    background: rgba(212, 175, 55, 0.15);
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent-gold), var(--accent-cyan));
-    box-shadow: 0 0 10px var(--accent-cyan);
+    background: linear-gradient(90deg, var(--gold-primary), var(--accent-cyan));
+    border-radius: 5px;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
     transition: width 0.5s ease;
 }
 
-/* Rewards Section */
+/* 奖励区域 */
 .rewards-section {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 40px;
-    padding: 0 10px;
+    gap: 12px;
+    margin-bottom: 28px;
 }
 
 .reward-node {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 10px;
-    width: 22%;
+    flex: 1;
+    background: var(--glass-white);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px 10px;
     text-align: center;
-    position: relative;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 12px var(--glass-shadow);
 }
 
 .reward-node.reached {
-    border-color: var(--accent-gold);
-    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold-primary);
+    background: rgba(244, 228, 188, 0.6);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
 }
 
 .reward-node.active {
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    transform: translateY(-2px);
 }
 
 .reward-node.claimed {
-    opacity: 0.6;
-    filter: grayscale(0.5);
+    opacity: 0.5;
+}
+
+.reward-node.claimed .node-icon img {
+    filter: grayscale(0.8);
 }
 
 .node-point {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 5px;
+    font-size: 13px;
+    color: var(--gold-dark);
+    font-weight: bold;
+    margin-bottom: 6px;
 }
 
 .node-icon img {
-    width: 48px;
-    height: 48px;
-    margin: 5px 0;
+    width: 42px;
+    height: 42px;
+    margin: 4px 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .reward-items {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
     display: flex;
     flex-direction: column;
     gap: 2px;
+    margin-top: 6px;
 }
 
 .item-tag {
-    color: var(--accent-gold);
+    color: var(--gold-dark);
+    font-weight: 500;
 }
 
-/* Task Grid */
+/* 任务网格 */
 .task-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 16px;
 }
 
 .task-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 15px;
+    background: var(--glass-white);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 16px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    transition: transform 0.2s ease;
+    gap: 14px;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 16px var(--glass-shadow);
 }
 
 .task-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 6px 24px rgba(180, 160, 130, 0.2);
+}
+
+.task-card.completed {
+    border-color: var(--success);
+    background: rgba(76, 175, 80, 0.08);
 }
 
 .task-card.completed .task-name {
-    color: var(--success-color);
+    color: var(--success);
 }
 
 .task-icon {
-    width: 50px;
-    height: 50px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--gold-light), var(--bg-ivory));
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    box-shadow:
+        0 2px 8px rgba(212, 175, 55, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .task-icon img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 10px;
 }
 
 .task-info {
@@ -210,31 +287,33 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .task-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
+    color: var(--text-primary);
 }
 
 .tag-unlimited {
     font-size: 10px;
-    background: linear-gradient(45deg, #FF512F, #DD2476);
+    background: linear-gradient(45deg, #FF7043, #FF5252);
     color: white;
     padding: 2px 6px;
     border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(255, 82, 82, 0.3);
 }
 
 .task-desc {
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     margin-bottom: 8px;
 }
 
 .task-progress-bar {
     height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(212, 175, 55, 0.15);
     border-radius: 3px;
     margin-bottom: 6px;
     overflow: hidden;
@@ -242,8 +321,9 @@ body {
 
 .task-progress-bar .bar-fill {
     height: 100%;
-    background: var(--accent-cyan);
+    background: linear-gradient(90deg, var(--gold-primary), var(--accent-cyan));
     border-radius: 3px;
+    transition: width 0.3s ease;
 }
 
 .task-footer {
@@ -253,9 +333,10 @@ body {
 }
 
 .progress-text {
-    color: var(--text-primary);
+    color: var(--text-secondary);
 }
 
 .points-text {
-    color: var(--accent-gold);
+    color: var(--gold-dark);
+    font-weight: 500;
 }

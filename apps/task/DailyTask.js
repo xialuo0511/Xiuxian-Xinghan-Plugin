@@ -35,16 +35,20 @@ export class DailyTask extends plugin {
         // 3. 添加资源路径变量（CSS 需要）
         const pluResPath = `file:///${pluginPath.replace(/\\/g, '/')}/resources/`;
 
-        // 4. 渲染
+        // 4. 获取玩家头像作为背景幻影
+        const playerAvatar = `https://q1.qlogo.cn/g?b=qq&nk=${usr_qq}&s=640`;
+
+        // 5. 渲染
         const img = await puppeteer.screenshot('daily_task', {
             tplFile: htmlPath,
             pluResPath: pluResPath,
+            player_avatar: playerAvatar,
             ...data,
             imgType: 'jpeg',
             quality: 90
         });
 
-        // 5. 回复图片
+        // 6. 回复图片
         await e.reply(img);
     }
 }
