@@ -222,8 +222,9 @@ export async function getTaskRenderData(userId) {
     const maxPoints = 150;
     const rewards = REWARDS.map(r => ({
         points: r.points,
+        position: (r.points / maxPoints) * 100, // 计算在进度条上的位置百分比
         is_claimed: stats.rewards_claimed.includes(r.points),
-        can_claim: stats.points >= r.points && !stats.rewards_claimed.includes(r.points), // 虽然是自动发放，但可用于UI高亮
+        can_claim: stats.points >= r.points && !stats.rewards_claimed.includes(r.points),
         is_reached: stats.points >= r.points,
         items: r.rewards
     }));
