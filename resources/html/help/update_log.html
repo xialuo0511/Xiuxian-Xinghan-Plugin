@@ -2,427 +2,427 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>修仙模拟器 v3.1 更新绘卷</title>
-    <style>
-        @font-face {
-            font-family: 'NZBZ';
-            src: url('../../font/NZBZ.TTF');
-        }
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>修仙模拟器 v3.1 更新绘卷</title>
+  <style>
+      @font-face {
+          font-family: 'NZBZ';
+          src: url('../../font/NZBZ.TTF');
+      }
 
-        :root {
-            --bg-color: #0f172a;
-            /* Slate 900 */
-            --card-bg: rgba(30, 41, 59, 0.7);
-            /* Slate 800 with opacity */
-            --primary-gold: #fbbf24;
-            /* Amber 400 */
-            --accent-cyan: #22d3ee;
-            /* Cyan 400 */
-            --text-primary: #f1f5f9;
-            /* Slate 100 */
-            --text-secondary: #94a3b8;
-            /* Slate 400 */
-            --border-color: rgba(148, 163, 184, 0.1);
-            --glow-gold: 0 0 15px rgba(251, 191, 36, 0.3);
-        }
+      :root {
+          --bg-color: #0f172a;
+          /* Slate 900 */
+          --card-bg: rgba(30, 41, 59, 0.7);
+          /* Slate 800 with opacity */
+          --primary-gold: #fbbf24;
+          /* Amber 400 */
+          --accent-cyan: #22d3ee;
+          /* Cyan 400 */
+          --text-primary: #f1f5f9;
+          /* Slate 100 */
+          --text-secondary: #94a3b8;
+          /* Slate 400 */
+          --border-color: rgba(148, 163, 184, 0.1);
+          --glow-gold: 0 0 15px rgba(251, 191, 36, 0.3);
+      }
 
-        body {
-            margin: 0;
-            padding: 40px 20px;
-            background: var(--bg-color) url('../../img/background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Microsoft YaHei', sans-serif;
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            /* Overlay to darken background */
-            box-shadow: inset 0 0 100px #000;
-        }
+      body {
+          margin: 0;
+          padding: 40px 20px;
+          background: var(--bg-color) url('../../img/background.jpg') no-repeat center center fixed;
+          background-size: cover;
+          font-family: 'Microsoft YaHei', sans-serif;
+          color: var(--text-primary);
+          display: flex;
+          justify-content: center;
+          min-height: 100vh;
+          /* Overlay to darken background */
+          box-shadow: inset 0 0 100px #000;
+      }
 
-        /* Glassmorphism Container */
-        .container {
-            width: 800px;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            position: relative;
-        }
+      /* Glassmorphism Container */
+      .container {
+          width: 800px;
+          background: rgba(15, 23, 42, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          overflow: hidden;
+          position: relative;
+      }
 
-        /* Header */
-        .header {
-            padding: 40px 0;
-            text-align: center;
-            background: linear-gradient(to bottom, rgba(30, 41, 59, 0.5), transparent);
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-        }
+      /* Header */
+      .header {
+          padding: 40px 0;
+          text-align: center;
+          background: linear-gradient(to bottom, rgba(30, 41, 59, 0.5), transparent);
+          border-bottom: 1px solid var(--border-color);
+          position: relative;
+      }
 
-        .version-badge {
-            background: linear-gradient(135deg, #d97706, #b45309);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 9999px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+      .version-badge {
+          background: linear-gradient(135deg, #d97706, #b45309);
+          color: white;
+          padding: 6px 16px;
+          border-radius: 9999px;
+          font-size: 0.9rem;
+          font-weight: bold;
+          letter-spacing: 1px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+      }
 
-        .title {
-            font-family: 'NZBZ', serif;
-            font-size: 3.5rem;
-            background: linear-gradient(to right, #fcd34d, #f59e0b, #d97706);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 15px 0 5px 0;
-            text-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
-            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
-        }
+      .title {
+          font-family: 'NZBZ', serif;
+          font-size: 3.5rem;
+          background: linear-gradient(to right, #fcd34d, #f59e0b, #d97706);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin: 15px 0 5px 0;
+          text-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+          filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+      }
 
-        .subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            font-weight: 300;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
+      .subtitle {
+          font-size: 1.1rem;
+          color: var(--text-secondary);
+          font-weight: 300;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+      }
 
-        /* Content Areas */
-        .content {
-            padding: 40px;
-        }
+      /* Content Areas */
+      .content {
+          padding: 40px;
+      }
 
-        .section {
-            margin-bottom: 40px;
-        }
+      .section {
+          margin-bottom: 40px;
+      }
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+      .section-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+      }
 
-        .section-title {
-            font-family: 'NZBZ', serif;
-            font-size: 1.8rem;
-            color: var(--primary-gold);
-            margin-right: 15px;
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
-        }
+      .section-title {
+          font-family: 'NZBZ', serif;
+          font-size: 1.8rem;
+          color: var(--primary-gold);
+          margin-right: 15px;
+          text-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+      }
 
-        .section-line {
-            flex-grow: 1;
-            height: 1px;
-            background: linear-gradient(to right, var(--primary-gold), transparent);
-            opacity: 0.3;
-        }
+      .section-line {
+          flex-grow: 1;
+          height: 1px;
+          background: linear-gradient(to right, var(--primary-gold), transparent);
+          opacity: 0.3;
+      }
 
-        /* Cards */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
+      /* Cards */
+      .card-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 20px;
+      }
 
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
+      .card {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 20px;
+          transition: all 0.3s ease;
+      }
 
-        .card:hover {
-            transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(251, 191, 36, 0.3);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-        }
+      .card:hover {
+          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(251, 191, 36, 0.3);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
 
-        .card-title {
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            margin: 0 0 10px 0;
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-        }
+      .card-title {
+          font-size: 1.2rem;
+          color: var(--text-primary);
+          margin: 0 0 10px 0;
+          display: flex;
+          align-items: center;
+          font-weight: 600;
+      }
 
-        .card-title::before {
-            content: '';
-            display: block;
-            width: 4px;
-            height: 16px;
-            background: var(--primary-gold);
-            margin-right: 10px;
-            border-radius: 2px;
-            box-shadow: 0 0 8px var(--primary-gold);
-        }
+      .card-title::before {
+          content: '';
+          display: block;
+          width: 4px;
+          height: 16px;
+          background: var(--primary-gold);
+          margin-right: 10px;
+          border-radius: 2px;
+          box-shadow: 0 0 8px var(--primary-gold);
+      }
 
-        .card-desc {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin: 0;
-        }
+      .card-desc {
+          font-size: 0.95rem;
+          color: var(--text-secondary);
+          line-height: 1.6;
+          margin: 0;
+      }
 
-        /* Daily Task Table Style */
-        .task-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
+      /* Daily Task Table Style */
+      .task-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.9rem;
+          margin-top: 10px;
+      }
 
-        .task-table th,
-        .task-table td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid var(--border-color);
-        }
+      .task-table th,
+      .task-table td {
+          text-align: left;
+          padding: 8px;
+          border-bottom: 1px solid var(--border-color);
+      }
 
-        .task-table th {
-            color: var(--primary-gold);
-            font-weight: normal;
-        }
+      .task-table th {
+          color: var(--primary-gold);
+          font-weight: normal;
+      }
 
-        /* Tags */
-        .tag {
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid;
-            margin-left: auto;
-        }
+      /* Tags */
+      .tag {
+          font-size: 0.75rem;
+          padding: 2px 8px;
+          border-radius: 4px;
+          border: 1px solid;
+          margin-left: auto;
+      }
 
-        .tag.new {
-            color: #4ade80;
-            border-color: rgba(74, 222, 128, 0.3);
-            background: rgba(74, 222, 128, 0.1);
-        }
+      .tag.new {
+          color: #4ade80;
+          border-color: rgba(74, 222, 128, 0.3);
+          background: rgba(74, 222, 128, 0.1);
+      }
 
-        .tag.event {
-            color: #f472b6;
-            border-color: rgba(244, 114, 182, 0.3);
-            background: rgba(244, 114, 182, 0.1);
-        }
+      .tag.event {
+          color: #f472b6;
+          border-color: rgba(244, 114, 182, 0.3);
+          background: rgba(244, 114, 182, 0.1);
+      }
 
-        .highlight-text {
-            color: var(--accent-cyan);
-            font-weight: bold;
-        }
+      .highlight-text {
+          color: var(--accent-cyan);
+          font-weight: bold;
+      }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 30px;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            background: rgba(15, 23, 42, 0.4);
-        }
+      /* Footer */
+      .footer {
+          text-align: center;
+          padding: 30px;
+          border-top: 1px solid var(--border-color);
+          color: var(--text-secondary);
+          font-size: 0.85rem;
+          background: rgba(15, 23, 42, 0.4);
+      }
 
-        /* Decorative Background Elements */
-        .glow-orb {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
+      /* Decorative Background Elements */
+      .glow-orb {
+          position: absolute;
+          width: 300px;
+          height: 300px;
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 0;
+      }
 
-        .orb-1 {
-            top: -100px;
-            left: -100px;
-        }
+      .orb-1 {
+          top: -100px;
+          left: -100px;
+      }
 
-        .orb-2 {
-            bottom: -50px;
-            right: -50px;
-            background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
-        }
-    </style>
+      .orb-2 {
+          bottom: -50px;
+          right: -50px;
+          background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+      }
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <!-- Background Orbs -->
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
+<div class="container">
+  <!-- Background Orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
 
-        <div class="header">
-            <span class="version-badge">v3.1.0 重磅更新</span>
-            <h1 class="title">春岁绘卷 · 天榜争锋</h1>
-            <div class="subtitle">Spring Scroll & Heaven Rank Update</div>
+  <div class="header">
+    <span class="version-badge">v3.1.0 重磅更新</span>
+    <h1 class="title">春岁绘卷 · 天榜争锋</h1>
+    <div class="subtitle">Spring Scroll & Heaven Rank Update</div>
+  </div>
+
+  <div class="content">
+
+    <!-- Daily Task Section -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">每日任务系统</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          每日活跃 · 积分换礼
+          <span class="tag new">NEW</span>
         </div>
-
-        <div class="content">
-
-            <!-- Daily Task Section -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">每日任务系统</span>
-                    <span class="section-line"></span>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        每日活跃 · 积分换礼
-                        <span class="tag new">NEW</span>
-                    </div>
-                    <div class="card-desc">
-                        <p>全新的每日活跃系统上线！输入 <span class="highlight-text">#每日任务</span> 查看进度。</p>
-                        <table class="task-table">
-                            <tr>
-                                <th>任务</th>
-                                <th>目标</th>
-                                <th>奖励</th>
-                            </tr>
-                            <tr>
-                                <td>签到</td>
-                                <td>每日1次</td>
-                                <td>10分</td>
-                            </tr>
-                            <tr>
-                                <td>秘境</td>
-                                <td>探索10次 / 沉迷1次</td>
-                                <td>20分</td>
-                            </tr>
-                            <tr>
-                                <td>以武会友</td>
-                                <td>切磋1次</td>
-                                <td>15分</td>
-                            </tr>
-                            <tr>
-                                <td>经商</td>
-                                <td>出售获20w灵石</td>
-                                <td>20分 (上限100)</td>
-                            </tr>
-                        </table>
-                        <p style="margin-top: 10px; font-size: 0.85rem; color: #64748b;">
-                            * 积分达标自动发放灵石、血气瓶及七星玄元丹。
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tiandi Bang Section -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">天地榜 2.0</span>
-                    <span class="section-line"></span>
-                </div>
-                <div class="card-grid">
-                    <div class="card">
-                        <div class="card-title">可视化战报</div>
-                        <p class="card-desc">
-                            告别枯燥文字，全新视觉化战斗结算！<br>
-                            引入六大段位体系：<br>
-                            <span class="highlight-text">凡俗 ➔ 化神</span>
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">天象系统</div>
-                        <p class="card-desc">
-                            天地灵气异动，每3-7天随机轮转。<br>
-                            <span class="highlight-text">灵气潮汐、杀劫降临、五行失衡...</span><br>
-                            善用天象方可克敌制胜！
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">赛季结算</div>
-                        <p class="card-desc">
-                            每双周结算，发放【天地令】。<br>
-                            在<span class="highlight-text">天地堂</span>兑换专属称号与道具。
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Events Section -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">新春盛典</span>
-                    <span class="section-line"></span>
-                </div>
-                <div class="card"
-                    style="background: linear-gradient(to right, rgba(220, 38, 38, 0.1), rgba(15, 23, 42, 0.3)); border-color: rgba(220, 38, 38, 0.3);">
-                    <div class="card-title" style="color: #fca5a5;">
-                        万马奔腾 · 接福迎祥
-                        <span class="tag event">限时活动</span>
-                    </div>
-                    <div class="card-desc">
-                        <p><strong>活动时间：</strong>2026/2/2 - 2026/3/8</p>
-                        <ul style="margin: 5px 0 0 20px; padding: 0;">
-                            <li><strong>天马牧场：</strong>探索秘境，偶遇幼年天马获取BUFF。</li>
-                            <li><strong>魔驹降临：</strong>每晚世界BOSS讨伐，赢取丰厚奖励。</li>
-                            <li><strong>灯谜祈福：</strong>元宵答题，兑换限定道具。</li>
-                        </ul>
-                        <div
-                            style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 0.85rem; text-align: right;">
-                            <span style="color: var(--accent-cyan);">ℹ 详细BOSS数据与奖励表请查看文档页</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Optimization -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-title">体验优化</span>
-                    <span class="section-line"></span>
-                </div>
-                <div class="card-grid">
-                    <div class="card">
-                        <div class="card-title">
-                            修仙帮助 · 全新样式
-                            <span class="tag new">NEW</span>
-                        </div>
-                        <p class="card-desc">
-                            仙侠主题深度重构！<br>
-                            <span class="highlight-text">深紫黑渐变背景 + 金色发光标题 + 青色指令高亮</span><br>
-                            玻璃态卡片让帮助更赏心悦目。
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">
-                            每日任务 · 可视化面板
-                            <span class="tag new">NEW</span>
-                        </div>
-                        <p class="card-desc">
-                            全新签到式进度条，竖线标记奖励节点。<br>
-                            <span class="highlight-text">玻璃磨砂效果 + 玩家头像幻影背景</span>
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">天地榜 · 每周结算</div>
-                        <p class="card-desc">
-                            从双周改为<span class="highlight-text">每周结算</span>，让竞技更激烈！<br>
-                            新增结算通知与专属称号系统。
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">底层重构</div>
-                        <p class="card-desc">DAL层重写，修复Redis连接问题，优化启动速度。</p>
-                    </div>
-                </div>
-            </div>
-
+        <div class="card-desc">
+          <p>全新的每日活跃系统上线！输入 <span class="highlight-text">#每日任务</span> 查看进度。</p>
+          <table class="task-table">
+            <tr>
+              <th>任务</th>
+              <th>目标</th>
+              <th>奖励</th>
+            </tr>
+            <tr>
+              <td>签到</td>
+              <td>每日1次</td>
+              <td>10分</td>
+            </tr>
+            <tr>
+              <td>秘境</td>
+              <td>探索10次 / 沉迷1次</td>
+              <td>20分</td>
+            </tr>
+            <tr>
+              <td>以武会友</td>
+              <td>切磋1次</td>
+              <td>15分</td>
+            </tr>
+            <tr>
+              <td>经商</td>
+              <td>出售获20w灵石</td>
+              <td>20分 (上限100)</td>
+            </tr>
+          </table>
+          <p style="margin-top: 10px; font-size: 0.85rem; color: #64748b;">
+            * 积分达标自动发放灵石、血气瓶及七星玄元丹。
+          </p>
         </div>
-
-        <div class="footer">
-            修仙模拟器制作组 · 2026 新春特别版
-        </div>
+      </div>
     </div>
+
+    <!-- Tiandi Bang Section -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">天地榜 2.0</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">可视化战报</div>
+          <p class="card-desc">
+            告别枯燥文字，全新视觉化战斗结算！<br>
+            引入六大段位体系：<br>
+            <span class="highlight-text">凡俗 ➔ 化神</span>
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">天象系统</div>
+          <p class="card-desc">
+            天地灵气异动，每3-7天随机轮转。<br>
+            <span class="highlight-text">灵气潮汐、杀劫降临、五行失衡...</span><br>
+            善用天象方可克敌制胜！
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">赛季结算</div>
+          <p class="card-desc">
+            每周结算，发放【天地令】。<br>
+            在<span class="highlight-text">天地堂</span>兑换专属称号与道具。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events Section -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">新春盛典</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="card"
+           style="background: linear-gradient(to right, rgba(220, 38, 38, 0.1), rgba(15, 23, 42, 0.3)); border-color: rgba(220, 38, 38, 0.3);">
+        <div class="card-title" style="color: #fca5a5;">
+          万马奔腾 · 接福迎祥
+          <span class="tag event">限时活动</span>
+        </div>
+        <div class="card-desc">
+          <p><strong>活动时间：</strong>2026/2/2 - 2026/3/8</p>
+          <ul style="margin: 5px 0 0 20px; padding: 0;">
+            <li><strong>天马牧场：</strong>探索秘境，偶遇幼年天马获取BUFF。</li>
+            <li><strong>魔驹降临：</strong>每晚世界BOSS讨伐，赢取丰厚奖励。</li>
+            <li><strong>灯谜祈福：</strong>元宵答题，兑换限定道具。</li>
+          </ul>
+          <div
+            style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 0.85rem; text-align: right;">
+            <span style="color: var(--accent-cyan);">ℹ 详细BOSS数据与奖励表请查看文档页</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optimization -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">体验优化</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">
+            修仙帮助 · 全新样式
+            <span class="tag new">NEW</span>
+          </div>
+          <p class="card-desc">
+            仙侠主题深度重构！<br>
+            <span class="highlight-text">深紫黑渐变背景 + 金色发光标题 + 青色指令高亮</span><br>
+            玻璃态卡片让帮助更赏心悦目。
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            每日任务 · 可视化面板
+            <span class="tag new">NEW</span>
+          </div>
+          <p class="card-desc">
+            全新签到式进度条，竖线标记奖励节点。<br>
+            <span class="highlight-text">玻璃磨砂效果 + 玩家头像幻影背景</span>
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">天地榜 · 每周结算</div>
+          <p class="card-desc">
+            <span class="highlight-text">每周结算</span>，让竞技更激烈！<br>
+            新增结算通知与专属称号系统。
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">底层重构</div>
+          <p class="card-desc">DAL层重写，修复Redis连接问题，优化启动速度。</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    修仙模拟器制作组 · 2026 新春特别版
+  </div>
+</div>
 </body>
 
 </html>
