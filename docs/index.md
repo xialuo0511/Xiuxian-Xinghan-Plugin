@@ -4,7 +4,7 @@ layout: home
 
 hero:
   name: "✨ 星瀚修仙"
-  text: "v3.0.0「一竿风月共听潮」"
+  text: "v3.1.0「春岁绘卷 · 天榜争锋」"
   tagline: 基于 Yunzai-Bot 的高性能群聊修仙文字游戏插件
   actions:
     - theme: brand
