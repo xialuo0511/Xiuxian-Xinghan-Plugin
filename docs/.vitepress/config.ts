@@ -63,7 +63,7 @@ export default defineConfig({
 
     // 社交链接
     socialLinks: [
-      { icon: 'github', link: 'https://gitee.com/xialuo03/xiuxian-emulator-plugin' }
+      { icon: 'github', link: 'https://github.com/xialuo0511/Xiuxian-Xinghan-Plugin' }
     ],
 
     // 页脚
