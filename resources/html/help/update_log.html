@@ -11,337 +11,393 @@
             src: url('../../font/NZBZ.TTF');
         }
 
-        @font-face {
-            font-family: 'NumberFont';
-            src: url('../../font/tttgbnumber.ttf');
-        }
-
         :root {
-            --primary-gold: #D4AF37;
-            --secondary-gold: #C5A028;
-            --bg-dark: #1a1a1d;
-            --text-light: #e0e0e0;
-            --panel-bg: rgba(30, 30, 35, 0.95);
-            --border-color: #4a4a4a;
-            --highlight-red: #c0392b;
-            --scroll-paper: #fdf5e6;
+            --bg-color: #0f172a;
+            /* Slate 900 */
+            --card-bg: rgba(30, 41, 59, 0.7);
+            /* Slate 800 with opacity */
+            --primary-gold: #fbbf24;
+            /* Amber 400 */
+            --accent-cyan: #22d3ee;
+            /* Cyan 400 */
+            --text-primary: #f1f5f9;
+            /* Slate 100 */
+            --text-secondary: #94a3b8;
+            /* Slate 400 */
+            --border-color: rgba(148, 163, 184, 0.1);
+            --glow-gold: 0 0 15px rgba(251, 191, 36, 0.3);
         }
 
         body {
             margin: 0;
-            padding: 20px;
-            background: #121212 url('../../img/background.jpg') no-repeat center center fixed;
+            padding: 40px 20px;
+            background: var(--bg-color) url('../../img/background.jpg') no-repeat center center fixed;
             background-size: cover;
-            font-family: 'NZBZ', 'Microsoft YaHei', sans-serif;
-            color: #333;
+            font-family: 'Microsoft YaHei', sans-serif;
+            color: var(--text-primary);
             display: flex;
             justify-content: center;
-            align-items: flex-start;
             min-height: 100vh;
+            /* Overlay to darken background */
+            box-shadow: inset 0 0 100px #000;
         }
 
-        .scroll-container {
+        /* Glassmorphism Container */
+        .container {
             width: 800px;
-            background: var(--scroll-paper);
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            position: relative;
-            padding: 40px;
-            background-image: url('../../img/paper_texture.png');
-            /* Optional texture */
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             overflow: hidden;
-            border: 2px solid #dcdcdc;
-        }
-
-        /* Top and Bottom Scroll Rails */
-        .scroll-rail-top,
-        .scroll-rail-bottom {
-            position: absolute;
-            left: -20px;
-            right: -20px;
-            height: 40px;
-            background: linear-gradient(90deg, #8B4513, #A0522D, #8B4513);
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            z-index: 10;
-        }
-
-        .scroll-rail-top {
-            top: -20px;
-        }
-
-        .scroll-rail-bottom {
-            bottom: -20px;
-        }
-
-        /* Header Section */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
             position: relative;
-            border-bottom: 2px solid var(--highlight-red);
-            padding-bottom: 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 40px 0;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(30, 41, 59, 0.5), transparent);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
         }
 
         .version-badge {
-            background-color: var(--highlight-red);
-            color: #fff;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 1.2rem;
-            display: inline-block;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .title {
-            font-size: 3rem;
-            color: #2c3e50;
-            margin: 10px 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            font-family: 'NZBZ', serif;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, #fcd34d, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 15px 0 5px 0;
+            text-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
         }
 
         .subtitle {
-            font-size: 1.5rem;
-            color: #7f8c8d;
-            font-weight: normal;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* Content Sections */
+        /* Content Areas */
+        .content {
+            padding: 40px;
+        }
+
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .section-title {
+            font-family: 'NZBZ', serif;
             font-size: 1.8rem;
-            color: #8B4513;
-            border-left: 5px solid var(--highlight-red);
-            padding-left: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
+            color: var(--primary-gold);
+            margin-right: 15px;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
         }
 
-        .section-title::after {
-            content: '';
+        .section-line {
             flex-grow: 1;
             height: 1px;
-            background: linear-gradient(90deg, #8B4513, transparent);
-            margin-left: 15px;
+            background: linear-gradient(to right, var(--primary-gold), transparent);
+            opacity: 0.3;
         }
 
-        .feature-list {
-            list-style: none;
-            padding: 0;
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
-        .feature-item {
-            background: rgba(255, 255, 255, 0.6);
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 3px solid transparent;
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
             transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(251, 191, 36, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin: 0 0 10px 0;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
+            font-weight: 600;
         }
 
-        .feature-item:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        .card-title::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 16px;
+            background: var(--primary-gold);
+            margin-right: 10px;
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--primary-gold);
         }
 
-        .feature-item.new {
-            border-left-color: #27ae60;
+        .card-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
         }
 
-        .feature-item.update {
-            border-left-color: #2980b9;
-        }
-
-        .feature-item.fix {
-            border-left-color: #e67e22;
-        }
-
-        .tag {
+        /* Daily Task Table Style */
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .task-table th,
+        .task-table td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .task-table th {
+            color: var(--primary-gold);
+            font-weight: normal;
+        }
+
+        /* Tags */
+        .tag {
+            font-size: 0.75rem;
             padding: 2px 8px;
             border-radius: 4px;
-            margin-right: 15px;
-            min-width: 60px;
-            text-align: center;
-            color: #fff;
-            flex-shrink: 0;
+            border: 1px solid;
+            margin-left: auto;
         }
 
         .tag.new {
-            background-color: #27ae60;
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.3);
+            background: rgba(74, 222, 128, 0.1);
         }
 
-        .tag.update {
-            background-color: #2980b9;
+        .tag.event {
+            color: #f472b6;
+            border-color: rgba(244, 114, 182, 0.3);
+            background: rgba(244, 114, 182, 0.1);
         }
 
-        .tag.fix {
-            background-color: #e67e22;
-        }
-
-        .feature-content h4 {
-            margin: 0 0 5px 0;
-            font-size: 1.2rem;
-            color: #2c3e50;
-        }
-
-        .feature-content p {
-            margin: 0;
-            font-family: 'Microsoft YaHei', sans-serif;
-            font-size: 1rem;
-            color: #555;
-            line-height: 1.5;
+        .highlight-text {
+            color: var(--accent-cyan);
+            font-weight: bold;
         }
 
         /* Footer */
         .footer {
             text-align: center;
-            margin-top: 40px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            border-top: 1px dashed #bdc3c7;
-            padding-top: 20px;
+            padding: 30px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            background: rgba(15, 23, 42, 0.4);
         }
 
-        .stamp {
+        /* Decorative Background Elements */
+        .glow-orb {
             position: absolute;
-            bottom: 60px;
-            right: 60px;
-            width: 120px;
-            height: 120px;
-            border: 3px solid #c0392b;
-            border-radius: 8px;
-            color: #c0392b;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            transform: rotate(-15deg);
-            background: rgba(255, 255, 255, 0.7);
-            font-weight: bold;
-            box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.3);
-            pointer-events: none;
-            opacity: 0.8;
-        }
-
-        .inner-stamp {
-            border: 1px solid #c0392b;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        /* Decorative Elements */
-        .cloud-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(#dcdcdc 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.1;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
             pointer-events: none;
             z-index: 0;
+        }
+
+        .orb-1 {
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            bottom: -50px;
+            right: -50px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
         }
     </style>
 </head>
 
 <body>
-    <div class="scroll-container">
-        <div class="scroll-rail-top"></div>
-        <div class="cloud-pattern"></div>
+    <div class="container">
+        <!-- Background Orbs -->
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
 
         <div class="header">
-            <span class="version-badge">Version 3.1.0</span>
+            <span class="version-badge">v3.1.0 重磅更新</span>
             <h1 class="title">春岁绘卷 · 天榜争锋</h1>
             <div class="subtitle">Spring Scroll & Heaven Rank Update</div>
         </div>
 
-        <div class="section">
-            <div class="section-title">重磅更新</div>
-            <ul class="feature-list">
-                <li class="feature-item new">
-                    <span class="tag new">新玩法</span>
-                    <div class="feature-content">
-                        <h4>天地榜 2.0 系统重制</h4>
-                        <p>全新的视觉化战报系统，告别枯燥文字。引入六大段位体系（凡俗至化神），每周结算并发放重磅奖励。</p>
-                    </div>
-                </li>
-                <li class="feature-item new">
-                    <span class="tag new">新功能</span>
-                    <div class="feature-content">
-                        <h4>天地堂 & 积分兑换</h4>
-                        <p>天地榜专属商店开业！使用赛季积分兑换稀有道具、丹药及限定称号。每周日开放兑换。</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
+        <div class="content">
 
-        <div class="section">
-            <div class="section-title">功能优化</div>
-            <ul class="feature-list">
-                <li class="feature-item update">
-                    <span class="tag update">优化</span>
-                    <div class="feature-content">
-                        <h4>视觉体验全面升级</h4>
-                        <p>全线实装高清渲染技术（HDPI），文字图片清晰度提升 200%。重绘了天地榜、排行榜、商店等核心界面。</p>
+            <!-- Daily Task Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-title">每日任务系统</span>
+                    <span class="section-line"></span>
+                </div>
+                <div class="card">
+                    <div class="card-title">
+                        每日活跃 · 积分换礼
+                        <span class="tag new">NEW</span>
                     </div>
-                </li>
-                <li class="feature-item update">
-                    <span class="tag update">优化</span>
-                    <div class="feature-content">
-                        <h4>称号系统扩展</h4>
-                        <p>新增【天榜连胜王】【天榜至尊】【榜上有名】等荣誉称号。修复了称号兑换后不立即生效的问题。</p>
+                    <div class="card-desc">
+                        <p>全新的每日活跃系统上线！输入 <span class="highlight-text">#每日任务</span> 查看进度。</p>
+                        <table class="task-table">
+                            <tr>
+                                <th>任务</th>
+                                <th>目标</th>
+                                <th>奖励</th>
+                            </tr>
+                            <tr>
+                                <td>签到</td>
+                                <td>每日1次</td>
+                                <td>10分</td>
+                            </tr>
+                            <tr>
+                                <td>秘境</td>
+                                <td>探索10次 / 沉迷1次</td>
+                                <td>20分</td>
+                            </tr>
+                            <tr>
+                                <td>以武会友</td>
+                                <td>切磋1次</td>
+                                <td>15分</td>
+                            </tr>
+                            <tr>
+                                <td>经商</td>
+                                <td>出售获20w灵石</td>
+                                <td>20分 (上限100)</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top: 10px; font-size: 0.85rem; color: #64748b;">
+                            * 积分达标自动发放灵石、血气瓶及七星玄元丹。
+                        </p>
                     </div>
-                </li>
-            </ul>
-        </div>
+                </div>
+            </div>
 
-        <div class="section">
-            <div class="section-title">问题修复</div>
-            <ul class="feature-list">
-                <li class="feature-item fix">
-                    <span class="tag fix">修复</span>
-                    <div class="feature-content">
-                        <h4>天象系统修复</h4>
-                        <p>修复了天象卡在“永久”状态的问题，现在天象将正常进行 3-7 天的随机轮转。</p>
+            <!-- Tiandi Bang Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-title">天地榜 2.0</span>
+                    <span class="section-line"></span>
+                </div>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title">可视化战报</div>
+                        <p class="card-desc">
+                            告别枯燥文字，全新视觉化战斗结算！<br>
+                            引入六大段位体系：<br>
+                            <span class="highlight-text">凡俗 ➔ 化神</span>
+                        </p>
                     </div>
-                </li>
-                <li class="feature-item fix">
-                    <span class="tag fix">修复</span>
-                    <div class="feature-content">
-                        <h4>底层性能优化</h4>
-                        <p>修复 Redis 连接导致的命令错误，优化了模块加载逻辑，解决了部分插件冲突导致的启动失败问题。</p>
+                    <div class="card">
+                        <div class="card-title">天象系统</div>
+                        <p class="card-desc">
+                            天地灵气异动，每3-7天随机轮转。<br>
+                            <span class="highlight-text">灵气潮汐、杀劫降临、五行失衡...</span><br>
+                            善用天象方可克敌制胜！
+                        </p>
                     </div>
-                </li>
-            </ul>
+                    <div class="card">
+                        <div class="card-title">赛季结算</div>
+                        <p class="card-desc">
+                            每双周结算，发放【天地令】。<br>
+                            在<span class="highlight-text">天地堂</span>兑换专属称号与道具。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-title">新春盛典</span>
+                    <span class="section-line"></span>
+                </div>
+                <div class="card"
+                    style="background: linear-gradient(to right, rgba(220, 38, 38, 0.1), rgba(15, 23, 42, 0.3)); border-color: rgba(220, 38, 38, 0.3);">
+                    <div class="card-title" style="color: #fca5a5;">
+                        万马奔腾 · 接福迎祥
+                        <span class="tag event">限时活动</span>
+                    </div>
+                    <div class="card-desc">
+                        <p><strong>活动时间：</strong>2026/2/2 - 2026/3/8</p>
+                        <ul style="margin: 5px 0 0 20px; padding: 0;">
+                            <li><strong>天马牧场：</strong>探索秘境，偶遇幼年天马获取BUFF。</li>
+                            <li><strong>魔驹降临：</strong>每晚世界BOSS讨伐，赢取丰厚奖励。</li>
+                            <li><strong>灯谜祈福：</strong>元宵答题，兑换限定道具。</li>
+                        </ul>
+                        <div
+                            style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 0.85rem; text-align: right;">
+                            <span style="color: var(--accent-cyan);">ℹ 详细BOSS数据与奖励表请查看文档页</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optimization -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-title">体验优化</span>
+                    <span class="section-line"></span>
+                </div>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title">视觉升级</div>
+                        <p class="card-desc">全线 UI 高清重制，实装「春岁绘卷」动态皮肤。</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">底层重构</div>
+                        <p class="card-desc">DAL层重写，修复Redis连接问题，优化启动速度。</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="footer">
-            <p>修仙模拟器制作组 敬上</p>
-            <p>2026 春节特别版</p>
+            修仙模拟器制作组 · 2026 新春特别版
         </div>
-
-        <div class="stamp">
-            <div class="inner-stamp">
-                <span>版本</span>
-                <span>验证</span>
-            </div>
-        </div>
-
-        <div class="scroll-rail-bottom"></div>
     </div>
 </body>
 
