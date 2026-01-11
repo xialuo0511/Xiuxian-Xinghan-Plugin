@@ -199,6 +199,11 @@ export async function getTaskRenderData(userId) {
             percentage = Math.min(100, (state.count / conf.target) * 100);
         }
 
+        if (key === 'sign_in') {
+            // 动态设置头像
+            conf.icon = `http://q1.qlogo.cn/g?b=qq&nk=${userId}&s=100`;
+        }
+
         return {
             key: key,
             name: conf.name,
