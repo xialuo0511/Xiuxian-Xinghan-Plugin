@@ -8,6 +8,7 @@ import * as DAL from '../../api/data-access.js';
 import { Gulid, puppeteer, Show } from '../../api/api.js';
 import { redisClient } from '../../api/redis.js';
 import { battleEngine } from '../../logic/battle_logic.js'; // 【核心】导入新的逻辑处理器
+import { updateTaskProgress } from '../../logic/daily_task_logic.js';
 
 /**
  * 暴击判断函数
@@ -131,7 +132,7 @@ export class Battle extends plugin {
 
     // 切磋前补满状态
     [...teamA,
-      ...teamB].forEach(p => p.当前血量 = p.血量上限);
+    ...teamB].forEach(p => p.当前血量 = p.血量上限);
 
 
     e.reply(`【${teamA.map(p => p.名号).join(',')}】向【${teamB.map(p => p.名号).join(',')}】发起了切磋！`);
@@ -140,6 +141,9 @@ export class Battle extends plugin {
 
     let img = await this.renderBattle(e, battleResult);
     e.reply(img);
+
+    // 每日任务埋点：以武会友
+    await updateTaskProgress(A_id, 'duel');
   }
 
   /**
@@ -261,19 +265,19 @@ export class Battle extends plugin {
     // 统计伤害
     let totalDamage = 0;
     battleResult.log.forEach(entry => {
-        if (entry.type === 'action' && entry.caster.id === userId && entry.targets) {
-            entry.targets.forEach(t => {
-                if (t.type === 'damage') {
-                    totalDamage += t.value;
-                }
-            });
-        }
+      if (entry.type === 'action' && entry.caster.id === userId && entry.targets) {
+        entry.targets.forEach(t => {
+          if (t.type === 'damage') {
+            totalDamage += t.value;
+          }
+        });
+      }
     });
-    
+
     // 格式化输出
     const damageDisplay = totalDamage >= 10000 ? (totalDamage / 10000).toFixed(2) + '万' : totalDamage;
     const statMsg = `[伤害统计] 10回合内，你共造成了 ${damageDisplay} 点伤害！`;
-    
+
     battleResult.msg.push('\n' + statMsg);
     // 推送至结构化日志以便在图片中显示
     battleResult.log.push({ type: 'end', text: statMsg });

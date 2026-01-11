@@ -13,6 +13,7 @@ import {
   get_tianfu_level,
   Add_tianfu_exp
 } from '../Xiuxian/xiuxian.js';
+import { updateTaskProgress } from '../../logic/daily_task_logic.js';
 
 /**
  * 定时任务
@@ -231,6 +232,9 @@ export class yijieSecretPlaceTask extends plugin {
               }
               await Add_tianfu_exp(player_id, 1)
               await Add_yijie_beibao_thing(player_id, thing_name, thing_class, shu)
+
+              // 每日任务埋点：秘境探索
+              await updateTaskProgress(player_id, 'explore', 1);
             }
             let arr = action;
             if (Number(arr.cishu) == 1 || !arr.cishu) {

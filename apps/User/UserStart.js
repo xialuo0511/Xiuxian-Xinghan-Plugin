@@ -24,6 +24,7 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import * as partnerLogic from '../../logic/partner_logic.js';
 import { loadItemConfig } from '../../model/ConfigLoader.js';
+import { updateTaskProgress } from '../../logic/daily_task_logic.js';
 
 const collaborativeSigninConfig = loadItemConfig('collaborative_signin.yaml');
 
@@ -47,7 +48,8 @@ export class UserStart extends plugin {
           fnc: 'Show_player'
         },
         {
-          reg: '^#修仙签到$',
+          // 这一步需要插入到实际签到逻辑中，而不是导入处。
+          // 先读取文件找到签到逻辑函数 sign
           fnc: 'daily_gift'
         },
         {
@@ -250,6 +252,9 @@ export class UserStart extends plugin {
     if (!result.success) {
       return e.reply(result.message);
     }
+
+    // 每日任务埋点：签到
+    await updateTaskProgress(usr_qq, 'sign_in');
 
     const now = new Date();
     const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();

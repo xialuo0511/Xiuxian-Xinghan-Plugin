@@ -12,6 +12,7 @@ import path from 'path';
 import { canPlayerAction } from '../../logic/transaction_logic.js';
 import { depositWithdrawLingshi } from '../../logic/item_logic.js';
 import { findItemLocation } from '../../logic/search_logic.js';
+import { updateTaskProgress } from '../../logic/daily_task_logic.js';
 import { refineEquipment } from '../../logic/refine_logic.js';
 import { drawFromPool } from '../../logic/gacha_logic.js';
 import { offerStone } from '../../logic/stone_logic.js';
@@ -166,6 +167,11 @@ export class UserHome extends plugin {
 
     const result = await sellItem(userId, itemName, quantity);
     e.reply(result.message);
+
+    // 每日任务埋点：出售物品
+    if (result.success && result.earnings > 0) {
+      await updateTaskProgress(userId, 'sell', result.earnings);
+    }
   }
 
   /**

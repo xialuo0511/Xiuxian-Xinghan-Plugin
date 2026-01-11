@@ -45,7 +45,7 @@ export async function buyItem(userId, itemName, quantity = 1) {
             const itemClass = itemInfo.class;
             // updateNajieSync 会自动处理堆叠和添加
             // 默认为0品级
-            const success = DAL.updateNajieSync(najie, itemName, itemClass, quantity, 0); 
+            const success = DAL.updateNajieSync(najie, itemName, itemClass, quantity, 0);
             if (!success) {
                 finalMessage = "纳戒空间不足或物品添加失败";
                 return false;
@@ -79,7 +79,7 @@ export async function buyItemWithXianshi(userId, itemName, quantity = 1) {
 
         const itemInfo = await foundthing(itemName);
         if (!itemInfo) {
-             return { success: false, message: `数据异常：[${itemName}]不存在于世` };
+            return { success: false, message: `数据异常：[${itemName}]不存在于世` };
         }
 
         const price = shopItem.出售价 || shopItem.price || 0;
@@ -133,89 +133,89 @@ export async function sellItem(userId, itemName, quantity = 1) {
         // 检查特殊限制 (活动物品等)
         const isRestricted = await Check_thing(itemInfo);
         if (isRestricted === 1) {
-             return { success: false, message: `[${itemName}]特殊物品/活动物品，无法出售` };
+            return { success: false, message: `[${itemName}]特殊物品/活动物品，无法出售` };
         }
 
         // 检查价格
         // 兼容 '出售价' 字段
         const basePrice = itemInfo.出售价 || itemInfo.price || 0;
         if (basePrice <= 0) {
-             return { success: false, message: `[${itemName}]不可出售` };
+            return { success: false, message: `[${itemName}]不可出售` };
         }
-        
+
         // 所有物品均按出售价全额卖出，不打折
         let sellPrice = basePrice;
 
         if (sellPrice <= 0) {
-             return { success: false, message: `[${itemName}]太廉价了，卖不出去` };
+            return { success: false, message: `[${itemName}]太廉价了，卖不出去` };
         }
 
         let finalMessage = "";
         const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
-             const itemClass = itemInfo.class;
-             const categoryMap = { '仙米': '仙宠口粮' };
-             const najieKey = categoryMap[itemClass] || itemClass;
+            const itemClass = itemInfo.class;
+            const categoryMap = { '仙米': '仙宠口粮' };
+            const najieKey = categoryMap[itemClass] || itemClass;
 
-             if (!najie[najieKey] || !Array.isArray(najie[najieKey])) {
-                 finalMessage = `你没有[${itemName}]`;
-                 return false;
-             }
+            if (!najie[najieKey] || !Array.isArray(najie[najieKey])) {
+                finalMessage = `你没有[${itemName}]`;
+                return false;
+            }
 
-             let itemIndex = -1;
-             
-             if (itemClass === '装备') {
-                 // 找到所有同名的
-                 const candidates = najie[najieKey]
+            let itemIndex = -1;
+
+            if (itemClass === '装备') {
+                // 找到所有同名的
+                const candidates = najie[najieKey]
                     .map((item, index) => ({ ...item, index }))
                     .filter(item => item.name === itemName);
-                 
-                 if (candidates.length === 0) {
-                     finalMessage = `你没有[${itemName}]`;
-                     return false;
-                 }
-                 
-                 // 优先找没锁定的
-                 const unlocked = candidates.find(item => !item.islockd);
-                 if (unlocked) {
-                     itemIndex = unlocked.index;
-                 } else {
-                     finalMessage = `[${itemName}]都被锁定了，请先解锁`;
-                     return false;
-                 }
-             } else {
-                 itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
-                 if (itemIndex === -1) {
+
+                if (candidates.length === 0) {
                     finalMessage = `你没有[${itemName}]`;
                     return false;
-                 }
-                 if (najie[najieKey][itemIndex].islockd) {
+                }
+
+                // 优先找没锁定的
+                const unlocked = candidates.find(item => !item.islockd);
+                if (unlocked) {
+                    itemIndex = unlocked.index;
+                } else {
+                    finalMessage = `[${itemName}]都被锁定了，请先解锁`;
+                    return false;
+                }
+            } else {
+                itemIndex = najie[najieKey].findIndex(item => item.name === itemName);
+                if (itemIndex === -1) {
+                    finalMessage = `你没有[${itemName}]`;
+                    return false;
+                }
+                if (najie[najieKey][itemIndex].islockd) {
                     finalMessage = `[${itemName}]已被锁定，请先解锁`;
                     return false;
-                 }
-             }
+                }
+            }
 
-             const targetItem = najie[najieKey][itemIndex];
+            const targetItem = najie[najieKey][itemIndex];
 
-             if (targetItem.数量 < quantity) {
-                 finalMessage = `你只有 ${targetItem.数量} 个 [${itemName}]`;
-                 return false;
-             }
+            if (targetItem.数量 < quantity) {
+                finalMessage = `你只有 ${targetItem.数量} 个 [${itemName}]`;
+                return false;
+            }
 
-             // 扣除物品
-             targetItem.数量 -= quantity;
-             if (targetItem.数量 <= 0) {
-                 najie[najieKey].splice(itemIndex, 1);
-             }
+            // 扣除物品
+            targetItem.数量 -= quantity;
+            if (targetItem.数量 <= 0) {
+                najie[najieKey].splice(itemIndex, 1);
+            }
 
-             // 加钱
-             const totalEarnings = sellPrice * quantity;
-             player.灵石 += totalEarnings;
-             
-             finalMessage = `成功出售 ${itemName} * ${quantity}，获得 ${totalEarnings} 灵石`;
-             return true;
+            // 加钱
+            const totalEarnings = sellPrice * quantity;
+            player.灵石 += totalEarnings;
+
+            finalMessage = `成功出售 ${itemName} * ${quantity}，获得 ${totalEarnings} 灵石`;
+            return true;
         });
 
-        return { success: transactionSuccess, message: finalMessage || "出售失败，请稍后重试" };
+        return { success: transactionSuccess, message: finalMessage || "出售失败，请稍后重试", earnings: sellPrice * quantity };
 
     } catch (error) {
         console.error('出售物品失败:', error);
