@@ -48,7 +48,8 @@ export async function getCurrentSeason() {
  * 获取玩家天地榜数据
  */
 export async function getPlayerTiandibang(userId) {
-    const player = await DAL.getAllPlayerData(userId);
+    const data = await DAL.getAllPlayerData(userId);
+    const player = data?.player;
     if (!player) return null;
 
     // 初始化默认数据
@@ -72,7 +73,8 @@ export async function getPlayerTiandibang(userId) {
  * 报名参加天地榜
  */
 export async function registerTiandibang(userId) {
-    const player = await DAL.getAllPlayerData(userId);
+    const data = await DAL.getAllPlayerData(userId);
+    const player = data?.player;
     if (!player) return { success: false, message: '未找到玩家存档' };
 
     const currentSeason = await getCurrentSeason();
@@ -147,7 +149,8 @@ export function getLianshengReward(streak) {
  * 刷新每日次数（如果是新的一天）
  */
 export async function refreshDailyFights(userId) {
-    const player = await DAL.getAllPlayerData(userId);
+    const data = await DAL.getAllPlayerData(userId);
+    const player = data?.player;
     if (!player?.tiandibang) return false;
 
     const today = new Date().toDateString();
@@ -167,14 +170,16 @@ export async function refreshDailyFights(userId) {
  * 消耗每日次数
  */
 export async function consumeDailyFight(userId) {
-    const player = await DAL.getAllPlayerData(userId);
+    const data = await DAL.getAllPlayerData(userId);
+    const player = data?.player;
     if (!player?.tiandibang) return { success: false, message: '请先报名天地榜' };
 
     // 先刷新每日次数
     await refreshDailyFights(userId);
 
     // 重新获取最新数据
-    const updatedPlayer = await DAL.getAllPlayerData(userId);
+    const updatedData = await DAL.getAllPlayerData(userId);
+    const updatedPlayer = updatedData.player;
 
     if (updatedPlayer.tiandibang.daily_fights <= 0) {
         return { success: false, message: '今日比试次数已用完，请明日再来' };
@@ -191,7 +196,8 @@ export async function consumeDailyFight(userId) {
  * 更新战斗结果
  */
 export async function updateBattleResult(userId, isWin, baseJifen, baseLingshi) {
-    const player = await DAL.getAllPlayerData(userId);
+    const data = await DAL.getAllPlayerData(userId);
+    const player = data?.player;
     if (!player?.tiandibang) return null;
 
     let jifen = baseJifen;
@@ -256,7 +262,8 @@ export async function getLeaderboard(start = 0, end = 9) {
     for (let i = 0; i < results.length; i++) {
         const userId = results[i].value;
         const jifen = results[i].score;
-        const player = await DAL.getAllPlayerData(userId);
+        const data = await DAL.getAllPlayerData(userId);
+        const player = data?.player;
 
         leaderboard.push({
             rank: start + i + 1,

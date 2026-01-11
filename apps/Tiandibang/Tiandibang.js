@@ -8,10 +8,11 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
-import { Read_player, existplayer, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js';
+import * as DAL from '../../api/data-access.js';
 import { battleEngine } from '../../logic/battle_logic.js';
 import * as tianxiangLogic from '../../logic/tianxiang_logic.js';
 import * as tiandibangLogic from '../../logic/tiandibang_logic.js';
+
 
 export class Tiandibang extends plugin {
     constructor() {
@@ -50,7 +51,7 @@ export class Tiandibang extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) return;
 
         const result = await tiandibangLogic.registerTiandibang(userId);
         e.reply(result.message, true);
@@ -65,14 +66,15 @@ export class Tiandibang extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) return;
 
         // 检查是否报名
         if (!await tiandibangLogic.isRegistered(userId)) {
             return e.reply('你还未报名本赛季天地榜，请发送【#报名天地榜】参加', true);
         }
 
-        const player = await Read_player(userId);
+        const playerData = await DAL.getAllPlayerData(userId);
+        const player = playerData?.player;
         const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
         const duanwei = tiandibangLogic.getDuanwei(tiandibang.jifen);
         const rank = await tiandibangLogic.getPlayerRank(userId);
@@ -153,7 +155,7 @@ export class Tiandibang extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) return;
 
         // 检查是否报名
         if (!await tiandibangLogic.isRegistered(userId)) {
@@ -176,8 +178,8 @@ export class Tiandibang extends plugin {
             return e.reply(consumeResult.message, true);
         }
 
-        // 获取玩家和天象数据
-        const player = await Read_player(userId);
+        const playerData = await DAL.getAllPlayerData(userId);
+        const player = playerData?.player;
         const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
         const tianxiang = await tianxiangLogic.getCurrentTianxiang();
 
@@ -187,7 +189,8 @@ export class Tiandibang extends plugin {
         let isNPC = false;
 
         if (opponentId) {
-            opponent = await Read_player(opponentId);
+            const opponentData = await DAL.getAllPlayerData(opponentId);
+            opponent = opponentData?.player;
         } else {
             // 生成NPC对手
             isNPC = true;
@@ -245,8 +248,11 @@ export class Tiandibang extends plugin {
         // 更新战斗结果
         const result = await tiandibangLogic.updateBattleResult(userId, isWin, baseJifen, baseLingshi);
 
-        // 发放灵石
-        await Add_灵石(userId, result.lingshi);
+        // 发放灵石 - 通过DAL更新玩家数据
+        const playerDataForLingshi = await DAL.getAllPlayerData(userId);
+        const playerForLingshi = playerDataForLingshi.player;
+        playerForLingshi.灵石 = (playerForLingshi.灵石 || 0) + result.lingshi;
+        await DAL.savePlayer(userId, playerForLingshi);
 
         // 构建结果消息
         const resultMsgs = [
@@ -316,7 +322,7 @@ export class Tiandibang extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) return;
 
         const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
         if (!tiandibang) {
@@ -358,7 +364,7 @@ export class Tiandibang extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) return;
 
         const itemName = e.msg.replace(/#积分兑换/, '').trim();
         if (!itemName) {
@@ -385,7 +391,7 @@ export class Tiandibang extends plugin {
         await DAL.savePlayer(userId, playerData);
 
         // 添加物品
-        await Add_najie_thing(userId, item.name, item.class, 1);
+        await DAL.updateNajieItem(userId, item.name, item.class, 1);
 
         // 更新排行榜
         await redis.zAdd('xiuxian:tiandibang:leaderboard', {
@@ -417,7 +423,7 @@ export class Tiandibang extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) return;
 
         const itemName = e.msg.replace(/#荣耀点兑换/, '').trim();
         if (!itemName) {
@@ -449,7 +455,7 @@ export class Tiandibang extends plugin {
         await DAL.savePlayer(userId, player);
 
         // 添加物品
-        await Add_najie_thing(userId, item.name, item.class, 1);
+        await DAL.updateNajieItem(userId, item.name, item.class, 1);
 
         e.reply(`兑换成功！获得【${item.name}】，剩余${player.tiandibang.glory_points}荣耀点`);
     }
@@ -463,7 +469,7 @@ export class Tiandibang extends plugin {
         }
 
         const userId = e.user_id;
-        if (!await existplayer(userId)) return;
+        if (!await DAL.existPlayer(userId)) return;
 
         const itemName = e.msg.replace(/#天地令兑换/, '').trim();
         if (!itemName) {
@@ -494,11 +500,8 @@ export class Tiandibang extends plugin {
         await DAL.savePlayer(userId, player);
 
         // 添加物品
-        await Add_najie_thing(userId, item.name, item.class, 1);
+        await DAL.updateNajieItem(userId, item.name, item.class, 1);
 
         e.reply(`🎉 兑换成功！获得【${item.name}】，剩余${player.tiandibang.tiandi_tokens}天地令`);
     }
 }
-
-// 导入DAL
-import * as DAL from '../../api/data-access.js';

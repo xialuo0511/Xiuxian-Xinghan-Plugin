@@ -74,15 +74,6 @@ const 天灵根概率 = 0.08;
 const 圣体概率 = 0.01;
 const 变异灵根概率 = 1 - 体质概率 - 伪灵根概率 - 真灵根概率 - 天灵根概率 - 圣体概率;
 
-//检查存档是否存在，存在返回true;
-export async function existplayer(usr_qq) {
-  let exist_player;
-  exist_player = fs.existsSync(`${__PATH.player_path}/${usr_qq}.json`);
-  if (exist_player) {
-    return true;
-  }
-  return false;
-}
 
 //检查异界存档是否存在，存在返回true;
 export async function yijie_existplayer(usr_qq) {
