@@ -155,6 +155,17 @@ export async function consumeItem(userId, itemName, quantity = 1) {
         player.饱食度 = (Number(player.饱食度) || 0) + (itemInfo.加成 * quantity);
         effectApplied = true;
       }
+    } else if (itemInfo.class === '称号') {
+      if (!player.all_titles) player.all_titles = [];
+      if (!player.all_titles.includes(itemInfo.name)) {
+        player.all_titles.push(itemInfo.name);
+        effectApplied = true;
+      } else {
+        // 如果已经拥有该称号，也算作效果已应用（允许消耗多余的称号物品）
+        effectApplied = true;
+        // 可以考虑返回一个特殊的提示，告诉用户已经有了
+        logger.info(`玩家 ${userId} 消耗了重复的称号物品：${itemInfo.name}`);
+      }
     }
 
     if (!effectApplied) {

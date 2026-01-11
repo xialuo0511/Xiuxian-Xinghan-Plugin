@@ -3,3 +3,18 @@
   category: 活动
   rarity: 5
   isLimited: true
+
+- name: 天榜连胜王
+  desc: 天地榜达成10连胜获得
+  category: 战斗
+  rarity: 4
+
+- name: 天榜至尊
+  desc: 天地榜赛季结算排名第一获得
+  category: 榜单
+  rarity: 5
+
+- name: 榜上有名
+  desc: 天地榜赛季结算排名前三获得
+  category: 榜单
+  rarity: 3

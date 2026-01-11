@@ -477,6 +477,17 @@ export class Tiandibang extends plugin {
 
         // 扣除积分 (复用已获取的playerData)
         playerData.player.tiandibang.jifen -= item.积分;
+
+        // 特殊处理：如果是称号，直接添加到玩家称号列表
+        if (item.class === '称号') {
+            if (!playerData.player.all_titles) {
+                playerData.player.all_titles = [];
+            }
+            if (!playerData.player.all_titles.includes(item.name)) {
+                playerData.player.all_titles.push(item.name);
+            }
+        }
+
         await DAL.savePlayer(userId, playerData.player);
 
         // 添加物品
