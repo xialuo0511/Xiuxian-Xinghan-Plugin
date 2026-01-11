@@ -1,4 +1,3 @@
-import { redisClient } from '../api/redis.js';
 import * as DAL from '../api/data-access.js';
 import { Add_najie_thing } from '../apps/Xiuxian/xiuxian.js';
 
@@ -44,7 +43,7 @@ export async function getDailyStats(userId) {
     const today = getTodayDate();
     const key = `${REDIS_KEY_PREFIX}${today}:${userId}`;
 
-    let stats = await redisClient.get(key);
+    let stats = await redis.get(key);
     if (!stats) {
         stats = {
             points: 0,
@@ -55,7 +54,7 @@ export async function getDailyStats(userId) {
         for (const taskKey in DAILY_TASKS) {
             stats.tasks[taskKey] = { count: 0, completed_times: 0 };
         }
-        await redisClient.set(key, JSON.stringify(stats), { EX: 86400 * 2 }); // 存2天避免跨天边界问题
+        await redis.set(key, JSON.stringify(stats), { EX: 86400 * 2 }); // 存2天避免跨天边界问题
     } else {
         stats = JSON.parse(stats);
     }
@@ -68,7 +67,7 @@ export async function getDailyStats(userId) {
 async function saveDailyStats(userId, stats) {
     const today = getTodayDate();
     const key = `${REDIS_KEY_PREFIX}${today}:${userId}`;
-    await redisClient.set(key, JSON.stringify(stats), { EX: 86400 * 2 });
+    await redis.set(key, JSON.stringify(stats), { EX: 86400 * 2 });
 }
 
 /**
