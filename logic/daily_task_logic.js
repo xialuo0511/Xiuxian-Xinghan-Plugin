@@ -1,5 +1,4 @@
 import * as DAL from '../api/data-access.js';
-import { Add_najie_thing } from '../apps/Xiuxian/xiuxian.js';
 
 /**
  * 每日任务配置
@@ -150,7 +149,9 @@ async function checkAndDistributeRewards(userId, stats) {
                     });
                     msg += `${count}灵石 `;
                 } else {
-                    await Add_najie_thing(userId, item.name, item.name === '血气瓶' || item.name === '七星玄元丹' ? '丹药' : '道具', count);
+                    // 使用DAL添加丹药/道具到纳戒
+                    const itemClass = (item.name === '血气瓶' || item.name === '七星玄元丹') ? '丹药' : '道具';
+                    await DAL.updateNajieItem(userId, item.name, itemClass, count);
                     msg += `${item.name}×${count} `;
                 }
             }
