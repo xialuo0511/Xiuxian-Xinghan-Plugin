@@ -12,6 +12,8 @@ import * as DAL from '../../api/data-access.js';
 import { battleEngine } from '../../logic/battle_logic.js';
 import * as tianxiangLogic from '../../logic/tianxiang_logic.js';
 import * as tiandibangLogic from '../../logic/tiandibang_logic.js';
+import fs from 'fs';
+import path from 'path';
 
 
 export class Tiandibang extends plugin {
@@ -58,7 +60,7 @@ export class Tiandibang extends plugin {
     }
 
     /**
-     * 显示天地榜状态
+     * 显示天地榜状态（图片版）
      */
     async showStatus(e) {
         if (!e.isGroup) {
@@ -85,7 +87,13 @@ export class Tiandibang extends plugin {
         await tiandibangLogic.refreshDailyFights(userId);
         const updatedTiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
 
-        const statusData = {
+        // 获取赛季结束时间和结算日状态
+        const seasonEndTime = tiandibangLogic.formatSeasonEndTime();
+        const isSettlement = tiandibangLogic.isSettlementDay();
+
+        // 渲染数据
+        const renderData = {
+            userId: userId,
             name: player.名号,
             jifen: tiandibang.jifen,
             duanwei: duanwei.name,
@@ -100,25 +108,35 @@ export class Tiandibang extends plugin {
             season: season,
             tianxiang: tianxiang.name,
             tianxiangDesc: tianxiang.desc,
-            tianxiangRemaining: tianxiangLogic.formatTianxiangRemaining(tianxiang)
+            tianxiangRemaining: tianxiangLogic.formatTianxiangRemaining(tianxiang),
+            seasonEndTime: isSettlement ? '今日结算' : seasonEndTime,
+            isSettlement: isSettlement,
+            pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
         };
 
-        // 渲染图片
-        const msg = [
-            `═══ 天地榜 · 第${season}赛季 ═══`,
-            `道号：${player.名号}`,
-            `段位：${duanwei.name} | 排名：第${rank || '?'}名`,
-            `积分：${tiandibang.jifen}`,
-            `今日剩余：${updatedTiandibang.daily_fights}/${duanwei.dailyFights}次`,
-            `连胜：${tiandibang.win_streak}`,
-            `荣耀点：${tiandibang.glory_points} | 天地令：${tiandibang.tiandi_tokens}`,
-            ``,
-            `【当前天象】${tianxiang.name}`,
-            `${tianxiang.desc}`,
-            `剩余：${tianxiangLogic.formatTianxiangRemaining(tianxiang)}`
-        ].join('\n');
-
-        e.reply(msg);
+        try {
+            const dataForPuppeteer = await new Show(e).get_imgData('tiandibang_status', renderData);
+            const img = await puppeteer.screenshot('tiandibang_status', { ...dataForPuppeteer });
+            e.reply(img);
+        } catch (err) {
+            console.error('[TiandiBang] 状态图片渲染错误:', err);
+            // 回退到文本
+            const msg = [
+                `═══ 天地榜 · 第${season}赛季 ═══`,
+                `道号：${player.名号}`,
+                `段位：${duanwei.name} | 排名：第${rank || '?'}名`,
+                `积分：${tiandibang.jifen}`,
+                `今日剩余：${updatedTiandibang.daily_fights}/${duanwei.dailyFights}次`,
+                `连胜：${tiandibang.win_streak}`,
+                `荣耀点：${tiandibang.glory_points} | 天地令：${tiandibang.tiandi_tokens}`,
+                ``,
+                `【当前天象】${tianxiang.name}`,
+                `${tianxiang.desc}`,
+                ``,
+                `本赛季结束：${seasonEndTime}`
+            ].join('\n');
+            e.reply(msg);
+        }
     }
 
     /**
@@ -160,6 +178,11 @@ export class Tiandibang extends plugin {
         // 检查是否报名
         if (!await tiandibangLogic.isRegistered(userId)) {
             return e.reply('你还未报名本赛季天地榜，请发送【#报名天地榜】参加', true);
+        }
+
+        // 检查是否为结算日（周日不可比试）
+        if (tiandibangLogic.isSettlementDay()) {
+            return e.reply('今日为赛季结算日，无法进行比试。\n可查看【#赛季榜】排名或前往【#天地堂】兑换物品。', true);
         }
 
         // 检查动作状态
@@ -279,7 +302,29 @@ export class Tiandibang extends plugin {
             resultMsgs.push(...result.messages);
         }
 
-        e.reply(resultMsgs.join('\n'));
+        // 添加天地榜结果到战斗日志
+        battleResult.log.push({ type: 'system', text: `【${tianxiang.name}】生效中` });
+        battleResult.log.push({ type: 'end', text: isWin ? `🎉 ${player.名号} 获胜！` : `💔 ${player.名号} 落败` });
+        battleResult.log.push({ type: 'system', text: `积分 +${result.jifen} | 灵石 +${result.lingshi} | 段位: ${result.duanwei.name}` });
+        if (result.messages && result.messages.length > 0) {
+            result.messages.forEach(msg => battleResult.log.push({ type: 'system', text: msg }));
+        }
+
+        // 使用与以武会友相同的渲染逻辑 (universal_battle_log模板)
+        try {
+            const renderData = {
+                log: battleResult.log,
+                pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
+            };
+
+            const dataForPuppeteer = await new Show(e).get_imgData('universal_battle_log', renderData);
+            const img = await puppeteer.screenshot('universal_battle_log', { ...dataForPuppeteer });
+            e.reply(img);
+        } catch (renderErr) {
+            console.error('[TiandiBang] 战报渲染错误:', renderErr);
+            // 渲染失败，回退到文本消息
+            e.reply(resultMsgs.join('\n'));
+        }
     }
 
     /**
@@ -378,24 +423,24 @@ export class Tiandibang extends plugin {
             return e.reply(`天地堂没有【${itemName}】`, true);
         }
 
-        const player = await Read_player(userId);
+        const playerData = await DAL.getAllPlayerData(userId);
+        const player = playerData?.player;
         const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
 
         if (!tiandibang || tiandibang.jifen < item.积分) {
             return e.reply(`积分不足，还需${item.积分 - (tiandibang?.jifen || 0)}积分`, true);
         }
 
-        // 扣除积分
-        const playerData = await DAL.getAllPlayerData(userId);
-        playerData.tiandibang.jifen -= item.积分;
-        await DAL.savePlayer(userId, playerData);
+        // 扣除积分 (复用已获取的playerData)
+        playerData.player.tiandibang.jifen -= item.积分;
+        await DAL.savePlayer(userId, playerData.player);
 
         // 添加物品
         await DAL.updateNajieItem(userId, item.name, item.class, 1);
 
         // 更新排行榜
         await redis.zAdd('xiuxian:tiandibang:leaderboard', {
-            score: playerData.tiandibang.jifen,
+            score: playerData.player.tiandibang.jifen,
             value: String(userId)
         });
 

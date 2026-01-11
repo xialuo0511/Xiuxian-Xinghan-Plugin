@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+    <style>
+        @font-face {
+            font-family: "tttgbnumber";
+            src: url("{{pluResPath}}/font/tttgbnumber.ttf");
+        }
+
+        @font-face {
+            font-family: "NZBZ";
+            src: url("{{pluResPath}}/font/NZBZ.TTF");
+        }
+
+        :root {
+            --bg-paper: #1a1a2e;
+            --ink-color: #e8e8e8;
+            --ink-light: #a0a0a0;
+            --accent-gold: #ffd700;
+            --accent-purple: #9b59b6;
+            --win-color: #4caf50;
+            --lose-color: #e74c3c;
+            --border-color: #3a3a5c;
+        }
+
+        body {
+            width: 600px;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+            color: var(--ink-color);
+        }
+
+        .container {
+            background: rgba(30, 30, 50, 0.9);
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 24px;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .tianxiang {
+            font-size: 14px;
+            color: var(--accent-purple);
+            margin-top: 5px;
+        }
+
+        .vs-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .fighter {
+            text-align: center;
+            flex: 1;
+        }
+
+        .fighter-name {
+            font-size: 18px;
+            color: var(--ink-color);
+        }
+
+        .vs-text {
+            font-size: 24px;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .result-banner {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .result-win {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.1));
+            border: 2px solid var(--win-color);
+            color: var(--win-color);
+        }
+
+        .result-lose {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(231, 76, 60, 0.1));
+            border: 2px solid var(--lose-color);
+            color: var(--lose-color);
+        }
+
+        .battle-log {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-title {
+            font-size: 16px;
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .log-line {
+            font-size: 13px;
+            color: var(--ink-light);
+            line-height: 1.6;
+            padding: 2px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--ink-light);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-family: "tttgbnumber";
+            color: var(--accent-gold);
+        }
+
+        .stat-value.green {
+            color: var(--win-color);
+        }
+
+        .stat-value.purple {
+            color: var(--accent-purple);
+        }
+
+        .extra-messages {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(155, 89, 182, 0.1);
+            border-left: 3px solid var(--accent-purple);
+            border-radius: 4px;
+        }
+
+        .extra-msg {
+            font-size: 14px;
+            color: var(--accent-purple);
+            padding: 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="title">{{title}}</div>
+            <div class="tianxiang">【{{tianxiang}}】生效中</div>
+        </div>
+
+        <div class="vs-section">
+            <div class="fighter">
+                <div class="fighter-name">{{playerName}}</div>
+            </div>
+            <div class="vs-text">VS</div>
+            <div class="fighter">
+                <div class="fighter-name">{{opponentName}}</div>
+            </div>
+        </div>
+
+        <div class="result-banner {{if isWin}}result-win{{else}}result-lose{{/if}}">
+            {{if isWin}}🎉 胜利{{else}}💔 落败{{/if}}
+        </div>
+
+        {{if battleLog && battleLog.length > 0}}
+        <div class="battle-log">
+            <div class="log-title">⚔️ 战斗记录</div>
+            {{each battleLog line}}
+            <div class="log-line">{{line}}</div>
+            {{/each}}
+        </div>
+        {{/if}}
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">获得积分</div>
+                <div class="stat-value green">+{{jifen}}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">总积分</div>
+                <div class="stat-value">{{totalJifen}}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">获得灵石</div>
+                <div class="stat-value green">+{{lingshi}}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">当前段位</div>
+                <div class="stat-value purple">{{duanwei}}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">连胜</div>
+                <div class="stat-value">{{winStreak}}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">剩余次数</div>
+                <div class="stat-value">{{remainingFights}}</div>
+            </div>
+        </div>
+
+        {{if extraMessages && extraMessages.length > 0}}
+        <div class="extra-messages">
+            {{each extraMessages msg}}
+            <div class="extra-msg">{{msg}}</div>
+            {{/each}}
+        </div>
+        {{/if}}
+    </div>
+
+</body>
+
+</html>

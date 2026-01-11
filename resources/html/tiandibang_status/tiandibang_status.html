@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+    <style>
+        @font-face {
+            font-family: "tttgbnumber";
+            src: url("{{pluResPath}}/font/tttgbnumber.ttf");
+        }
+
+        @font-face {
+            font-family: "NZBZ";
+            src: url("{{pluResPath}}/font/NZBZ.TTF");
+        }
+
+        :root {
+            --bg-cream: #f7f3e9;
+            --gold-primary: #b8860b;
+            --gold-light: #daa520;
+            --gold-dark: #8b6914;
+            --text-dark: #3a2f1e;
+            --text-muted: #6b5e4a;
+            --border-gold: #c9a959;
+            --accent-purple: #8b5cf6;
+            --win-color: #e74c3c;
+        }
+
+        body {
+            width: 500px;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f7f3e9 0%, #ede7d9 100%);
+            font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+            color: var(--text-dark);
+        }
+
+        .container {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 243, 233, 0.9) 100%);
+            border: 3px solid var(--border-gold);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(139, 105, 20, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+        }
+
+        /* 顶部装饰 */
+        .container::before {
+            content: "☁";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            font-size: 30px;
+            color: var(--gold-light);
+            opacity: 0.6;
+        }
+
+        .container::after {
+            content: "☁";
+            position: absolute;
+            top: -10px;
+            right: 30px;
+            font-size: 20px;
+            color: var(--gold-light);
+            opacity: 0.4;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 32px;
+            color: var(--gold-dark);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            letter-spacing: 5px;
+        }
+
+        .season-tag {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .player-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            border: 1px solid var(--border-gold);
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--gold-primary);
+            object-fit: cover;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 20px;
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .player-rank {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .duanwei-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e5dcc8;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-family: "tttgbnumber";
+            color: var(--gold-dark);
+            font-weight: bold;
+        }
+
+        .stat-value.purple {
+            color: var(--accent-purple);
+        }
+
+        .stat-value.red {
+            color: var(--win-color);
+        }
+
+        .currency-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .currency-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #fff 0%, #f7f3e9 100%);
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e5dcc8;
+        }
+
+        .currency-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .currency-value {
+            font-family: "tttgbnumber";
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+
+        .tianxiang-section {
+            background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid var(--border-gold);
+            margin-bottom: 15px;
+        }
+
+        .tianxiang-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tianxiang-icon {
+            font-size: 20px;
+        }
+
+        .tianxiang-name {
+            font-size: 16px;
+            color: var(--gold-dark);
+            font-weight: bold;
+        }
+
+        .tianxiang-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .season-end {
+            background: linear-gradient(135deg, #f8f4ff 0%, #ede7f6 100%);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #d4c4f0;
+        }
+
+        .season-end-label {
+            font-size: 12px;
+            color: var(--accent-purple);
+        }
+
+        .season-end-time {
+            font-size: 18px;
+            font-family: "tttgbnumber";
+            color: var(--accent-purple);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="title">天地榜</div>
+            <div class="season-tag">第{{season}}赛季</div>
+        </div>
+
+        <div class="player-section">
+            <img class="avatar" src="https://q1.qlogo.cn/g?b=qq&s=640&nk={{userId}}" />
+            <div class="player-info">
+                <div class="player-name">{{name}}</div>
+                <div class="player-rank">赛季排名：#{{rank}}</div>
+            </div>
+            <div class="duanwei-badge" style="background: {{duanweiColor}};">{{duanwei}}</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">积分</div>
+                <div class="stat-value">{{jifen}}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">今日剩余</div>
+                <div class="stat-value">{{dailyFights}}/{{maxDailyFights}}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">连胜</div>
+                <div class="stat-value red">{{winStreak}}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总战斗</div>
+                <div class="stat-value purple">{{totalFights}}</div>
+            </div>
+        </div>
+
+        <div class="currency-row">
+            <div class="currency-item">
+                <span class="currency-icon">💎</span>
+                <span style="font-size:12px;color:#6b5e4a;">荣耀点</span>
+                <span class="currency-value">{{gloryPoints}}</span>
+            </div>
+            <div class="currency-item">
+                <span class="currency-icon">🏆</span>
+                <span style="font-size:12px;color:#6b5e4a;">天地令</span>
+                <span class="currency-value">{{tiandiTokens}}</span>
+            </div>
+        </div>
+
+        <div class="tianxiang-section">
+            <div class="tianxiang-header">
+                <span class="tianxiang-icon">☯</span>
+                <span class="tianxiang-name">{{tianxiang}}</span>
+                <span style="margin-left:auto;font-size:12px;color:#6b5e4a;">剩余：{{tianxiangRemaining}}</span>
+            </div>
+            <div class="tianxiang-desc">{{tianxiangDesc}}</div>
+        </div>
+
+        <div class="season-end">
+            <div class="season-end-label">本赛季结束</div>
+            <div class="season-end-time">{{seasonEndTime}}</div>
+        </div>
+    </div>
+
+</body>
+
+</html>

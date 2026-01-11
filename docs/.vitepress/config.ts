@@ -23,6 +23,8 @@ export default defineConfig({
           { text: '经济系统', link: '/gameplay/economy' }
         ]
       },
+      { text: '活动列表', link: '/activities/' },
+      { text: '功能更新', link: '/features/' },
       {
         text: '更新日志',
         items: [
@@ -50,6 +52,13 @@ export default defineConfig({
           { text: '宗门系统', link: '/gameplay/association' },
           { text: '职业系统', link: '/gameplay/occupation' },
           { text: '经济系统', link: '/gameplay/economy' }
+        ]
+      },
+      {
+        text: '🎪 活动与功能',
+        items: [
+          { text: '活动列表', link: '/activities/' },
+          { text: '功能更新', link: '/features/' }
         ]
       },
       {

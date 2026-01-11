@@ -45,6 +45,46 @@ export async function getCurrentSeason() {
 }
 
 /**
+ * 检查今天是否为结算日（周日）
+ */
+export function isSettlementDay() {
+    const today = new Date();
+    return today.getDay() === 0; // 0 = 周日
+}
+
+/**
+ * 获取本赛季结束时间（本周日23:59:59）
+ */
+export function getSeasonEndTime() {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+
+    const endDate = new Date(now);
+    endDate.setDate(now.getDate() + daysUntilSunday);
+    endDate.setHours(23, 59, 59, 0);
+
+    return endDate;
+}
+
+/**
+ * 格式化赛季结束倒计时
+ */
+export function formatSeasonEndTime() {
+    const now = new Date();
+    const endTime = getSeasonEndTime();
+    const diffMs = endTime.getTime() - now.getTime();
+
+    if (diffMs <= 0) return '结算中';
+
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+    if (days > 0) return `${days}天${hours}小时`;
+    return `${hours}小时`;
+}
+
+/**
  * 获取玩家天地榜数据
  */
 export async function getPlayerTiandibang(userId) {

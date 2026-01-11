@@ -202,11 +202,14 @@ export async function checkAndRotateTianxiang() {
     // 如果天象已过期或不存在
     if (!current.endTime || Date.now() > current.endTime) {
         const newTianxiang = generateRandomTianxiang();
-        await setTianxiang(newTianxiang, newTianxiang.duration);
+        // 随机3-7天时长
+        const randomDuration = Math.floor(Math.random() * 5) + 3; // 3-7天
+        await setTianxiang(newTianxiang, randomDuration);
         return {
             rotated: true,
             oldTianxiang: current,
-            newTianxiang: newTianxiang
+            newTianxiang: newTianxiang,
+            duration: randomDuration
         };
     }
 
