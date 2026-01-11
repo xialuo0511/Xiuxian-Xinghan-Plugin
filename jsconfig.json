@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
+    "module": "ESNext",
     "target": "ESNext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "node",
     "checkJs": true,
     "allowJs": true,
     "maxNodeModuleJsDepth": 2,
+    "baseUrl": "./",
+    "paths": {
+      "trss-yunzai": ["node_modules/@types/trss-yunzai/index.d.ts"]
+    },
     "types": [
       "trss-yunzai"
     ]
