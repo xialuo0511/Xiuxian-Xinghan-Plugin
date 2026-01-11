@@ -158,13 +158,8 @@ async function checkAndDistributeRewards(userId, stats) {
             // 标记已领取
             stats.rewards_claimed.push(rewardConfig.points);
 
-            try {
-                // 尝试通知用户
-                let notifyMsg = msg;
-                Bot.pickUser(userId).sendMsg(notifyMsg).catch(() => { });
-            } catch (e) {
-                // ignore
-            }
+            // 注意：不发送私聊通知，避免封号风险
+            // 奖励会在下次查看每日任务时自动显示
         }
     }
 }
