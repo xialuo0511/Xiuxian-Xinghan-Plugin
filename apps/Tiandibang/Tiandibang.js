@@ -1,558 +1,504 @@
-import plugin from '../../../../lib/plugins/plugin.js'
-import fs from "fs"
-import path from "path"
-import Show from "../../model/show.js";
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
-import data from '../../model/XiuxianData.js'
-import { __PATH } from "../Xiuxian/xiuxian.js"
-import { ForwardMsg, Read_player, shijianc, Add_灵石, existplayer, Add_najie_thing, exist_najie_thing } from "../Xiuxian/xiuxian.js"
-import { zd_battle } from "../Battle/Battle.js"
-import config from "../../model/Config.js"
+/**
+ * 天地榜 2.0 指令处理模块
+ * 重构版本 - 使用DAL架构和battleEngine战斗系统
+ */
 
-import { createRequire } from "module"
-const require = createRequire(import.meta.url)
-import mysql from "mysql"
-import { constrainedMemory } from 'process';
-let databaseConfigData = config.getConfig("database", "database");
-//创建连接
-const db = mysql.createPool({
-    host: 'localhost',
-    user: databaseConfigData.Database.username,
-    password: databaseConfigData.Database.password,
-    database: 'xiuxiandatabase'
-})
+import plugin from '../../../../lib/plugins/plugin.js';
+import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import Show from '../../model/show.js';
+import data from '../../model/XiuxianData.js';
+import config from '../../model/Config.js';
+import { Read_player, existplayer, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js';
+import { battleEngine } from '../../logic/battle_logic.js';
+import * as tianxiangLogic from '../../logic/tianxiang_logic.js';
+import * as tiandibangLogic from '../../logic/tiandibang_logic.js';
 
 export class Tiandibang extends plugin {
     constructor() {
         super({
-            /** 功能名称 */
-            name: 'Tiandibang',
-            /** 功能描述 */
-            dsc: '交易模块',
+            name: 'Tiandibang2.0',
+            dsc: '天地榜2.0 - 天象系统 + 五行克制',
             event: 'message',
-            /** 优先级，数字越小等级越高 */
             priority: 600,
             rule: [
-                {
-                    reg: '^#天地榜$',
-                    fnc: 'my_point'
-                },
-                {
-                    reg: '^#比试$',
-                    fnc: 'pk'
-                },
-                {
-                    reg: '^#报名比赛',
-                    fnc: 'cansai'
-                },
-                {
-                    reg: '^#天地堂',
-                    fnc: 'tianditang'
-                },
-                {
-                    reg: '^#积分兑换(.*)$',
-                    fnc: 'duihuan'
-                }
+                { reg: '^#天地榜$', fnc: 'showStatus' },
+                { reg: '^#比试$', fnc: 'startBattle' },
+                { reg: '^#报名天地榜$', fnc: 'register' },
+                { reg: '^#当前天象$', fnc: 'showTianxiang' },
+                { reg: '^#赛季榜$', fnc: 'showLeaderboard' },
+                { reg: '^#天地堂$', fnc: 'showShop' },
+                { reg: '^#积分兑换(.*)$', fnc: 'exchange' },
+                { reg: '^#荣耀点兑换(.*)$', fnc: 'exchangeGlory' },
+                { reg: '^#天地令兑换(.*)$', fnc: 'exchangeToken' }
             ]
         });
-        this.set = config.getdefSet('task', 'task')
+
+        // 定时任务：天象轮换检查
         this.task = {
-            cron: this.set.saiji,
-            name: 're_bangdang',
-            fnc: () => this.re_bangdang()
-        }
+            cron: '0 0 * * *', // 每天0点检查
+            name: 'tianxiang_rotate',
+            fnc: () => this.rotateTianxiang()
+        };
     }
 
-    async duihuan(e) {
+    /**
+     * 报名天地榜
+     */
+    async register(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
-        }
-        let date = new Date();
-        let n = date.getDay();
-        if (n != 0) {
-            e.reply(`物品筹备中，等到周日再来兑换吧`);
-            return;
+            return e.reply('修仙游戏请在群聊中游玩');
         }
 
-        let usr_qq = e.user_id;
-        //查看存档
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
-        }
-        var reg = new RegExp(/积分兑换/);
-        let msg = e.msg.replace(reg, '');
-        msg = msg.replace("#", '');
-        let thing_name = msg.replace("积分兑换", '');
-        let ifexist = data.tianditang.find(item => item.name == thing_name);
-        if (!ifexist) {
-            e.reply(`天地堂还没有这样的东西:${thing_name}`);
-            return;
-        }
-        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
-        db.query(sql1, async (err, result) => {
-            var dataString = JSON.stringify(result);
-            let a = JSON.parse(dataString)
-            a = a[0]
-            if (!a) {
-                e.reply("您未报名")
-                return;
-            }
-            if (a.jifen < ifexist.积分) {
-                e.reply(`积分不足,还需${ifexist.积分 - a.jifen}积分兑换${thing_name}`);
-                return;
-            }
-            a.jifen -= ifexist.积分;
-            await Add_najie_thing(usr_qq, thing_name, ifexist.class, 1);
-            let sql2 = `update tiandibang set jifen='${a.jifen}' where usr_id=${usr_qq};`
-            db.query(sql2, (err, result) => {
-                e.reply([`兑换成功!获得[${thing_name}],剩余[${a.jifen}]积分`, '\n可以在【我的纳戒】中查看']);
-                return;
-            })
+        const userId = e.user_id;
+        if (!await existplayer(userId)) return;
 
-        })
-
+        const result = await tiandibangLogic.registerTiandibang(userId);
+        e.reply(result.message, true);
     }
 
-    async tianditang(e) {
+    /**
+     * 显示天地榜状态
+     */
+    async showStatus(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
+            return e.reply('修仙游戏请在群聊中游玩');
         }
-        let usr_qq = e.user_id;
-        //查看存档
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
-        }
-        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
-        db.query(sql1, async (err, result) => {
-            var dataString = JSON.stringify(result);
-            let a = JSON.parse(dataString)
-            a = a[0]
-            if (!a) {
-                e.reply("您未报名")
-                return;
-            }
-            let img = await get_tianditang_img(e, a.jifen);
-            e.reply(img);
-            return;
-        })
 
+        const userId = e.user_id;
+        if (!await existplayer(userId)) return;
+
+        // 检查是否报名
+        if (!await tiandibangLogic.isRegistered(userId)) {
+            return e.reply('你还未报名本赛季天地榜，请发送【#报名天地榜】参加', true);
+        }
+
+        const player = await Read_player(userId);
+        const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+        const duanwei = tiandibangLogic.getDuanwei(tiandibang.jifen);
+        const rank = await tiandibangLogic.getPlayerRank(userId);
+        const tianxiang = await tianxiangLogic.getCurrentTianxiang();
+        const season = await tiandibangLogic.getCurrentSeason();
+
+        // 刷新每日次数
+        await tiandibangLogic.refreshDailyFights(userId);
+        const updatedTiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+
+        const statusData = {
+            name: player.名号,
+            jifen: tiandibang.jifen,
+            duanwei: duanwei.name,
+            duanweiColor: duanwei.color,
+            rank: rank || '未上榜',
+            dailyFights: updatedTiandibang.daily_fights,
+            maxDailyFights: duanwei.dailyFights,
+            winStreak: tiandibang.win_streak,
+            totalFights: tiandibang.total_fights,
+            gloryPoints: tiandibang.glory_points,
+            tiandiTokens: tiandibang.tiandi_tokens,
+            season: season,
+            tianxiang: tianxiang.name,
+            tianxiangDesc: tianxiang.desc,
+            tianxiangRemaining: tianxiangLogic.formatTianxiangRemaining(tianxiang)
+        };
+
+        // 渲染图片
+        const msg = [
+            `═══ 天地榜 · 第${season}赛季 ═══`,
+            `道号：${player.名号}`,
+            `段位：${duanwei.name} | 排名：第${rank || '?'}名`,
+            `积分：${tiandibang.jifen}`,
+            `今日剩余：${updatedTiandibang.daily_fights}/${duanwei.dailyFights}次`,
+            `连胜：${tiandibang.win_streak}`,
+            `荣耀点：${tiandibang.glory_points} | 天地令：${tiandibang.tiandi_tokens}`,
+            ``,
+            `【当前天象】${tianxiang.name}`,
+            `${tianxiang.desc}`,
+            `剩余：${tianxiangLogic.formatTianxiangRemaining(tianxiang)}`
+        ].join('\n');
+
+        e.reply(msg);
     }
 
-    async cansai(e) {
+    /**
+     * 显示当前天象
+     */
+    async showTianxiang(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
+            return e.reply('修仙游戏请在群聊中游玩');
         }
-        let usr_qq = e.user_id;
-        //查看存档
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
-        }
-        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
-        db.query(sql1, async (err, result) => {
-            var dataString = JSON.stringify(result);
-            let a = JSON.parse(dataString)
-            a = a[0]
-            if (a) {
-                e.reply("你已经参赛了!")
-                return;
-            }
-            let sql2 = `insert into tiandibang values (${usr_qq},3,0,0,0,0)`
-            db.query(sql2, (err, result) => {
-                e.reply("参赛成功!");
-                return;
-            })
-        })
+
+        const tianxiang = await tianxiangLogic.getCurrentTianxiang();
+        const remaining = tianxiangLogic.formatTianxiangRemaining(tianxiang);
+
+        const msg = [
+            `═══ 当前天象 ═══`,
+            `【${tianxiang.name}】`,
+            `${tianxiang.desc}`,
+            ``,
+            `剩余时间：${remaining}`,
+            ``,
+            `发送【#天地榜】查看个人信息`,
+            `发送【#比试】开始对战`
+        ].join('\n');
+
+        e.reply(msg);
     }
 
-    async my_point(e) {
+    /**
+     * 开始比试
+     */
+    async startBattle(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
+            return e.reply('修仙游戏请在群聊中游玩');
         }
-        let usr_qq = e.user_id;
-        //查看存档
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
+
+        const userId = e.user_id;
+        if (!await existplayer(userId)) return;
+
+        // 检查是否报名
+        if (!await tiandibangLogic.isRegistered(userId)) {
+            return e.reply('你还未报名本赛季天地榜，请发送【#报名天地榜】参加', true);
         }
-        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
-        db.query(sql1, async (err, result) => {
-            var dataString = JSON.stringify(result);
-            let a = JSON.parse(dataString)
-            a = a[0]
-            if (!a) {
-                e.reply("请先报名")
-                return;
+
+        // 检查动作状态
+        const action = await redis.get(`xiuxian:player:${userId}:action`);
+        if (action) {
+            const actionData = JSON.parse(action);
+            if (Date.now() < actionData.end_time) {
+                const remaining = Math.ceil((actionData.end_time - Date.now()) / 1000 / 60);
+                return e.reply(`正在${actionData.action}中，剩余${remaining}分钟`, true);
             }
-            let sql2 = `select * from tiandibang;`
-            db.query(sql2, async (err, result) => {
-                var dataString = JSON.stringify(result);
-                let tiandibang = JSON.parse(dataString)
-                for (var i = 0; i < tiandibang.length; i++) {
-                    let play = await Read_player(tiandibang[i].usr_id)
-                    tiandibang[i].名号 = play.名号
-                }
-                let l = 10;
-                let msg = [
-                    "***天地榜(每日免费三次周一0点清空积分)***",
-                ];
-                for (var i = 0; i < tiandibang.length; i++) {
-                    if (tiandibang[i].usr_qq == usr_qq) {
-                        x = i;
-                        break;
-                    }
-                }
-                let x = tiandibang.length;
-                if (l > tiandibang.length) {
-                    l = tiandibang.length;
-                }
-                let b = []
-                if (x < l) {
-                    for (var m = 0; m < l; m++) {
-                        b.push(tiandibang[m])
-                    }
-                }
-                else if (x >= l && (tiandibang.length - x) < l) {
-                    for (var m = tiandibang.length - l; m < tiandibang.length; m++) {
-                        b.push(tiandibang[m])
-                    }
-                }
-                else {
-                    for (var m = x - 5; m < x + 5; m++) {
-                        b.push(tiandibang[m])
-                    }
-                }
-                b.sort(function (a, b) {
-                    if (a.jifen === b.jifen) {
-                        return a.the_best_jifen - b.the_best_jifen
-                    } else {
-                        return b.jifen - a.jifen
-                    }
-                })
-                for (var i = 0; i < b.length; i++) {
-                    msg.push(
-                        "名次：" + (i + 1) +
-                        "|名号：" + b[i].名号 +
-                        "|积分：" + b[i].jifen +
-                        "|最高积分：" + b[i].the_best_jifen +
-                        "|累计挑战次数：" + b[i].all_cishu
-                    );
-                }
+        }
 
+        // 消耗每日次数
+        const consumeResult = await tiandibangLogic.consumeDailyFight(userId);
+        if (!consumeResult.success) {
+            return e.reply(consumeResult.message, true);
+        }
 
+        // 获取玩家和天象数据
+        const player = await Read_player(userId);
+        const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+        const tianxiang = await tianxiangLogic.getCurrentTianxiang();
 
-                let log_data = {
-                    log: msg,
-                };
-                const data1 = await new Show(e).get_logData(log_data);
-                let img = await puppeteer.screenshot('log', {
-                    ...data1,
-                });
-                e.reply(img);
-                return;
-            })
-        })
+        // 匹配对手
+        const opponentId = await tiandibangLogic.matchOpponent(userId, tiandibang.jifen);
+        let opponent;
+        let isNPC = false;
 
+        if (opponentId) {
+            opponent = await Read_player(opponentId);
+        } else {
+            // 生成NPC对手
+            isNPC = true;
+            const randomFactor = 0.8 + Math.random() * 0.4;
+            opponent = {
+                名号: '灵修兽',
+                攻击: Math.floor(player.攻击 * randomFactor),
+                防御: Math.floor(player.防御 * randomFactor),
+                当前血量: Math.floor(player.血量上限 * randomFactor),
+                血量上限: Math.floor(player.血量上限 * randomFactor),
+                暴击率: player.暴击率 || 0.1,
+                灵根: { name: '无', type: '无' },
+                id: 'npc_lingxiushou'
+            };
+        }
+
+        // 应用天象效果
+        const playerEffects = tianxiangLogic.applyTianxiangEffects(tianxiang, player);
+        const opponentEffects = tianxiangLogic.applyTianxiangEffects(tianxiang, opponent);
+
+        // 计算五行克制
+        const wuxingBonus = tianxiangLogic.calculateWuxingBonus(player.灵根, opponent.灵根);
+
+        // 构建战斗单位
+        const playerUnit = {
+            id: userId,
+            名号: player.名号,
+            攻击: Math.floor(player.攻击 * playerEffects.atkModifier * wuxingBonus),
+            防御: Math.floor(player.防御 * playerEffects.defModifier),
+            当前血量: Math.floor(player.血量上限 * playerEffects.hpModifier),
+            血量上限: Math.floor(player.血量上限 * playerEffects.hpModifier),
+            暴击率: (player.暴击率 || 0.1) + playerEffects.critModifier,
+            灵根: player.灵根
+        };
+
+        const opponentUnit = {
+            id: opponentId || 'npc',
+            名号: opponent.名号,
+            攻击: Math.floor(opponent.攻击 * opponentEffects.atkModifier / wuxingBonus),
+            防御: Math.floor(opponent.防御 * opponentEffects.defModifier),
+            当前血量: Math.floor((opponent.血量上限 || opponent.当前血量) * opponentEffects.hpModifier),
+            血量上限: Math.floor((opponent.血量上限 || opponent.当前血量) * opponentEffects.hpModifier),
+            暴击率: opponent.暴击率 || 0.1,
+            灵根: opponent.灵根
+        };
+
+        // 执行战斗
+        const battleResult = await battleEngine(playerUnit, opponentUnit, 30);
+
+        // 计算积分和灵石
+        const isWin = battleResult.A_win;
+        const baseJifen = isWin ? (isNPC ? 1500 : 2000) : (isNPC ? 800 : 1000);
+        const baseLingshi = Math.floor(tiandibang.jifen * 2);
+
+        // 更新战斗结果
+        const result = await tiandibangLogic.updateBattleResult(userId, isWin, baseJifen, baseLingshi);
+
+        // 发放灵石
+        await Add_灵石(userId, result.lingshi);
+
+        // 构建结果消息
+        const resultMsgs = [
+            `═══ 天地榜比试 ═══`,
+            `【${tianxiang.name}】生效中`,
+            ``
+        ];
+
+        // 添加战斗日志（简化版）
+        if (battleResult.msg && battleResult.msg.length > 0) {
+            resultMsgs.push(...battleResult.msg.slice(-5)); // 只显示最后5条
+        }
+
+        resultMsgs.push(``);
+        resultMsgs.push(isWin ? `🎉 ${player.名号} 获胜！` : `💔 ${player.名号} 落败`);
+        resultMsgs.push(`积分 +${result.jifen} (当前: ${result.totalJifen})`);
+        resultMsgs.push(`灵石 +${result.lingshi}`);
+        resultMsgs.push(`段位: ${result.duanwei.name}`);
+        resultMsgs.push(`剩余次数: ${consumeResult.remainingFights}`);
+
+        // 添加额外消息（连胜等）
+        if (result.messages && result.messages.length > 0) {
+            resultMsgs.push(``);
+            resultMsgs.push(...result.messages);
+        }
+
+        e.reply(resultMsgs.join('\n'));
     }
 
-    async pk(e) {
-        //不开放私聊
+    /**
+     * 显示赛季排行榜
+     */
+    async showLeaderboard(e) {
         if (!e.isGroup) {
-            e.reply('修仙游戏请在群聊中游玩');
-            return;
+            return e.reply('修仙游戏请在群聊中游玩');
         }
-        let usr_qq = e.user_id;
-        //有无存档
-        let ifexistplay = await existplayer(usr_qq);
-        if (!ifexistplay) {
-            return;
+
+        const season = await tiandibangLogic.getCurrentSeason();
+        const leaderboard = await tiandibangLogic.getLeaderboard(0, 9);
+
+        const msg = [
+            `═══ 天地榜 · 第${season}赛季 ═══`,
+            ``
+        ];
+
+        for (const entry of leaderboard) {
+            const medal = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `${entry.rank}.`;
+            msg.push(`${medal} ${entry.name} | ${entry.duanwei.name} | ${entry.jifen}分`);
         }
-        //查询redis中的人物动作
-        let action = await redis.get("xiuxian:player:" + usr_qq + ":action");
-        action = JSON.parse(action);
-        if (action != null) {
-            //人物有动作查询动作结束时间
-            let action_end_time = action.end_time;
-            let now_time = new Date().getTime();
-            if (now_time <= action_end_time) {
-                let m = parseInt((action_end_time - now_time) / 1000 / 60);
-                let s = parseInt(((action_end_time - now_time) - m * 60 * 1000) / 1000);
-                e.reply("正在" + action.action + "中,剩余时间:" + m + "分" + s + "秒");
-                return;
-            }
+
+        if (leaderboard.length === 0) {
+            msg.push('暂无玩家上榜');
         }
-        let sql1 = `select * from tiandibang where usr_id=${usr_qq};`
-        db.query(sql1, async (err, result) => {
-            var dataString = JSON.stringify(result);
-            let a = JSON.parse(dataString)
-            a = a[0]
-            if (!a) {
-                e.reply("请先报名")
-                return;
-            }
-            let sql2 = `select * from tiandibang;`
-            db.query(sql2, async (err, result) => {
-                var dataString = JSON.stringify(result);
-                let tiandibang = JSON.parse(dataString)
-                let x = tiandibang.length;
-                for (var m = 0; m < tiandibang.length; m++) {
-                    if (tiandibang[m].usr_id == usr_qq) {
-                        x = m;
-                        break;
-                    }
-                }
-                let last_msg = [];
-                let atk = 1;
-                let def = 1;
-                let blood = 1;
-                let now = new Date();
-                let nowTime = now.getTime(); //获取当前日期的时间戳
-                let Today = await shijianc(nowTime);
-                let lastbisai_time = await shijianc(tiandibang[x].last_time);//获得上次pk日期
-                if (Today.Y != lastbisai_time.Y || Today.M != lastbisai_time.M || Today.D != lastbisai_time.D) {
-                    tiandibang[x].last_time = nowTime
-                    tiandibang[x].cishu = 3;
-                }
-                for (var i = 0; i < tiandibang.length; i++) {
-                    let playerer = await Read_player(tiandibang[i].usr_id)
-                    tiandibang[i].名号 = playerer.名号
-                    tiandibang[i].境界 = playerer.level_id
-                    tiandibang[i].攻击 = playerer.攻击
-                    tiandibang[i].防御 = playerer.防御
-                    tiandibang[i].当前血量 = playerer.血量上限
-                    tiandibang[i].学习的功法 = playerer.学习的功法
-                    tiandibang[i].灵根 = playerer.灵根
-                    tiandibang[i].法球倍率 = playerer.灵根.法球倍率
-                }
-                if (Today.Y == lastbisai_time.Y && Today.M == lastbisai_time.M && Today.D == lastbisai_time.D && tiandibang[x].cishu < 1) {
-                    let zbl = await exist_najie_thing(usr_qq, "摘榜令", "道具");
-                    if (zbl) {
-                        tiandibang[x].cishu = 1;
-                        await Add_najie_thing(usr_qq, "摘榜令", "道具", -1);
-                        last_msg.push(`${tiandibang[x].名号}使用了摘榜令\n`);
-                    }
-                    else {
-                        e.reply("今日挑战次数用光了,请明日再来吧");
-                        return;
-                    }
-                }
-                let lingshi;
-                if (x != 0) {
-                    let k = Math.ceil(Math.random() * tiandibang.length);
-                    if (k == 0 || tiandibang[x].名号 == tiandibang[k].名号) {
-                        k = -1
-                    }
-                    let B_player;
-                    if (k != -1) {
-                        if ((tiandibang[k].攻击 / tiandibang[x].攻击) > 2) {
-                            atk = 2;
-                            def = 2;
-                            blood = 2;
-                        }
-                        else if ((tiandibang[k].攻击 / tiandibang[x].攻击) > 1.6) {
-                            atk = 1.6;
-                            def = 1.6;
-                            blood = 1.6;
-                        }
-                        else if ((tiandibang[k].攻击 / tiandibang[x].攻击) > 1.3) {
-                            atk = 1.3;
-                            def = 1.3;
-                            blood = 1.3;
-                        }
-                        B_player = {
-                            名号: tiandibang[k].名号,
-                            攻击: tiandibang[k].攻击,
-                            防御: tiandibang[k].防御,
-                            当前血量: tiandibang[k].当前血量,
-                            暴击率: tiandibang[k].暴击率,
-                            学习的功法: tiandibang[k].学习的功法,
-                            灵根: tiandibang[k].灵根,
-                            法球倍率: tiandibang[k].法球倍率
-                        }
-                    }
-                    let A_player = {
-                        名号: tiandibang[x].名号,
-                        攻击: parseInt((tiandibang[x].攻击)) * atk,
-                        防御: parseInt((tiandibang[x].防御) * def),
-                        当前血量: parseInt((tiandibang[x].当前血量) * blood),
-                        暴击率: tiandibang[x].暴击率,
-                        学习的功法: tiandibang[x].学习的功法,
-                        灵根: tiandibang[x].灵根,
-                        法球倍率: tiandibang[x].法球倍率
-                    }
-                    if (k == -1) {
-                        atk = (0.8 + 0.4 * Math.random());
-                        def = (0.8 + 0.4 * Math.random());
-                        blood = (0.8 + 0.4 * Math.random());
-                        B_player = {
-                            名号: "灵修兽",
-                            攻击: parseInt((tiandibang[x].攻击)) * atk,
-                            防御: parseInt((tiandibang[x].防御) * def),
-                            当前血量: parseInt((tiandibang[x].当前血量) * blood),
-                            暴击率: tiandibang[x].暴击率,
-                            学习的功法: tiandibang[x].学习的功法,
-                            灵根: tiandibang[x].灵根,
-                            法球倍率: 0.1
-                        }
-                    }
-                    let Data_battle = await zd_battle(A_player, B_player);
-                    let msg = Data_battle.msg;
-                    let A_win = `${A_player.名号}击败了${B_player.名号}`;
-                    let B_win = `${B_player.名号}击败了${A_player.名号}`;
-                    if (msg.find(item => item == A_win)) {
-                        if (k == -1) {
-                            tiandibang[x].jifen += 1500;
-                            lingshi = tiandibang[x].jifen * 2.5;
-                        }
-                        else {
-                            tiandibang[x].jifen += 2000;
-                            lingshi = tiandibang[x].jifen * 2;
-                        }
-                        tiandibang[x].cishu -= 1;
-                        if (tiandibang[x].the_best_jifen < tiandibang[x].jifen) {
-                            tiandibang[x].the_best_jifen = tiandibang[x].jifen
-                        }
-                        last_msg.push(`${A_player.名号}击败了[${B_player.名号}],当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set the_best_jifen=${tiandibang[x].the_best_jifen},jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
-                        db.query(sql2)
-                    }
-                    else if (msg.find(item => item == B_win)) {
-                        if (k == -1) {
-                            tiandibang[x].jifen += 800;
-                            lingshi = tiandibang[x].jifen * 2.5;
-                        }
-                        else {
-                            tiandibang[x].jifen += 1000;
-                            lingshi = tiandibang[x].jifen * 2;
-                        }
-                        tiandibang[x].cishu -= 1;
-                        if (tiandibang[x].the_best_jifen < tiandibang[x].jifen) {
-                            tiandibang[x].the_best_jifen = tiandibang[x].jifen
-                        }
-                        last_msg.push(`${A_player.名号}被[${B_player.名号}]打败了,当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set the_best_jifen=${tiandibang[x].the_best_jifen},jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
-                        db.query(sql2)
-                    }
-                    else {
-                        e.reply(`战斗过程出错`);
-                        return;
-                    }
-                    await Add_灵石(usr_qq, lingshi);
-                    let log_data = {
-                        log: msg,
-                    };
-                    const data1 = await new Show(e).get_logData(log_data);
-                    let img = await puppeteer.screenshot('log', {
-                        ...data1,
-                    });
-                    e.reply(img);
-                    e.reply(last_msg);
-                }
-                else {
-                    let A_player = {
-                        名号: tiandibang[x].名号,
-                        攻击: (tiandibang[x].攻击),
-                        防御: (tiandibang[x].防御),
-                        当前血量: (tiandibang[x].当前血量),
-                        暴击率: tiandibang[x].暴击率,
-                        学习的功法: tiandibang[x].学习的功法,
-                        灵根: tiandibang[x].灵根,
-                        法球倍率: tiandibang[x].法球倍率
-                    }
-                    atk = (0.8 + 0.4 * Math.random());
-                    def = (0.8 + 0.4 * Math.random());
-                    blood = (0.8 + 0.4 * Math.random());
-                    let B_player = {
-                        名号: "灵修兽",
-                        攻击: parseInt((tiandibang[x].攻击)) * atk,
-                        防御: parseInt((tiandibang[x].防御) * def),
-                        当前血量: parseInt((tiandibang[x].当前血量) * blood),
-                        暴击率: tiandibang[x].暴击率,
-                        学习的功法: tiandibang[x].学习的功法,
-                        灵根: tiandibang[x].灵根,
-                        法球倍率: tiandibang[x].法球倍率
-                    }
-                    let Data_battle = await zd_battle(A_player, B_player);
-                    let msg = Data_battle.msg;
-                    let A_win = `${A_player.名号}击败了${B_player.名号}`;
-                    let B_win = `${B_player.名号}击败了${A_player.名号}`;
-                    if (msg.find(item => item == A_win)) {
-                        tiandibang[x].jifen += 1500;
-                        tiandibang[x].cishu -= 1;
-                        lingshi = tiandibang[x].jifen * 3;
-                        if (tiandibang[x].the_best_jifen < tiandibang[x].jifen) {
-                            tiandibang[x].the_best_jifen = tiandibang[x].jifen
-                        }
-                        last_msg.push(`${A_player.名号}击败了[${B_player.名号}],当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set the_best_jifen=${tiandibang[x].the_best_jifen},jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
-                        db.query(sql2)
-                    }
-                    else if (msg.find(item => item == B_win)) {
-                        tiandibang[x].jifen += 800;
-                        tiandibang[x].cishu -= 1;
-                        lingshi = tiandibang[x].jifen * 3;
-                        if (tiandibang[x].the_best_jifen < tiandibang[x].jifen) {
-                            tiandibang[x].the_best_jifen = tiandibang[x].jifen
-                        }
-                        last_msg.push(`${A_player.名号}被[${B_player.名号}]打败了,当前积分[${tiandibang[x].jifen}],获得了[${lingshi}]灵石`);
-                        let sql2 = `update tiandibang set the_best_jifen=${tiandibang[x].the_best_jifen},jifen=${tiandibang[x].jifen},cishu=${tiandibang[x].cishu},all_cishu=${tiandibang[x].all_cishu + 1},last_time=${tiandibang[x].last_time} where usr_id=${usr_qq};`
-                        db.query(sql2)
-                    }
-                    else {
-                        e.reply(`战斗过程出错`);
-                        return;
-                    }
-                    await Add_灵石(usr_qq, lingshi);
-                    let log_data = {
-                        log: msg,
-                    };
-                    const data1 = await new Show(e).get_logData(log_data);
-                    let img = await puppeteer.screenshot('log', {
-                        ...data1,
-                    });
-                    e.reply(img);
-                    e.reply(last_msg);
-                }
-                return;
-            })
 
-        })
+        msg.push(``);
+        msg.push(`发送【#报名天地榜】参与挑战`);
 
-
-
+        e.reply(msg.join('\n'));
     }
 
-    async re_bangdang() {
-        let sql2 = `update tiandibang set jifen=0;`
-        db.query(sql2, (err, result) => {
-            return;
-        })
+    /**
+     * 天地堂商店
+     */
+    async showShop(e) {
+        if (!e.isGroup) {
+            return e.reply('修仙游戏请在群聊中游玩');
+        }
+
+        const userId = e.user_id;
+        if (!await existplayer(userId)) return;
+
+        const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+        if (!tiandibang) {
+            return e.reply('请先报名天地榜', true);
+        }
+
+        const commodities = data.tianditang || [];
+
+        const msg = [
+            `═══ 天地堂 ═══`,
+            `你的积分：${tiandibang.jifen}`,
+            `荣耀点：${tiandibang.glory_points} | 天地令：${tiandibang.tiandi_tokens}`,
+            ``
+        ];
+
+        for (const item of commodities) {
+            msg.push(`${item.name} - ${item.积分}积分`);
+        }
+
+        msg.push(``);
+        msg.push(`发送【#积分兑换+物品名】进行兑换`);
+        msg.push(`（仅周日可兑换）`);
+
+        e.reply(msg.join('\n'));
     }
 
+    /**
+     * 兑换物品
+     */
+    async exchange(e) {
+        if (!e.isGroup) {
+            return e.reply('修仙游戏请在群聊中游玩');
+        }
 
+        // 检查是否周日
+        const day = new Date().getDay();
+        if (day !== 0) {
+            return e.reply('天地堂仅在周日开放兑换，请届时再来');
+        }
 
+        const userId = e.user_id;
+        if (!await existplayer(userId)) return;
 
+        const itemName = e.msg.replace(/#积分兑换/, '').trim();
+        if (!itemName) {
+            return e.reply('请指定要兑换的物品名称', true);
+        }
+
+        const commodities = data.tianditang || [];
+        const item = commodities.find(c => c.name === itemName);
+
+        if (!item) {
+            return e.reply(`天地堂没有【${itemName}】`, true);
+        }
+
+        const player = await Read_player(userId);
+        const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+
+        if (!tiandibang || tiandibang.jifen < item.积分) {
+            return e.reply(`积分不足，还需${item.积分 - (tiandibang?.jifen || 0)}积分`, true);
+        }
+
+        // 扣除积分
+        const playerData = await DAL.getAllPlayerData(userId);
+        playerData.tiandibang.jifen -= item.积分;
+        await DAL.savePlayer(userId, playerData);
+
+        // 添加物品
+        await Add_najie_thing(userId, item.name, item.class, 1);
+
+        // 更新排行榜
+        await redis.zAdd('xiuxian:tiandibang:leaderboard', {
+            score: playerData.tiandibang.jifen,
+            value: String(userId)
+        });
+
+        e.reply(`兑换成功！获得【${item.name}】，剩余${playerData.tiandibang.jifen}积分`);
+    }
+
+    /**
+     * 天象轮换（定时任务）
+     */
+    async rotateTianxiang() {
+        const result = await tianxiangLogic.checkAndRotateTianxiang();
+
+        if (result.rotated) {
+            // 可在此处添加全服通知逻辑
+            logger.info(`[天地榜] 天象更替：${result.oldTianxiang?.name} → ${result.newTianxiang.name}`);
+        }
+    }
+
+    /**
+     * 荣耀点兑换
+     */
+    async exchangeGlory(e) {
+        if (!e.isGroup) {
+            return e.reply('修仙游戏请在群聊中游玩');
+        }
+
+        const userId = e.user_id;
+        if (!await existplayer(userId)) return;
+
+        const itemName = e.msg.replace(/#荣耀点兑换/, '').trim();
+        if (!itemName) {
+            return e.reply('请指定要兑换的物品名称', true);
+        }
+
+        // 荣耀点商品列表
+        const gloryShop = [
+            { name: '摘榜令', class: '道具', price: 80 },
+            { name: '战意丹', class: '丹药', price: 30 },
+            { name: '五行调和丹', class: '丹药', price: 50 },
+            { name: '连胜守护符', class: '道具', price: 100 }
+        ];
+
+        const item = gloryShop.find(i => i.name === itemName);
+        if (!item) {
+            const allItems = gloryShop.map(i => `${i.name}(${i.price}点)`).join('、');
+            return e.reply(`荣耀点商店没有【${itemName}】\n可兑换：${allItems}`, true);
+        }
+
+        const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+        if (!tiandibang || tiandibang.glory_points < item.price) {
+            return e.reply(`荣耀点不足，还需${item.price - (tiandibang?.glory_points || 0)}荣耀点`, true);
+        }
+
+        // 扣除荣耀点
+        const player = await DAL.getAllPlayerData(userId);
+        player.tiandibang.glory_points -= item.price;
+        await DAL.savePlayer(userId, player);
+
+        // 添加物品
+        await Add_najie_thing(userId, item.name, item.class, 1);
+
+        e.reply(`兑换成功！获得【${item.name}】，剩余${player.tiandibang.glory_points}荣耀点`);
+    }
+
+    /**
+     * 天地令兑换
+     */
+    async exchangeToken(e) {
+        if (!e.isGroup) {
+            return e.reply('修仙游戏请在群聊中游玩');
+        }
+
+        const userId = e.user_id;
+        if (!await existplayer(userId)) return;
+
+        const itemName = e.msg.replace(/#天地令兑换/, '').trim();
+        if (!itemName) {
+            return e.reply('请指定要兑换的物品名称', true);
+        }
+
+        // 天地令商品列表
+        const tokenShop = [
+            { name: '天地秘籍残页', class: '道具', price: 500, desc: '集齐5张可合成专属功法' },
+            { name: '天榜战袍', class: '装备', price: 800, desc: '限定装备外观' },
+            { name: '称号·天地弄潮儿', class: '称号', price: 1000, desc: '永久称号' }
+        ];
+
+        const item = tokenShop.find(i => i.name === itemName);
+        if (!item) {
+            const allItems = tokenShop.map(i => `${i.name}(${i.price}令)`).join('、');
+            return e.reply(`天地令商店没有【${itemName}】\n可兑换：${allItems}`, true);
+        }
+
+        const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+        if (!tiandibang || tiandibang.tiandi_tokens < item.price) {
+            return e.reply(`天地令不足，还需${item.price - (tiandibang?.tiandi_tokens || 0)}天地令`, true);
+        }
+
+        // 扣除天地令
+        const player = await DAL.getAllPlayerData(userId);
+        player.tiandibang.tiandi_tokens -= item.price;
+        await DAL.savePlayer(userId, player);
+
+        // 添加物品
+        await Add_najie_thing(userId, item.name, item.class, 1);
+
+        e.reply(`🎉 兑换成功！获得【${item.name}】，剩余${player.tiandibang.tiandi_tokens}天地令`);
+    }
 }
 
-async function get_tianditang_img(e, jifen) {
-    let usr_qq = e.user_id;
-    let player = await Read_player(usr_qq);
-    let commodities_list = data.tianditang;
-    let tianditang_data = {
-        name: player.名号,
-        jifen,
-        commodities_list: commodities_list
-    }
-    const data1 = await new Show(e).get_tianditangData(tianditang_data);
-    let img = await puppeteer.screenshot("tianditang", {
-        ...data1,
-    });
-    return img;
-
-}
+// 导入DAL
+import * as DAL from '../../api/data-access.js';

@@ -1,0 +1,71 @@
+# 天地堂商品配置
+# 天地榜2.0 - 商店物品
+
+# 积分兑换商品（原有）
+commodities:
+  - name: "摘榜令"
+    class: "道具"
+    积分: 5000
+    desc: "增加1次天地榜挑战次数"
+
+  - name: "五行调和丹"
+    class: "丹药"
+    积分: 3000
+    desc: "本次对战免疫天象负面效果"
+
+  - name: "连胜守护符"
+    class: "道具"
+    积分: 8000
+    desc: "失败时保留连胜（仅1次）"
+
+  - name: "战意丹"
+    class: "丹药"
+    积分: 2000
+    desc: "本次对战攻击+5%"
+
+  - name: "七星玄元丹"
+    class: "丹药"
+    积分: 15000
+    desc: "极其珍贵的修为丹药"
+
+# 荣耀点商品
+glory_shop:
+  - name: "摘榜令"
+    class: "道具"
+    price: 80
+    currency: "荣耀点"
+
+  - name: "战意丹"
+    class: "丹药"
+    price: 30
+    currency: "荣耀点"
+
+  - name: "五行调和丹"
+    class: "丹药"
+    price: 50
+    currency: "荣耀点"
+
+  - name: "连胜守护符"
+    class: "道具"
+    price: 100
+    currency: "荣耀点"
+
+# 天地令商品
+token_shop:
+  - name: "天地秘籍残页"
+    class: "道具"
+    price: 500
+    currency: "天地令"
+    desc: "集齐5张可合成专属功法"
+
+  - name: "天榜战袍"
+    class: "装备"
+    price: 800
+    currency: "天地令"
+    desc: "装备系专属外观"
+
+  - name: "称号·天地弄潮儿"
+    class: "称号"
+    price: 1000
+    currency: "天地令"
+    desc: "永久称号"
