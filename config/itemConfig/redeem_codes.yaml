@@ -30,3 +30,13 @@
       amount: 10
     - name: "七星玄元丹"
       amount: 5
+
+- code: "2026xiuxianNewyeah"
+  description: "2026新年快乐"
+  type: "one_time_per_player"
+  startTime: "2026-01-01 00:00:00"
+  rewards:
+    - name: "七星玄元丹"
+      amount: 5
+    - name: "2w"
+      amount: 100
