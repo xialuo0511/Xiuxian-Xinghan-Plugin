@@ -1,9 +1,11 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "星瀚修仙文档",
-  description: "基于 Yunzai-Bot 的高性能群聊修仙文字游戏插件",
+  title: '星瀚修仙文档',
+  description: '基于 Yunzai-Bot 的高性能群聊修仙文字游戏插件',
+  // 基础路径
+  base: '/Xiuxian-Xinghan-Plugin/',
 
   themeConfig: {
     // 顶部导航
@@ -87,4 +89,4 @@ export default defineConfig({
     // 最后更新时间
     lastUpdatedText: '最后更新'
   }
-})
+});
