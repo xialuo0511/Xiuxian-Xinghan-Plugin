@@ -61,7 +61,7 @@ export class BotHelp extends plugin {
           fnc: 'yijiehelp',
         },
         {
-          reg: '^#修仙更新日志$',
+          reg: '^#修仙版本日志$',
           fnc: 'showUpdateLog',
         }
       ],
