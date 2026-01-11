@@ -29,17 +29,22 @@ export class DailyTask extends plugin {
         const data = await getTaskRenderData(usr_qq);
 
         // 2. 准备模板路径
-        const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'daily_task', 'daily_task.html');
+        const pluginPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
+        const htmlPath = path.join(pluginPath, 'resources', 'html', 'daily_task', 'daily_task.html');
 
-        // 3. 渲染
+        // 3. 添加资源路径变量（CSS 需要）
+        const pluResPath = `file:///${pluginPath.replace(/\\/g, '/')}/resources/`;
+
+        // 4. 渲染
         const img = await puppeteer.screenshot('daily_task', {
             tplFile: htmlPath,
+            pluResPath: pluResPath,
             ...data,
             imgType: 'jpeg',
             quality: 90
         });
 
-        // 4. 回复图片
+        // 5. 回复图片
         await e.reply(img);
     }
 }
