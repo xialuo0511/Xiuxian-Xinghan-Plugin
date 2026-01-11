@@ -296,9 +296,9 @@ export async function updateBattleResult(userId, isWin, baseJifen, baseLingshi) 
  * 获取排行榜
  */
 export async function getLeaderboard(start = 0, end = 9) {
-    // 使用 zRevRange 获取倒序排行，带分数
-    // 返回格式通常为 [member1, score1, member2, score2, ...]
-    const rawResults = await redis.zRevRange(LEADERBOARD_KEY, start, end, 'WITHSCORES');
+    // 使用 sendCommand 调用 ZREVRANGE 以兼容不同Redis客户端
+    // 返回格式为 [member1, score1, member2, score2, ...]
+    const rawResults = await redis.sendCommand(['ZREVRANGE', LEADERBOARD_KEY, String(start), String(end), 'WITHSCORES']);
 
     const leaderboard = [];
     if (!rawResults || rawResults.length === 0) return leaderboard;
