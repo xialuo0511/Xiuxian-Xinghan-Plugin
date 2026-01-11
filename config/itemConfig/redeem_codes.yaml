@@ -20,23 +20,13 @@
     - name: "七星玄元丹"
       amount: 5
 
-- code: "ADSG5DF4Q"
-  description: "版本更新补偿"
+# v3.1 万象更新 兑换码
+- code: "XHXX31WANXIANG"
+  description: "v3.1万象更新版本福利"
   type: "one_time_per_player"
+  startTime: "2026-01-12 00:00:00"
   rewards:
     - name: "2w"
-      amount: 6
-    - name: "七星玄元丹"
-      amount: 5
-    - name: "花篮"
       amount: 10
-
-- code: "2026xiuxianNewyeah"
-  description: "2026新年快乐"
-  type: "one_time_per_player"
-  startTime: "2026-01-01 00:00:00"
-  rewards:
     - name: "七星玄元丹"
       amount: 5
-    - name: "2w"
-      amount: 100
