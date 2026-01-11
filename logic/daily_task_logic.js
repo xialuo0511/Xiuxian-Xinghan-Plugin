@@ -222,7 +222,8 @@ export async function getTaskRenderData(userId) {
     const maxPoints = 150;
     const rewards = REWARDS.map(r => ({
         points: r.points,
-        position: (r.points / maxPoints) * 100, // 计算在进度条上的位置百分比
+        // 计算在进度条上的位置，最大95%防止溢出
+        position: Math.min(95, (r.points / maxPoints) * 100),
         is_claimed: stats.rewards_claimed.includes(r.points),
         can_claim: stats.points >= r.points && !stats.rewards_claimed.includes(r.points),
         is_reached: stats.points >= r.points,

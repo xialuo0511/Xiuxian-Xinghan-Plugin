@@ -222,8 +222,9 @@
             font-size: 10px;
             color: #6a3906;
             text-align: center;
-            max-width: 60px;
-            line-height: 1.2;
+            max-width: 80px;
+            line-height: 1.3;
+            white-space: nowrap;
         }
 
         /* ===== 任务列表 ===== */
@@ -394,7 +395,7 @@
                     <div class="reward-icon-box">{{if reward.is_claimed}}✓{{else}}🎁{{/if}}</div>
                     <div class="reward-points-text">{{reward.points}}分</div>
                     <div class="reward-items-text">
-                        {{each reward.items item}}{{item.name}}{{/each}}
+                        {{each reward.items item}}{{item.name}}×{{item.count}}{{/each}}
                     </div>
                 </div>
                 {{/each}}
