@@ -277,6 +277,42 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding-top: 15px;
         }
+
+        /* 未拥有皮肤样式 */
+        .skin-card.not-owned {
+            opacity: 0.6;
+        }
+
+        .skin-card.not-owned .preview-area {
+            filter: grayscale(70%);
+        }
+
+        .skin-card.not-owned::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 12px;
+        }
+
+        .locked-tag {
+            font-size: 11px;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .locked-tag svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
     </style>
 </head>
 
@@ -289,7 +325,7 @@
 
         <div class="skin-grid">
             {{each allSkins skin}}
-            <div class="skin-card {{if skin.isCurrent}}active{{/if}}">
+            <div class="skin-card {{if skin.isCurrent}}active{{/if}} {{if !skin.isOwned}}not-owned{{/if}}">
                 {{if skin.isCurrent}}
                 <div class="active-badge">当前佩戴</div>
                 {{/if}}
@@ -341,6 +377,15 @@
                                 </path>
                             </svg>
                             已拥有
+                        </div>
+                        {{else}}
+                        <div class="locked-tag">
+                            <svg viewBox="0 0 1024 1024">
+                                <path
+                                    d="M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304z">
+                                </path>
+                            </svg>
+                            未解锁
                         </div>
                         {{/if}}
                     </div>
