@@ -80,6 +80,9 @@ export class Tiandibang extends plugin {
         const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
         const duanwei = tiandibangLogic.getDuanwei(tiandibang.jifen);
         const rank = await tiandibangLogic.getPlayerRank(userId);
+
+        // 检查天象是否过期并自动轮换
+        await tianxiangLogic.checkAndRotateTianxiang();
         const tianxiang = await tianxiangLogic.getCurrentTianxiang();
         const season = await tiandibangLogic.getCurrentSeason();
 
@@ -205,6 +208,9 @@ export class Tiandibang extends plugin {
         const playerData = await DAL.getAllPlayerData(userId);
         const player = playerData?.player;
         const tiandibang = await tiandibangLogic.getPlayerTiandibang(userId);
+
+        // 检查天象是否过期并自动轮换
+        await tianxiangLogic.checkAndRotateTianxiang();
         const tianxiang = await tianxiangLogic.getCurrentTianxiang();
 
         // 匹配对手
