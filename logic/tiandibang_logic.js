@@ -269,7 +269,7 @@ export async function updateBattleResult(userId, isWin, baseJifen, baseLingshi) 
 
     // 更新积分
     player.tiandibang.jifen += jifen;
-    player.tiandibang.glory_points += Math.floor(jifen / 10); // 荣耀点
+    player.tiandibang.glory_points += Math.floor(jifen / 30); // 荣耀点 (已降低数值)
 
     // 更新排行榜
     await redis.zAdd(LEADERBOARD_KEY, {
