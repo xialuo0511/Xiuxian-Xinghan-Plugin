@@ -90,7 +90,7 @@ export async function treasureHunt(userId, mapName) {
 
         // 设置玩家状态为"寻宝中"
         const endTime = Date.now() + huntDuration;
-        await DAL.setPlayerAction(userId, '寻宝', endTime);
+        await DAL.setPlayerAction(userId, { action: '寻宝', endTime: endTime });
 
         const minutes = Math.ceil(huntDuration / 60000);
 
