@@ -257,6 +257,20 @@ export async function updateBattleResult(userId, isWin, baseJifen, baseLingshi) 
 
             if (liansheng.reward) {
                 messages.push(`🎁 获得奖励：${liansheng.reward}`);
+
+                // 发放奖励逻辑
+                const rewardName = liansheng.reward;
+                if (rewardName.includes('称号')) {
+                    const title = rewardName.replace('称号：', '');
+                    if (!player.all_titles) player.all_titles = [];
+                    if (!player.all_titles.includes(title)) {
+                        player.all_titles.push(title);
+                        // 称号不需要 save, 最后统一 save
+                    }
+                } else {
+                    // 假设是物品，尝试发放
+                    await DAL.updateNajieItem(userId, rewardName, '道具', 1);
+                }
             }
         }
     } else {
@@ -359,8 +373,54 @@ export async function startNewSeason() {
     const currentSeason = await getCurrentSeason();
     const newSeason = currentSeason + 1;
 
-    // 保存赛季结算数据
+    // 获取前50名进行结算
     const finalLeaderboard = await getLeaderboard(0, 49);
+
+    // 发放赛季奖励
+    for (const entry of finalLeaderboard) {
+        const userId = entry.userId;
+        const rank = entry.rank;
+        let reward = null;
+
+        // 匹配奖励配置
+        for (const r of SEASON_REWARDS) {
+            if (rank <= r.rank) {
+                reward = r;
+                break;
+            }
+        }
+
+        if (reward) {
+            const data = await DAL.getAllPlayerData(userId);
+            const player = data?.player;
+            if (player) {
+                // 发放天地令
+                if (reward.tiandiLing > 0) {
+                    if (!player.tiandibang) player.tiandibang = {};
+                    player.tiandibang.tiandi_tokens = (player.tiandibang.tiandi_tokens || 0) + reward.tiandiLing;
+                }
+
+                // 发放称号
+                if (reward.title) {
+                    if (!player.all_titles) player.all_titles = [];
+                    if (!player.all_titles.includes(reward.title)) {
+                        player.all_titles.push(reward.title);
+                    }
+                }
+
+                // 发放额外奖励 (如功法 items)
+                if (reward.extra) {
+                    // 暂未实现物品直接发放，需配合 updateNajieItem，此处仅做逻辑预留或根据实际配置调用
+                    // 若 extra 是道具名，可调用 DAL.updateNajieItem(userId, reward.extra, '道具', 1);
+                }
+
+                await DAL.savePlayer(userId, player);
+                console.log(`[天地榜结算] 玩家 ${userId} 排名 ${rank}，获得 ${reward.tiandiLing} 天地令 ${reward.title ? '+ ' + reward.title : ''}`);
+            }
+        }
+    }
+
+    // 保存赛季历史
     await redis.set(`${REDIS_PREFIX}:season_result:${currentSeason}`, JSON.stringify({
         season: currentSeason,
         endTime: Date.now(),
