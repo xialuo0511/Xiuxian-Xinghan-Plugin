@@ -21,9 +21,9 @@ let browserInstance = null;
 const defaultConfig = {
     timeout: 5000,           // 等待ready信号的超时时间(ms)
     readySelector: '#capture.ready',  // ready信号选择器
-    scale: 2,                // 设备缩放比例
-    imgType: 'png',          // 图片格式
-    quality: 90,             // JPEG质量(仅jpeg有效)
+    scale: 1.5,              // 设备缩放比例（降低以减小图片大小）
+    imgType: 'jpeg',         // 图片格式（jpeg比png小很多）
+    quality: 85,             // JPEG质量
     fullPage: false,         // 是否全页截图
     selector: '#capture'     // 截图区域选择器
 };
@@ -35,7 +35,7 @@ async function getBrowser() {
     if (!browserInstance || !browserInstance.isConnected()) {
         console.log('[Screenshot] 启动浏览器实例...');
         browserInstance = await puppeteer.launch({
-            headless: 'new',
+            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -44,7 +44,16 @@ async function getBrowser() {
                 '--disable-gpu',
                 '--no-first-run',
                 '--no-zygote',
-                '--single-process'
+                '--disable-extensions',
+                '--disable-background-networking',
+                '--disable-default-apps',
+                '--disable-sync',
+                '--disable-translate',
+                '--hide-scrollbars',
+                '--metrics-recording-only',
+                '--mute-audio',
+                '--no-first-run',
+                '--safebrowsing-disable-auto-update'
             ]
         });
 
@@ -125,10 +134,10 @@ export async function screenshot(name, options = {}) {
 
         const html = renderTemplate(config.tplFile, options);
 
-        // 4. 加载HTML内容
+        // 4. 加载HTML内容（使用domcontentloaded加快速度，图片等待由ready信号控制）
         await page.setContent(html, {
-            waitUntil: 'networkidle0',
-            timeout: 10000
+            waitUntil: 'domcontentloaded',
+            timeout: 5000
         });
 
         // 5. 等待ready信号
