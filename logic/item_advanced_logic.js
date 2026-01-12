@@ -2,6 +2,7 @@ import * as DAL from '../api/data-access.js';
 import { transaction_update } from '../api/data-access.js';
 import { exist_najie_thing, Add_najie_thing, foundthing } from '../apps/Xiuxian/xiuxian.js';
 import data from '../model/XiuxianData.js';
+import { openLianshengBox, LIANSHENG_BOX_REWARDS } from './tiandibang_logic.js';
 
 /**
  * 打开物品逻辑
@@ -10,6 +11,25 @@ import data from '../model/XiuxianData.js';
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function openItem(userId, itemName) {
+    // 特殊处理：连胜宝匣（不走transaction_update，因为openLianshengBox内部已处理）
+    if (itemName === '连胜宝匣') {
+        const result = await openLianshengBox(userId);
+        if (!result.success) {
+            return result;
+        }
+
+        // 构建奖励提示消息
+        let rareHint = '';
+        if (result.reward.probability <= 5) {
+            rareHint = ' 🎉 稀有奖励！';
+        }
+
+        return {
+            success: true,
+            message: `✨ 打开了【连胜宝匣】，获得了：${result.rewardText}${rareHint}\n📦 剩余宝匣：${result.remainingBoxes}个`
+        };
+    }
+
     return await transaction_update(userId, async (playerData) => {
         const { player, najie } = playerData;
 

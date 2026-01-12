@@ -23,6 +23,101 @@ export const LIANSHENG_REWARDS = [
     { streak: 10, jifenMultiplier: 2.5, lingshiMultiplier: 2.0, reward: '称号：天榜连胜王', broadcast: true }
 ];
 
+// ===== 连胜宝匣奖池定义 =====
+export const LIANSHENG_BOX_REWARDS = [
+    { name: '灵石', amount: 20000, probability: 60, type: 'lingshi' },
+    { name: '摘榜令', amount: 1, probability: 15, type: 'item', class: '道具' },
+    { name: '摘榜令', amount: 2, probability: 5, type: 'item', class: '道具' },
+    { name: '荣耀点', amount: 20, probability: 5, type: 'glory' },
+    { name: '荣耀点', amount: 5, probability: 10, type: 'glory' },
+    { name: '七星玄元丹', amount: 1, probability: 2.5, type: 'item', class: '丹药' },
+    { name: '天地令', amount: 50, probability: 2.5, type: 'token' }
+];
+
+/**
+ * 获取玩家连胜宝匣数量
+ */
+export async function getPlayerBoxCount(userId) {
+    const data = await DAL.getAllPlayerData(userId);
+    const najie = data?.najie;
+    if (!najie) return 0;
+
+    const box = najie.find(item => item.name === '连胜宝匣');
+    return box ? box.acount : 0;
+}
+
+/**
+ * 打开连胜宝匣
+ */
+export async function openLianshengBox(userId) {
+    // 检查是否有宝匣
+    const boxCount = await getPlayerBoxCount(userId);
+    if (boxCount <= 0) {
+        return { success: false, message: '你没有连胜宝匣可以打开' };
+    }
+
+    // 消耗一个宝匣
+    await DAL.updateNajieItem(userId, '连胜宝匣', '道具', -1);
+
+    // 按概率抽取奖励
+    const roll = Math.random() * 100;
+    let cumulative = 0;
+    let reward = null;
+
+    for (const r of LIANSHENG_BOX_REWARDS) {
+        cumulative += r.probability;
+        if (roll < cumulative) {
+            reward = r;
+            break;
+        }
+    }
+
+    // 保底机制
+    if (!reward) {
+        reward = LIANSHENG_BOX_REWARDS[0]; // 默认给灵石
+    }
+
+    // 发放奖励
+    const playerData = await DAL.getAllPlayerData(userId);
+    const player = playerData?.player;
+
+    let rewardText = '';
+
+    switch (reward.type) {
+        case 'lingshi':
+            player.灵石 = (player.灵石 || 0) + reward.amount;
+            await DAL.savePlayer(userId, player);
+            rewardText = `灵石×${reward.amount}`;
+            break;
+
+        case 'item':
+            await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount);
+            rewardText = `${reward.name}×${reward.amount}`;
+            break;
+
+        case 'glory':
+            if (!player.tiandibang) player.tiandibang = {};
+            player.tiandibang.glory_points = (player.tiandibang.glory_points || 0) + reward.amount;
+            await DAL.savePlayer(userId, player);
+            rewardText = `荣耀点×${reward.amount}`;
+            break;
+
+        case 'token':
+            if (!player.tiandibang) player.tiandibang = {};
+            player.tiandibang.tiandi_tokens = (player.tiandibang.tiandi_tokens || 0) + reward.amount;
+            await DAL.savePlayer(userId, player);
+            rewardText = `天地令×${reward.amount}`;
+            break;
+    }
+
+    return {
+        success: true,
+        reward: reward,
+        rewardText: rewardText,
+        remainingBoxes: boxCount - 1
+    };
+}
+
 // ===== 赛季奖励定义 =====
 export const SEASON_REWARDS = [
     { rank: 1, tiandiLing: 50, title: '天榜至尊', extra: '限定功法心得' },
