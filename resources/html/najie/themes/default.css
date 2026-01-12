@@ -226,3 +226,50 @@ body {
     margin-top: 5px;
     text-align: left;
 }
+
+/* --- 装备品级样式 --- */
+.item-quality {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.item-quality[data-quality="0"] {
+    background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+    color: white;
+}
+
+.item-quality[data-quality="1"] {
+    background: linear-gradient(135deg, #8bc34a 0%, #689f38 100%);
+    color: white;
+}
+
+.item-quality[data-quality="2"] {
+    background: linear-gradient(135deg, #03a9f4 0%, #0288d1 100%);
+    color: white;
+}
+
+.item-quality[data-quality="3"] {
+    background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+    color: white;
+}
+
+.item-quality[data-quality="4"] {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+}
+
+.item-quality[data-quality="5"] {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    color: white;
+}
+
+.item-quality[data-quality="6"] {
+    background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
+    color: #5d4037;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 8px rgba(255, 179, 0, 0.4);
+}

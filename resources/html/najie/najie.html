@@ -57,6 +57,18 @@
           </div>
           <div class="item-details">
             {{if item.category == "装备"}}
+            <div class="item-quality" data-quality="{{item.pinji}}">
+              品级:
+              {{if item.pinji == 0}}劣
+              {{else if item.pinji == 1}}普
+              {{else if item.pinji == 2}}优
+              {{else if item.pinji == 3}}精
+              {{else if item.pinji == 4}}极
+              {{else if item.pinji == 5}}绝
+              {{else if item.pinji == 6}}顶
+              {{else}}未知
+              {{/if}}
+            </div>
             <div>攻击: {{item.atk}}</div>
             <div>防御: {{item.def}}</div>
             <div>血量: {{item.HP}}</div>
