@@ -579,8 +579,7 @@ export class Tiandibang extends plugin {
         // 天地令商品列表
         const tokenShop = [
             { name: '天地秘籍残页', class: '道具', price: 500, desc: '集齐5张可合成专属功法' },
-            { name: '天榜战袍', class: '装备', price: 800, desc: '限定装备外观' },
-            { name: '称号·天地弄潮儿', class: '称号', price: 1000, desc: '永久称号' }
+            { name: '称号·天地弄潮儿', class: '称号', price: 3000, desc: '永久称号，彰显非凡实力' }
         ];
 
         const item = tokenShop.find(i => i.name === itemName);
@@ -597,7 +596,21 @@ export class Tiandibang extends plugin {
         // 扣除天地令
         const player = await DAL.getAllPlayerData(userId);
         player.tiandibang.tiandi_tokens -= item.price;
-        await DAL.savePlayer(userId, player);
+
+        // 特殊处理：如果是称号，直接添加到玩家称号列表
+        if (item.class === '称号') {
+            const titleName = item.name.replace('称号·', '');
+            if (!player.player.all_titles) {
+                player.player.all_titles = [];
+            }
+            if (!player.player.all_titles.includes(titleName)) {
+                player.player.all_titles.push(titleName);
+            }
+            await DAL.savePlayer(userId, player.player);
+            return e.reply(`🎉 兑换成功！获得称号【${titleName}】，剩余${player.tiandibang.tiandi_tokens}天地令`);
+        }
+
+        await DAL.savePlayer(userId, player.player);
 
         // 添加物品
         await DAL.updateNajieItem(userId, item.name, item.class, 1);
