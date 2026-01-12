@@ -550,14 +550,14 @@ export class Tiandibang extends plugin {
         }
 
         // 扣除荣耀点
-        const player = await DAL.getAllPlayerData(userId);
-        player.tiandibang.glory_points -= item.price;
-        await DAL.savePlayer(userId, player);
+        const playerData = await DAL.getAllPlayerData(userId);
+        playerData.player.tiandibang.glory_points -= item.price;
+        await DAL.savePlayer(userId, playerData.player);
 
         // 添加物品
         await DAL.updateNajieItem(userId, item.name, item.class, 1);
 
-        e.reply(`兑换成功！获得【${item.name}】，剩余${player.tiandibang.glory_points}荣耀点`);
+        e.reply(`兑换成功！获得【${item.name}】，剩余${playerData.player.tiandibang.glory_points}荣耀点`);
     }
 
     /**
@@ -594,27 +594,27 @@ export class Tiandibang extends plugin {
         }
 
         // 扣除天地令
-        const player = await DAL.getAllPlayerData(userId);
-        player.tiandibang.tiandi_tokens -= item.price;
+        const playerData = await DAL.getAllPlayerData(userId);
+        playerData.player.tiandibang.tiandi_tokens -= item.price;
 
         // 特殊处理：如果是称号，直接添加到玩家称号列表
         if (item.class === '称号') {
             const titleName = item.name.replace('称号·', '');
-            if (!player.player.all_titles) {
-                player.player.all_titles = [];
+            if (!playerData.player.all_titles) {
+                playerData.player.all_titles = [];
             }
-            if (!player.player.all_titles.includes(titleName)) {
-                player.player.all_titles.push(titleName);
+            if (!playerData.player.all_titles.includes(titleName)) {
+                playerData.player.all_titles.push(titleName);
             }
-            await DAL.savePlayer(userId, player.player);
-            return e.reply(`🎉 兑换成功！获得称号【${titleName}】，剩余${player.tiandibang.tiandi_tokens}天地令`);
+            await DAL.savePlayer(userId, playerData.player);
+            return e.reply(`🎉 兑换成功！获得称号【${titleName}】，剩余${playerData.player.tiandibang.tiandi_tokens}天地令`);
         }
 
-        await DAL.savePlayer(userId, player.player);
+        await DAL.savePlayer(userId, playerData.player);
 
         // 添加物品
         await DAL.updateNajieItem(userId, item.name, item.class, 1);
 
-        e.reply(`🎉 兑换成功！获得【${item.name}】，剩余${player.tiandibang.tiandi_tokens}天地令`);
+        e.reply(`🎉 兑换成功！获得【${item.name}】，剩余${playerData.player.tiandibang.tiandi_tokens}天地令`);
     }
 }
