@@ -19,27 +19,42 @@ const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
  * @param {string} fileUrl file://开头的路径
  * @returns {string} base64 data uri
  */
-function getBase64FromUrl(fileUrl) {
+function getBase64FromUrl(fileUrl, baseDir) {
     try {
-        const filePath = fileUrl.replace('file://', '');
-        const realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
-        const decodedPath = decodeURIComponent(realPath);
+        let realPath = fileUrl;
 
-        if (!fs.existsSync(decodedPath)) {
-            console.warn(`[Screenshot] 文件不存在: ${decodedPath}`);
+        // 处理 file:// 协议
+        if (fileUrl.startsWith('file://')) {
+            const filePath = fileUrl.replace('file://', '');
+            realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
+            realPath = decodeURIComponent(realPath);
+        }
+        // 处理相对路径
+        else if (baseDir && !path.isAbsolute(fileUrl) && !fileUrl.startsWith('data:') && !fileUrl.startsWith('http')) {
+            realPath = path.resolve(baseDir, fileUrl.split('?')[0].split('#')[0]); // 去除query和hash
+        }
+
+        // 简单清理路径中的引号
+        realPath = realPath.replace(/['"]/g, '');
+
+        if (!fs.existsSync(realPath)) {
+            // console.warn(`[Screenshot] 文件不存在: ${realPath}`);
             return fileUrl;
         }
 
-        const imgBuffer = fs.readFileSync(decodedPath);
+        const imgBuffer = fs.readFileSync(realPath);
         const base64 = imgBuffer.toString('base64');
-        const ext = path.extname(decodedPath).substring(1).toLowerCase();
+        const ext = path.extname(realPath).substring(1).toLowerCase();
 
-        // 简单MIME映射
+        // MIME映射
         let mimeType = ext;
         if (ext === 'jpg') mimeType = 'jpeg';
         else if (ext === 'svg') mimeType = 'svg+xml';
+        else if (ext === 'ttf') mimeType = 'font/ttf';
+        else if (ext === 'woff') mimeType = 'font/woff';
+        else if (ext === 'woff2') mimeType = 'font/woff2';
 
-        return `data:image/${mimeType};base64,${base64}`;
+        return `data:${mimeType};base64,${base64}`;
     } catch (e) {
         console.warn(`[Screenshot] 读取文件失败: ${fileUrl}`, e.message);
         return fileUrl;
@@ -52,16 +67,31 @@ function getBase64FromUrl(fileUrl) {
  * @returns {string} 内联后的HTML
  */
 function inlineResources(html) {
-    // 1. 内联CSS <link href="file://..." rel="stylesheet" />
-    html = html.replace(/<link\s+rel="stylesheet"\s+href="(file:\/\/[^"]+)"\s*\/?>/gi, (match, url) => {
-        try {
-            const filePath = url.replace('file://', '');
-            const realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
-            let cssContent = fs.readFileSync(decodeURIComponent(realPath), 'utf-8');
+    // 1. 内联CSS <link href="..." rel="stylesheet" />
+    // 支持换行、属性乱序、单双引号
+    html = html.replace(/<link[^>]+href=["']([^"']+)["'][^>]*>/gi, (match, url) => {
+        // 检查是否是stylesheet
+        if (!match.includes('rel="stylesheet"') && !match.includes("rel='stylesheet'")) {
+            return match;
+        }
 
-            // 递归处理CSS中的 url(file://...)
-            cssContent = cssContent.replace(/url\(['"]?(file:\/\/[^'"]+)['"]?\)/gi, (match, imgUrl) => {
-                const base64 = getBase64FromUrl(imgUrl);
+        try {
+            let cssPath = url;
+            if (url.startsWith('file://')) {
+                const filePath = url.replace('file://', '');
+                cssPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
+                cssPath = decodeURIComponent(cssPath);
+            }
+
+            if (!fs.existsSync(cssPath)) return match;
+
+            const cssDir = path.dirname(cssPath);
+            let cssContent = fs.readFileSync(cssPath, 'utf-8');
+
+            // 递归处理CSS中的 url(...)，传入cssDir作为基准目录解析相对路径
+            cssContent = cssContent.replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi, (match, assetUrl) => {
+                if (assetUrl.startsWith('data:')) return match;
+                const base64 = getBase64FromUrl(assetUrl, cssDir);
                 return `url("${base64}")`;
             });
 
@@ -72,19 +102,19 @@ function inlineResources(html) {
         }
     });
 
-    // 2. 内联HTML中的内联样式图片 url(file://...)
-    // 这解决了 <style>background-image: url(...)</style> 的问题
-    html = html.replace(/url\(['"]?(file:\/\/[^'"]+)['"]?\)/gi, (match, imgUrl) => {
+    // 2. 内联HTML中的内联样式图片 url(...)
+    html = html.replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi, (match, imgUrl) => {
+        if (imgUrl.startsWith('data:')) return match;
+        // HTML中的相对路径通常相对于HTML文件位置，但这里我们在内存中，通常只能处理绝对路径或file协议
         const base64 = getBase64FromUrl(imgUrl);
         return `url("${base64}")`;
     });
 
-    // 3. 内联图片 <img src="file://..." />
-    html = html.replace(/<img\s+([^>]*?)src="(file:\/\/[^"]+)"([^>]*?)>/gi, (match, preAttrs, url, postAttrs) => {
+    // 3. 内联图片 <img src="..." />
+    html = html.replace(/<img([^>]+)src=["']([^"']+)["']([^>]*)>/gi, (match, preAttrs, url, postAttrs) => {
         const base64 = getBase64FromUrl(url);
-        // 如果转换失败返回的是原URL，所以只有以data:开头才替换
         if (base64.startsWith('data:')) {
-            return `<img ${preAttrs}src="${base64}"${postAttrs}>`;
+            return `<img${preAttrs}src="${base64}"${postAttrs}>`;
         }
         return match;
     });
