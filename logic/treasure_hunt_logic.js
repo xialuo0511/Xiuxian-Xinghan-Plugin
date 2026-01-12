@@ -30,11 +30,11 @@ export async function treasureHunt(userId, mapName) {
     }
 
     // 检查是否拥有该地图（地图在纳戒中，类别是"道具"）
-    const hasMap = await DAL.getNajieItemAmount(userId, mapName + '地图', '道具');
+    const hasMap = await DAL.getNajieItemAmount(userId, mapName, '道具');
     if (!hasMap || hasMap < 1) {
         return {
             success: false,
-            message: `你的纳戒中没有【${mapName}地图】。`
+            message: `你的纳戒中没有【${mapName}】。`
         };
     }
 
@@ -59,7 +59,7 @@ export async function treasureHunt(userId, mapName) {
     // 执行事务：消耗地图、发放奖励、设置状态
     try {
         // 消耗地图
-        await DAL.updateNajieItem(userId, mapName + '地图', '道具', -1);
+        await DAL.updateNajieItem(userId, mapName, '道具', -1);
 
         // 发放奖励
         let rewardMessage = '';
