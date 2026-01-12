@@ -579,7 +579,7 @@ export class Tiandibang extends plugin {
         // 天地令商品列表
         const tokenShop = [
             { name: '天地秘籍残页', class: '道具', price: 500, desc: '集齐5张可合成专属功法' },
-            { name: '称号·天地弄潮儿', class: '称号', price: 3000, desc: '永久称号，彰显非凡实力' }
+            { name: '称号·天地弄潮儿', class: '称号', price: 800, desc: '永久称号，彰显非凡实力' }
         ];
 
         const item = tokenShop.find(i => i.name === itemName);
