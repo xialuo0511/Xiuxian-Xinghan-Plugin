@@ -40,14 +40,17 @@ export class TiandibangTask extends plugin {
      * 只有管理员可调用的手动结算
      */
     async manualSettlement(e) {
-        // 二次确认，防止误触
-        if (!this.confirm) {
-            this.confirm = true;
-            setTimeout(() => { this.confirm = false; }, 30000); // 30秒内有效
+        const confirmKey = 'xiuxian:admin:confirm_settlement';
+        const isConfirmed = await redis.get(confirmKey);
+
+        if (!isConfirmed) {
+            await redis.set(confirmKey, '1', { EX: 30 }); // 30秒过期
             return e.reply('⚠️ 警告：这将强制结束当前赛季并清除排行榜！\n此操作不可逆！\n请在30秒内再次发送【#手动结算天地榜】以确认执行。');
         }
 
-        this.confirm = false;
+        // 清除确认状态，防止连击
+        await redis.del(confirmKey);
+
         e.reply('正在执行天地榜结算...');
 
         try {
