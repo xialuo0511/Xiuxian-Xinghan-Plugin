@@ -1,6 +1,7 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import Show from '../../model/show.js';
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import customPuppeteer from '../../api/puppeteer-wrapper.js';
 import config from '../../model/Config.js';
 import Config from '../../model/Config.js';
 import data from '../../model/XiuxianData.js';
@@ -392,7 +393,7 @@ export async function get_huanying_img(e) {
     console.log(`[幻影楼] 玩家 ${usr_qq}: 拥有=${daoju_have.length}, 未拥有=${daoju_need.length}`);
 
     const data1 = await new Show(e).get_huanying(player_data);
-    let img = await puppeteer.screenshot('huanying', {
+    let img = await customPuppeteer.screenshot('huanying', {
       ...data1
     });
     return img;
