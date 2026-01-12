@@ -168,7 +168,15 @@ export async function screenshot(name, options = {}) {
 
         const imgBuffer = await element.screenshot(screenshotOptions);
 
-        console.log(`[Screenshot] ${name}: 截图完成 (${Date.now() - startTime}ms)`);
+        // 调试：保存截图到文件
+        const debugDir = path.join(PLUGIN_ROOT, 'temp', 'screenshots');
+        if (!fs.existsSync(debugDir)) {
+            fs.mkdirSync(debugDir, { recursive: true });
+        }
+        const debugPath = path.join(debugDir, `${name}_${Date.now()}.${config.imgType}`);
+        fs.writeFileSync(debugPath, imgBuffer);
+        console.log(`[Screenshot] ${name}: 截图已保存到 ${debugPath}`);
+        console.log(`[Screenshot] ${name}: 截图完成 (${Date.now() - startTime}ms), 大小: ${(imgBuffer.length / 1024).toFixed(2)}KB`);
 
         // 8. 返回icqq兼容的消息段格式
         // yunzai使用全局segment对象，也可直接返回对象格式
