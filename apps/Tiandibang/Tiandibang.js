@@ -387,6 +387,9 @@ export class Tiandibang extends plugin {
             const dataForPuppeteer = await new Show(e).get_imgData('tiandibang_leaderboard', renderData);
             const img = await puppeteer.screenshot('tiandibang_leaderboard', {
                 tplFile: htmlPath,
+                scale: 2,
+                imgType: 'jpeg',
+                quality: 90,
                 ...renderData
             });
             e.reply(img);
@@ -443,6 +446,9 @@ export class Tiandibang extends plugin {
             const dataForPuppeteer = await new Show(e).get_imgData('tiandibang_shop', renderData);
             const img = await puppeteer.screenshot('tiandibang_shop', {
                 tplFile: htmlPath,
+                scale: 2,
+                imgType: 'jpeg',
+                quality: 90,
                 ...renderData
             });
             e.reply(img);
