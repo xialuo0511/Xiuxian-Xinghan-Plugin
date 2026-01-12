@@ -21,7 +21,7 @@ let browserInstance = null;
 const defaultConfig = {
     timeout: 5000,           // 等待ready信号的超时时间(ms)
     readySelector: '#capture.ready',  // ready信号选择器
-    scale: 1.5,              // 设备缩放比例（降低以减小图片大小）
+    scale: 1,                // 设备缩放比例（1倍速度最快）
     imgType: 'jpeg',         // 图片格式（jpeg比png小很多）
     quality: 85,             // JPEG质量
     fullPage: false,         // 是否全页截图
