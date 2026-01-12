@@ -74,7 +74,7 @@
       desc: '查看幻影皮肤列表'
     - icon: help-icon_59
       title: '#幻影兑换xxx'
-      desc: '用幻影币兑换指定皮肤'
+      desc: '使用虚无幻影兑换皮肤'
 
 - group: 秘境系统
   list:
