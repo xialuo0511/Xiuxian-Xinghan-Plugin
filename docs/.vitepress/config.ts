@@ -20,7 +20,8 @@ export default defineConfig({
           { text: '战斗系统', link: '/gameplay/battle' },
           { text: '宗门系统', link: '/gameplay/association' },
           { text: '职业系统', link: '/gameplay/occupation' },
-          { text: '经济系统', link: '/gameplay/economy' }
+          { text: '经济系统', link: '/gameplay/economy' },
+          { text: '寻宝系统', link: '/gameplay/treasure_hunt' }
         ]
       },
       { text: '活动列表', link: '/activities/' },

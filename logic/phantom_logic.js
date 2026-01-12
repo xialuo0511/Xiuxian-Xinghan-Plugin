@@ -15,7 +15,7 @@ export async function equipPhantomCard(userId, cardName, cardType) {
 
   // 使用同步回调，因为所有操作都是针对传入的js对象
   const transactionSuccess = await transaction_update(userId, (player, equipment, najie) => {
-    
+
     // 1. 查找物品所在的分类和索引
     let itemClass = null;
     let itemIndex = -1;
@@ -45,7 +45,7 @@ export async function equipPhantomCard(userId, cardName, cardType) {
       result = { success: false, message: `在配置中未找到[${cardName}]的牌面信息。` };
       return false;
     }
-    
+
     // 4. 消耗物品 (关键步骤)
     if (categoryArray[itemIndex].数量 > 1) {
       categoryArray[itemIndex].数量 -= 1;
@@ -59,7 +59,7 @@ export async function equipPhantomCard(userId, cardName, cardType) {
     } else {
       player.装备皮肤 = cardInfo.id;
     }
-    
+
     // 6. 设置成功信息
     result = { success: true, message: `成功消耗并装备${cardType}幻影[${cardInfo.name}]` };
     return true; // 提交对 player 和 najie 的所有更改
@@ -68,7 +68,7 @@ export async function equipPhantomCard(userId, cardName, cardType) {
   if (!transactionSuccess && result.success) {
     result = { success: false, message: '装备失败，数据写入时发生冲突，请重试。' };
   }
-  
+
   return result;
 }
 
