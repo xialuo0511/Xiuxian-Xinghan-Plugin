@@ -15,21 +15,22 @@
 </head>
 
 <body class="elem-default default-mode  ">
-  <div class="container" id="container">
+  <div id="capture">
+    <div class="container" id="container">
 
-    <div class="info_box">
-      <div class="head-box type">
-        <div class="title">#修仙帮助<span class="version">{{version}}</span></div>
-        <div class="label">Yunzai-Bot &#38; xiuxian-emulator-plugin<span
-          class="version">{{version}}</span>「{{version_name}}」</div>
+      <div class="info_box">
+        <div class="head-box type">
+          <div class="title">#修仙帮助<span class="version">{{version}}</span></div>
+          <div class="label">Yunzai-Bot &#38; xiuxian-emulator-plugin<span
+              class="version">{{version}}</span>「{{version_name}}」</div>
+        </div>
       </div>
-    </div>
 
-    {{each helpData val}}
+      {{each helpData val}}
       <div class="cont-box">
         <div class="help-group">{{val.group}}</div>
         <div class="help-table">
-  
+
           <div class="tr">
             {{each val.list item}}
             <div class="td">
@@ -39,14 +40,48 @@
             </div>
             {{/each}}
           </div>
-    
+
         </div>
       </div>
       {{/each}}
 
-    <div class="copyright">Created By Yunzai-Bot<span class="version">3.0.0</span> & xiuxian-emulator-plugin<span
-        class="version">{{version}}</span></div>
+      <div class="copyright">Created By Yunzai-Bot<span class="version">3.0.0</span> & xiuxian-emulator-plugin<span
+          class="version">{{version}}</span></div>
+    </div>
   </div>
+
+  <script>
+    (function () {
+      const images = document.querySelectorAll('img');
+      let loadedCount = 0;
+      const totalImages = images.length;
+
+      function checkAllLoaded() {
+        loadedCount++;
+        if (loadedCount >= totalImages) {
+          document.getElementById('capture').classList.add('ready');
+        }
+      }
+
+      if (totalImages === 0) {
+        document.getElementById('capture').classList.add('ready');
+      } else {
+        images.forEach(img => {
+          if (img.complete) {
+            checkAllLoaded();
+          } else {
+            img.addEventListener('load', checkAllLoaded);
+            img.addEventListener('error', checkAllLoaded);
+          }
+        });
+      }
+
+      // 保底 3 秒超时
+      setTimeout(() => {
+        document.getElementById('capture').classList.add('ready');
+      }, 3000);
+    })();
+  </script>
 </body>
 
 </html>

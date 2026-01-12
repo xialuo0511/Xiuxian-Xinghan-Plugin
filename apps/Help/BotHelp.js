@@ -1,5 +1,6 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import customPuppeteer from '../../api/puppeteer-wrapper.js';
 import Help from '../../model/help.js';
 import Help1 from '../../model/xunbaohelp.js';
 import Help2 from '../../model/shituhelp.js';
@@ -182,7 +183,7 @@ export class BotHelp extends plugin {
   async cache(data) {
     let tmp = md5(JSON.stringify(data));
     if (helpData.md5 == tmp) return helpData.img;
-    helpData.img = await puppeteer.screenshot('help', data);
+    helpData.img = await customPuppeteer.screenshot('help', data);
     helpData.md5 = tmp;
     return helpData.img;
   }

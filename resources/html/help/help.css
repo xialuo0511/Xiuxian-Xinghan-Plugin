@@ -2,6 +2,12 @@
 /* 基于 ui-ux-pro-max 推荐：Dark Mode + Cyberpunk 元素 */
 
 body {
+  width: fit-content;
+  margin: 0;
+  padding: 0;
+}
+
+#capture {
   transform: scale(1);
   width: 100%;
   background: linear-gradient(135deg, #0a0e17 0%, #1a1f2e 50%, #0f1419 100%);
