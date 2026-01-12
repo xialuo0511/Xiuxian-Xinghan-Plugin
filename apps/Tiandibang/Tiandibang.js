@@ -345,10 +345,20 @@ export class Tiandibang extends plugin {
         const season = await tiandibangLogic.getCurrentSeason();
         const leaderboard = await tiandibangLogic.getLeaderboard(0, 9);
 
+        // 为每个玩家添加预计天地令奖励
+        const leaderboardWithRewards = leaderboard.map(entry => {
+            let tiandiLing = 0;
+            if (entry.rank === 1) tiandiLing = 50;
+            else if (entry.rank <= 3) tiandiLing = 30;
+            else if (entry.rank <= 10) tiandiLing = 20;
+            else if (entry.rank <= 50) tiandiLing = 10;
+            return { ...entry, tiandiLing };
+        });
+
         // 渲染数据
         const renderData = {
             season,
-            leaderboard,
+            leaderboard: leaderboardWithRewards,
             pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
         };
 

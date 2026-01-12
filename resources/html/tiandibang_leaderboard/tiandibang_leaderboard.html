@@ -4,6 +4,8 @@
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="content-type" />
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap');
+
         @font-face {
             font-family: "tttgbnumber";
             src: url("{{pluResPath}}/font/tttgbnumber.ttf");
@@ -15,161 +17,391 @@
         }
 
         :root {
-            --bg-cream: #f7f3e9;
-            --gold-primary: #b8860b;
-            --gold-light: #daa520;
-            --gold-dark: #8b6914;
-            --text-dark: #3a2f1e;
-            --text-muted: #6b5e4a;
-            --border-gold: #c9a959;
-            --accent-purple: #8b5cf6;
-            --rank-1: #ffd700;
-            --rank-2: #c0c0c0;
-            --rank-3: #cd7f32;
+            /* 亮色修仙主题 */
+            --bg-primary: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 50%, #ffcc80 100%);
+            --bg-card: rgba(255, 255, 255, 0.92);
+            --bg-card-hover: rgba(255, 255, 255, 0.98);
+
+            /* 金色系主色 */
+            --gold-primary: #d4a017;
+            --gold-secondary: #ffc947;
+            --gold-dark: #a67c00;
+            --gold-glow: rgba(255, 193, 7, 0.4);
+
+            /* 紫色点缀 */
+            --purple-accent: #8b5cf6;
+            --purple-light: #a78bfa;
+
+            /* 文字颜色 */
+            --text-primary: #2d1b00;
+            --text-secondary: #5d4037;
+            --text-muted: #8d6e63;
+
+            /* 排名颜色 */
+            --rank-1-bg: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
+            --rank-1-border: #ff8f00;
+            --rank-2-bg: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+            --rank-2-border: #9e9e9e;
+            --rank-3-bg: linear-gradient(135deg, #ffab91 0%, #ff8a65 100%);
+            --rank-3-border: #e64a19;
+
+            /* 边框装饰 */
+            --border-ornate: #d4a017;
+            --border-subtle: rgba(212, 160, 23, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            width: 500px;
+            width: 520px;
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #f7f3e9 0%, #ede7d9 100%);
-            font-family: "NZBZ", "Microsoft YaHei", sans-serif;
-            color: var(--text-dark);
+            padding: 24px;
+            background: var(--bg-primary);
+            font-family: "NZBZ", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
         }
 
         .container {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 243, 233, 0.9) 100%);
-            border: 3px solid var(--border-gold);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(139, 105, 20, 0.15);
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow:
+                0 8px 32px rgba(212, 160, 23, 0.25),
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 2px solid var(--border-ornate);
+            position: relative;
+        }
+
+        /* 顶部装饰条 */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    var(--gold-secondary) 20%,
+                    var(--gold-primary) 50%,
+                    var(--gold-secondary) 80%,
+                    transparent 100%);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--border-gold);
-            padding-bottom: 15px;
+            padding: 28px 24px 20px;
+            background: linear-gradient(180deg,
+                    rgba(255, 248, 225, 0.8) 0%,
+                    rgba(255, 255, 255, 0) 100%);
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
         }
 
         .title {
-            font-size: 32px;
+            font-size: 36px;
+            font-family: "NZBZ", serif;
             color: var(--gold-dark);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-            letter-spacing: 5px;
+            letter-spacing: 8px;
+            text-shadow:
+                0 2px 4px rgba(212, 160, 23, 0.3),
+                0 0 20px rgba(255, 193, 7, 0.2);
+            margin-bottom: 8px;
+        }
+
+        .title-icon {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            margin: 0 8px;
+            vertical-align: middle;
         }
 
         .subtitle {
             font-size: 14px;
             color: var(--text-muted);
-            margin-top: 5px;
+            font-family: "Noto Sans SC", sans-serif;
+            font-weight: 400;
+        }
+
+        .season-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--purple-accent) 0%, var(--purple-light) 100%);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
         }
 
         .list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            padding: 20px;
         }
 
         .item {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #e5dcc8;
+            background: rgba(255, 248, 225, 0.6);
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .item:nth-child(1) {
-            background: linear-gradient(90deg, #fff9db 0%, #fff 100%);
-            border-color: var(--rank-1);
+        .item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gold-primary);
+            opacity: 0.5;
         }
 
-        .item:nth-child(2) {
-            background: linear-gradient(90deg, #f5f5f5 0%, #fff 100%);
-            border-color: var(--rank-2);
+        /* 前三名特殊样式 */
+        .item.rank-1 {
+            background: var(--rank-1-bg);
+            border-color: var(--rank-1-border);
+            box-shadow: 0 4px 16px rgba(255, 179, 0, 0.35);
         }
 
-        .item:nth-child(3) {
-            background: linear-gradient(90deg, #fff0e0 0%, #fff 100%);
-            border-color: var(--rank-3);
+        .item.rank-1::before {
+            background: #ff8f00;
+            opacity: 1;
+            width: 5px;
+        }
+
+        .item.rank-2 {
+            background: var(--rank-2-bg);
+            border-color: var(--rank-2-border);
+            box-shadow: 0 3px 12px rgba(158, 158, 158, 0.3);
+        }
+
+        .item.rank-2::before {
+            background: #9e9e9e;
+            opacity: 1;
+        }
+
+        .item.rank-3 {
+            background: var(--rank-3-bg);
+            border-color: var(--rank-3-border);
+            box-shadow: 0 3px 12px rgba(230, 74, 25, 0.25);
+        }
+
+        .item.rank-3::before {
+            background: #e64a19;
+            opacity: 1;
         }
 
         .rank {
-            width: 40px;
-            font-size: 24px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
             font-family: "tttgbnumber";
-            color: var(--text-muted);
-            text-align: center;
             font-weight: bold;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            flex-shrink: 0;
         }
 
-        .item:nth-child(1) .rank {
-            color: var(--rank-1);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        .item.rank-1 .rank {
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff8f00;
+            box-shadow: 0 2px 8px rgba(255, 143, 0, 0.3);
         }
 
-        .item:nth-child(2) .rank {
-            color: var(--rank-2);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        .item.rank-2 .rank {
+            background: rgba(255, 255, 255, 0.9);
+            color: #757575;
         }
 
-        .item:nth-child(3) .rank {
-            color: var(--rank-3);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        .item.rank-3 .rank {
+            background: rgba(255, 255, 255, 0.9);
+            color: #e64a19;
         }
 
         .avatar {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: 2px solid var(--gold-primary);
-            margin: 0 15px;
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            margin: 0 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+
+        .item.rank-1 .avatar {
+            border-color: #fff;
+            box-shadow: 0 0 0 2px #ff8f00, 0 4px 12px rgba(255, 143, 0, 0.4);
         }
 
         .info {
             flex: 1;
+            min-width: 0;
         }
 
         .name {
-            font-size: 18px;
-            color: var(--text-dark);
-            font-weight: bold;
+            font-size: 17px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item.rank-1 .name,
+        .item.rank-2 .name,
+        .item.rank-3 .name {
+            color: #1a1a1a;
+        }
+
+        .meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .duanwei {
-            font-size: 12px;
-            color: var(--text-muted);
-            background: rgba(0, 0, 0, 0.05);
-            padding: 2px 6px;
+            font-size: 11px;
+            color: #fff;
+            padding: 2px 8px;
             border-radius: 10px;
-            display: inline-block;
-            margin-top: 2px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .reward-badge {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 11px;
+            color: var(--purple-accent);
+            background: rgba(139, 92, 246, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .reward-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .score-section {
+            text-align: right;
+            flex-shrink: 0;
         }
 
         .score {
-            font-size: 20px;
+            font-size: 22px;
             font-family: "tttgbnumber";
             color: var(--gold-dark);
             font-weight: bold;
-            text-align: right;
-            min-width: 80px;
+            line-height: 1.2;
+        }
+
+        .item.rank-1 .score,
+        .item.rank-2 .score,
+        .item.rank-3 .score {
+            color: #1a1a1a;
+        }
+
+        .score-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
         }
 
         .empty {
             text-align: center;
             color: var(--text-muted);
-            padding: 40px 0;
-            font-size: 16px;
+            padding: 50px 20px;
+            font-size: 15px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
         }
 
         .footer {
             text-align: center;
             color: var(--text-muted);
             font-size: 12px;
-            margin-top: 20px;
-            border-top: 1px dashed var(--border-gold);
-            padding-top: 10px;
+            padding: 16px 24px 20px;
+            background: linear-gradient(180deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 248, 225, 0.5) 100%);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-tip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--purple-accent);
+        }
+
+        /* 奖励说明区 */
+        .reward-legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 12px 20px;
+            background: rgba(139, 92, 246, 0.05);
+            border-top: 1px dashed var(--border-subtle);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.gold {
+            background: var(--gold-primary);
+        }
+
+        .legend-dot.silver {
+            background: #9e9e9e;
+        }
+
+        .legend-dot.bronze {
+            background: #e64a19;
+        }
+
+        .legend-dot.normal {
+            background: var(--purple-accent);
         }
     </style>
 </head>
@@ -178,30 +410,81 @@
 
     <div class="container">
         <div class="header">
-            <div class="title">赛季榜</div>
-            <div class="subtitle">第{{season}}赛季 · 实时排名</div>
+            <div class="title">
+                ⚔ 赛季榜 ⚔
+            </div>
+            <div class="subtitle">
+                <span class="season-badge">第{{season}}赛季</span>
+                实时排名 · 争夺天榜荣耀
+            </div>
         </div>
 
         <div class="list">
             {{each leaderboard item index}}
-            <div class="item">
+            <div
+                class="item {{if item.rank == 1}}rank-1{{/if}}{{if item.rank == 2}}rank-2{{/if}}{{if item.rank == 3}}rank-3{{/if}}">
                 <div class="rank">{{item.rank}}</div>
                 <img class="avatar" src="https://q1.qlogo.cn/g?b=qq&s=640&nk={{item.userId}}" />
                 <div class="info">
                     <div class="name">{{item.name}}</div>
-                    <div class="duanwei" style="color: {{item.duanwei.color}}">{{item.duanwei.name}}</div>
+                    <div class="meta">
+                        <span class="duanwei"
+                            style="background-color: {{item.duanwei.color}}">{{item.duanwei.name}}</span>
+                        {{if item.tiandiLing > 0}}
+                        <span class="reward-badge">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                            </svg>
+                            预计+{{item.tiandiLing}}令
+                        </span>
+                        {{/if}}
+                    </div>
                 </div>
-                <div class="score">{{item.jifen}}</div>
+                <div class="score-section">
+                    <div class="score">{{item.jifen}}</div>
+                    <div class="score-label">积分</div>
+                </div>
             </div>
             {{/each}}
 
             {{if leaderboard.length == 0}}
-            <div class="empty">暂无修士上榜，快来争夺第一吧！</div>
+            <div class="empty">
+                <div class="empty-icon">🏆</div>
+                <div>暂无修士上榜</div>
+                <div style="margin-top: 8px; font-size: 13px;">快来争夺天榜第一吧！</div>
+            </div>
             {{/if}}
+        </div>
+
+        <div class="reward-legend">
+            <div class="legend-item">
+                <span class="legend-dot gold"></span>
+                <span>冠军 +50令</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot silver"></span>
+                <span>2-3名 +30令</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot bronze"></span>
+                <span>4-10名 +20令</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot normal"></span>
+                <span>11-50名 +10令</span>
+            </div>
         </div>
 
         <div class="footer">
             本赛季将于周日 23:59 结算
+            <div class="footer-tip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                </svg>
+                <span>获得天地令可兑换稀有道具与称号</span>
+            </div>
         </div>
     </div>
 
