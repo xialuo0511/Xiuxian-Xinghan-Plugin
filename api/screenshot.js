@@ -14,6 +14,46 @@ import path from 'path';
 const PLUGIN_ROOT = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
 const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
 
+/**
+ * 将HTML中的外部资源（CSS、图片）内联
+ * @param {string} html 原始HTML
+ * @returns {string} 内联后的HTML
+ */
+function inlineResources(html) {
+    // 1. 内联CSS <link href="file://..." rel="stylesheet" />
+    html = html.replace(/<link\s+rel="stylesheet"\s+href="(file:\/\/[^"]+)"\s*\/?>/gi, (match, url) => {
+        try {
+            const filePath = url.replace('file://', '');
+            // 处理Windows路径（移除开头的 /，如 file:///C:/... becomes /C:/... -> C:/...）
+            const realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
+            const cssContent = fs.readFileSync(decodeURIComponent(realPath), 'utf-8');
+            return `<style>\n${cssContent}\n</style>`;
+        } catch (e) {
+            console.warn(`[Screenshot] 内联CSS失败: ${url}`, e.message);
+            return match;
+        }
+    });
+
+    // 2. 内联图片 <img src="file://..." />
+    html = html.replace(/<img\s+([^>]*?)src="(file:\/\/[^"]+)"([^>]*?)>/gi, (match, preAttrs, url, postAttrs) => {
+        try {
+            const filePath = url.replace('file://', '');
+            const realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
+            const imgBuffer = fs.readFileSync(decodeURIComponent(realPath));
+            const base64 = imgBuffer.toString('base64');
+            const ext = path.extname(realPath).substring(1);
+            const mimeType = ext === 'jpg' ? 'jpeg' : ext;
+            return `<img ${preAttrs}src="data:image/${mimeType};base64,${base64}"${postAttrs}>`;
+        } catch (e) {
+            // 图片读取失败（可能不存在），保留原链接
+            console.warn(`[Screenshot] 内联图片失败: ${url}`, e.message);
+            return match;
+        }
+    });
+
+    return html;
+}
+
 // 浏览器实例（单例）
 let browserInstance = null;
 
@@ -132,25 +172,17 @@ export async function screenshot(name, options = {}) {
             throw new Error(`[Screenshot] ${name}: 未指定模板文件(tplFile)`);
         }
 
-        const html = renderTemplate(config.tplFile, options);
+        const htmlRaw = renderTemplate(config.tplFile, options);
 
-        // 4. 写入临时HTML文件，然后用goto加载（确保file://路径的CSS能正常加载）
-        const tempDir = path.join(PLUGIN_ROOT, 'temp', 'html');
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
-        }
-        const tempHtmlPath = path.join(tempDir, `${name}_${Date.now()}.html`);
-        fs.writeFileSync(tempHtmlPath, html, 'utf-8');
+        // 4. 内联资源（CSS & 图片）
+        // 这一步将极其显著地提升加载速度，因为避开了文件加载等待
+        const html = inlineResources(htmlRaw);
 
-        await page.goto(`file:///${tempHtmlPath.replace(/\\/g, '/')}`, {
+        // 5. 直接使用 setContent 加载
+        await page.setContent(html, {
             waitUntil: 'domcontentloaded',
-            timeout: 10000
+            timeout: 5000
         });
-
-        // 清理临时文件（延迟删除，确保页面加载完成）
-        setTimeout(() => {
-            fs.unlink(tempHtmlPath, () => { });
-        }, 5000);
 
         // 5. 等待ready信号
         try {
