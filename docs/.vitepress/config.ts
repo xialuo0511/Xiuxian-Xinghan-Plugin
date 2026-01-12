@@ -29,7 +29,7 @@ export default defineConfig({
         text: '更新日志',
         items: [
           { text: 'v3.1.0 更新日志', link: '/update/v3.1' },
-          { text: 'v3.0.0 更新日志', link: '/update/log' }
+          { text: 'v3.0.0 更新日志', link: '/update/v3.0' }
         ]
       }
     ],
@@ -65,7 +65,7 @@ export default defineConfig({
         text: '📋 更新日志',
         items: [
           { text: 'v3.1.0 更新日志', link: '/update/v3.1' },
-          { text: 'v3.0.0 更新日志', link: '/update/log' }
+          { text: 'v3.0.0 更新日志', link: '/update/v3.0' }
         ]
       }
     ],
