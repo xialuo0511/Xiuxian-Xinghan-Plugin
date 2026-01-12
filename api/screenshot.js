@@ -15,6 +15,38 @@ const PLUGIN_ROOT = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin
 const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
 
 /**
+ * 读取本地文件并转为Base64 Data URI
+ * @param {string} fileUrl file://开头的路径
+ * @returns {string} base64 data uri
+ */
+function getBase64FromUrl(fileUrl) {
+    try {
+        const filePath = fileUrl.replace('file://', '');
+        const realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
+        const decodedPath = decodeURIComponent(realPath);
+
+        if (!fs.existsSync(decodedPath)) {
+            console.warn(`[Screenshot] 文件不存在: ${decodedPath}`);
+            return fileUrl;
+        }
+
+        const imgBuffer = fs.readFileSync(decodedPath);
+        const base64 = imgBuffer.toString('base64');
+        const ext = path.extname(decodedPath).substring(1).toLowerCase();
+
+        // 简单MIME映射
+        let mimeType = ext;
+        if (ext === 'jpg') mimeType = 'jpeg';
+        else if (ext === 'svg') mimeType = 'svg+xml';
+
+        return `data:image/${mimeType};base64,${base64}`;
+    } catch (e) {
+        console.warn(`[Screenshot] 读取文件失败: ${fileUrl}`, e.message);
+        return fileUrl;
+    }
+}
+
+/**
  * 将HTML中的外部资源（CSS、图片）内联
  * @param {string} html 原始HTML
  * @returns {string} 内联后的HTML
@@ -24,9 +56,15 @@ function inlineResources(html) {
     html = html.replace(/<link\s+rel="stylesheet"\s+href="(file:\/\/[^"]+)"\s*\/?>/gi, (match, url) => {
         try {
             const filePath = url.replace('file://', '');
-            // 处理Windows路径（移除开头的 /，如 file:///C:/... becomes /C:/... -> C:/...）
             const realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
-            const cssContent = fs.readFileSync(decodeURIComponent(realPath), 'utf-8');
+            let cssContent = fs.readFileSync(decodeURIComponent(realPath), 'utf-8');
+
+            // 递归处理CSS中的 url(file://...)
+            cssContent = cssContent.replace(/url\(['"]?(file:\/\/[^'"]+)['"]?\)/gi, (match, imgUrl) => {
+                const base64 = getBase64FromUrl(imgUrl);
+                return `url("${base64}")`;
+            });
+
             return `<style>\n${cssContent}\n</style>`;
         } catch (e) {
             console.warn(`[Screenshot] 内联CSS失败: ${url}`, e.message);
@@ -34,21 +72,21 @@ function inlineResources(html) {
         }
     });
 
-    // 2. 内联图片 <img src="file://..." />
+    // 2. 内联HTML中的内联样式图片 url(file://...)
+    // 这解决了 <style>background-image: url(...)</style> 的问题
+    html = html.replace(/url\(['"]?(file:\/\/[^'"]+)['"]?\)/gi, (match, imgUrl) => {
+        const base64 = getBase64FromUrl(imgUrl);
+        return `url("${base64}")`;
+    });
+
+    // 3. 内联图片 <img src="file://..." />
     html = html.replace(/<img\s+([^>]*?)src="(file:\/\/[^"]+)"([^>]*?)>/gi, (match, preAttrs, url, postAttrs) => {
-        try {
-            const filePath = url.replace('file://', '');
-            const realPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
-            const imgBuffer = fs.readFileSync(decodeURIComponent(realPath));
-            const base64 = imgBuffer.toString('base64');
-            const ext = path.extname(realPath).substring(1);
-            const mimeType = ext === 'jpg' ? 'jpeg' : ext;
-            return `<img ${preAttrs}src="data:image/${mimeType};base64,${base64}"${postAttrs}>`;
-        } catch (e) {
-            // 图片读取失败（可能不存在），保留原链接
-            console.warn(`[Screenshot] 内联图片失败: ${url}`, e.message);
-            return match;
+        const base64 = getBase64FromUrl(url);
+        // 如果转换失败返回的是原URL，所以只有以data:开头才替换
+        if (base64.startsWith('data:')) {
+            return `<img ${preAttrs}src="${base64}"${postAttrs}>`;
         }
+        return match;
     });
 
     return html;
