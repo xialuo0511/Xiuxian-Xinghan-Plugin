@@ -256,3 +256,69 @@ body {
     margin-top: 5px;
     text-align: left;
 }
+
+/* --- 装备品级样式 (磨砂玻璃风格适配) --- */
+.item-quality {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    display: inline-block;
+    /* 磨砂玻璃基础样式 */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 劣 - 暗灰 */
+.item-quality[data-quality="0"] {
+    background: rgba(120, 120, 120, 0.3);
+    border-color: rgba(150, 150, 150, 0.4);
+    color: #b0b0b0;
+}
+
+/* 普 - 淡绿 */
+.item-quality[data-quality="1"] {
+    background: rgba(76, 175, 80, 0.25);
+    border-color: rgba(129, 199, 132, 0.4);
+    color: #a5d6a7;
+}
+
+/* 优 - 淡蓝 */
+.item-quality[data-quality="2"] {
+    background: rgba(33, 150, 243, 0.25);
+    border-color: rgba(100, 181, 246, 0.4);
+    color: #90caf9;
+}
+
+/* 精 - 淡紫 */
+.item-quality[data-quality="3"] {
+    background: rgba(156, 39, 176, 0.3);
+    border-color: rgba(186, 104, 200, 0.4);
+    color: #ce93d8;
+}
+
+/* 极 - 橙色 */
+.item-quality[data-quality="4"] {
+    background: rgba(255, 152, 0, 0.3);
+    border-color: rgba(255, 183, 77, 0.5);
+    color: #ffb74d;
+}
+
+/* 绝 - 红色 */
+.item-quality[data-quality="5"] {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(239, 83, 80, 0.5);
+    color: #ef9a9a;
+}
+
+/* 顶 - 金色发光 */
+.item-quality[data-quality="6"] {
+    background: rgba(255, 215, 0, 0.25);
+    border-color: rgba(255, 215, 0, 0.6);
+    color: #FFD700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+}
