@@ -17,7 +17,8 @@ body {
 }
 
 #capture {
-    width: 600px;
+    width: 900px;
+    min-height: 450px;
     padding: 20px;
     background-size: cover;
     background-position: center;
@@ -25,8 +26,10 @@ body {
     color: #4a2c1a;
 }
 
-/* --- 主容器 --- */
-.panel-container {
+/* --- 主布局：横向flex --- */
+.main-layout {
+    display: flex;
+    gap: 20px;
     background: rgba(253, 250, 245, 0.88);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -36,64 +39,58 @@ body {
     padding: 20px;
 }
 
-/* --- 顶部信息 --- */
-.header-section {
+/* --- 左侧玩家面板 --- */
+.player-panel {
+    width: 200px;
+    flex-shrink: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding-bottom: 20px;
-    border-bottom: 2px dashed #d2b48c;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    border: 1px solid #d2b48c;
 }
 
 .avatar {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     border: 3px solid #c8a87e;
-    flex-shrink: 0;
+    margin-bottom: 10px;
 }
 
-.info-bars {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.info-name-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-
-.info-label {
+.player-name {
     font-family: "NZBZ", sans-serif;
-    font-size: 24px;
-    color: #7a5533;
+    font-size: 22px;
+    color: #6a3906;
+    margin-bottom: 5px;
 }
 
-.info-mdz {
-    font-size: 14px;
+.player-mdz {
+    font-size: 13px;
     color: #a88763;
-    font-weight: bold;
+    margin-bottom: 15px;
 }
 
-.info-bar-row {
-    display: flex;
-    justify-content: space-between;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 8px 12px;
-    border-radius: 8px;
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
 }
 
-.stat-box {
+.stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 8px;
+    border-radius: 6px;
 }
 
 .stat-label {
-    font-size: 12px;
+    font-size: 11px;
     color: #888;
 }
 
@@ -103,103 +100,118 @@ body {
     color: #6a3906;
 }
 
-/* --- 物品展示区 --- */
-.content-section {
-    padding-top: 20px;
+/* --- 右侧装备面板 --- */
+.equipment-panel {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.grid-title {
+.panel-title {
     font-family: "NZBZ", sans-serif;
-    font-size: 28px;
+    font-size: 24px;
     text-align: center;
     color: #6a3906;
     margin-bottom: 15px;
+    border-bottom: 2px dashed #d2b48c;
+    padding-bottom: 10px;
 }
 
 .equipment-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
 }
 
 .equip-card {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.5);
     border: 1px solid #d2b48c;
     border-radius: 8px;
     padding: 12px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    text-align: center;
 }
 
-.equip-header {
+.equip-slot {
+    font-size: 12px;
+    color: #a88763;
+    margin-bottom: 4px;
+}
+
+.equip-name {
     font-family: "NZBZ", sans-serif;
-    font-size: 18px;
-    color: #6a3906;
-    border-bottom: 1px solid #d2b48c;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-}
-
-.equip-details {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    /* 3列布局 */
-    gap: 8px;
     font-size: 14px;
-    color: #5d4037;
+    color: #6a3906;
+    margin-bottom: 6px;
+    word-break: break-all;
 }
 
 .equip-quality {
-    grid-column: span 3;
-    /* 品级独占一行 */
+    font-size: 12px;
     font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
 }
 
-.equip-fumo {
-    grid-column: span 3;
-    color: #9c27b0;
-    font-size: 13px;
-    border-top: 1px dashed rgba(0, 0, 0, 0.1);
-    margin-top: 4px;
-    padding-top: 4px;
-}
-
-/* --- 品级样式 --- */
 .equip-quality[data-quality="0"] {
-    color: #757575;
+    background: #bdbdbd;
+    color: #fff;
 }
 
 .equip-quality[data-quality="1"] {
-    color: #689f38;
+    background: #8bc34a;
+    color: #fff;
 }
 
 .equip-quality[data-quality="2"] {
-    color: #0288d1;
+    background: #03a9f4;
+    color: #fff;
 }
 
 .equip-quality[data-quality="3"] {
-    color: #7b1fa2;
+    background: #9c27b0;
+    color: #fff;
 }
 
 .equip-quality[data-quality="4"] {
-    color: #f57c00;
+    background: #ff9800;
+    color: #fff;
 }
 
 .equip-quality[data-quality="5"] {
-    color: #d32f2f;
+    background: #f44336;
+    color: #fff;
 }
 
 .equip-quality[data-quality="6"] {
-    color: #ffb300;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #ffd54f, #ffb300);
+    color: #5d4037;
 }
 
-/* --- 也脚 --- */
+.equip-stats {
+    display: flex;
+    gap: 6px;
+    font-size: 11px;
+    color: #5d4037;
+    margin-bottom: 6px;
+}
+
+.equip-fumo {
+    font-size: 11px;
+    color: #9c27b0;
+    padding: 2px 6px;
+    background: rgba(156, 39, 176, 0.1);
+    border-radius: 4px;
+}
+
+/* --- 页脚 --- */
 .footer {
-    text-align: center;
-    font-size: 12px;
+    text-align: right;
+    font-size: 11px;
     color: #a88763;
-    margin-top: 20px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+    padding-right: 5px;
 }

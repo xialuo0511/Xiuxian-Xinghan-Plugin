@@ -1,4 +1,5 @@
-/* --- Dragon Spirit Theme (龙马精神) --- */
+/* --- Dragon Spirit Theme (龙马精神 / horse_year_2026) --- */
+/* --- 横向布局版 --- */
 
 /* --- 字体定义 --- */
 @font-face {
@@ -19,110 +20,98 @@ body {
 }
 
 #capture {
-    width: 600px;
+    width: 900px;
+    min-height: 450px;
     padding: 20px;
     background-size: cover;
     background-position: center;
     font-family: "tttgbnumber", sans-serif;
     color: #ffd700;
-    /* 金色字体 */
 }
 
-/* --- 主容器 --- */
-.panel-container {
-    background: rgba(40, 10, 10, 0.9);
-    /* 深红黑背景 */
+/* --- 主布局：横向flex --- */
+.main-layout {
+    display: flex;
+    gap: 20px;
+    background: linear-gradient(135deg, rgba(40, 10, 10, 0.92) 0%, rgba(60, 15, 15, 0.92) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 3px solid #b71c1c;
-    /* 红色边框 */
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(183, 28, 28, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.8);
     padding: 20px;
     position: relative;
-    overflow: hidden;
 }
 
-/* 龙纹装饰 (伪元素) */
-.panel-container::before {
+/* 金边装饰 */
+.main-layout::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
     border: 1px solid #ffd700;
-    margin: 5px;
     border-radius: 10px;
     pointer-events: none;
-    box-shadow: inset 0 0 10px #ffd700;
-    opacity: 0.3;
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
-/* --- 顶部信息 --- */
-.header-section {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #b71c1c;
-    position: relative;
-}
-
-.avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid #ffd700;
+/* --- 左侧玩家面板 --- */
+.player-panel {
+    width: 200px;
     flex-shrink: 0;
-    box-shadow: 0 0 10px #ffd700;
-}
-
-.info-bars {
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
-
-.info-name-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-
-.info-label {
-    font-family: "NZBZ", sans-serif;
-    font-size: 24px;
-    color: #ffeb3b;
-    /* 亮黄 */
-    text-shadow: 0 0 5px #ff5722;
-}
-
-.info-mdz {
-    font-size: 14px;
-    color: #ff5722;
-    /* 橙红 */
-    font-weight: bold;
-}
-
-.info-bar-row {
-    display: flex;
-    justify-content: space-between;
-    background: linear-gradient(90deg, rgba(183, 28, 28, 0.3) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(183, 28, 28, 0.3) 100%);
-    padding: 8px 12px;
-    border-radius: 8px;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(180deg, rgba(183, 28, 28, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%);
+    border-radius: 10px;
     border: 1px solid #b71c1c;
 }
 
-.stat-box {
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #ffd700;
+    margin-bottom: 10px;
+    box-shadow: 0 0 10px #ffd700;
+}
+
+.player-name {
+    font-family: "NZBZ", sans-serif;
+    font-size: 22px;
+    color: #ffeb3b;
+    margin-bottom: 5px;
+    text-shadow: 0 0 5px #ff5722;
+}
+
+.player-mdz {
+    font-size: 13px;
+    color: #ff5722;
+    margin-bottom: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+}
+
+.stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: rgba(183, 28, 28, 0.4);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .stat-label {
-    font-size: 12px;
+    font-size: 11px;
     color: #ffccbc;
 }
 
@@ -133,25 +122,29 @@ body {
     text-shadow: 0 0 2px #ff5722;
 }
 
-/* --- 物品展示区 --- */
-.content-section {
-    padding-top: 20px;
+/* --- 右侧装备面板 --- */
+.equipment-panel {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.grid-title {
+.panel-title {
     font-family: "NZBZ", sans-serif;
-    font-size: 28px;
+    font-size: 24px;
     text-align: center;
     color: #ffd700;
     margin-bottom: 15px;
+    border-bottom: 2px solid #b71c1c;
+    padding-bottom: 10px;
     text-shadow: 0 0 10px #b71c1c;
     background: linear-gradient(90deg, transparent, rgba(183, 28, 28, 0.5), transparent);
 }
 
 .equipment-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
 }
 
 .equip-card {
@@ -161,77 +154,91 @@ body {
     padding: 12px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    position: relative;
 }
 
-.equip-header {
+.equip-slot {
+    font-size: 12px;
+    color: #ef9a9a;
+    margin-bottom: 4px;
+}
+
+.equip-name {
     font-family: "NZBZ", sans-serif;
-    font-size: 18px;
+    font-size: 14px;
     color: #ffeb3b;
-    border-bottom: 1px solid #b71c1c;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    word-break: break-all;
     text-shadow: 0 0 2px #000;
 }
 
-.equip-details {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    font-size: 14px;
-    color: #ffccbc;
-}
-
 .equip-quality {
-    grid-column: span 3;
+    font-size: 12px;
     font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
 }
 
-.equip-fumo {
-    grid-column: span 3;
-    color: #e040fb;
-    font-size: 13px;
-    border-top: 1px dashed #b71c1c;
-    margin-top: 4px;
-    padding-top: 4px;
-}
-
-/* --- 品级样式 (针对深色背景优化) --- */
 .equip-quality[data-quality="0"] {
-    color: #bdbdbd;
+    background: #757575;
+    color: #fff;
 }
 
 .equip-quality[data-quality="1"] {
-    color: #aeea00;
+    background: #689f38;
+    color: #fff;
 }
 
 .equip-quality[data-quality="2"] {
-    color: #40c4ff;
+    background: #0288d1;
+    color: #fff;
 }
 
 .equip-quality[data-quality="3"] {
-    color: #e040fb;
+    background: #7b1fa2;
+    color: #fff;
 }
 
 .equip-quality[data-quality="4"] {
-    color: #ffab40;
+    background: #f57c00;
+    color: #fff;
 }
 
 .equip-quality[data-quality="5"] {
-    color: #ff5252;
+    background: #d32f2f;
+    color: #fff;
 }
 
 .equip-quality[data-quality="6"] {
-    color: #ffd700;
+    background: linear-gradient(135deg, #ffd54f, #ffb300);
+    color: #5d4037;
     text-shadow: 0 0 5px #ff6f00;
+}
+
+.equip-stats {
+    display: flex;
+    gap: 6px;
+    font-size: 11px;
+    color: #ffccbc;
+    margin-bottom: 6px;
+}
+
+.equip-fumo {
+    font-size: 11px;
+    color: #e040fb;
+    padding: 2px 6px;
+    background: rgba(224, 64, 251, 0.15);
+    border-radius: 4px;
 }
 
 /* --- 页脚 --- */
 .footer {
-    text-align: center;
-    font-size: 12px;
+    text-align: right;
+    font-size: 11px;
     color: #ef9a9a;
-    margin-top: 20px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin-top: 10px;
+    padding-right: 5px;
 }
