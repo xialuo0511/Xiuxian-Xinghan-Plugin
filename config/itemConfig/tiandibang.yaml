@@ -58,14 +58,8 @@ token_shop:
     currency: "天地令"
     desc: "集齐5张可合成专属功法"
 
-  - name: "天榜战袍"
-    class: "装备"
-    price: 800
-    currency: "天地令"
-    desc: "装备系专属外观"
-
   - name: "称号·天地弄潮儿"
     class: "称号"
-    price: 1000
+    price: 800
     currency: "天地令"
     desc: "永久称号"

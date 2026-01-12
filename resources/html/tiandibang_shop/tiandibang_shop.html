@@ -2,265 +2,265 @@
 <html>
 
 <head>
-    <meta content="text/html;charset=utf-8" http-equiv="content-type" />
-    <style>
-        @font-face {
-            font-family: "tttgbnumber";
-            src: url("{{pluResPath}}/font/tttgbnumber.ttf");
-        }
+  <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+  <style>
+      @font-face {
+          font-family: "tttgbnumber";
+          src: url("{{pluResPath}}/font/tttgbnumber.ttf");
+      }
 
-        @font-face {
-            font-family: "NZBZ";
-            src: url("{{pluResPath}}/font/NZBZ.TTF");
-        }
+      @font-face {
+          font-family: "NZBZ";
+          src: url("{{pluResPath}}/font/NZBZ.TTF");
+      }
 
-        :root {
-            --bg-cream: #f7f3e9;
-            --gold-primary: #b8860b;
-            --gold-light: #daa520;
-            --gold-dark: #8b6914;
-            --text-dark: #3a2f1e;
-            --text-muted: #6b5e4a;
-            --border-gold: #c9a959;
-            --accent-purple: #8b5cf6;
-            --accent-blue: #3498db;
-        }
+      :root {
+          --bg-cream: #f7f3e9;
+          --gold-primary: #b8860b;
+          --gold-light: #daa520;
+          --gold-dark: #8b6914;
+          --text-dark: #3a2f1e;
+          --text-muted: #6b5e4a;
+          --border-gold: #c9a959;
+          --accent-purple: #8b5cf6;
+          --accent-blue: #3498db;
+      }
 
-        body {
-            width: 550px;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #f7f3e9 0%, #ede7d9 100%);
-            font-family: "NZBZ", "Microsoft YaHei", sans-serif;
-            color: var(--text-dark);
-        }
+      body {
+          width: 550px;
+          margin: 0;
+          padding: 20px;
+          background: linear-gradient(135deg, #f7f3e9 0%, #ede7d9 100%);
+          font-family: "NZBZ", "Microsoft YaHei", sans-serif;
+          color: var(--text-dark);
+      }
 
-        .container {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 243, 233, 0.95) 100%);
-            border: 3px solid var(--border-gold);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(139, 105, 20, 0.15);
-        }
+      .container {
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 243, 233, 0.95) 100%);
+          border: 3px solid var(--border-gold);
+          border-radius: 15px;
+          padding: 20px;
+          box-shadow: 0 4px 20px rgba(139, 105, 20, 0.15);
+      }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-gold);
-            padding-bottom: 15px;
-        }
+      .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          border-bottom: 2px solid var(--border-gold);
+          padding-bottom: 15px;
+      }
 
-        .title {
-            font-size: 32px;
-            color: var(--gold-dark);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
+      .title {
+          font-size: 32px;
+          color: var(--gold-dark);
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
 
-        .user-assets {
-            text-align: right;
-            font-size: 14px;
-        }
+      .user-assets {
+          text-align: right;
+          font-size: 14px;
+      }
 
-        .asset-row {
-            margin: 2px 0;
-        }
+      .asset-row {
+          margin: 2px 0;
+      }
 
-        .asset-num {
-            font-family: "tttgbnumber";
-            font-weight: bold;
-            font-size: 16px;
-            margin-left: 5px;
-        }
+      .asset-num {
+          font-family: "tttgbnumber";
+          font-weight: bold;
+          font-size: 16px;
+          margin-left: 5px;
+      }
 
-        .color-jifen {
-            color: var(--gold-primary);
-        }
+      .color-jifen {
+          color: var(--gold-primary);
+      }
 
-        .color-glory {
-            color: var(--accent-blue);
-        }
+      .color-glory {
+          color: var(--accent-blue);
+      }
 
-        .color-token {
-            color: var(--accent-purple);
-        }
+      .color-token {
+          color: var(--accent-purple);
+      }
 
-        .section-title {
-            font-size: 18px;
-            color: var(--text-dark);
-            margin: 20px 0 10px;
-            display: flex;
-            align-items: center;
-        }
+      .section-title {
+          font-size: 18px;
+          color: var(--text-dark);
+          margin: 20px 0 10px;
+          display: flex;
+          align-items: center;
+      }
 
-        .section-title::before {
-            content: "✦";
-            color: var(--gold-primary);
-            margin-right: 8px;
-        }
+      .section-title::before {
+          content: "✦";
+          color: var(--gold-primary);
+          margin-right: 8px;
+      }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+      .grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+      }
 
-        .card {
-            background: #fff;
-            border: 1px solid #e5dcc8;
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
+      .card {
+          background: #fff;
+          border: 1px solid #e5dcc8;
+          border-radius: 8px;
+          padding: 12px;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          overflow: hidden;
+      }
 
-        .card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--gold-light);
-        }
+      .card::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 4px;
+          height: 100%;
+          background: var(--gold-light);
+      }
 
-        .card.glory::before {
-            background: var(--accent-blue);
-        }
+      .card.glory::before {
+          background: var(--accent-blue);
+      }
 
-        .card.token::before {
-            background: var(--accent-purple);
-        }
+      .card.token::before {
+          background: var(--accent-purple);
+      }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
+      .card-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 5px;
+      }
 
-        .item-name {
-            font-weight: bold;
-            font-size: 16px;
-            color: var(--text-dark);
-        }
+      .item-name {
+          font-weight: bold;
+          font-size: 16px;
+          color: var(--text-dark);
+      }
 
-        .item-price {
-            font-family: "tttgbnumber";
-            font-weight: bold;
-            font-size: 14px;
-        }
+      .item-price {
+          font-family: "tttgbnumber";
+          font-weight: bold;
+          font-size: 14px;
+      }
 
-        .card.jifen .item-price {
-            color: var(--gold-primary);
-        }
+      .card.jifen .item-price {
+          color: var(--gold-primary);
+      }
 
-        .card.glory .item-price {
-            color: var(--accent-blue);
-        }
+      .card.glory .item-price {
+          color: var(--accent-blue);
+      }
 
-        .card.token .item-price {
-            color: var(--accent-purple);
-        }
+      .card.token .item-price {
+          color: var(--accent-purple);
+      }
 
-        .item-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
+      .item-desc {
+          font-size: 12px;
+          color: var(--text-muted);
+          line-height: 1.4;
+      }
 
-        .cmd-hint {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            font-size: 10px;
-            color: #aaa;
-            opacity: 0.5;
-        }
+      .cmd-hint {
+          position: absolute;
+          bottom: 5px;
+          right: 5px;
+          font-size: 10px;
+          color: #aaa;
+          opacity: 0.5;
+      }
 
-        .tips {
-            margin-top: 25px;
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            border-top: 1px dashed var(--border-gold);
-            padding-top: 10px;
-        }
-    </style>
+      .tips {
+          margin-top: 25px;
+          text-align: center;
+          font-size: 12px;
+          color: var(--text-muted);
+          border-top: 1px dashed var(--border-gold);
+          padding-top: 10px;
+      }
+  </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <div class="header">
-            <div class="title">天地堂</div>
-            <div class="user-assets">
-                <div class="asset-row">积分 <span class="asset-num color-jifen">{{jifen}}</span></div>
-                <div class="asset-row">荣耀点 <span class="asset-num color-glory">{{gloryPoints}}</span></div>
-                <div class="asset-row">天地令 <span class="asset-num color-token">{{tiandiTokens}}</span></div>
-            </div>
-        </div>
-
-        <div class="section-title">积分兑换 (周日开放)</div>
-        <div class="grid">
-            {{each commodities item}}
-            <div class="card jifen">
-                <div class="card-header">
-                    <span class="item-name">{{item.name}}</span>
-                    <span class="item-price">{{item.积分}} 积分</span>
-                </div>
-                <div class="item-desc">用于修炼或战斗的基础物资</div>
-                <span class="cmd-hint">#积分兑换{{item.name}}</span>
-            </div>
-            {{/each}}
-        </div>
-
-        <div class="section-title">荣耀兑换 (每日开放)</div>
-        <div class="grid">
-            <div class="card glory">
-                <div class="card-header">
-                    <span class="item-name">摘榜令</span>
-                    <span class="item-price">80 点</span>
-                </div>
-                <div class="item-desc">增加1次挑战次数</div>
-                <span class="cmd-hint">#荣耀点兑换摘榜令</span>
-            </div>
-            <div class="card glory">
-                <div class="card-header">
-                    <span class="item-name">战意丹</span>
-                    <span class="item-price">30 点</span>
-                </div>
-                <div class="item-desc">攻击+5% (持续3场)</div>
-                <span class="cmd-hint">#荣耀点兑换战意丹</span>
-            </div>
-        </div>
-
-        <div class="section-title">赛季奖励 (天地令)</div>
-        <div class="grid">
-            <div class="card token">
-                <div class="card-header">
-                    <span class="item-name">天榜战袍</span>
-                    <span class="item-price">800 令</span>
-                </div>
-                <div class="item-desc">赛季限定外观，彰显尊贵身份</div>
-                <span class="cmd-hint">#天地令兑换天榜战袍</span>
-            </div>
-            <div class="card token">
-                <div class="card-header">
-                    <span class="item-name">秘籍残页</span>
-                    <span class="item-price">500 令</span>
-                </div>
-                <div class="item-desc">集齐5张可合成绝世功法</div>
-                <span class="cmd-hint">#天地令兑换秘籍残页</span>
-            </div>
-        </div>
-
-        <div class="tips">
-            发送对应的兑换指令即可购买物品
-        </div>
+<div class="container">
+  <div class="header">
+    <div class="title">天地堂</div>
+    <div class="user-assets">
+      <div class="asset-row">积分 <span class="asset-num color-jifen">{{ jifen }}</span></div>
+      <div class="asset-row">荣耀点 <span class="asset-num color-glory">{{ gloryPoints }}</span></div>
+      <div class="asset-row">天地令 <span class="asset-num color-token">{{ tiandiTokens }}</span></div>
     </div>
+  </div>
+
+  <div class="section-title">积分兑换 (周日开放)</div>
+  <div class="grid">
+    {{ each commodities item }}
+    <div class="card jifen">
+      <div class="card-header">
+        <span class="item-name">{{ item.name }}</span>
+        <span class="item-price">{{ item.积分 }} 积分</span>
+      </div>
+      <div class="item-desc">用于修炼或战斗的基础物资</div>
+      <span class="cmd-hint">#积分兑换{{ item.name }}</span>
+    </div>
+    {{ /each }}
+  </div>
+
+  <div class="section-title">荣耀兑换 (每日开放)</div>
+  <div class="grid">
+    <div class="card glory">
+      <div class="card-header">
+        <span class="item-name">摘榜令</span>
+        <span class="item-price">80 点</span>
+      </div>
+      <div class="item-desc">增加1次挑战次数</div>
+      <span class="cmd-hint">#荣耀点兑换摘榜令</span>
+    </div>
+    <div class="card glory">
+      <div class="card-header">
+        <span class="item-name">战意丹</span>
+        <span class="item-price">30 点</span>
+      </div>
+      <div class="item-desc">攻击+5% (持续3场)</div>
+      <span class="cmd-hint">#荣耀点兑换战意丹</span>
+    </div>
+  </div>
+
+  <div class="section-title">赛季奖励 (天地令)</div>
+  <div class="grid">
+    <div class="card token">
+      <div class="card-header">
+        <span class="item-name">称号·天地弄潮儿</span>
+        <span class="item-price">800 令</span>
+      </div>
+      <div class="item-desc">赛季限定外观，彰显尊贵身份</div>
+      <span class="cmd-hint">#天地令兑换称号·天地弄潮儿</span>
+    </div>
+    <div class="card token">
+      <div class="card-header">
+        <span class="item-name">秘籍残页</span>
+        <span class="item-price">500 令</span>
+      </div>
+      <div class="item-desc">集齐5张可合成绝世功法</div>
+      <span class="cmd-hint">#天地令兑换秘籍残页</span>
+    </div>
+  </div>
+
+  <div class="tips">
+    发送对应的兑换指令即可购买物品
+  </div>
+</div>
 
 </body>
 
