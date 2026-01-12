@@ -1,6 +1,9 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
-import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+// 使用自定义puppeteer包装模块（支持ready信号等待）
+import puppeteer from './puppeteer-wrapper.js';
+// 保留原始yunzai puppeteer供需要时使用
+import yunzaiPuppeteer from '../../../lib/puppeteer/puppeteer.js';
 import Show from '../model/show.js';
 
 import fs from 'fs';
@@ -13,7 +16,7 @@ import { __PATH } from '../apps/Xiuxian/xiuxian.js';
 export const verc = ({ e }) => {
   return true;
 };
-export { plugin, common, puppeteer, data, config, Show };
+export { plugin, common, puppeteer, yunzaiPuppeteer, data, config, Show };
 
 //创建连接
 import { createRequire } from 'module';
