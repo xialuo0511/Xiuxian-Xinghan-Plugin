@@ -340,54 +340,65 @@ export async function get_daoju_img(e) {
  * @return image
  */
 export async function get_huanying_img(e) {
-  let usr_qq = e.user_id;
-  let ifexistplay = data.existData('player', usr_qq);
-  if (!ifexistplay) {
-    return;
-  }
-  let player = await data.getData('player', usr_qq);
+  try {
+    let usr_qq = e.user_id;
+    let ifexistplay = await DAL.existPlayer(usr_qq);
+    if (!ifexistplay) {
+      console.log(`[幻影楼] 玩家 ${usr_qq} 不存在`);
+      return;
+    }
+    let player = await data.getData('player', usr_qq);
 
-  let najie = await Read_najie(usr_qq);
-  let user_name = player.名号;
-  let daoju_have = [];
-  let daoju_need = [];
-  let daoju_list = data.daoju_list;
-  let t;
-  for (var i = 0; i < daoju_list.length - 1; i++) {
-    var count = 0;
-    for (var j = 0; j < daoju_list.length - i - 1; j++) {
-      if (daoju_list[j].出售价 > daoju_list[j + 1].出售价) {
-        t = daoju_list[j];
-        daoju_list[j] = daoju_list[j + 1];
-        daoju_list[j + 1] = t;
-        count = 1;
+    let najie = await Read_najie(usr_qq);
+    if (!najie || !najie.道具) {
+      console.log(`[幻影楼] 玩家 ${usr_qq} 纳戒数据异常`);
+      return;
+    }
+
+    let user_name = player.名号;
+    let daoju_have = [];
+    let daoju_need = [];
+    let daoju_list = data.daoju_list;
+
+    // 安全检查
+    if (!daoju_list || daoju_list.length === 0) {
+      console.log(`[幻影楼] 道具列表为空`);
+      return;
+    }
+
+    // 复制数组避免修改原数据
+    let sortedList = [...daoju_list];
+
+    // 按出售价排序
+    sortedList.sort((a, b) => (a.出售价 || 0) - (b.出售价 || 0));
+
+    for (var i = 0; i < sortedList.length; i++) {
+      if (sortedList[i].type == '幻影卡面_练气' || sortedList[i].type == '幻影卡面_装备') {
+        if (najie.道具.find(item => item.name == sortedList[i].name)) {
+          daoju_have.push(sortedList[i]);
+        } else {
+          daoju_need.push(sortedList[i]);
+        }
       }
     }
-    if (count == 0)
-      break;
+
+    let player_data = {
+      user_id: usr_qq,
+      nickname: user_name,
+      daoju_have,
+      daoju_need
+    };
+    console.log(`[幻影楼] 玩家 ${usr_qq}: 拥有=${daoju_have.length}, 未拥有=${daoju_need.length}`);
+
+    const data1 = await new Show(e).get_huanying(player_data);
+    let img = await puppeteer.screenshot('huanying', {
+      ...data1
+    });
+    return img;
+  } catch (error) {
+    console.error(`[幻影楼] 生成图片失败:`, error);
+    return null;
   }
-  for (var i = 0; i < daoju_list.length; i++) {
-    if (najie.道具.find(item => item.name == daoju_list[i].name)) {
-      if (daoju_list[i].type == '幻影卡面_练气' || daoju_list[i].type == '幻影卡面_装备') {
-        daoju_have.push(daoju_list[i]);
-      }
-    } else {
-      if (daoju_list[i].type == '幻影卡面_练气' || daoju_list[i].type == '幻影卡面_装备') {
-        daoju_need.push(daoju_list[i]);
-      }
-    }
-  }
-  let player_data = {
-    user_id: usr_qq,
-    nickname: user_name,
-    daoju_have,
-    daoju_need
-  };
-  const data1 = await new Show(e).get_huanying(player_data);
-  let img = await puppeteer.screenshot('huanying', {
-    ...data1
-  });
-  return img;
 }
 
 /**
