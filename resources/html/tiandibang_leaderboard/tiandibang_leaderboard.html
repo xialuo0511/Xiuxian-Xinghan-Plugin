@@ -305,6 +305,24 @@
             height: 12px;
         }
 
+        .title-badge {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 11px;
+            color: #d4a017;
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(212, 160, 23, 0.2) 100%);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: 1px solid rgba(212, 160, 23, 0.3);
+        }
+
+        .title-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
         .score-section {
             text-align: right;
             flex-shrink: 0;
@@ -436,7 +454,16 @@
                                 <path
                                     d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                             </svg>
-                            预计+{{item.tiandiLing}}令
+                            +{{item.tiandiLing}}令
+                        </span>
+                        {{/if}}
+                        {{if item.title}}
+                        <span class="title-badge">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
+                            </svg>
+                            {{item.title}}
                         </span>
                         {{/if}}
                     </div>
@@ -460,11 +487,11 @@
         <div class="reward-legend">
             <div class="legend-item">
                 <span class="legend-dot gold"></span>
-                <span>冠军 +50令</span>
+                <span>冠军 +50令 +「天榜至尊」</span>
             </div>
             <div class="legend-item">
                 <span class="legend-dot silver"></span>
-                <span>2-3名 +30令</span>
+                <span>2-3名 +30令 +「榜上有名」</span>
             </div>
             <div class="legend-item">
                 <span class="legend-dot bronze"></span>

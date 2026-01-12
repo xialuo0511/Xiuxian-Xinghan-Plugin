@@ -348,11 +348,19 @@ export class Tiandibang extends plugin {
         // 为每个玩家添加预计天地令奖励
         const leaderboardWithRewards = leaderboard.map(entry => {
             let tiandiLing = 0;
-            if (entry.rank === 1) tiandiLing = 50;
-            else if (entry.rank <= 3) tiandiLing = 30;
-            else if (entry.rank <= 10) tiandiLing = 20;
-            else if (entry.rank <= 50) tiandiLing = 10;
-            return { ...entry, tiandiLing };
+            let title = '';
+            if (entry.rank === 1) {
+                tiandiLing = 50;
+                title = '天榜至尊';
+            } else if (entry.rank <= 3) {
+                tiandiLing = 30;
+                title = '榜上有名';
+            } else if (entry.rank <= 10) {
+                tiandiLing = 20;
+            } else if (entry.rank <= 50) {
+                tiandiLing = 10;
+            }
+            return { ...entry, tiandiLing, title };
         });
 
         // 渲染数据
