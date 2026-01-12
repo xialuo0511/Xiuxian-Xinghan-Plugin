@@ -180,7 +180,7 @@
 
 <body>
 
-    <div class="container">
+    <div class="container" id="capture">
         <div class="header">
             <div class="title">{{title}}</div>
             <div class="tianxiang">【{{tianxiang}}】生效中</div>
@@ -245,6 +245,39 @@
         {{/if}}
     </div>
 
+    <script>
+        (function () {
+            const container = document.getElementById('capture');
+            const images = Array.from(document.images);
+            let loadedCount = 0;
+            const total = images.length;
+
+            function check() {
+                loadedCount++;
+                if (loadedCount >= total) {
+                    container.classList.add('ready');
+                }
+            }
+
+            if (total === 0) {
+                container.classList.add('ready');
+            } else {
+                images.forEach(img => {
+                    if (img.complete) {
+                        check();
+                    } else {
+                        img.addEventListener('load', check);
+                        img.addEventListener('error', check);
+                    }
+                });
+            }
+
+            // 保底3秒
+            setTimeout(() => {
+                container.classList.add('ready');
+            }, 3000);
+        })();
+    </script>
 </body>
 
 </html>
