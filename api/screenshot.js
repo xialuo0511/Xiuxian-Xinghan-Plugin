@@ -134,11 +134,23 @@ export async function screenshot(name, options = {}) {
 
         const html = renderTemplate(config.tplFile, options);
 
-        // 4. 加载HTML内容（使用domcontentloaded加快速度，图片等待由ready信号控制）
-        await page.setContent(html, {
+        // 4. 写入临时HTML文件，然后用goto加载（确保file://路径的CSS能正常加载）
+        const tempDir = path.join(PLUGIN_ROOT, 'temp', 'html');
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
+        const tempHtmlPath = path.join(tempDir, `${name}_${Date.now()}.html`);
+        fs.writeFileSync(tempHtmlPath, html, 'utf-8');
+
+        await page.goto(`file:///${tempHtmlPath.replace(/\\/g, '/')}`, {
             waitUntil: 'domcontentloaded',
-            timeout: 5000
+            timeout: 10000
         });
+
+        // 清理临时文件（延迟删除，确保页面加载完成）
+        setTimeout(() => {
+            fs.unlink(tempHtmlPath, () => { });
+        }, 5000);
 
         // 5. 等待ready信号
         try {
