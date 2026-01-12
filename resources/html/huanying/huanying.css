@@ -1,3 +1,4 @@
+/* 幻影楼样式表 - 暗色修仙主题 */
 @font-face {
     font-family: "tttgbnumber";
     src: url("../../font/tttgbnumber.ttf");
@@ -12,232 +13,258 @@
     font-style: normal;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
+    width: 800px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    font-family: "tttgbnumber", sans-serif;
+    color: #e0e0e0;
+    padding: 20px;
+}
+
+.container {
     width: 100%;
-    text-align: center;
-    background-image: url('../../img/player/player.jpg');
-    background-size: 100% auto;
 }
 
-.header {
+/* 页面标题 */
+.page-header {
+    text-align: center;
+    padding: 30px 20px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.2) 0%, rgba(75, 0, 130, 0.3) 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    box-shadow: 0 8px 32px rgba(138, 43, 226, 0.15);
+}
+
+.page-title {
+    font-family: "NZBZ", serif;
+    font-size: 42px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #f97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+}
+
+.page-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+/* 兑换提示 */
+.exchange-tip {
     display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.15) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(251, 191, 36, 0.1);
 }
 
-.card_box {
-    margin: 30px;
-    width: 740px;
-    display: flex;
-    flex-wrap: nowrap;
-    background: radial-gradient(at top left, #ffffff10, #d7edea10);
-    border-top: 1px solid #ffcc80;
-    border-left: 1px solid #ffcc80;
-    border-right: 1px solid #bb8020;
-    border-bottom: 1px solid #bb8020;
-    box-shadow: 1px 2px 6px rgba(170, 31, 0, 0.2), 3px 8px 12px rgba(71, 35, 22, 0.3);
-    z-index: 999;
-    border-radius: 20px;
+.tip-icon {
+    font-size: 28px;
 }
 
-.user_top_left {
-    text-align: center;
-}
-
-.user_top_right {
-    float: right;
-    text-align: left;
-    margin: 20px;
-    border-radius: 20px;
-}
-
-.user_top_img_bottom {
-    margin: auto;
-    background-image: url("../../img/state/user_state.png");
-    background-size: 100% auto;
-    width: 280px;
-    height: 280px;
-}
-
-
-
-.user_top_font_left {
-    position: inherit;
-    margin-left: 30px;
-    margin-bottom: 30px;
-    padding: 5px;
-    border-radius: 20px;
-    color: azure;
-    font-weight: 600;
-    font-size: 30px;
-    font-family: "NZBZ";
-    color: #0053ffff;
-    background-color: rgb(138, 150, 154, 0.45);
-    position: relative;
-}
-
-.user_top_font_right {
-    text-align: left;
-    margin: 9px;
-    padding: 10px;
-    font-size: 22px;
-    width: 350px;
-    height: 30px;
-    font-weight: 600;
-    font-family: "tttgbnumber";
-    color: #000;
-    padding-left: 15px;
-    display: flex;
-    flex-wrap: nowrap;
-}
-
-.user_top_left_dh {
-    font-family: "NZBZ";
-    background-color: rgba(19, 21, 22, 0.486);
-    margin: 9px;
-    border-radius: 20px;
-    color: azure;
-    margin-left: 13px;
-    width: 240px;
-    height: 40px;
-    padding: 5px;
-    font-size: 35px;
-    text-align: center;
-    box-shadow: 3px 2px 3px #ccc
-}
-
-
-
-.use_data {
-    width: 740px;
-}
-
-.user_font {
-    text-align: left;
-    margin: 10px;
-    font-size: 22px;
-    padding: 15px;
-    font-weight: 600;
-    font-family: "tttgbnumber";
-    color: #000000;
-}
-
-.user_font_title {
-    margin: 10px 30px 10px 30px;
-    text-align: center;
-    border-bottom: 1px solid #bb8020;
-    font-size: 30px;
-    font-weight: 600;
-    color: #000000;
-}
-
-.wupin {
-    display: -webkit-flex;
+.tip-content {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
 }
 
-.user_top_img {
-    margin: 10px;
-    width: 185px;
-    border-radius: 5px;
+.tip-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
 }
 
-.item {
-    margin: 10px;
-    padding: 10px;
-    width: 185px;
-    background: radial-gradient(at top left, #ffcc4d80, #ff9800d0);
-    border-top: 1px solid #ffcc80;
-    border-left: 1px solid #ffcc80;
-    border-right: 1px solid #bb8020;
-    border-bottom: 1px solid #bb8020;
-    box-shadow: 1px 2px 6px rgba(170, 31, 0, 0.2), 3px 8px 12px rgba(71, 35, 22, 0.3);
-    border-radius: 5px;
-    position: relative;
-}
-
-.item_title {
-    display: block;
-    padding: 5px;
-    text-align: center;
-    font-family: "tttgbnumber";
+.tip-command {
     font-size: 18px;
     font-weight: 600;
-    color: #2f2b26;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    padding: 4px 12px;
+    border-radius: 6px;
 }
 
-.font_item_title {
-    font-family: "tttgbnumber";
-    font-size: 20px;
+.tip-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* 分区 */
+.section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.section-icon.owned {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+}
+
+.section-icon.locked {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+}
+
+.section-title {
+    font-size: 22px;
     font-weight: 600;
-    color: #151310;
+    color: #fff;
 }
 
-.item_int {
-    display: block;
-    font-family: "tttgbnumber";
-    font-size: 16px;
-    font-weight: 600;
-    color: #393535;
+.section-count {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 12px;
 }
 
-.wuqi {
+/* 卡片网格 */
+.cards-grid {
     display: flex;
     flex-wrap: wrap;
+    gap: 16px;
 }
 
-.wuqi1 {
-    display: flex;
-    flex-grow: 2;
-    width: 100%;
-    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-}
-
-.wuqi2 {
-    display: flex;
-    flex-grow: 2;
-    width: 25%;
-    font-size: 20px;
-    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-    font-weight: 500;
-}
-
-.user_bottom1 {
-    border-radius: 20px;
-    width: 90%;
-    margin: auto;
-    background-image: radial-gradient(rgba(180, 153, 152, 0.408), rgba(230, 222, 128, 0.312));
-}
-
-.user_bottom2 {
-    border-radius: 20px;
-    width: 90%;
-    margin: auto;
-    height: 20px;
-}
-
-.blood_box {
-    width: 280px;
-    height: 100%;
-    background-color: rgb(138, 150, 154, 0.45);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px 0 rgb(216, 218, 234, 0.45);
-}
-
-.blood_bar {
+/* 卡片 */
+.card {
+    width: 235px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
     position: relative;
-    width: 30%;
-    height: 100%;
-    background-color: rgb(222, 210, 73, 0.60);
-    border-radius: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.blood_volume {
-    position: relative;
-    top: -28px;
-    text-align: center;
-    width: 300px;
-    height: 100%;
+.card-owned {
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.1);
+}
+
+.card-owned:hover {
+    box-shadow: 0 8px 30px rgba(34, 197, 94, 0.2);
+}
+
+.card-locked {
+    border: 1px solid rgba(107, 114, 128, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 卡片徽章 */
+.card-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-normal {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-limited {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.3) 0%, rgba(239, 68, 68, 0.3) 100%);
+    color: #fb923c;
+    border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+/* 卡片内容 */
+.card-content {
+    padding: 20px 16px 12px;
+}
+
+.card-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.card-type {
+    font-size: 12px;
+    color: rgba(168, 85, 247, 0.9);
     font-weight: 500;
-    font-family: "NZBZ";
-    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    min-height: 40px;
+}
+
+/* 卡片底部 */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-id {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.card-exchange {
+    font-size: 11px;
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.card-limited {
+    font-size: 11px;
+    color: #f97316;
+    font-weight: 600;
+}
+
+/* 底部留白 */
+.footer-space {
+    height: 30px;
 }

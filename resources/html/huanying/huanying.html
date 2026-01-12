@@ -3,82 +3,94 @@
 
 <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/gongfa/gongfa.css" />
+    <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/huanying/huanying.css" />
     <link rel="preload" href="../../font/tttgbnumber.ttf" as="font" />
     <link rel="shortcut icon" href="#" />
 </head>
 
 <body>
-    <div>
-        <div class="header">
-        </div>
-        <!--上-->
-        <div class="card_box">
-            <div class="use_data">
-                <div class="user_font user_font_title">{{nickname}}的幻影</div>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div class="title-wrapper">
+                <h1 class="page-title">幻 影 楼</h1>
+                <p class="page-subtitle">{{nickname}} 的幻影收藏</p>
             </div>
         </div>
 
-        <!--下-->
+        <!-- 兑换提示 -->
+        <div class="exchange-tip">
+            <div class="tip-icon">💫</div>
+            <div class="tip-content">
+                <span class="tip-label">兑换指令</span>
+                <span class="tip-command">#幻影兑换xxx</span>
+                <span class="tip-desc">消耗【虚无幻影】兑换任意常驻卡面</span>
+            </div>
+        </div>
+
+        <!-- 已拥有的幻影 -->
         {{if daoju_have.length > 0}}
-        <div class="card_box">
-            <div class="use_data">
-                <div class="user_font user_font_title">【已拥有】</div>
-                <div class="user_font  wupin">
-                    {{each daoju_have item}}
-                    {{if item.type == "幻影卡面_练气"}}
-                    <div class="item">
-                        <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
-                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
-                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
-                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
-                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon owned">✓</div>
+                <h2 class="section-title">已拥有</h2>
+                <span class="section-count">{{daoju_have.length}}</span>
+            </div>
+            <div class="cards-grid">
+                {{each daoju_have item}}
+                <div class="card card-owned">
+                    <div class="card-badge {{if item.type2 === '限定'}}badge-limited{{else}}badge-normal{{/if}}">
+                        {{item.type2 || '常驻'}}
                     </div>
-                    {{else}}
-                    <div class="item">
-                        <div class=" item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
-                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
-                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
-                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
-                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+                    <div class="card-content">
+                        <h3 class="card-name">{{item.name}}</h3>
+                        <div class="card-type">{{if item.type === '幻影卡面_练气'}}练气幻影{{else}}装备幻影{{/if}}</div>
+                        <p class="card-desc">{{item.desc || '暂无描述'}}</p>
                     </div>
-                    {{/if}}
-                    {{/each}}
+                    <div class="card-footer">
+                        <span class="card-id">ID: {{item.id}}</span>
+                    </div>
                 </div>
+                {{/each}}
             </div>
         </div>
         {{/if}}
 
-        <!--下-->
+        <!-- 未拥有的幻影 -->
         {{if daoju_need.length > 0}}
-        <div class="card_box">
-            <div class="use_data">
-                <div class="user_font user_font_title">【未拥有】</div>
-                <div class="user_font  wupin">
-                    {{each daoju_need item}}
-                    {{if item.type == "幻影卡面_练气"}}
-                    <div class="item">
-                        <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
-                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
-                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
-                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
-                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon locked">🔒</div>
+                <h2 class="section-title">未拥有</h2>
+                <span class="section-count">{{daoju_need.length}}</span>
+            </div>
+            <div class="cards-grid">
+                {{each daoju_need item}}
+                <div class="card card-locked">
+                    <div class="card-badge {{if item.type2 === '限定'}}badge-limited{{else}}badge-normal{{/if}}">
+                        {{item.type2 || '常驻'}}
                     </div>
-                    {{else}}
-                    <div class="item">
-                        <div class="item_title font_item_title">【{{item.type2}}】{{item.name}}</div>
-                        <div class="item_int" style="padding-left: 26px;">id：{{item.id}}</div>
-                        <div class="item_int" style="padding-left: 26px;">类型：{{item.type}}</div>
-                        <div class="item_int" style="padding-left: 26px;">描述：{{item.desc}}</div>
-                        <div class="item_int" style="padding-left: 26px;">价格：{{(item.出售价).toFixed(0)}}</div>
+                    <div class="card-content">
+                        <h3 class="card-name">{{item.name}}</h3>
+                        <div class="card-type">{{if item.type === '幻影卡面_练气'}}练气幻影{{else}}装备幻影{{/if}}</div>
+                        <p class="card-desc">{{item.desc || '暂无描述'}}</p>
                     </div>
-                    {{/if}}
-                    {{/each}}
+                    <div class="card-footer">
+                        <span class="card-id">ID: {{item.id}}</span>
+                        {{if item.type2 !== '限定'}}
+                        <span class="card-exchange">可兑换</span>
+                        {{else}}
+                        <span class="card-limited">限定</span>
+                        {{/if}}
+                    </div>
                 </div>
+                {{/each}}
             </div>
         </div>
         {{/if}}
-    </div>
+
+        <!-- 底部留白 -->
+        <div class="footer-space"></div>
     </div>
 </body>
 

@@ -33,6 +33,10 @@ export class GuessLanternRiddles extends plugin {
                     reg: '^#自选存档皮肤.*$',
                     fnc: 'cundan_pifu'
                 },
+                {
+                    reg: '^#幻影兑换(.*)$',
+                    fnc: 'huanyingDuihuan'
+                },
 
             ]
         })
@@ -111,6 +115,69 @@ export class GuessLanternRiddles extends plugin {
             await Add_najie_thing(usr_qq, "虚无幻影", "道具", -1)
             e.reply("兑换" + kamian.name + "成功")
         }
+        return;
+    }
+
+    /**
+     * 幻影兑换 - 通过名称兑换幻影卡面
+     * 指令：#幻影兑换xxx
+     */
+    async huanyingDuihuan(e) {
+        if (!e.isGroup) {
+            e.reply('修仙游戏请在群聊中游玩');
+            return;
+        }
+
+        let usr_qq = e.user_id;
+        // 检查存档
+        let ifexistplay = await existplayer(usr_qq);
+        if (!ifexistplay) {
+            return;
+        }
+
+        // 解析幻影名称
+        const huanyingName = e.msg.replace('#幻影兑换', '').trim();
+        if (!huanyingName) {
+            e.reply('请输入要兑换的幻影名称，例如：#幻影兑换星辰幻影');
+            return;
+        }
+
+        // 检查是否拥有虚无幻影
+        let hasXuwu = await exist_najie_thing(usr_qq, "虚无幻影", "道具");
+        if (!hasXuwu) {
+            e.reply('你没有【虚无幻影】，无法兑换');
+            return;
+        }
+
+        // 在道具列表中查找目标幻影
+        const targetHuanying = data.daoju_list.find(item =>
+            item.name === huanyingName &&
+            (item.type === '幻影卡面_练气' || item.type === '幻影卡面_装备')
+        );
+
+        if (!targetHuanying) {
+            e.reply(`未找到名为【${huanyingName}】的幻影卡面，请发送【#幻影楼】查看可兑换的幻影`);
+            return;
+        }
+
+        // 限定卡面不可兑换
+        if (targetHuanying.type2 === '限定') {
+            e.reply('限定卡面不允许兑换！');
+            return;
+        }
+
+        // 检查是否已拥有该幻影
+        let hasTarget = await exist_najie_thing(usr_qq, huanyingName, "道具");
+        if (hasTarget) {
+            e.reply(`你已经拥有【${huanyingName}】了`);
+            return;
+        }
+
+        // 执行兑换：消耗虚无幻影，获得目标幻影
+        await Add_najie_thing(usr_qq, huanyingName, "道具", 1);
+        await Add_najie_thing(usr_qq, "虚无幻影", "道具", -1);
+
+        e.reply(`✨ 兑换成功！\n获得【${huanyingName}】\n类型：${targetHuanying.type === '幻影卡面_练气' ? '练气' : '装备'}幻影`);
         return;
     }
 
