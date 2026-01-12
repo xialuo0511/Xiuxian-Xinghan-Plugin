@@ -19,6 +19,7 @@ import {
   Write_qinmidu,
   yijie_zhanlijisuan
 } from '../Xiuxian/xiuxian.js';
+import { GetPlayerCurrentSkin } from '../../logic/skin_logic.js';
 
 import { createRequire } from 'module';
 
@@ -1221,14 +1222,25 @@ export async function get_association_img(e) {
  */
 export async function get_equipment_img(e) {
   let usr_qq = e.user_id;
-  let player = await data.getData('player', usr_qq);
-  let ifexistplay = data.existData('player', usr_qq);
-  if (!ifexistplay) {
+
+  // 使用 DAL 获取玩家所有数据
+  const playerData = await DAL.getAllPlayerData(usr_qq);
+  if (!playerData || !playerData.player) {
     return;
   }
+
+  const player = playerData.player;
+  const equipment = playerData.equipment || { 武器: {}, 护具: {}, 法宝: {}, 项链: {} }; // 防空
+  const najie = playerData.najie;
+
+  // 获取皮肤配置
+  const skinConfig = await GetPlayerCurrentSkin(usr_qq);
+
+  // 装备皮肤字段仅用于背景图
   let action = player.装备皮肤;
+
   const bao = Math.trunc(parseInt(player.暴击率 * 100));
-  let equipment = await data.getData('equipment', usr_qq);
+
   let player_data = {
     user_id: usr_qq,
     mdz: player.魔道值,
@@ -1242,10 +1254,12 @@ export async function get_equipment_img(e) {
     player_bao: bao,
     player_maxHP: player.血量上限,
     player_nowHP: player.当前血量,
-    pifu: action
+    pifu: action,
+    skinConfig: skinConfig // 传递皮肤配置给模板
   };
+
   const data1 = await new Show(e).get_equipmnetData(player_data);
-  return await puppeteer.screenshot('equipment', {
+  return await customPuppeteer.screenshot('equipment', {
     ...data1
   });
 }
