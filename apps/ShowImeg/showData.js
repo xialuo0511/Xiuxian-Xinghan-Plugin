@@ -1255,7 +1255,8 @@ export async function get_equipment_img(e) {
     player_maxHP: player.血量上限,
     player_nowHP: player.当前血量,
     pifu: action,
-    skinConfig: skinConfig // 传递皮肤配置给模板
+    skinConfig: skinConfig, // 传递皮肤配置给模板
+    修仙版本: versionData
   };
 
   const data1 = await new Show(e).get_equipmnetData(player_data);
