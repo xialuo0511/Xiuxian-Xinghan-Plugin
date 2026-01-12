@@ -64,6 +64,27 @@
       title: '#切换皮肤xxx'
       desc: '装备指定皮肤'
 
+- group: 寻宝系统
+  list:
+    - icon: help-icon_81
+      title: '#寻宝xxx'
+      desc: '前往指定地点寻宝'
+    - icon: help-icon_70
+      title: '#幻影楼'
+      desc: '查看幻影皮肤列表'
+    - icon: help-icon_59
+      title: '#幻影兑换xxx'
+      desc: '用幻影币兑换指定皮肤'
+
+- group: 秘境系统
+  list:
+    - icon: help-icon_38
+      title: '#降临秘境xxx'
+      desc: '进入指定秘境探索'
+    - icon: help-icon_38
+      title: '#沉迷秘境xxx'
+      desc: '沉迷秘境挂机'
+
 - group: 管理指令
   list:
     - icon: help-icon_48
