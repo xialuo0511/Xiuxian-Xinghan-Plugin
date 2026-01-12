@@ -20,7 +20,7 @@ import {
   updatePlayerAvatarFrame
 } from '../../logic/player_profile.js';
 
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 import * as partnerLogic from '../../logic/partner_logic.js';
 import { loadItemConfig } from '../../model/ConfigLoader.js';
@@ -154,10 +154,7 @@ export class UserStart extends plugin {
     // 生成图片并回复
     const dataForPuppeteer = await new Show(e).get_playerData(renderData);
     const img = await puppeteer.screenshot('player', {
-      ...dataForPuppeteer,
-      _page: {
-        deviceScaleFactor: 2 // 开启2倍超清渲染
-      }
+      ...dataForPuppeteer
     });
     e.reply(img);
   }
@@ -310,8 +307,7 @@ export class UserStart extends plugin {
     // 生成并发送图片
     const dataForPuppeteer = await new Show(e).get_checkin_calendarData(calendarData);
     const img = await puppeteer.screenshot('checkin_calendar', {
-      ...dataForPuppeteer,
-      _page: { deviceScaleFactor: 2 }
+      ...dataForPuppeteer
     });
 
     await e.reply([segment.at(e.user_id),

@@ -4,7 +4,7 @@
  */
 
 import plugin from '../../../../lib/plugins/plugin.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 import data from '../../model/XiuxianData.js';
 import config from '../../model/Config.js';
@@ -387,9 +387,7 @@ export class Tiandibang extends plugin {
             const dataForPuppeteer = await new Show(e).get_imgData('tiandibang_leaderboard', renderData);
             const img = await puppeteer.screenshot('tiandibang_leaderboard', {
                 tplFile: htmlPath,
-                ...renderData,
-                scale: 2,
-                imgType: 'png'
+                ...renderData
             });
             e.reply(img);
         } catch (err) {
@@ -445,9 +443,7 @@ export class Tiandibang extends plugin {
             const dataForPuppeteer = await new Show(e).get_imgData('tiandibang_shop', renderData);
             const img = await puppeteer.screenshot('tiandibang_shop', {
                 tplFile: htmlPath,
-                ...renderData,
-                scale: 2,
-                imgType: 'png'
+                ...renderData
             });
             e.reply(img);
         } catch (err) {
