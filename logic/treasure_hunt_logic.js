@@ -63,7 +63,43 @@ export async function treasureHunt(userId, mapName) {
 
         // 发放奖励
         let rewardMessage = '';
-        if (selectedReward === '灵石') {
+        if (mapName === '深渊') {
+            // 深渊必掉落
+            await DAL.updateNajieItem(userId, '深渊石', '材料', 9);
+            const netheriteAmount = 5 + Math.floor(Math.random() * 6); // 5~10
+            await DAL.updateNajieItem(userId, '下界合金矿', '材料', netheriteAmount);
+            rewardMessage = `【深渊石】×9、【下界合金矿】×${netheriteAmount}\n`;
+
+            // 深渊概率掉落
+            let randomDrop = '';
+            let randomAmount = 1;
+            if (selectedReward === '七星海棠丹') {
+                randomAmount = 3 + Math.floor(Math.random() * 5); // 3~7
+                randomDrop = `【${selectedReward}】×${randomAmount}`;
+                await DAL.updateNajieItem(userId, selectedReward, '丹药', randomAmount);
+            } else if (selectedReward === '岩浆') {
+                randomAmount = 12 + Math.floor(Math.random() * 4); // 12~15
+                randomDrop = `【${selectedReward}】×${randomAmount}`;
+                await DAL.updateNajieItem(userId, selectedReward, '道具', randomAmount);
+            } else if (selectedReward === '经验球') {
+                randomAmount = 20 + Math.floor(Math.random() * 11); // 20~30
+                randomDrop = `【${selectedReward}】×${randomAmount}`;
+                await DAL.updateNajieItem(userId, selectedReward, '道具', randomAmount);
+            } else if (selectedReward === '血气瓶') {
+                randomAmount = 20 + Math.floor(Math.random() * 11); // 20~30
+                randomDrop = `【${selectedReward}】×${randomAmount}`;
+                await DAL.updateNajieItem(userId, selectedReward, '道具', randomAmount);
+            } else if (selectedReward === '经验瓶') {
+                randomAmount = 10 + Math.floor(Math.random() * 11); // 10~20
+                randomDrop = `【${selectedReward}】×${randomAmount}`;
+                await DAL.updateNajieItem(userId, selectedReward, '道具', randomAmount);
+            } else {
+                // 回退逻辑，防止配置变动导致的问题
+                await DAL.updateNajieItem(userId, selectedReward, '材料', 1);
+                randomDrop = `【${selectedReward}】×1`;
+            }
+            rewardMessage += `概率掉落: ${randomDrop}`;
+        } else if (selectedReward === '灵石') {
             // 灵石奖励
             const lingshiAmount = 50000 + Math.floor(Math.random() * 150000);
             await DAL.transaction_update(userId, (player) => {
