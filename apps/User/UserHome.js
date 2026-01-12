@@ -556,36 +556,53 @@ export class UserHome extends plugin {
 
     const allTitlesConfig = loadItemConfig('titles.yaml') || [];
     const unlockedTitles = player.all_titles || [];
+    const limitedTitles = player.limited_titles || []; // 限定称号列表 [{name, expireTime, source}]
     const currentTitle = player.称号 || '';
+
+    // 创建限定称号映射表，用于快速查找
+    const limitedTitlesMap = {};
+    limitedTitles.forEach(lt => {
+      limitedTitlesMap[lt.name] = lt;
+    });
 
     // 1. 处理配置中的称号
     const titlesList = allTitlesConfig.map(t => {
       const isUnlocked = unlockedTitles.includes(t.name);
+      const limitedInfo = limitedTitlesMap[t.name];
       return {
         ...t,
         isUnlocked: isUnlocked,
-        isEquipped: currentTitle === t.name
+        isEquipped: currentTitle === t.name,
+        isLimited: !!limitedInfo,
+        expireTime: limitedInfo?.expireTime || null,
+        expireText: limitedInfo ? this.formatExpireTime(limitedInfo.expireTime) : null
       };
     });
 
     // 2. 处理已解锁但未在配置中的称号（兼容旧数据）
     unlockedTitles.forEach(tName => {
       if (!titlesList.find(item => item.name === tName)) {
+        const limitedInfo = limitedTitlesMap[tName];
         titlesList.push({
           name: tName,
-          desc: '未收录的神秘称号',
-          category: '特殊',
-          rarity: 1,
+          desc: limitedInfo ? `${limitedInfo.source || '限定称号'}` : '未收录的神秘称号',
+          category: limitedInfo ? '限定' : '特殊',
+          rarity: limitedInfo ? 5 : 1,
           isUnlocked: true,
-          isEquipped: currentTitle === tName
+          isEquipped: currentTitle === tName,
+          isLimited: !!limitedInfo,
+          expireTime: limitedInfo?.expireTime || null,
+          expireText: limitedInfo ? this.formatExpireTime(limitedInfo.expireTime) : null
         });
       }
     });
 
-    // 排序：已佩戴 > 已解锁 > 稀有度 > 未解锁
+    // 排序：已佩戴 > 限定(未过期) > 已解锁 > 稀有度 > 未解锁
     titlesList.sort((a, b) => {
       if (a.isEquipped) return -1;
       if (b.isEquipped) return 1;
+      if (a.isLimited && !b.isLimited) return -1;
+      if (!a.isLimited && b.isLimited) return 1;
       if (a.isUnlocked && !b.isUnlocked) return -1;
       if (!a.isUnlocked && b.isUnlocked) return 1;
       return b.rarity - a.rarity;
@@ -605,6 +622,24 @@ export class UserHome extends plugin {
     });
 
     e.reply(img);
+  }
+
+  /**
+   * 格式化到期时间
+   */
+  formatExpireTime(expireTime) {
+    if (!expireTime) return null;
+    const now = Date.now();
+    const diff = expireTime - now;
+
+    if (diff <= 0) return '已过期';
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+    if (days > 0) return `${days}天${hours}小时后到期`;
+    if (hours > 0) return `${hours}小时后到期`;
+    return '即将到期';
   }
   async switchTitle(e) {
     const userId = await this.preCheck(e);

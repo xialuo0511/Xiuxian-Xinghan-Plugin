@@ -471,6 +471,58 @@ export async function startNewSeason() {
     // 获取前50名进行结算
     const finalLeaderboard = await getLeaderboard(0, 49);
 
+    // 计算下周日23:59:59的时间戳作为称号到期时间
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysUntilNextSunday = dayOfWeek === 0 ? 7 : 7 - dayOfWeek;
+    const expireDate = new Date(now);
+    expireDate.setDate(now.getDate() + daysUntilNextSunday);
+    expireDate.setHours(23, 59, 59, 0);
+    const expireTime = expireDate.getTime();
+
+    // 天地榜限定称号列表
+    const LIMITED_TITLES = ['天榜至尊', '榜上有名'];
+
+    // 回收所有玩家的天地榜限定称号
+    const allPlayers = await redis.sendCommand(['SMEMBERS', 'xiuxian:players']);
+    if (allPlayers && allPlayers.length > 0) {
+        for (const playerId of allPlayers) {
+            const data = await DAL.getAllPlayerData(playerId);
+            const player = data?.player;
+            if (player) {
+                let changed = false;
+
+                // 从 all_titles 移除限定称号
+                if (player.all_titles && Array.isArray(player.all_titles)) {
+                    const originalLength = player.all_titles.length;
+                    player.all_titles = player.all_titles.filter(t => !LIMITED_TITLES.includes(t));
+                    if (player.all_titles.length !== originalLength) {
+                        changed = true;
+                    }
+                }
+
+                // 清空 limited_titles 中的天地榜相关称号
+                if (player.limited_titles && Array.isArray(player.limited_titles)) {
+                    const originalLength = player.limited_titles.length;
+                    player.limited_titles = player.limited_titles.filter(t => !LIMITED_TITLES.includes(t.name));
+                    if (player.limited_titles.length !== originalLength) {
+                        changed = true;
+                    }
+                }
+
+                // 如果当前佩戴的是限定称号，卸下
+                if (LIMITED_TITLES.includes(player.称号)) {
+                    player.称号 = '';
+                    changed = true;
+                }
+
+                if (changed) {
+                    await DAL.savePlayer(playerId, player);
+                }
+            }
+        }
+    }
+
     // 发放赛季奖励
     for (const entry of finalLeaderboard) {
         const userId = entry.userId;
@@ -495,22 +547,33 @@ export async function startNewSeason() {
                     player.tiandibang.tiandi_tokens = (player.tiandibang.tiandi_tokens || 0) + reward.tiandiLing;
                 }
 
-                // 发放称号
+                // 发放限定称号
                 if (reward.title) {
+                    // 添加到 all_titles（用于显示）
                     if (!player.all_titles) player.all_titles = [];
                     if (!player.all_titles.includes(reward.title)) {
                         player.all_titles.push(reward.title);
                     }
+
+                    // 添加到 limited_titles（带过期时间）
+                    if (!player.limited_titles) player.limited_titles = [];
+                    // 移除旧的同名称号（如果有）
+                    player.limited_titles = player.limited_titles.filter(t => t.name !== reward.title);
+                    // 添加新的
+                    player.limited_titles.push({
+                        name: reward.title,
+                        expireTime: expireTime,
+                        source: '天地榜赛季奖励'
+                    });
                 }
 
                 // 发放额外奖励 (如功法 items)
                 if (reward.extra) {
-                    // 暂未实现物品直接发放，需配合 updateNajieItem，此处仅做逻辑预留或根据实际配置调用
-                    // 若 extra 是道具名，可调用 DAL.updateNajieItem(userId, reward.extra, '道具', 1);
+                    await DAL.updateNajieItem(userId, reward.extra, '道具', 1);
                 }
 
                 await DAL.savePlayer(userId, player);
-                console.log(`[天地榜结算] 玩家 ${userId} 排名 ${rank}，获得 ${reward.tiandiLing} 天地令 ${reward.title ? '+ ' + reward.title : ''}`);
+                console.log(`[天地榜结算] 玩家 ${userId} 排名 ${rank}，获得 ${reward.tiandiLing} 天地令 ${reward.title ? '+ 限定称号「' + reward.title + '」' : ''}`);
             }
         }
     }
