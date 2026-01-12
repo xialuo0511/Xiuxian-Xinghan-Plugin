@@ -20,6 +20,12 @@
 }
 
 body {
+    width: fit-content;
+    margin: 0;
+    padding: 0;
+}
+
+#capture {
     width: 800px;
     min-height: 100vh;
     background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
