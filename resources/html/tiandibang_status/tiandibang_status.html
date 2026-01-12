@@ -24,9 +24,16 @@
         }
 
         body {
+            font-family: "NZBZ", "STKaiti", "KaiTi", "SimSun", serif;
+            margin: 0;
+            padding: 0;
+            width: fit-content;
+        }
+
+        /* 截图容器 - 承载原body的背景和尺寸 */
+        #capture {
             width: 520px;
             min-height: 600px;
-            font-family: "NZBZ", "STKaiti", "KaiTi", "SimSun", serif;
             background: linear-gradient(180deg,
                     #d4c4a8 0%,
                     #e8dcc8 15%,
@@ -540,112 +547,113 @@
 </head>
 
 <body>
+    <div id="capture">
+        <div class="main-container">
+            <!-- 底部装饰角占位 -->
+            <span class="corner-bottom-left">❖</span>
+            <span class="corner-bottom-right">❖</span>
 
-    <div class="main-container" id="capture">
-        <!-- 底部装饰角占位 -->
-        <span class="corner-bottom-left">❖</span>
-        <span class="corner-bottom-right">❖</span>
-
-        <!-- 头部 -->
-        <div class="header">
-            <div class="title">天地榜</div>
-            <div class="subtitle">第{{season}}赛季</div>
-            <div class="title-divider">
-                <span class="divider-line"></span>
-                <span class="divider-icon">✧</span>
-                <span class="divider-line"></span>
-            </div>
-        </div>
-
-        <!-- 内容区上部 -->
-        <div class="content-top">
-            <!-- 左侧：头像和名称 -->
-            <div class="left-section">
-                <div class="avatar-container">
-                    <img src="https://q1.qlogo.cn/g?b=qq&s=640&nk={{userId}}" alt="avatar" />
-                </div>
-                <div class="name-box">
-                    <div class="player-level">{{playerLevel}}</div>
-                    <div class="player-name">{{name}}</div>
+            <!-- 头部 -->
+            <div class="header">
+                <div class="title">天地榜</div>
+                <div class="subtitle">第{{season}}赛季</div>
+                <div class="title-divider">
+                    <span class="divider-line"></span>
+                    <span class="divider-icon">✧</span>
+                    <span class="divider-line"></span>
                 </div>
             </div>
 
-            <!-- 右侧：段位和信息 -->
-            <div class="right-section">
-                <div class="rank-hexagon">
-                    <div class="hexagon-bg">
-                        <span class="hexagon-icon">⚔</span>
+            <!-- 内容区上部 -->
+            <div class="content-top">
+                <!-- 左侧：头像和名称 -->
+                <div class="left-section">
+                    <div class="avatar-container">
+                        <img src="https://q1.qlogo.cn/g?b=qq&s=640&nk={{userId}}" alt="avatar" />
+                    </div>
+                    <div class="name-box">
+                        <div class="player-level">{{playerLevel}}</div>
+                        <div class="player-name">{{name}}</div>
                     </div>
                 </div>
-                <div class="info-text">
-                    <div class="info-row">
-                        <span class="info-label">段位:</span>
-                        <span class="duanwei-badge" style="background: {{duanweiColor}};">{{duanwei}}</span>
+
+                <!-- 右侧：段位和信息 -->
+                <div class="right-section">
+                    <div class="rank-hexagon">
+                        <div class="hexagon-bg">
+                            <span class="hexagon-icon">⚔</span>
+                        </div>
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">赛季排名:</span>
-                        <span class="info-value">#{{rank}}</span>
+                    <div class="info-text">
+                        <div class="info-row">
+                            <span class="info-label">段位:</span>
+                            <span class="duanwei-badge" style="background: {{duanweiColor}};">{{duanwei}}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">赛季排名:</span>
+                            <span class="info-value">#{{rank}}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">积分:</span>
+                            <span class="info-value highlight">{{jifen}}</span>
+                        </div>
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">积分:</span>
-                        <span class="info-value highlight">{{jifen}}</span>
+                </div>
+            </div>
+
+            <!-- 中部统计栏 -->
+            <div class="stats-section">
+                <div class="stat-bar">
+                    <div class="stat-item">
+                        <span class="stat-icon">📋</span>
+                        <span class="stat-label">今日剩余:</span>
+                        <span class="stat-value">{{dailyFights}}/{{maxDailyFights}}</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item right">
+                        <span class="stat-icon fire">🔥</span>
+                        <span class="stat-label">连胜:</span>
+                        <span class="stat-value streak">{{winStreak}}</span>
+                    </div>
+                </div>
+
+                <div class="stat-bar">
+                    <div class="stat-item">
+                        <span class="stat-icon coin">💎</span>
+                        <span class="stat-label">荣耀点:</span>
+                        <span class="stat-value">{{gloryPoints}}</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item right">
+                        <span class="stat-icon token">🏆</span>
+                        <span class="stat-label">天地令:</span>
+                        <span class="stat-value">{{tiandiTokens}}</span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 中部统计栏 -->
-        <div class="stats-section">
-            <div class="stat-bar">
-                <div class="stat-item">
-                    <span class="stat-icon">📋</span>
-                    <span class="stat-label">今日剩余:</span>
-                    <span class="stat-value">{{dailyFights}}/{{maxDailyFights}}</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item right">
-                    <span class="stat-icon fire">🔥</span>
-                    <span class="stat-label">连胜:</span>
-                    <span class="stat-value streak">{{winStreak}}</span>
+            <!-- 天象信息栏 -->
+            <div class="tianxiang-box">
+                <div class="tianxiang-icon">☯</div>
+                <div class="tianxiang-content">
+                    <div class="tianxiang-title">
+                        当前天象: <span class="tianxiang-name">{{tianxiang}}</span>
+                    </div>
+                    <div class="tianxiang-desc">{{tianxiangDesc}}</div>
+                    <div class="tianxiang-remaining">剩余: {{tianxiangRemaining}}</div>
                 </div>
             </div>
 
-            <div class="stat-bar">
-                <div class="stat-item">
-                    <span class="stat-icon coin">💎</span>
-                    <span class="stat-label">荣耀点:</span>
-                    <span class="stat-value">{{gloryPoints}}</span>
+            <!-- 底部卷轴 -->
+            <div class="scroll-footer">
+                <div class="scroll-bg">
+                    {{if isSettlement}}
+                    <span class="scroll-text settlement-warning">⚠ 今日为结算日，无法比试</span>
+                    {{else}}
+                    <span class="scroll-text">本赛季结束:</span>
+                    <span class="scroll-time">{{seasonEndTime}}</span>
+                    {{/if}}
                 </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item right">
-                    <span class="stat-icon token">🏆</span>
-                    <span class="stat-label">天地令:</span>
-                    <span class="stat-value">{{tiandiTokens}}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 天象信息栏 -->
-        <div class="tianxiang-box">
-            <div class="tianxiang-icon">☯</div>
-            <div class="tianxiang-content">
-                <div class="tianxiang-title">
-                    当前天象: <span class="tianxiang-name">{{tianxiang}}</span>
-                </div>
-                <div class="tianxiang-desc">{{tianxiangDesc}}</div>
-                <div class="tianxiang-remaining">剩余: {{tianxiangRemaining}}</div>
-            </div>
-        </div>
-
-        <!-- 底部卷轴 -->
-        <div class="scroll-footer">
-            <div class="scroll-bg">
-                {{if isSettlement}}
-                <span class="scroll-text settlement-warning">⚠ 今日为结算日，无法比试</span>
-                {{else}}
-                <span class="scroll-text">本赛季结束:</span>
-                <span class="scroll-time">{{seasonEndTime}}</span>
-                {{/if}}
             </div>
         </div>
     </div>

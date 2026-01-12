@@ -55,8 +55,13 @@
         }
 
         body {
-            width: 520px;
             margin: 0;
+            padding: 0;
+            width: fit-content;
+        }
+
+        #capture {
+            width: 520px;
             padding: 24px;
             background: var(--bg-primary);
             font-family: "NZBZ", "Noto Sans SC", "Microsoft YaHei", sans-serif;
@@ -426,91 +431,93 @@
 
 <body>
 
-    <div class="container" id="capture">
-        <div class="header">
-            <div class="title">
-                ⚔ 赛季榜 ⚔
+    <div id="capture">
+        <div class="container">
+            <div class="header">
+                <div class="title">
+                    ⚔ 赛季榜 ⚔
+                </div>
+                <div class="subtitle">
+                    <span class="season-badge">第{{season}}赛季</span>
+                    实时排名 · 争夺天榜荣耀
+                </div>
             </div>
-            <div class="subtitle">
-                <span class="season-badge">第{{season}}赛季</span>
-                实时排名 · 争夺天榜荣耀
-            </div>
-        </div>
 
-        <div class="list">
-            {{each leaderboard item index}}
-            <div
-                class="item {{if item.rank == 1}}rank-1{{/if}}{{if item.rank == 2}}rank-2{{/if}}{{if item.rank == 3}}rank-3{{/if}}">
-                <div class="rank">{{item.rank}}</div>
-                <img class="avatar" src="https://q1.qlogo.cn/g?b=qq&s=640&nk={{item.userId}}" />
-                <div class="info">
-                    <div class="name">{{item.name}}</div>
-                    <div class="meta">
-                        <span class="duanwei"
-                            style="background-color: {{item.duanwei.color}}">{{item.duanwei.name}}</span>
-                        {{if item.tiandiLing > 0}}
-                        <span class="reward-badge">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                            </svg>
-                            +{{item.tiandiLing}}令
-                        </span>
-                        {{/if}}
-                        {{if item.title}}
-                        <span class="title-badge">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
-                            </svg>
-                            {{item.title}}
-                        </span>
-                        {{/if}}
+            <div class="list">
+                {{each leaderboard item index}}
+                <div
+                    class="item {{if item.rank == 1}}rank-1{{/if}}{{if item.rank == 2}}rank-2{{/if}}{{if item.rank == 3}}rank-3{{/if}}">
+                    <div class="rank">{{item.rank}}</div>
+                    <img class="avatar" src="https://q1.qlogo.cn/g?b=qq&s=640&nk={{item.userId}}" />
+                    <div class="info">
+                        <div class="name">{{item.name}}</div>
+                        <div class="meta">
+                            <span class="duanwei"
+                                style="background-color: {{item.duanwei.color}}">{{item.duanwei.name}}</span>
+                            {{if item.tiandiLing > 0}}
+                            <span class="reward-badge">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                                </svg>
+                                +{{item.tiandiLing}}令
+                            </span>
+                            {{/if}}
+                            {{if item.title}}
+                            <span class="title-badge">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
+                                </svg>
+                                {{item.title}}
+                            </span>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="score-section">
+                        <div class="score">{{item.jifen}}</div>
+                        <div class="score-label">积分</div>
                     </div>
                 </div>
-                <div class="score-section">
-                    <div class="score">{{item.jifen}}</div>
-                    <div class="score-label">积分</div>
+                {{/each}}
+
+                {{if leaderboard.length == 0}}
+                <div class="empty">
+                    <div class="empty-icon">🏆</div>
+                    <div>暂无修士上榜</div>
+                    <div style="margin-top: 8px; font-size: 13px;">快来争夺天榜第一吧！</div>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="reward-legend">
+                <div class="legend-item">
+                    <span class="legend-dot gold"></span>
+                    <span>冠军 +50令 +「天榜至尊」</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot silver"></span>
+                    <span>2-3名 +30令 +「榜上有名」</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot bronze"></span>
+                    <span>4-10名 +20令</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot normal"></span>
+                    <span>11-50名 +10令</span>
                 </div>
             </div>
-            {{/each}}
 
-            {{if leaderboard.length == 0}}
-            <div class="empty">
-                <div class="empty-icon">🏆</div>
-                <div>暂无修士上榜</div>
-                <div style="margin-top: 8px; font-size: 13px;">快来争夺天榜第一吧！</div>
-            </div>
-            {{/if}}
-        </div>
-
-        <div class="reward-legend">
-            <div class="legend-item">
-                <span class="legend-dot gold"></span>
-                <span>冠军 +50令 +「天榜至尊」</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-dot silver"></span>
-                <span>2-3名 +30令 +「榜上有名」</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-dot bronze"></span>
-                <span>4-10名 +20令</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-dot normal"></span>
-                <span>11-50名 +10令</span>
-            </div>
-        </div>
-
-        <div class="footer">
-            本赛季将于周日 23:59 结算
-            <div class="footer-tip">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                </svg>
-                <span>获得天地令可兑换稀有道具与称号</span>
+            <div class="footer">
+                本赛季将于周日 23:59 结算
+                <div class="footer-tip">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                    </svg>
+                    <span>获得天地令可兑换稀有道具与称号</span>
+                </div>
             </div>
         </div>
     </div>

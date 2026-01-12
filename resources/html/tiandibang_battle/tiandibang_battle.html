@@ -26,8 +26,13 @@
         }
 
         body {
-            width: 600px;
             margin: 0;
+            padding: 0;
+            width: fit-content;
+        }
+
+        #capture {
+            width: 600px;
             padding: 20px;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             font-family: "NZBZ", "Microsoft YaHei", sans-serif;
@@ -180,69 +185,71 @@
 
 <body>
 
-    <div class="container" id="capture">
-        <div class="header">
-            <div class="title">{{title}}</div>
-            <div class="tianxiang">【{{tianxiang}}】生效中</div>
-        </div>
+    <div id="capture">
+        <div class="container">
+            <div class="header">
+                <div class="title">{{title}}</div>
+                <div class="tianxiang">【{{tianxiang}}】生效中</div>
+            </div>
 
-        <div class="vs-section">
-            <div class="fighter">
-                <div class="fighter-name">{{playerName}}</div>
+            <div class="vs-section">
+                <div class="fighter">
+                    <div class="fighter-name">{{playerName}}</div>
+                </div>
+                <div class="vs-text">VS</div>
+                <div class="fighter">
+                    <div class="fighter-name">{{opponentName}}</div>
+                </div>
             </div>
-            <div class="vs-text">VS</div>
-            <div class="fighter">
-                <div class="fighter-name">{{opponentName}}</div>
-            </div>
-        </div>
 
-        <div class="result-banner {{if isWin}}result-win{{else}}result-lose{{/if}}">
-            {{if isWin}}🎉 胜利{{else}}💔 落败{{/if}}
-        </div>
+            <div class="result-banner {{if isWin}}result-win{{else}}result-lose{{/if}}">
+                {{if isWin}}🎉 胜利{{else}}💔 落败{{/if}}
+            </div>
 
-        {{if battleLog && battleLog.length > 0}}
-        <div class="battle-log">
-            <div class="log-title">⚔️ 战斗记录</div>
-            {{each battleLog line}}
-            <div class="log-line">{{line}}</div>
-            {{/each}}
-        </div>
-        {{/if}}
+            {{if battleLog && battleLog.length > 0}}
+            <div class="battle-log">
+                <div class="log-title">⚔️ 战斗记录</div>
+                {{each battleLog line}}
+                <div class="log-line">{{line}}</div>
+                {{/each}}
+            </div>
+            {{/if}}
 
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-label">获得积分</div>
-                <div class="stat-value green">+{{jifen}}</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">获得积分</div>
+                    <div class="stat-value green">+{{jifen}}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">总积分</div>
+                    <div class="stat-value">{{totalJifen}}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">获得灵石</div>
+                    <div class="stat-value green">+{{lingshi}}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">当前段位</div>
+                    <div class="stat-value purple">{{duanwei}}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">连胜</div>
+                    <div class="stat-value">{{winStreak}}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">剩余次数</div>
+                    <div class="stat-value">{{remainingFights}}</div>
+                </div>
             </div>
-            <div class="stat-item">
-                <div class="stat-label">总积分</div>
-                <div class="stat-value">{{totalJifen}}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">获得灵石</div>
-                <div class="stat-value green">+{{lingshi}}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">当前段位</div>
-                <div class="stat-value purple">{{duanwei}}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">连胜</div>
-                <div class="stat-value">{{winStreak}}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">剩余次数</div>
-                <div class="stat-value">{{remainingFights}}</div>
-            </div>
-        </div>
 
-        {{if extraMessages && extraMessages.length > 0}}
-        <div class="extra-messages">
-            {{each extraMessages msg}}
-            <div class="extra-msg">{{msg}}</div>
-            {{/each}}
+            {{if extraMessages && extraMessages.length > 0}}
+            <div class="extra-messages">
+                {{each extraMessages msg}}
+                <div class="extra-msg">{{msg}}</div>
+                {{/each}}
+            </div>
+            {{/if}}
         </div>
-        {{/if}}
     </div>
 
     <script>

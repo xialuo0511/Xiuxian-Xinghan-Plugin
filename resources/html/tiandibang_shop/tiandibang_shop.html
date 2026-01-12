@@ -27,8 +27,13 @@
     }
 
     body {
-      width: 550px;
       margin: 0;
+      padding: 0;
+      width: fit-content;
+    }
+
+    #capture {
+      width: 550px;
       padding: 20px;
       background: linear-gradient(135deg, #f7f3e9 0%, #ede7d9 100%);
       font-family: "NZBZ", "Microsoft YaHei", sans-serif;
@@ -193,64 +198,66 @@
 
 <body>
 
-  <div class="container" id="capture">
-    <div class="header">
-      <div class="title">天地堂</div>
-      <div class="user-assets">
-        <div class="asset-row">积分 <span class="asset-num color-jifen">{{ jifen }}</span></div>
-        <div class="asset-row">荣耀点 <span class="asset-num color-glory">{{ gloryPoints }}</span></div>
-        <div class="asset-row">天地令 <span class="asset-num color-token">{{ tiandiTokens }}</span></div>
-      </div>
-    </div>
-
-    <div class="section-title">积分兑换 (周日开放)</div>
-    <div class="grid">
-      {{ each commodities item }}
-      <div class="card jifen">
-        <div class="card-header">
-          <span class="item-name">{{ item.name }}</span>
-          <span class="item-price">{{ item.积分 }} 积分</span>
+  <div id="capture">
+    <div class="container">
+      <div class="header">
+        <div class="title">天地堂</div>
+        <div class="user-assets">
+          <div class="asset-row">积分 <span class="asset-num color-jifen">{{ jifen }}</span></div>
+          <div class="asset-row">荣耀点 <span class="asset-num color-glory">{{ gloryPoints }}</span></div>
+          <div class="asset-row">天地令 <span class="asset-num color-token">{{ tiandiTokens }}</span></div>
         </div>
-        <div class="item-desc">用于修炼或战斗的基础物资</div>
-        <span class="cmd-hint">#积分兑换{{ item.name }}</span>
       </div>
-      {{ /each }}
-    </div>
 
-    <div class="section-title">荣耀兑换 (每日开放)</div>
-    <div class="grid">
-      <div class="card glory">
-        <div class="card-header">
-          <span class="item-name">摘榜令</span>
-          <span class="item-price">80 点</span>
+      <div class="section-title">积分兑换 (周日开放)</div>
+      <div class="grid">
+        {{ each commodities item }}
+        <div class="card jifen">
+          <div class="card-header">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-price">{{ item.积分 }} 积分</span>
+          </div>
+          <div class="item-desc">用于修炼或战斗的基础物资</div>
+          <span class="cmd-hint">#积分兑换{{ item.name }}</span>
         </div>
-        <div class="item-desc">增加1次挑战次数</div>
-        <span class="cmd-hint">#荣耀点兑换摘榜令</span>
+        {{ /each }}
       </div>
-      <div class="card glory">
-        <div class="card-header">
-          <span class="item-name">战意丹</span>
-          <span class="item-price">30 点</span>
-        </div>
-        <div class="item-desc">攻击+5% (持续3场)</div>
-        <span class="cmd-hint">#荣耀点兑换战意丹</span>
-      </div>
-    </div>
 
-    <div class="section-title">赛季奖励 (天地令)</div>
-    <div class="grid">
-      <div class="card token">
-        <div class="card-header">
-          <span class="item-name">称号·天地弄潮儿</span>
-          <span class="item-price">800 令</span>
+      <div class="section-title">荣耀兑换 (每日开放)</div>
+      <div class="grid">
+        <div class="card glory">
+          <div class="card-header">
+            <span class="item-name">摘榜令</span>
+            <span class="item-price">80 点</span>
+          </div>
+          <div class="item-desc">增加1次挑战次数</div>
+          <span class="cmd-hint">#荣耀点兑换摘榜令</span>
         </div>
-        <div class="item-desc">赛季限定外观，彰显尊贵身份</div>
-        <span class="cmd-hint">#天地令兑换称号·天地弄潮儿</span>
+        <div class="card glory">
+          <div class="card-header">
+            <span class="item-name">战意丹</span>
+            <span class="item-price">30 点</span>
+          </div>
+          <div class="item-desc">攻击+5% (持续3场)</div>
+          <span class="cmd-hint">#荣耀点兑换战意丹</span>
+        </div>
       </div>
-    </div>
 
-    <div class="tips">
-      发送对应的兑换指令即可购买物品
+      <div class="section-title">赛季奖励 (天地令)</div>
+      <div class="grid">
+        <div class="card token">
+          <div class="card-header">
+            <span class="item-name">称号·天地弄潮儿</span>
+            <span class="item-price">800 令</span>
+          </div>
+          <div class="item-desc">赛季限定外观，彰显尊贵身份</div>
+          <span class="cmd-hint">#天地令兑换称号·天地弄潮儿</span>
+        </div>
+      </div>
+
+      <div class="tips">
+        发送对应的兑换指令即可购买物品
+      </div>
     </div>
   </div>
 
