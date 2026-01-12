@@ -342,14 +342,15 @@ export async function get_daoju_img(e) {
 export async function get_huanying_img(e) {
   try {
     let usr_qq = e.user_id;
-    let ifexistplay = await DAL.existPlayer(usr_qq);
-    if (!ifexistplay) {
-      console.log(`[幻影楼] 玩家 ${usr_qq} 不存在`);
+
+    // 使用DAL获取完整玩家数据
+    const playerBundle = await DAL.getAllPlayerData(usr_qq);
+    if (!playerBundle) {
+      console.log(`[幻影楼] 玩家 ${usr_qq} 数据不存在`);
       return;
     }
-    let player = await data.getData('player', usr_qq);
 
-    let najie = await Read_najie(usr_qq);
+    const { player, najie } = playerBundle;
     if (!najie || !najie.道具) {
       console.log(`[幻影楼] 玩家 ${usr_qq} 纳戒数据异常`);
       return;
