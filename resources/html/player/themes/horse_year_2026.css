@@ -120,30 +120,30 @@ body {
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     padding: 20px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    /* 允许腊梅装饰溢出显示 */
     z-index: 60;
     /* 确保卡片内容浮在装饰之上 */
 }
 
-/* 腊梅装饰 (每一张卡片右下角前景) */
+/* 腊梅装饰 (每一张卡片右下角前景，覆盖圆角) */
 .card-base::after,
 .details-card::after {
     content: "";
     position: absolute;
-    bottom: -5px;
-    right: -5px;
-    width: 80px;
-    /* 腊梅花枝大小 */
-    height: 80px;
+    /* 圆角半径16px，腊梅中心对准圆角中心 */
+    bottom: -25px;
+    right: -25px;
+    width: 70px;
+    height: 70px;
     background-image: url("../../../img/materials/wintersweet.png");
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: bottom right;
-    opacity: 0.95;
+    background-position: center;
+    opacity: 1;
     z-index: 100;
-    /* 前景显示，遮挡部分内容营造层次 */
     pointer-events: none;
-    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
 }
 
 /* 进度条小卡片不加腊梅，避免太乱 */
