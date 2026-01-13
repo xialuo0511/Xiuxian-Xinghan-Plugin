@@ -73,7 +73,7 @@
   mechanics: "群体治疗专家，天赋能持续滋养队友。"
   lore: "曾是百草园中一株得道的灵芝，感悟乙木长生之理化形。它所过之处，百花盛开，枯木逢春。它不喜争斗，只愿悬壶济世。其绝技「青帝长生诀」借来东方青帝之生机，能瞬间治愈重伤的队友，由于它是灵体，甚至能修复受损的神魂。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 100, defense: 120, health: 1350, resistance: 0.15, speed: 100, taunt: 100, element: "木", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 110 }
+  base_stats: { attack: 100, defense: 120, health: 1350, resistance: 0.15, speed: 100, taunt: 100, element: "木", crit_rate: 0.1, crit_dmg: 1.5, max_energy: 115 }
   skills:
     basic:
       name: "飞叶"
@@ -138,7 +138,7 @@
   mechanics: "极致的单体爆发，暴击率越高伤害越高。"
   lore: "采南方离火之精修炼而成的火灵，性格暴烈如火。它崇尚极致的毁灭力量，认为只有灰烬才是万物最终的归宿。其绝技「九龙神火罩」通过召唤九条火龙盘旋而上，将敌人困于火罩之中焚烧，造成毁灭性单体伤害，非大毅力者不可降服。"
   eventKey: "wanxiang_tianji_2025_10"
-  base_stats: { attack: 210, defense: 80, health: 1250, resistance: 0.05, speed: 125, taunt: 80, element: "火", crit_rate: 0.25, crit_dmg: 1.8, max_energy: 130 }
+  base_stats: { attack: 210, defense: 80, health: 1250, resistance: 0.05, speed: 125, taunt: 80, element: "火", crit_rate: 0.25, crit_dmg: 1.8, max_energy: 135 }
   skills:
     basic:
       name: "烈焰掌"
