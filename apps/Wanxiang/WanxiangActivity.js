@@ -6,7 +6,7 @@ import path from 'path';
 import YAML from 'yaml';
 import { loadItemConfig } from '../../model/ConfigLoader.js';
 import { runCombat } from '../../logic/combat/CombatEngine.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 
 const STAGES = loadItemConfig('wanxiang_stages.yaml') || [];

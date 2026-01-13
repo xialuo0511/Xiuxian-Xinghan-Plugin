@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <style>
-      @font-face {font-family: "tttgbnumber";src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");}
-      @font-face {font-family: "NZBZ";src: url("file:///{{pluResPath}}/font/NZBZ.ttf");}
+    @font-face {
+      font-family: "tttgbnumber";
+      src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+    }
+
+    @font-face {
+      font-family: "NZBZ";
+      src: url("file:///{{pluResPath}}/font/NZBZ.ttf");
+    }
 
     body {
       margin: 0;
+      padding: 0;
+      width: fit-content;
+    }
+
+    #capture {
       padding: 30px;
       font-family: "NZBZ", "Microsoft YaHei", sans-serif;
       background: #0d0d0d;
@@ -15,6 +28,7 @@
       color: #e0e0e0;
       width: 700px;
     }
+
     .container {
       padding: 25px;
       background: rgba(20, 0, 0, 0.8);
@@ -22,12 +36,14 @@
       border-radius: 12px;
       box-shadow: 0 0 30px rgba(183, 28, 28, 0.2);
     }
+
     .header {
       text-align: center;
       margin-bottom: 25px;
       border-bottom: 1px solid #b71c1c;
       padding-bottom: 15px;
     }
+
     .title {
       font-size: 42px;
       font-weight: bold;
@@ -35,17 +51,20 @@
       text-shadow: 0 0 10px rgba(255, 82, 82, 0.6);
       letter-spacing: 4px;
     }
+
     .subtitle {
       font-size: 16px;
       color: #ff8a80;
       margin-top: 5px;
       font-family: "Microsoft YaHei";
     }
+
     .oath-list {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 15px;
     }
+
     .oath-card {
       background: linear-gradient(135deg, rgba(40, 0, 0, 0.9) 0%, rgba(20, 0, 0, 0.9) 100%);
       border: 1px solid #5c0000;
@@ -55,22 +74,25 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
+
     .oath-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        border-bottom: 1px solid rgba(255, 82, 82, 0.2);
-        padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 82, 82, 0.2);
+      padding-bottom: 8px;
     }
+
     .oath-name {
       font-size: 24px;
       font-weight: bold;
       color: #ff5252;
       text-shadow: 0 0 5px rgba(255, 82, 82, 0.4);
     }
+
     .oath-profit {
       font-size: 16px;
       font-weight: bold;
@@ -81,6 +103,7 @@
       border: 1px solid #00c853;
       font-family: "tttgbnumber";
     }
+
     .oath-desc {
       font-size: 14px;
       color: #cfd8dc;
@@ -89,6 +112,7 @@
       text-align: justify;
       font-family: "Microsoft YaHei";
     }
+
     .footer {
       margin-top: 30px;
       text-align: center;
@@ -98,32 +122,38 @@
       padding-top: 15px;
       font-family: "Microsoft YaHei";
     }
-    .command-tip { color: #ffca28; font-weight: bold; }
+
+    .command-tip {
+      color: #ffca28;
+      font-weight: bold;
+    }
+
     .warning-tip {
-        color: #ef5350;
-        margin-top: 10px;
-        font-size: 14px;
-        background: rgba(183, 28, 28, 0.1);
-        display: inline-block;
-        padding: 5px 15px;
-        border-radius: 20px;
-        border: 1px solid rgba(183, 28, 28, 0.3);
+      color: #ef5350;
+      margin-top: 10px;
+      font-size: 14px;
+      background: rgba(183, 28, 28, 0.1);
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      border: 1px solid rgba(183, 28, 28, 0.3);
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
+  <div id="capture">
     <div class="header">
       <div class="title">誓约之书</div>
       <div class="subtitle">立下誓约 · 挑战极限 · 逆天改命</div>
     </div>
-    
+
     <div class="oath-list">
       {{each oaths o}}
       <div class="oath-card">
         <div class="oath-header">
-            <div class="oath-name">【{{o.name}}】</div>
-            <div class="oath-profit">收益 +{{o.profit_display}}</div>
+          <div class="oath-name">【{{o.name}}】</div>
+          <div class="oath-profit">收益 +{{o.profit_display}}</div>
         </div>
         <div class="oath-desc">{{o.desc}}</div>
       </div>
@@ -137,4 +167,5 @@
     </div>
   </div>
 </body>
+
 </html>

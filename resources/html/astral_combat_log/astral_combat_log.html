@@ -36,8 +36,13 @@
         }
 
         body {
-            width: 800px;
             margin: 0;
+            padding: 0;
+            width: fit-content;
+        }
+
+        #capture {
+            width: 800px;
             padding: 30px;
             background: #e6e2d3;
             background-image: repeating-linear-gradient(45deg, #e6e2d3 0, #e6e2d3 10px, #e3dfd0 10px, #e3dfd0 12px);
@@ -514,7 +519,7 @@
 
 <body>
 
-    <div class="log-container">
+    <div id="capture">
         {{each log line}}
 
         <!-- 开始/结束/系统信息 -->
