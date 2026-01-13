@@ -208,6 +208,31 @@
       发送 <span class="cmd">#兑换 [商品名] [数量]</span> 进行兑换 (如: #兑换 灵石 1)
     </div>
   </div>
+  <script>
+    (function () {
+      const images = document.querySelectorAll('img');
+      let loadedCount = 0;
+      const totalImages = images.length;
+      function checkAllLoaded() {
+        loadedCount++;
+        if (loadedCount >= totalImages) {
+          document.getElementById('capture').classList.add('ready');
+        }
+      }
+      if (totalImages === 0) {
+        document.getElementById('capture').classList.add('ready');
+      } else {
+        images.forEach(img => {
+          if (img.complete) checkAllLoaded();
+          else {
+            img.addEventListener('load', checkAllLoaded);
+            img.addEventListener('error', checkAllLoaded);
+          }
+        });
+      }
+      setTimeout(() => { document.getElementById('capture').classList.add('ready'); }, 3000);
+    })();
+  </script>
 </body>
 
 </html>

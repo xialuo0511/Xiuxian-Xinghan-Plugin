@@ -166,6 +166,31 @@
       <div class="warning-tip">⚠️ 注意：不可只选择收益+0%的誓约开局</div>
     </div>
   </div>
+  <script>
+    (function () {
+      const images = document.querySelectorAll('img');
+      let loadedCount = 0;
+      const totalImages = images.length;
+      function checkAllLoaded() {
+        loadedCount++;
+        if (loadedCount >= totalImages) {
+          document.getElementById('capture').classList.add('ready');
+        }
+      }
+      if (totalImages === 0) {
+        document.getElementById('capture').classList.add('ready');
+      } else {
+        images.forEach(img => {
+          if (img.complete) checkAllLoaded();
+          else {
+            img.addEventListener('load', checkAllLoaded);
+            img.addEventListener('error', checkAllLoaded);
+          }
+        });
+      }
+      setTimeout(() => { document.getElementById('capture').classList.add('ready'); }, 3000);
+    })();
+  </script>
 </body>
 
 </html>
