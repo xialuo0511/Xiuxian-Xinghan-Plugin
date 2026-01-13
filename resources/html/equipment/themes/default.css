@@ -1,4 +1,6 @@
-/* --- 字体定义 --- */
+/* --- Default Skin (Classic Xianxia) --- */
+/* --- 适配 Header + Grid 新布局 --- */
+
 @font-face {
     font-family: "tttgbnumber";
     src: url("../../../font/tttgbnumber.ttf");
@@ -9,7 +11,6 @@
     src: url("../../../font/NZBZ.TTF");
 }
 
-/* --- 基础样式 --- */
 body {
     width: fit-content;
     margin: 0;
@@ -17,52 +18,94 @@ body {
 }
 
 #capture {
-    width: 900px;
-    min-height: 450px;
-    /* 改为min-height，允许内容撑开 */
+    width: 800px;
+    /* 调整为800px以符合设计规范 */
+    min-height: 400px;
     background-size: cover;
     background-position: top center;
-    /* 从顶部开始显示 */
     background-repeat: repeat-y;
-    /* 纵向重复以填充多余空间 */
     font-family: "tttgbnumber", sans-serif;
     color: #4a2c1a;
     position: relative;
-}
-
-/* --- 主布局：左 - 中 - 右 --- */
-.main-layout {
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    min-height: 450px;
-    /* 最小高度 */
     padding: 20px;
     box-sizing: border-box;
-}
-
-/* --- 左右装备面板 --- */
-.side-panel {
-    width: 220px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    /* 改为从顶部开始 */
-    gap: 15px;
+    gap: 20px;
 }
 
-/* --- 装备卡片（参考纳戒风格） --- */
+/* --- 头部信息区 --- */
+.header-section {
+    background: rgba(253, 250, 245, 0.95);
+    border: 2px solid #a88763;
+    border-radius: 12px;
+    padding: 15px 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.player-name {
+    font-family: "NZBZ", sans-serif;
+    font-size: 32px;
+    color: #6a3906;
+    margin-bottom: 12px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.player-stats-row {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    border-top: 1px dashed #d2b48c;
+    padding-top: 12px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #4a2c1a;
+}
+
+.stat-label {
+    background: #8b5a2b;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.stat-value {
+    font-weight: bold;
+}
+
+/* --- 装备网格区 --- */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* --- 装备卡片 --- */
 .equip-card {
-    /* 移除 flex: 1，让卡片自适应内容高度 */
     background: rgba(253, 250, 245, 0.92);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 2px solid #a88763;
     border-radius: 12px;
-    padding: 0;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     overflow: hidden;
 }
 
@@ -72,28 +115,26 @@ body {
     justify-content: space-between;
     align-items: center;
     background: linear-gradient(135deg, #6a3906 0%, #8b5a2b 100%);
-    padding: 10px 12px;
+    padding: 8px 12px;
     border-bottom: 2px solid #d2b48c;
 }
 
 .equip-slot {
     font-family: "NZBZ", sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     color: #ffd700;
     background: rgba(0, 0, 0, 0.3);
     padding: 2px 8px;
     border-radius: 4px;
-    flex-shrink: 0;
 }
 
 .equip-name {
     font-family: "NZBZ", sans-serif;
-    font-size: 15px;
+    font-size: 16px;
     color: #fff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     flex-grow: 1;
     text-align: right;
-    word-break: break-all;
 }
 
 .equip-name.empty {
@@ -101,9 +142,10 @@ body {
     font-style: italic;
 }
 
-/* 卡片内容区 */
+/* 卡片内容 */
 .equip-body {
     padding: 12px;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
@@ -116,52 +158,48 @@ body {
     border-radius: 20px;
     margin: 0 auto 10px;
     text-align: center;
+    color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .equip-quality[data-quality="0"] {
     background: linear-gradient(135deg, #9e9e9e, #757575);
-    color: #fff;
 }
 
 .equip-quality[data-quality="1"] {
     background: linear-gradient(135deg, #8bc34a, #689f38);
-    color: #fff;
 }
 
 .equip-quality[data-quality="2"] {
     background: linear-gradient(135deg, #03a9f4, #0288d1);
-    color: #fff;
 }
 
 .equip-quality[data-quality="3"] {
     background: linear-gradient(135deg, #9c27b0, #7b1fa2);
-    color: #fff;
 }
 
 .equip-quality[data-quality="4"] {
     background: linear-gradient(135deg, #ff9800, #f57c00);
-    color: #fff;
 }
 
 .equip-quality[data-quality="5"] {
     background: linear-gradient(135deg, #f44336, #d32f2f);
-    color: #fff;
 }
 
 .equip-quality[data-quality="6"] {
     background: linear-gradient(135deg, #ffd54f, #ffb300);
     color: #5d4037;
-    box-shadow: 0 2px 8px rgba(255, 179, 0, 0.5);
+    box-shadow: 0 0 8px rgba(255, 179, 0, 0.5);
 }
 
 /* 属性列表 */
 .equip-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    font-size: 13px;
+    gap: 8px;
+    font-size: 14px;
     color: #5d4037;
+    margin-bottom: 10px;
 }
 
 .equip-stats div {
@@ -171,55 +209,22 @@ body {
     border-left: 3px solid #d2b48c;
 }
 
-/* 附魔区 */
+/* 附魔 */
 .equip-fumo {
-    font-size: 12px;
+    margin-top: auto;
+    font-size: 13px;
     color: #9c27b0;
     text-align: center;
-    margin-top: 10px;
-    padding: 6px 10px;
-    background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), rgba(156, 39, 176, 0.05));
+    padding: 6px;
+    background: rgba(156, 39, 176, 0.08);
     border: 1px dashed #9c27b0;
     border-radius: 6px;
 }
 
-/* --- 中间展示区 --- */
-.center-panel {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 20px;
-    min-width: 200px;
-}
-
-.player-title {
-    font-family: "NZBZ", sans-serif;
-    font-size: 28px;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(106, 57, 6, 0.5);
-    margin-bottom: 10px;
-}
-
-.player-stats {
-    display: flex;
-    gap: 20px;
-    font-size: 14px;
-    color: #fff;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-    background: rgba(0, 0, 0, 0.4);
-    padding: 8px 20px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* --- 页脚 --- */
+/* 页脚 */
 .footer {
-    position: absolute;
-    bottom: 8px;
-    right: 15px;
+    text-align: center;
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.6);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    color: rgba(74, 44, 26, 0.6);
+    margin-top: 10px;
 }
