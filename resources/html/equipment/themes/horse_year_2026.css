@@ -1,5 +1,5 @@
 /* --- Dragon Spirit Theme (龙马精神 / horse_year_2026) --- */
-/* --- 左-中-右 布局版 - 增强卡片层次 --- */
+/* --- 左-中-右 布局版 - 自适应高度 --- */
 
 /* --- 字体定义 --- */
 @font-face {
@@ -21,9 +21,13 @@ body {
 
 #capture {
     width: 900px;
-    height: 450px;
+    min-height: 450px;
+    /* 改为min-height，允许内容撑开 */
     background-size: cover;
-    background-position: center;
+    background-position: top center;
+    /* 从顶部开始显示 */
+    background-repeat: repeat-y;
+    /* 纵向重复以填充多余空间 */
     font-family: "tttgbnumber", sans-serif;
     color: #ffd700;
     position: relative;
@@ -34,7 +38,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    height: 100%;
+    min-height: 450px;
+    /* 最小高度 */
     padding: 20px;
     box-sizing: border-box;
 }
@@ -44,13 +49,14 @@ body {
     width: 220px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    /* 改为从顶部开始 */
     gap: 15px;
 }
 
 /* --- 装备卡片（龙马精神风格） --- */
 .equip-card {
-    flex: 1;
+    /* 移除 flex: 1，让卡片自适应内容高度 */
     background: linear-gradient(135deg, rgba(40, 10, 10, 0.95) 0%, rgba(60, 15, 15, 0.95) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -95,6 +101,7 @@ body {
     padding: 2px 8px;
     border-radius: 4px;
     border: 1px solid rgba(255, 215, 0, 0.3);
+    flex-shrink: 0;
 }
 
 .equip-name {
@@ -104,6 +111,7 @@ body {
     text-shadow: 0 0 5px rgba(255, 87, 34, 0.5);
     flex-grow: 1;
     text-align: right;
+    word-break: break-all;
 }
 
 .equip-name.empty {
@@ -114,7 +122,6 @@ body {
 /* 卡片内容区 */
 .equip-body {
     padding: 12px;
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
@@ -174,7 +181,6 @@ body {
     gap: 6px;
     font-size: 13px;
     color: #ffccbc;
-    flex-grow: 1;
 }
 
 .equip-stats div {
@@ -204,6 +210,7 @@ body {
     justify-content: flex-end;
     align-items: center;
     padding: 20px;
+    min-width: 200px;
 }
 
 .player-title {
