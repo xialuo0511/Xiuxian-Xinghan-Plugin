@@ -110,6 +110,7 @@ body {
     font-family: "NZBZ", sans-serif;
     font-size: 18px;
     color: #ffaa00;
+    font-weight: normal;
     letter-spacing: 2px;
     padding: 4px 14px;
     background: rgba(0, 0, 0, 0.4);

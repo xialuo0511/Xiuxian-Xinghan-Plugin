@@ -15,8 +15,13 @@
     }
 
     body {
-      width: 700px;
+      width: fit-content;
       margin: 0;
+      padding: 0;
+    }
+
+    #capture {
+      width: 700px;
       padding: 20px;
       /* 仿古纸张背景 */
       background-color: #f4e4bc;
@@ -28,6 +33,7 @@
       background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
       font-family: "NZBZ", sans-serif;
       color: #4a2c1a;
+      box-sizing: border-box;
     }
 
     .container {
@@ -345,90 +351,117 @@
 </head>
 
 <body>
-  <div class="container">
-    <!-- 装饰角标 -->
-    <div class="corner-decoration corner-tl"></div>
-    <div class="corner-decoration corner-tr"></div>
-    <div class="corner-decoration corner-bl"></div>
-    <div class="corner-decoration corner-br"></div>
+  <div id="capture">
+    <div class="container">
+      <!-- 装饰角标 -->
+      <div class="corner-decoration corner-tl"></div>
+      <div class="corner-decoration corner-tr"></div>
+      <div class="corner-decoration corner-bl"></div>
+      <div class="corner-decoration corner-br"></div>
 
-    <div class="header">
-      <div class="title-main">称号图鉴</div>
-      <div class="divider"></div>
-    </div>
+      <div class="header">
+        <div class="title-main">称号图鉴</div>
+        <div class="divider"></div>
+      </div>
 
-    <div class="current-title-section">
-      <div class="label-sm">—— 当前佩戴 ——</div>
-      {{if currentTitle}}
-      <div class="current-title-display">{{currentTitle}}</div>
-      {{else}}
-      <div class="no-title">暂无佩戴</div>
-      {{/if}}
-    </div>
+      <div class="current-title-section">
+        <div class="label-sm">—— 当前佩戴 ——</div>
+        {{if currentTitle}}
+        <div class="current-title-display">{{currentTitle}}</div>
+        {{else}}
+        <div class="no-title">暂无佩戴</div>
+        {{/if}}
+      </div>
 
-    <div class="section-label">收录名录</div>
+      <div class="section-label">收录名录</div>
 
-    <div class="title-grid">
-      {{if titles && titles.length > 0}}
-      {{each titles t}}
-      <div class="title-card {{if t.isEquipped}}equipped{{else if !t.isUnlocked}}locked{{/if}}">
-        <div class="card-top">
-          <div>
-            <span class="card-name">{{t.name}}</span>
-            {{if t.isLimited}}<span class="badge-limited">限定</span>{{/if}}
+      <div class="title-grid">
+        {{if titles && titles.length > 0}}
+        {{each titles t}}
+        <div class="title-card {{if t.isEquipped}}equipped{{else if !t.isUnlocked}}locked{{/if}}">
+          <div class="card-top">
+            <div>
+              <span class="card-name">{{t.name}}</span>
+              {{if t.isLimited}}<span class="badge-limited">限定</span>{{/if}}
+            </div>
+            <div class="rarity-stars">
+              {{if t.rarity == 5}}★★★★★
+              {{else if t.rarity == 4}}★★★★
+              {{else if t.rarity == 3}}★★★
+              {{else if t.rarity == 2}}★★
+              {{else}}★
+              {{/if}}
+            </div>
           </div>
-          <div class="rarity-stars">
-            {{if t.rarity == 5}}★★★★★
-            {{else if t.rarity == 4}}★★★★
-            {{else if t.rarity == 3}}★★★
-            {{else if t.rarity == 2}}★★
-            {{else}}★
+
+          <div class="card-desc">
+            {{if t.isUnlocked}}
+            {{t.desc}}
+            {{else}}
+            获取方式：{{t.desc}}
+            {{/if}}
+          </div>
+
+          {{if t.isLimited && t.expireText}}
+          <div class="expire-info">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z" />
+            </svg>
+            <span>{{t.expireText}}</span>
+          </div>
+          {{/if}}
+
+          <div class="card-footer">
+            <span class="category-tag">{{t.category}}</span>
+
+            {{if t.isEquipped}}
+            <span class="status-stamp status-equipped">已佩戴</span>
+            {{else if t.isUnlocked}}
+            <span class="status-stamp status-unlocked">已解锁</span>
+            {{else}}
+            <span class="status-stamp status-locked">未解锁</span>
             {{/if}}
           </div>
         </div>
-
-        <div class="card-desc">
-          {{if t.isUnlocked}}
-          {{t.desc}}
-          {{else}}
-          获取方式：{{t.desc}}
-          {{/if}}
-        </div>
-
-        {{if t.isLimited && t.expireText}}
-        <div class="expire-info">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z" />
-          </svg>
-          <span>{{t.expireText}}</span>
+        {{/each}}
+        {{else}}
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #8d6e63;">
+          暂无称号数据
         </div>
         {{/if}}
-
-        <div class="card-footer">
-          <span class="category-tag">{{t.category}}</span>
-
-          {{if t.isEquipped}}
-          <span class="status-stamp status-equipped">已佩戴</span>
-          {{else if t.isUnlocked}}
-          <span class="status-stamp status-unlocked">已解锁</span>
-          {{else}}
-          <span class="status-stamp status-locked">未解锁</span>
-          {{/if}}
-        </div>
       </div>
-      {{/each}}
-      {{else}}
-      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #8d6e63;">
-        暂无称号数据
-      </div>
-      {{/if}}
-    </div>
 
-    <div class="footer">
-      使用 <span class="cmd-hint">#切换称号 [称号名]</span> 进行佩戴
+      <div class="footer">
+        使用 <span class="cmd-hint">#切换称号 [称号名]</span> 进行佩戴
+      </div>
     </div>
   </div>
+  <script>
+    (function () {
+      const images = document.querySelectorAll('img');
+      let loadedCount = 0;
+      const totalImages = images.length;
+      function checkAllLoaded() {
+        loadedCount++;
+        if (loadedCount >= totalImages) {
+          document.getElementById('capture').classList.add('ready');
+        }
+      }
+      if (totalImages === 0) {
+        document.getElementById('capture').classList.add('ready');
+      } else {
+        images.forEach(img => {
+          if (img.complete) checkAllLoaded();
+          else {
+            img.addEventListener('load', checkAllLoaded);
+            img.addEventListener('error', checkAllLoaded);
+          }
+        });
+      }
+      setTimeout(() => { document.getElementById('capture').classList.add('ready'); }, 3000);
+    })();
+  </script>
 </body>
 
 </html>

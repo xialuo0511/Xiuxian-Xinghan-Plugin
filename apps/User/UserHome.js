@@ -4,7 +4,7 @@ import { treasureHunt } from '../../logic/treasure_hunt_logic.js';
 // 新的数据访问层
 import * as DAL from '../../api/data-access.js';
 import { Gulid } from '../../api/api.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 import path from 'path';
 
