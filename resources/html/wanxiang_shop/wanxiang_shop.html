@@ -147,6 +147,16 @@
       color: #ccc;
     }
 
+    .item-card.sold-out {
+      opacity: 0.5;
+      filter: grayscale(0.8);
+    }
+
+    .sold-out .item-stock {
+      background: #757575;
+      color: #ccc;
+    }
+
     .item-price {
       font-size: 20px;
       color: var(--gold);
@@ -191,7 +201,7 @@
 
     <div class="shop-list">
       {{each items item}}
-      <div class="item-card {{if item.locked}}locked{{/if}}">
+      <div class="item-card {{if item.locked}}locked{{else if item.limit !== -1 && item.stock <= 0}}sold-out{{/if}}">
         <div class="item-header">
           <div class="item-name">{{item.name}}</div>
           <div class="item-stock">
