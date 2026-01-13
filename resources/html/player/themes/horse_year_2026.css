@@ -168,11 +168,11 @@ body {
     right: 0;
     bottom: 0;
     background-image: url("../../../img/materials/auspiciousClouds.png");
-    background-size: 100px;
-    /* 适当缩小纹理尺寸 */
+    background-size: 300px;
+    /* 增大纹理尺寸，减少密集感 */
     background-repeat: repeat;
-    opacity: 0.12;
-    /* 低透明度，若隐若现 */
+    opacity: 0.1;
+    /* 保持低透明度 */
     z-index: -1;
     /* 这里设为-1，但在stacking context中可能位于背景后？测试调整 */
     /* 由于父元素建立了stacking context (z-index:60)，z-index:-1的子元素会位于父元素背景之下。
