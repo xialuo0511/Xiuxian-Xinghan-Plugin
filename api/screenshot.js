@@ -129,9 +129,9 @@ let browserInstance = null;
 const defaultConfig = {
     timeout: 5000,           // 等待ready信号的超时时间(ms)
     readySelector: '#capture.ready',  // ready信号选择器
-    scale: 1,                // 设备缩放比例（1倍速度最快）
+    scale: 2,                // 设备缩放比例（2倍高清）
     imgType: 'jpeg',         // 图片格式（jpeg比png小很多）
-    quality: 85,             // JPEG质量
+    quality: 90,             // JPEG质量（90高画质）
     fullPage: false,         // 是否全页截图
     selector: '#capture'     // 截图区域选择器
 };
@@ -220,7 +220,6 @@ function renderTemplate(tplFile, data) {
  */
 export async function screenshot(name, options = {}) {
     const config = { ...defaultConfig, ...options };
-    console.log(`[Screenshot] ${name} Config: scale=${config.scale}, imgType=${config.imgType}, quality=${config.quality}, width=${config.width || 'auto'}`);
     const startTime = Date.now();
     let page = null;
 
