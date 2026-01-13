@@ -1,0 +1,230 @@
+:root {
+    --primary-red: #b22c2c;
+    --primary-gold: #ffd700;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 215, 0, 0.3);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: fit-content;
+}
+
+#capture {
+    width: 750px;
+    min-height: 1000px;
+    position: relative;
+    font-family: "NZBZ", sans-serif;
+    color: #fff;
+    overflow: hidden;
+}
+
+/* --- 背景层 --- */
+.bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../../img/event/spring_2026/page_bg.png');
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+/* --- 顶部主图 --- */
+.header-section {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    background-image: url('../../../img/event/spring_2026/header_bg.png');
+    background-size: cover;
+    background-position: center bottom;
+    z-index: 1;
+    /* 底部渐变遮罩，使背景自然过渡 */
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+/* 装饰挂件 */
+.decor-pendant {
+    position: absolute;
+    top: 0;
+    width: 80px;
+    height: 200px;
+    background-image: url('../../../img/event/spring_2026/decor_pendant.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+.decor-pendant.left {
+    left: 40px;
+}
+
+.decor-pendant.right {
+    right: 40px;
+    transform: scaleX(-1);
+}
+
+/* 标题区域 */
+.title-area {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-title {
+    width: 500px;
+    /* 假设标题图片宽度 */
+    height: 150px;
+    background-image: url('../../../img/event/spring_2026/title_text.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* 如果没有图片则不显示 */
+    drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+}
+
+.sub-title {
+    font-family: "tttgbnumber", sans-serif;
+    font-size: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 5px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.5);
+    color: var(--primary-gold);
+    letter-spacing: 4px;
+}
+
+/* --- 内容卷轴 (Glassmorphism) --- */
+.content-scroll {
+    position: relative;
+    z-index: 2;
+    margin: -60px 40px 40px 40px;
+    /* 向上重叠header */
+    background: linear-gradient(180deg, rgba(168, 20, 20, 0.85), rgba(80, 10, 10, 0.95));
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--primary-gold);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* 卷轴装饰角 (用伪元素画) */
+.content-scroll::before,
+.content-scroll::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    border: 1px dashed rgba(255, 215, 0, 0.3);
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+.scroll-header {
+    text-align: center;
+    font-size: 28px;
+    color: var(--primary-gold);
+    margin-bottom: 25px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ornament {
+    color: #fff;
+    opacity: 0.6;
+    margin: 0 10px;
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+/* 活动网格 */
+.activity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.activity-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.cmd-text {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+}
+
+.cmd-desc {
+    font-family: "tttgbnumber", sans-serif;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+}
+
+.btn-action {
+    font-size: 14px;
+    color: var(--primary-red);
+    background: var(--primary-gold);
+    padding: 2px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* 倒计时 */
+.countdown-section {
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.countdown-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
+}
+
+.countdown-timer {
+    font-family: "tttgbnumber", sans-serif;
+    font-size: 22px;
+    color: var(--primary-gold);
+}
+
+.num {
+    font-size: 28px;
+    color: #fff;
+    font-weight: bold;
+    margin: 0 3px;
+}
+
+/* 页脚 */
+.footer {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    padding-bottom: 20px;
+    font-family: "tttgbnumber", sans-serif;
+}

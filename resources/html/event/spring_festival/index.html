@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+        @font-face {
+            font-family: "tttgbnumber";
+            src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+        }
+
+        @font-face {
+            font-family: "NZBZ";
+            src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+        }
+    </style>
+</head>
+
+<body>
+    <div id="capture">
+        <!-- 背景层 -->
+        <div class="bg-layer"></div>
+
+        <!-- 顶部主图区域 -->
+        <div class="header-section">
+            <!-- 装饰挂件 -->
+            <div class="decor-pendant left"></div>
+            <div class="decor-pendant right"></div>
+
+            <!-- 标题区域 (文字素材) -->
+            <div class="title-area">
+                <div class="main-title"></div>
+                <div class="sub-title">2026 · 丙午马年 · 新春盛典</div>
+            </div>
+        </div>
+
+        <!-- 内容卷轴 -->
+        <div class="content-scroll">
+            <div class="scroll-header">
+                <span class="ornament">❖</span> 活动一览 <span class="ornament">❖</span>
+            </div>
+
+            <div class="activity-grid">
+                {{each commands cmd}}
+                <div class="activity-card">
+                    <div class="cmd-text">{{cmd.cmd}}</div>
+                    <div class="cmd-desc">{{cmd.desc}}</div>
+                    <div class="btn-action">前往</div>
+                </div>
+                {{/each}}
+            </div>
+
+            <!-- 倒计时区域 -->
+            <div class="countdown-section">
+                <div class="countdown-label">距离活动结束还有</div>
+                <div class="countdown-timer" id="countdown">计算中...</div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            Designed by Antigravity · Xiuxian Emulator Plugin
+        </div>
+    </div>
+
+    <script>
+        // 倒计时逻辑
+        const endTime = {{ activity_end_time }};
+        const timerElem = document.getElementById('countdown');
+
+        function updateTimer() {
+            const now = Date.now();
+            const diff = endTime - now;
+
+            if (diff <= 0) {
+                timerElem.innerText = "活动已圆满结束";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            timerElem.innerHTML = `<span class="num">${days}</span> 天 <span class="num">${hours}</span> 时 <span class="num">${minutes}</span> 分`;
+        }
+
+        updateTimer();
+        // 静态页面其实不需要setInterval，因为是截图，但为了逻辑完整写在这里
+    </script>
+</body>
+
+</html>
