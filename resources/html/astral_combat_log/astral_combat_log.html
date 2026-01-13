@@ -520,198 +520,202 @@
 <body>
 
     <div id="capture">
-        {{each log line}}
+        <div class="log-container">
+            {{each log line}}
 
-        <!-- 开始/结束/系统信息 -->
-        {{if line.type === 'start' || line.type === 'system'}}
-        <div class="system-text">◈ {{line.text}} ◈</div>
-        {{else if line.type === 'end'}}
-        <div class="end-text">☁ {{line.text}} ☁</div>
+            <!-- 开始/结束/系统信息 -->
+            {{if line.type === 'start' || line.type === 'system'}}
+            <div class="system-text">◈ {{line.text}} ◈</div>
+            {{else if line.type === 'end'}}
+            <div class="end-text">☁ {{line.text}} ☁</div>
 
-        <!-- 回合分割 -->
-        {{else if line.type === 'turn'}}
-        <div class="turn-header">{{line.text}}</div>
+            <!-- 回合分割 -->
+            {{else if line.type === 'turn'}}
+            <div class="turn-header">{{line.text}}</div>
 
-        <!-- 跳过行动 (被控制) -->
-        {{else if line.type === 'skipped'}}
-        <div
-            class="action-card skipped-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
-            <div class="action-header">
-                <div class="caster-info">
-                    <span class="av-badge">耗时 {{line.av_cost}}</span>
-                    <span class="ele-{{line.caster.element}}">{{line.caster.name}}</span>
+            <!-- 跳过行动 (被控制) -->
+            {{else if line.type === 'skipped'}}
+            <div
+                class="action-card skipped-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
+                <div class="action-header">
+                    <div class="caster-info">
+                        <span class="av-badge">耗时 {{line.av_cost}}</span>
+                        <span class="ele-{{line.caster.element}}">{{line.caster.name}}</span>
+                    </div>
                 </div>
-            </div>
-            <div class="skipped-reason">
-                ❄ {{line.reason}} ❄
-            </div>
-        </div>
-
-        <!-- 战斗行动卡片 -->
-        {{else if line.type === 'action' || line.type === 'ultimate'}}
-        <div
-            class="action-card {{if line.caster.team === 'player'}}player-action{{else if line.caster.team === 'system'}}system-action{{else}}enemy-action{{/if}} {{if line.type === 'ultimate'}}ultimate-action{{/if}}">
-
-            <!-- 头部: 施法者 + 技能名 -->
-            <div class="action-header">
-                <div class="caster-info">
-                    {{if line.type === 'ultimate'}}<span class="ultimate-tag">终结技</span>{{/if}}
-                    {{if !line.is_extra_turn && line.type !== 'ultimate'}}
-                    <span class="av-badge">耗时 {{if line.av_cost !== undefined}}{{line.av_cost}}{{else}}0{{/if}}</span>
-                    {{/if}}
-                    <span
-                        class="ele-{{line.caster.element}} {{if line.caster.level >= 5}}rank-boss{{else if line.caster.level >= 3}}rank-elite{{/if}}">
-                        {{if line.caster.level >= 5}}<span class="boss-tag">首领</span>{{else if line.caster.level >=
-                        3}}<span class="elite-tag">精英</span>{{/if}}{{line.caster.name}}
-                    </span>
-                    <span class="skill-name">「{{line.skill}}」</span>
+                <div class="skipped-reason">
+                    ❄ {{line.reason}} ❄
                 </div>
             </div>
 
-            <!-- 中部: 目标列表 (循环遍历所有目标) -->
-            <div class="targets-container">
-                {{each line.targets target}}
-                <div class="target-row">
-                    <div class="target-name">
-                        <span class="action-arrow">➢</span>
+            <!-- 战斗行动卡片 -->
+            {{else if line.type === 'action' || line.type === 'ultimate'}}
+            <div
+                class="action-card {{if line.caster.team === 'player'}}player-action{{else if line.caster.team === 'system'}}system-action{{else}}enemy-action{{/if}} {{if line.type === 'ultimate'}}ultimate-action{{/if}}">
+
+                <!-- 头部: 施法者 + 技能名 -->
+                <div class="action-header">
+                    <div class="caster-info">
+                        {{if line.type === 'ultimate'}}<span class="ultimate-tag">终结技</span>{{/if}}
+                        {{if !line.is_extra_turn && line.type !== 'ultimate'}}
+                        <span class="av-badge">耗时 {{if line.av_cost !==
+                            undefined}}{{line.av_cost}}{{else}}0{{/if}}</span>
+                        {{/if}}
                         <span
-                            class="ele-{{target.element}} {{if target.level >= 5}}rank-boss{{else if target.level >= 3}}rank-elite{{/if}}">
-                            {{if target.level >= 5}}<span class="boss-tag">首领</span>{{else if target.level >= 3}}<span
-                                class="elite-tag">精英</span>{{/if}}{{target.name}}
+                            class="ele-{{line.caster.element}} {{if line.caster.level >= 5}}rank-boss{{else if line.caster.level >= 3}}rank-elite{{/if}}">
+                            {{if line.caster.level >= 5}}<span class="boss-tag">首领</span>{{else if line.caster.level >=
+                            3}}<span class="elite-tag">精英</span>{{/if}}{{line.caster.name}}
                         </span>
-                    </div>
-
-                    <div class="effect-info effect-{{target.type}}">
-                        {{if target.is_crit}}<span class="crit-tag">暴击</span>{{/if}}
-                        {{if target.is_counter}}<span class="counter-tag">克制</span>{{/if}}
-                        {{if target.type === 'damage'}}
-                        -{{target.value_display}}
-                        {{if target.vampire_heal > 0}}
-                        <span class="effect-heal" style="font-size: 0.8em; margin-left: 5px;">(+{{target.vampire_heal}}
-                            吸血)</span>
-                        {{/if}}
-                        {{if target.reflected_damage > 0}}
-                        <span class="effect-damage" style="font-size: 0.8em; margin-left: 5px;">(反弹
-                            {{target.reflected_damage}})</span>
-                        {{/if}}
-                        {{else if target.type === 'heal'}}+{{target.value_display}}
-                        {{else if target.type === 'shield'}}🛡{{target.value_display}}
-                        {{else if target.type === 'reflected_damage'}}
-                        <span style="color:#e67e22;">(反弹) -{{target.value_display}}</span>
-                        {{else if target.type === 'debuff_application'}}
-                        <span style="font-size: 18px; color: #8e44ad;">{{target.value_display}}</span>
-                        {{else if target.type === 'dot_damage'}}
-                        <span style="color: #e74c3c;">-{{target.value_display}}</span>
-                        {{/if}}
+                        <span class="skill-name">「{{line.skill}}」</span>
                     </div>
                 </div>
-                {{/each}}
-            </div>
 
-            <!-- 底部: 详细战斗文本 (触发的特效等) -->
-            {{if line.details && line.details.length > 0}}
-            <div class="action-details">
-                {{each line.details detail}}
-                <div class="detail-line">· {{detail}}</div>
-                {{/each}}
+                <!-- 中部: 目标列表 (循环遍历所有目标) -->
+                <div class="targets-container">
+                    {{each line.targets target}}
+                    <div class="target-row">
+                        <div class="target-name">
+                            <span class="action-arrow">➢</span>
+                            <span
+                                class="ele-{{target.element}} {{if target.level >= 5}}rank-boss{{else if target.level >= 3}}rank-elite{{/if}}">
+                                {{if target.level >= 5}}<span class="boss-tag">首领</span>{{else if target.level >=
+                                3}}<span class="elite-tag">精英</span>{{/if}}{{target.name}}
+                            </span>
+                        </div>
+
+                        <div class="effect-info effect-{{target.type}}">
+                            {{if target.is_crit}}<span class="crit-tag">暴击</span>{{/if}}
+                            {{if target.is_counter}}<span class="counter-tag">克制</span>{{/if}}
+                            {{if target.type === 'damage'}}
+                            -{{target.value_display}}
+                            {{if target.vampire_heal > 0}}
+                            <span class="effect-heal"
+                                style="font-size: 0.8em; margin-left: 5px;">(+{{target.vampire_heal}}
+                                吸血)</span>
+                            {{/if}}
+                            {{if target.reflected_damage > 0}}
+                            <span class="effect-damage" style="font-size: 0.8em; margin-left: 5px;">(反弹
+                                {{target.reflected_damage}})</span>
+                            {{/if}}
+                            {{else if target.type === 'heal'}}+{{target.value_display}}
+                            {{else if target.type === 'shield'}}🛡{{target.value_display}}
+                            {{else if target.type === 'reflected_damage'}}
+                            <span style="color:#e67e22;">(反弹) -{{target.value_display}}</span>
+                            {{else if target.type === 'debuff_application'}}
+                            <span style="font-size: 18px; color: #8e44ad;">{{target.value_display}}</span>
+                            {{else if target.type === 'dot_damage'}}
+                            <span style="color: #e74c3c;">-{{target.value_display}}</span>
+                            {{/if}}
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+
+                <!-- 底部: 详细战斗文本 (触发的特效等) -->
+                {{if line.details && line.details.length > 0}}
+                <div class="action-details">
+                    {{each line.details detail}}
+                    <div class="detail-line">· {{detail}}</div>
+                    {{/each}}
+                </div>
+                {{/if}}
+
+                <!-- 底部: 双方状态简略 -->
+                <div class="status-panel">
+                    <!-- 我方状态 -->
+                    <div class="team-col">
+                        {{each line.teamStatus.player unit}}
+                        <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
+                            <div class="unit-status-row">
+                                <span class="unit-name">{{unit.name}}</span>
+                                <div style="flex: 1; margin: 0 10px;">
+                                    <div class="hp-track" style="margin: 0;">
+                                        <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
+                                        {{if unit.shield > 0}}
+                                        <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                                        {{/if}}
+                                    </div>
+                                    {{if unit.max_energy > 0}}
+                                    <div class="energy-track">
+                                        <div class="energy-fill" style="width: {{unit.energy_percent}}%"></div>
+                                    </div>
+                                    {{/if}}
+                                </div>
+                                <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                    <span class="hp-val" style="width:auto;">{{unit.hp_display}}</span>
+                                    {{if unit.max_energy > 0}}
+                                    <span class="hp-val"
+                                        style="width:auto; font-size:10px; color:#f39c12; margin-top:-2px;">{{unit.energy}}</span>
+                                    {{/if}}
+                                </div>
+                            </div>
+                            {{if unit.effects && unit.effects.length > 0}}
+                            <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
+                                {{each unit.effects eff}}
+                                <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
+                                    {{eff.icon}}
+                                    {{if eff.is_stackable}}
+                                    <span class="effect-stack">x{{eff.stack_count}}</span>
+                                    {{else if eff.duration !== '∞'}}
+                                    <span class="effect-duration">{{eff.duration}}</span>
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        {{/each}}
+                    </div>
+                    <!-- 敌方状态 -->
+                    <div class="team-col">
+                        {{each line.teamStatus.enemy unit}}
+                        <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
+                            <div class="unit-status-row">
+                                <span class="unit-name">{{unit.name}}</span>
+                                <div style="flex: 1; margin: 0 10px;">
+                                    <div class="hp-track" style="margin: 0;">
+                                        <div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div>
+                                        {{if unit.shield > 0}}
+                                        <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
+                                        {{/if}}
+                                    </div>
+                                    {{if unit.max_energy > 0}}
+                                    <div class="energy-track">
+                                        <div class="energy-fill" style="width: {{unit.energy_percent}}%"></div>
+                                    </div>
+                                    {{/if}}
+                                </div>
+                                <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                    <span class="hp-val" style="width:auto;">{{unit.hp_display}}</span>
+                                    {{if unit.max_energy > 0}}
+                                    <span class="hp-val"
+                                        style="width:auto; font-size:10px; color:#f39c12; margin-top:-2px;">{{unit.energy}}</span>
+                                    {{/if}}
+                                </div>
+                            </div>
+                            {{if unit.effects && unit.effects.length > 0}}
+                            <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
+                                {{each unit.effects eff}}
+                                <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
+                                    {{eff.icon}}
+                                    {{if eff.is_stackable}}
+                                    <span class="effect-stack">x{{eff.stack_count}}</span>
+                                    {{else if eff.duration !== '∞'}}
+                                    <span class="effect-duration">{{eff.duration}}</span>
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
             </div>
             {{/if}}
 
-            <!-- 底部: 双方状态简略 -->
-            <div class="status-panel">
-                <!-- 我方状态 -->
-                <div class="team-col">
-                    {{each line.teamStatus.player unit}}
-                    <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
-                        <div class="unit-status-row">
-                            <span class="unit-name">{{unit.name}}</span>
-                            <div style="flex: 1; margin: 0 10px;">
-                                <div class="hp-track" style="margin: 0;">
-                                    <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
-                                    {{if unit.shield > 0}}
-                                    <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
-                                    {{/if}}
-                                </div>
-                                {{if unit.max_energy > 0}}
-                                <div class="energy-track">
-                                    <div class="energy-fill" style="width: {{unit.energy_percent}}%"></div>
-                                </div>
-                                {{/if}}
-                            </div>
-                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <span class="hp-val" style="width:auto;">{{unit.hp_display}}</span>
-                                {{if unit.max_energy > 0}}
-                                <span class="hp-val"
-                                    style="width:auto; font-size:10px; color:#f39c12; margin-top:-2px;">{{unit.energy}}</span>
-                                {{/if}}
-                            </div>
-                        </div>
-                        {{if unit.effects && unit.effects.length > 0}}
-                        <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
-                            {{each unit.effects eff}}
-                            <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
-                                {{eff.icon}}
-                                {{if eff.is_stackable}}
-                                <span class="effect-stack">x{{eff.stack_count}}</span>
-                                {{else if eff.duration !== '∞'}}
-                                <span class="effect-duration">{{eff.duration}}</span>
-                                {{/if}}
-                            </div>
-                            {{/each}}
-                        </div>
-                        {{/if}}
-                    </div>
-                    {{/each}}
-                </div>
-                <!-- 敌方状态 -->
-                <div class="team-col">
-                    {{each line.teamStatus.enemy unit}}
-                    <div style="margin-bottom: 6px;" class="{{if unit.hp <= 0}}dead{{/if}}">
-                        <div class="unit-status-row">
-                            <span class="unit-name">{{unit.name}}</span>
-                            <div style="flex: 1; margin: 0 10px;">
-                                <div class="hp-track" style="margin: 0;">
-                                    <div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div>
-                                    {{if unit.shield > 0}}
-                                    <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
-                                    {{/if}}
-                                </div>
-                                {{if unit.max_energy > 0}}
-                                <div class="energy-track">
-                                    <div class="energy-fill" style="width: {{unit.energy_percent}}%"></div>
-                                </div>
-                                {{/if}}
-                            </div>
-                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <span class="hp-val" style="width:auto;">{{unit.hp_display}}</span>
-                                {{if unit.max_energy > 0}}
-                                <span class="hp-val"
-                                    style="width:auto; font-size:10px; color:#f39c12; margin-top:-2px;">{{unit.energy}}</span>
-                                {{/if}}
-                            </div>
-                        </div>
-                        {{if unit.effects && unit.effects.length > 0}}
-                        <div class="status-effects" style="justify-content: flex-start; padding-left: 5px;">
-                            {{each unit.effects eff}}
-                            <div class="effect-badge {{if eff.is_debuff}}debuff{{else}}buff{{/if}}">
-                                {{eff.icon}}
-                                {{if eff.is_stackable}}
-                                <span class="effect-stack">x{{eff.stack_count}}</span>
-                                {{else if eff.duration !== '∞'}}
-                                <span class="effect-duration">{{eff.duration}}</span>
-                                {{/if}}
-                            </div>
-                            {{/each}}
-                        </div>
-                        {{/if}}
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
+            {{/each}}
         </div>
-        {{/if}}
-
-        {{/each}}
     </div>
     <script>
         (function () {
