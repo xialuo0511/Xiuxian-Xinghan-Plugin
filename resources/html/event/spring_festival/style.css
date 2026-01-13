@@ -13,14 +13,14 @@ body {
 
 #capture {
     width: 750px;
-    min-height: 1200px;
-    /* 增加整体高度 */
+    min-height: 1000px;
+    /* 减小整体高度 */
     position: relative;
     font-family: "NZBZ", sans-serif;
     color: #fff;
     overflow: hidden;
-    padding-bottom: 40px;
-    /* 底部留白 */
+    padding-bottom: 20px;
+    /* 减小底部留白 */
 }
 
 /* --- 背景层 --- */

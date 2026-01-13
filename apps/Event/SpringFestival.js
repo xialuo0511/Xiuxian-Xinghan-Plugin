@@ -5,7 +5,7 @@ import path from 'path';
 
 // 春节活动配置
 const ACTIVITY_CONFIG = {
-    endTime: new Date('2026-02-17 23:59:59').getTime(), // 假设活动结束时间（根据马年春节调整，此处设为正月二十）
+    endTime: new Date('2026-03-08 23:59:59').getTime(), // 活动时间：2026/2/2 09:00 ~ 2026/3/8 23:59
     commands: [
         { cmd: '#新春签到', desc: '领红包，积攒好运' },
         { cmd: '#赶年兽', desc: '全服合力，击退年兽' },
