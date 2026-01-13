@@ -88,8 +88,8 @@ body {
 
 /* 万马奔腾标题 - 添加磨砂玻璃背景 */
 .main-title {
-    width: 450px;
-    height: 120px;
+    width: 550px;
+    height: 160px;
     background-image: url('../../../img/event/spring_2026/title_text.png');
     background-size: contain;
     background-repeat: no-repeat;

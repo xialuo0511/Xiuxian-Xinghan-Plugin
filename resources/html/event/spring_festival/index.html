@@ -52,7 +52,7 @@
 
             <!-- 倒计时区域 -->
             <div class="countdown-section">
-                <div class="countdown-label">距离活动结束还有</div>
+                <div class="countdown-label">{{countdown_label}}</div>
                 <div class="countdown-timer" id="countdown">计算中...</div>
             </div>
         </div>
@@ -65,12 +65,12 @@
 
     <script>
         // 倒计时逻辑
-        const endTime = {{ activity_end_time }};
+        const targetTime = {{ target_time }};
         const timerElem = document.getElementById('countdown');
 
         function updateTimer() {
             const now = Date.now();
-            const diff = endTime - now;
+            const diff = targetTime - now;
 
             if (diff <= 0) {
                 timerElem.innerText = "活动已圆满结束";
