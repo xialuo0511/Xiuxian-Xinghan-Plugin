@@ -259,7 +259,8 @@ export async function screenshot(name, options = {}) {
             });
             console.log(`[Screenshot] ${name}: ready信号已接收 (${Date.now() - startTime}ms)`);
         } catch (waitError) {
-            console.warn(`[Screenshot] ${name}: 等待ready信号超时，降级截图`);
+            // Ready 超时不是致命错误，继续尝试截图（页面可能已经渲染完成但没有发送信号）
+            console.log(`[Screenshot] ${name}: 未等到ready信号，继续截图 (${Date.now() - startTime}ms)`);
         }
 
         // 6. 获取截图区域
