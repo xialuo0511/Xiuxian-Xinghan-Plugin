@@ -1,5 +1,5 @@
 /* --- Dragon Spirit Theme (龙马精神 / horse_year_2026) --- */
-/* --- 左-中-右 布局版 - 自适应高度 --- */
+/* --- 仿纳戒风格：磨砂玻璃 + 淡红边框 + 金色点缀 --- */
 
 /* --- 字体定义 --- */
 @font-face {
@@ -22,14 +22,14 @@ body {
 #capture {
     width: 900px;
     min-height: 450px;
-    /* 改为min-height，允许内容撑开 */
+    background-color: #1a0505;
+    /* 深红黑底色 */
     background-size: cover;
     background-position: top center;
-    /* 从顶部开始显示 */
     background-repeat: repeat-y;
-    /* 纵向重复以填充多余空间 */
     font-family: "tttgbnumber", sans-serif;
-    color: #ffd700;
+    color: #F5E6D3;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     position: relative;
 }
 
@@ -39,7 +39,6 @@ body {
     justify-content: space-between;
     align-items: stretch;
     min-height: 450px;
-    /* 最小高度 */
     padding: 20px;
     box-sizing: border-box;
 }
@@ -50,37 +49,24 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    /* 改为从顶部开始 */
     gap: 15px;
 }
 
-/* --- 装备卡片（龙马精神风格） --- */
+/* --- 装备卡片（磨砂玻璃风格） --- */
 .equip-card {
-    /* 移除 flex: 1，让卡片自适应内容高度 */
-    background: linear-gradient(135deg, rgba(40, 10, 10, 0.95) 0%, rgba(60, 15, 15, 0.95) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px solid #ffd700;
+    /* 磨砂玻璃效果 */
+    background: rgba(40, 5, 5, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    border: 1px solid rgba(218, 165, 32, 0.4);
+    /* 淡金边框 */
     border-radius: 12px;
     padding: 0;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 215, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    position: relative;
-}
-
-/* 金边内装饰 */
-.equip-card::before {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    right: 3px;
-    bottom: 3px;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 8px;
-    pointer-events: none;
 }
 
 /* 卡片头部 */
@@ -88,34 +74,37 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(135deg, #b71c1c 0%, #8b0000 100%);
+    /* 磨砂玻璃渐变 */
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 5, 5, 0.6));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     padding: 10px 12px;
-    border-bottom: 2px solid #ffd700;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .equip-slot {
     font-family: "NZBZ", sans-serif;
     font-size: 13px;
-    color: #ffd700;
-    background: rgba(0, 0, 0, 0.4);
+    color: #FFD700;
+    background: rgba(0, 0, 0, 0.3);
     padding: 2px 8px;
     border-radius: 4px;
-    border: 1px solid rgba(255, 215, 0, 0.3);
     flex-shrink: 0;
+    text-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
 }
 
 .equip-name {
     font-family: "NZBZ", sans-serif;
     font-size: 15px;
-    color: #ffeb3b;
-    text-shadow: 0 0 5px rgba(255, 87, 34, 0.5);
+    color: #FFD700;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
     flex-grow: 1;
     text-align: right;
     word-break: break-all;
 }
 
 .equip-name.empty {
-    color: #ef9a9a;
+    color: #999;
     font-style: italic;
 }
 
@@ -126,52 +115,70 @@ body {
     flex-direction: column;
 }
 
-/* 品级标签 */
+/* 品级标签（磨砂玻璃风格） */
 .equip-quality {
     font-size: 12px;
     font-weight: bold;
     padding: 4px 12px;
-    border-radius: 20px;
+    border-radius: 6px;
     margin: 0 auto 10px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* 磨砂玻璃基础样式 */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+/* 劣 - 暗灰 */
 .equip-quality[data-quality="0"] {
-    background: linear-gradient(135deg, #757575, #616161);
-    color: #fff;
+    background: rgba(120, 120, 120, 0.3);
+    border-color: rgba(150, 150, 150, 0.4);
+    color: #b0b0b0;
 }
 
+/* 普 - 淡绿 */
 .equip-quality[data-quality="1"] {
-    background: linear-gradient(135deg, #689f38, #558b2f);
-    color: #fff;
+    background: rgba(76, 175, 80, 0.25);
+    border-color: rgba(129, 199, 132, 0.4);
+    color: #a5d6a7;
 }
 
+/* 优 - 淡蓝 */
 .equip-quality[data-quality="2"] {
-    background: linear-gradient(135deg, #0288d1, #0277bd);
-    color: #fff;
+    background: rgba(33, 150, 243, 0.25);
+    border-color: rgba(100, 181, 246, 0.4);
+    color: #90caf9;
 }
 
+/* 精 - 淡紫 */
 .equip-quality[data-quality="3"] {
-    background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
-    color: #fff;
+    background: rgba(156, 39, 176, 0.3);
+    border-color: rgba(186, 104, 200, 0.4);
+    color: #ce93d8;
 }
 
+/* 极 - 橙色 */
 .equip-quality[data-quality="4"] {
-    background: linear-gradient(135deg, #f57c00, #ef6c00);
-    color: #fff;
+    background: rgba(255, 152, 0, 0.3);
+    border-color: rgba(255, 183, 77, 0.5);
+    color: #ffb74d;
 }
 
+/* 绝 - 红色 */
 .equip-quality[data-quality="5"] {
-    background: linear-gradient(135deg, #d32f2f, #c62828);
-    color: #fff;
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(239, 83, 80, 0.5);
+    color: #ef9a9a;
 }
 
+/* 顶 - 金色发光 */
 .equip-quality[data-quality="6"] {
-    background: linear-gradient(135deg, #ffd54f, #ffb300);
-    color: #5d4037;
-    text-shadow: 0 0 3px #ff6f00;
-    box-shadow: 0 2px 8px rgba(255, 179, 0, 0.5);
+    background: rgba(255, 215, 0, 0.25);
+    border-color: rgba(255, 215, 0, 0.6);
+    color: #FFD700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
 }
 
 /* 属性列表 */
@@ -180,25 +187,25 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 6px;
     font-size: 13px;
-    color: #ffccbc;
+    color: #eee;
 }
 
 .equip-stats div {
-    background: rgba(183, 28, 28, 0.4);
+    background: rgba(0, 0, 0, 0.2);
     padding: 4px 8px;
     border-radius: 4px;
-    border-left: 3px solid #ffd700;
+    border-left: 2px solid rgba(255, 215, 0, 0.4);
 }
 
 /* 附魔区 */
 .equip-fumo {
     font-size: 12px;
-    color: #e040fb;
+    color: #ce93d8;
     text-align: center;
     margin-top: 10px;
     padding: 6px 10px;
-    background: linear-gradient(135deg, rgba(224, 64, 251, 0.2), rgba(224, 64, 251, 0.1));
-    border: 1px dashed #e040fb;
+    background: rgba(156, 39, 176, 0.15);
+    border: 1px dashed rgba(186, 104, 200, 0.4);
     border-radius: 6px;
 }
 
@@ -216,19 +223,23 @@ body {
 .player-title {
     font-family: "NZBZ", sans-serif;
     font-size: 28px;
-    color: #ffd700;
-    text-shadow: 0 0 10px #b71c1c, 0 2px 8px rgba(0, 0, 0, 0.8);
+    color: #FFD700;
+    text-shadow: 0 0 10px #ff4500, 0 2px 8px rgba(0, 0, 0, 0.8);
     margin-bottom: 10px;
+    letter-spacing: 2px;
 }
 
 .player-stats {
     display: flex;
     gap: 20px;
     font-size: 14px;
-    color: #ffeb3b;
+    color: #F5E6D3;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-    background: rgba(183, 28, 28, 0.7);
-    border: 1px solid #ffd700;
+    /* 磨砂玻璃效果 */
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 5, 5, 0.6));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
     padding: 8px 20px;
     border-radius: 20px;
 }
@@ -239,6 +250,6 @@ body {
     bottom: 8px;
     right: 15px;
     font-size: 10px;
-    color: rgba(255, 215, 0, 0.6);
+    color: rgba(255, 255, 255, 0.6);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
