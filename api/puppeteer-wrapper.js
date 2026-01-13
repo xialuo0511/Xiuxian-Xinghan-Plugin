@@ -124,8 +124,9 @@
  * │  │                                                                  │   │
  * │  │ const img = await puppeteer.screenshot('your_template_name', {   │   │
  * │  │   ...yourDataObject,   // 传递给模板的数据                       │   │
- * │  │   scale: 2,            // 可选: 高清截图 (默认1)                 │   │
- * │  │   quality: 90          // 可选: JPEG质量 (默认85)               │   │
+ * │  │   scale: 2,            // 推荐: 高清截图 (默认1)                 │   │
+ * │  │   imgType: 'png',      // 推荐: 无损清晰 (默认jpeg)             │   │
+ * │  │   quality: 90          // 可选: 若用jpeg推荐90+                 │   │
  * │  │
  * │  │ });                                                              │   │
  * │  │ e.reply(img);                                                    │   │
@@ -176,8 +177,8 @@ const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
  * e.reply(img);
  *
  * @example
- * // 高清模式
- * const img = await puppeteer.screenshot('tiandibang_shop', { ...data, scale: 2, quality: 90 });
+ * // 高清模式 (与练气/纳戒一致的效果)
+ * const img = await puppeteer.screenshot('tiandibang_shop', { ...data, scale: 2, imgType: 'png' });
  */
 async function screenshot(name, options = {}) {
   // 如果已经指定了tplFile，直接使用
