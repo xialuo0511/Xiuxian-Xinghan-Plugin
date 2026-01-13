@@ -8,10 +8,10 @@ const ACTIVITY_CONFIG = {
     startTime: new Date('2026-02-02 09:00:00').getTime(), // 活动开始时间
     endTime: new Date('2026-03-08 23:59:59').getTime(),   // 活动结束时间
     commands: [
-        { cmd: '#新春签到', desc: '领红包，积攒好运' },
-        { cmd: '#赶年兽', desc: '全服合力，击退年兽' },
-        { cmd: '#新春集市', desc: '兑换限定皮肤与道具' },
-        { cmd: '#万马奔腾', desc: '查看活动主页' }
+        { cmd: '#进入天马牧场', desc: '进入天马牧场秘境' },
+        { cmd: '#参与讨伐', desc: '参与魔驹讨伐战' },
+        { cmd: '#灯谜祈福', desc: '每日答题赢好礼' },
+        { cmd: '#马年庆典铺', desc: '兑换限定皮肤与道具' }
     ]
 };
 
