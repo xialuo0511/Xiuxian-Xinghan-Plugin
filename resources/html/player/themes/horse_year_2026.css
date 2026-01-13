@@ -118,24 +118,27 @@ body {
     filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
 }
 
-/* 左侧流苏 - 灯笼下方 */
+/* 左侧流苏 - 悬挂在边缘，避开文字 */
 .t-1 {
-    width: 60px;
-    height: 120px;
-    top: 180px;
-    left: 50px;
-    opacity: 0.9;
-    transform: rotate(-5deg);
+    width: 50px;
+    height: 100px;
+    top: 140px;
+    left: 2px;
+    opacity: 0.8;
+    transform: rotate(0deg);
+    z-index: 55;
+    /* 略微提高一点，或者保持在卡片后 */
 }
 
-/* 右侧流苏 - 灯笼下方 */
+/* 右侧流苏 - 悬挂在边缘，避开文字 */
 .t-2 {
-    width: 60px;
-    height: 120px;
-    top: 180px;
-    right: 50px;
-    opacity: 0.9;
-    transform: scaleX(-1) rotate(-5deg);
+    width: 50px;
+    height: 100px;
+    top: 140px;
+    right: 2px;
+    opacity: 0.8;
+    transform: scaleX(-1) rotate(0deg);
+    z-index: 55;
 }
 
 /* --- 卡片通用样式 (Glassmorphism) --- */
