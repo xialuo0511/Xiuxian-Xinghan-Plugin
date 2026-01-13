@@ -158,6 +158,38 @@ body {
     /* 确保卡片内容浮在装饰之上 */
 }
 
+/* 祥云背景纹理 (低透明度平铺) */
+.card-base::before,
+.details-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../../img/materials/auspiciousClouds.png");
+    background-size: 100px;
+    /* 适当缩小纹理尺寸 */
+    background-repeat: repeat;
+    opacity: 0.12;
+    /* 低透明度，若隐若现 */
+    z-index: -1;
+    /* 这里设为-1，但在stacking context中可能位于背景后？测试调整 */
+    /* 由于父元素建立了stacking context (z-index:60)，z-index:-1的子元素会位于父元素背景之下。
+       所以改为 z-index: 0，并让内容为 z-index 1 */
+    z-index: 0;
+    border-radius: 16px;
+    /* 保持圆角一致 */
+    pointer-events: none;
+}
+
+/* 确保所有内容文字浮于祥云之上 */
+.card-base>*,
+.details-card>* {
+    position: relative;
+    z-index: 2;
+}
+
 /* 腊梅装饰 (每一张卡片右下角前景，覆盖圆角) */
 .card-base::after,
 .details-card::after {
