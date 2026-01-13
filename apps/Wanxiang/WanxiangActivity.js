@@ -924,7 +924,7 @@ export class WanxiangActivity extends plugin {
       } catch (err) { console.error('[Wanxiang] Combat Log Error:', err); e.reply('战报生成出错。'); }
       finally { setTimeout(() => { imgPaths.forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p); }); }, 60000); }
 
-      for (const s of runData.souls) { const c = result.playerTeam.find(pt => pt.name === s.name); if (c) { s.current_hp = Math.max(0, c.current_hp); s.is_dead = s.current_hp <= 0; } }
+      for (const s of runData.souls) { const c = result.playerTeam.find(pt => pt.name === s.name); if (c) { s.current_hp = Math.max(0, c.current_hp); s.max_hp = c.max_hp; s.is_dead = s.current_hp <= 0; } }
       if (result.playerWon) {
         let jade = 0;
         if (runData.mode === 'infinite' && runData.layer > 20) {
