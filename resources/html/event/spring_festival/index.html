@@ -3,16 +3,16 @@
 
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="content-type" />
-    <link rel="stylesheet" href="file:///{{pluResPath}}/html/event/spring_festival/style.css" />
+    <link rel="stylesheet" href="{{pluResPath}}/html/event/spring_festival/style.css" />
     <style>
         @font-face {
             font-family: "tttgbnumber";
-            src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+            src: url("{{pluResPath}}/font/tttgbnumber.ttf");
         }
 
         @font-face {
             font-family: "NZBZ";
-            src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+            src: url("{{pluResPath}}/font/NZBZ.TTF");
         }
     </style>
 </head>
@@ -86,7 +86,39 @@
         }
 
         updateTimer();
-        // 静态页面其实不需要setInterval，因为是截图，但为了逻辑完整写在这里
+
+        // Ready 信号 - 等待所有图片加载完成后标记页面就绪
+        (function () {
+            const images = document.querySelectorAll('img');
+            let loadedCount = 0;
+            const totalImages = images.length;
+
+            function checkAllLoaded() {
+                loadedCount++;
+                if (loadedCount >= totalImages) {
+                    document.getElementById('capture').classList.add('ready');
+                }
+            }
+
+            if (totalImages === 0) {
+                // 没有img标签，直接标记就绪
+                document.getElementById('capture').classList.add('ready');
+            } else {
+                images.forEach(img => {
+                    if (img.complete) {
+                        checkAllLoaded();
+                    } else {
+                        img.addEventListener('load', checkAllLoaded);
+                        img.addEventListener('error', checkAllLoaded);
+                    }
+                });
+            }
+
+            // 保底：最多等待 3 秒
+            setTimeout(() => {
+                document.getElementById('capture').classList.add('ready');
+            }, 3000);
+        })();
     </script>
 </body>
 
