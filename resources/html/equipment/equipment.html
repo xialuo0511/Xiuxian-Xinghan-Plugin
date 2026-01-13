@@ -15,123 +15,114 @@
 
 <body>
     <div id="capture">
-        <!-- 头部信息区 -->
-        <div class="header-section">
-            <div class="player-info">
-                <div class="player-name">{{nickname}}</div>
-                <div class="player-stats-row">
-                    <div class="stat-item">
-                        <span class="stat-label">攻击</span>
-                        <span class="stat-value">{{player_atk}}</span>
+        <!-- 主布局区：左 - 中 - 右 -->
+        <div class="main-layout">
+            <!-- 左侧装备区 -->
+            <div class="side-panel left">
+                <!-- 武器 -->
+                <div class="equip-card">
+                    <div class="equip-header">
+                        <span class="equip-slot">武器</span>
+                        <span class="equip-name">{{arms.name}}</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">防御</span>
-                        <span class="stat-value">{{player_def}}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">血量</span>
-                        <span class="stat-value">{{player_nowHP}}/{{player_maxHP}}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">暴击</span>
-                        <span class="stat-value">{{player_bao}}%</span>
+                    <div class="equip-body">
+                        <div class="equip-quality" data-quality="{{arms.pinji}}">
+                            {{['劣','普','优','精','极','绝','顶'][arms.pinji] || '?'}}品
+                        </div>
+                        <div class="equip-stats">
+                            <div>攻击 {{arms.atk}}</div>
+                            <div>防御 {{arms.def}}</div>
+                            <div>血量 {{arms.HP}}</div>
+                            <div>暴击 {{(arms.bao * 100).toFixed(0)}}%</div>
+                        </div>
+                        <div class="equip-fumo">附魔: {{arms.fumo || '无'}}</div>
                     </div>
                 </div>
+
+                <!-- 护具 -->
+                <div class="equip-card">
+                    <div class="equip-header">
+                        <span class="equip-slot">护具</span>
+                        <span class="equip-name">{{armor.name}}</span>
+                    </div>
+                    <div class="equip-body">
+                        <div class="equip-quality" data-quality="{{armor.pinji}}">
+                            {{['劣','普','优','精','极','绝','顶'][armor.pinji] || '?'}}品
+                        </div>
+                        <div class="equip-stats">
+                            <div>攻击 {{armor.atk}}</div>
+                            <div>防御 {{armor.def}}</div>
+                            <div>血量 {{armor.HP}}</div>
+                            <div>暴击 {{(armor.bao * 100).toFixed(0)}}%</div>
+                        </div>
+                        <div class="equip-fumo">附魔: {{armor.fumo || '无'}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间展示区：玩家信息 -->
+            <div class="center-panel">
+                <div class="player-title">{{nickname}}</div>
+                <div class="player-stats">
+                    <span>攻{{player_atk}}</span>
+                    <span>防{{player_def}}</span>
+                    <span>血{{player_maxHP}}</span>
+                    <span>暴{{player_bao}}%</span>
+                </div>
+            </div>
+
+            <!-- 右侧装备区 -->
+            <div class="side-panel right">
+                <!-- 法宝 -->
+                <div class="equip-card">
+                    <div class="equip-header">
+                        <span class="equip-slot">法宝</span>
+                        <span class="equip-name">{{treasure.name}}</span>
+                    </div>
+                    <div class="equip-body">
+                        <div class="equip-quality" data-quality="{{treasure.pinji}}">
+                            {{['劣','普','优','精','极','绝','顶'][treasure.pinji] || '?'}}品
+                        </div>
+                        <div class="equip-stats">
+                            <div>攻击 {{treasure.atk}}</div>
+                            <div>防御 {{treasure.def}}</div>
+                            <div>血量 {{treasure.HP}}</div>
+                            <div>暴击 {{(treasure.bao * 100).toFixed(0)}}%</div>
+                        </div>
+                        <div class="equip-fumo">附魔: {{treasure.fumo || '无'}}</div>
+                    </div>
+                </div>
+
+                <!-- 项链 -->
+                <div class="equip-card">
+                    <div class="equip-header">
+                        <span class="equip-slot">项链</span>
+                        {{if necklace && necklace.name}}
+                        <span class="equip-name">{{necklace.name}}</span>
+                    </div>
+                    <div class="equip-body">
+                        <div class="equip-quality" data-quality="{{necklace.pinji}}">
+                            {{['劣','普','优','精','极','绝','顶'][necklace.pinji] || '?'}}品
+                        </div>
+                        <div class="equip-stats">
+                            <div>攻击 {{necklace.atk}}</div>
+                            <div>防御 {{necklace.def}}</div>
+                            <div>血量 {{necklace.HP}}</div>
+                            <div>暴击 {{(necklace.bao * 100).toFixed(0)}}%</div>
+                        </div>
+                        <div class="equip-fumo">附魔: {{necklace.fumo || '无'}}</div>
+                    </div>
+                    {{else}}
+                    <span class="equip-name empty">未装备</span>
+                </div>
+                <div class="equip-body">
+                    <div class="equip-stats" style="color:#aaa;text-align:center;display:block;padding:20px 0;">
+                        暂无项链
+                    </div>
+                </div>
+                {{/if}}
             </div>
         </div>
-
-        <!-- 装备列表区 -->
-        <div class="equipment-grid">
-            <!-- 武器 -->
-            <div class="equip-card">
-                <div class="equip-header">
-                    <span class="equip-slot">武器</span>
-                    <span class="equip-name">{{arms.name}}</span>
-                </div>
-                <div class="equip-body">
-                    <div class="equip-quality" data-quality="{{arms.pinji}}">
-                        {{['劣','普','优','精','极','绝','顶'][arms.pinji] || '?'}}品
-                    </div>
-                    <div class="equip-stats">
-                        <div>攻击 {{arms.atk}}</div>
-                        <div>防御 {{arms.def}}</div>
-                        <div>血量 {{arms.HP}}</div>
-                        <div>暴击 {{(arms.bao * 100).toFixed(0)}}%</div>
-                    </div>
-                    <div class="equip-fumo">附魔: {{arms.fumo || '无'}}</div>
-                </div>
-            </div>
-
-            <!-- 护具 -->
-            <div class="equip-card">
-                <div class="equip-header">
-                    <span class="equip-slot">护具</span>
-                    <span class="equip-name">{{armor.name}}</span>
-                </div>
-                <div class="equip-body">
-                    <div class="equip-quality" data-quality="{{armor.pinji}}">
-                        {{['劣','普','优','精','极','绝','顶'][armor.pinji] || '?'}}品
-                    </div>
-                    <div class="equip-stats">
-                        <div>攻击 {{armor.atk}}</div>
-                        <div>防御 {{armor.def}}</div>
-                        <div>血量 {{armor.HP}}</div>
-                        <div>暴击 {{(armor.bao * 100).toFixed(0)}}%</div>
-                    </div>
-                    <div class="equip-fumo">附魔: {{armor.fumo || '无'}}</div>
-                </div>
-            </div>
-
-            <!-- 法宝 -->
-            <div class="equip-card">
-                <div class="equip-header">
-                    <span class="equip-slot">法宝</span>
-                    <span class="equip-name">{{treasure.name}}</span>
-                </div>
-                <div class="equip-body">
-                    <div class="equip-quality" data-quality="{{treasure.pinji}}">
-                        {{['劣','普','优','精','极','绝','顶'][treasure.pinji] || '?'}}品
-                    </div>
-                    <div class="equip-stats">
-                        <div>攻击 {{treasure.atk}}</div>
-                        <div>防御 {{treasure.def}}</div>
-                        <div>血量 {{treasure.HP}}</div>
-                        <div>暴击 {{(treasure.bao * 100).toFixed(0)}}%</div>
-                    </div>
-                    <div class="equip-fumo">附魔: {{treasure.fumo || '无'}}</div>
-                </div>
-            </div>
-
-            <!-- 项链 -->
-            <div class="equip-card">
-                <div class="equip-header">
-                    <span class="equip-slot">项链</span>
-                    {{if necklace && necklace.name}}
-                    <span class="equip-name">{{necklace.name}}</span>
-                </div>
-                <div class="equip-body">
-                    <div class="equip-quality" data-quality="{{necklace.pinji}}">
-                        {{['劣','普','优','精','极','绝','顶'][necklace.pinji] || '?'}}品
-                    </div>
-                    <div class="equip-stats">
-                        <div>攻击 {{necklace.atk}}</div>
-                        <div>防御 {{necklace.def}}</div>
-                        <div>血量 {{necklace.HP}}</div>
-                        <div>暴击 {{(necklace.bao * 100).toFixed(0)}}%</div>
-                    </div>
-                    <div class="equip-fumo">附魔: {{necklace.fumo || '无'}}</div>
-                </div>
-                {{else}}
-                <span class="equip-name empty">未装备</span>
-            </div>
-            <div class="equip-body">
-                <div class="equip-stats" style="color:#aaa;text-align:center;display:block;padding:20px 0;">
-                    暂无项链
-                </div>
-            </div>
-            {{/if}}
-        </div>
-
         <div class="footer">v{{修仙版本[0].version}}</div>
     </div>
 

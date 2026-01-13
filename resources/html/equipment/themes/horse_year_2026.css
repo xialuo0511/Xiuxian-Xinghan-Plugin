@@ -1,4 +1,5 @@
 /* --- 龙马精神 horse_year_2026.css - 2026春节限定 --- */
+/* --- 左-中-右布局 --- */
 
 /**
  * **设计理念**: 热烈喜庆的新春氛围，融合磨砂玻璃(Glassmorphism)现代设计，
@@ -23,10 +24,8 @@ body {
 }
 
 #capture {
-    width: 800px;
-    /* 提示词要求 800px */
-    min-height: 400px;
-    /* 背景色兜底 */
+    width: 900px;
+    min-height: 450px;
     background-color: #1a0505;
     background-size: cover;
     background-position: top center;
@@ -35,247 +34,219 @@ body {
     color: #F5E6D3;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     position: relative;
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
-/* --- 头部信息区 (Glassmorphism 卡片) --- */
-.header-section {
-    /* 容器: Glassmorphism */
-    background: rgba(40, 5, 5, 0.55);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    /* 边框: 1px 半透明金色 */
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 12px;
-    padding: 20px 30px;
-
-    /* 阴影: 金色辉光 */
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-
-    display: flex;
-    justify-content: center;
-}
-
-.player-info {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.player-name {
-    font-family: "NZBZ", sans-serif;
-    font-size: 36px;
-    color: #FFD700;
-    /* 金色 */
-    margin-bottom: 20px;
-    /* 金色文字发光 */
-    text-shadow: 0 0 10px #ff4500, 0 2px 5px rgba(0, 0, 0, 0.8);
-    letter-spacing: 2px;
-}
-
-.player-stats-row {
+/* --- 主布局：左 - 中 - 右 --- */
+.main-layout {
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    padding: 0 10px;
+    align-items: stretch;
+    min-height: 450px;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.stat-item {
+/* --- 左右装备面板 --- */
+.side-panel {
+    width: 220px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    min-width: 80px;
+    justify-content: flex-start;
+    gap: 15px;
 }
 
-.stat-label {
-    font-size: 12px;
-    color: #ffd700;
-    opacity: 0.8;
-}
-
-.stat-value {
-    font-size: 20px;
-    font-weight: bold;
-    color: #F5E6D3;
-    text-shadow: 0 0 5px rgba(255, 69, 0, 0.6);
-}
-
-/* --- 装备网格区 --- */
-.equipment-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-/* --- 装备卡片 --- */
+/* --- 装备卡片（Glassmorphism 毛玻璃效果） --- */
 .equip-card {
-    /* 半透明深红背景 */
     background: rgba(40, 5, 5, 0.55);
-    /* 毛玻璃效果 */
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-
-    /* 边框 */
     border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 12px;
-
+    padding: 0;
     display: flex;
     flex-direction: column;
-
-    /* 辉光 */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    transition: transform 0.2s;
 }
 
-/* 卡片头部 */
+/* 卡片头部 - Glassmorphism */
 .equip-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* 磨砂玻璃渐变 */
     background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 5, 5, 0.6));
-    padding: 10px 15px;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .equip-slot {
     font-family: "NZBZ", sans-serif;
-    font-size: 14px;
-    color: #1a0505;
-    background: #FFD700;
-    /* 金色背景黑字 */
+    font-size: 13px;
+    color: #FFD700;
+    background: rgba(0, 0, 0, 0.3);
     padding: 2px 8px;
     border-radius: 4px;
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-    font-weight: bold;
+    flex-shrink: 0;
+    /* 移除阴影 */
 }
 
 .equip-name {
     font-family: "NZBZ", sans-serif;
-    font-size: 18px;
+    font-size: 15px;
     color: #FFD700;
-    text-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
-    /* 橙红文字阴影 */
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
     flex-grow: 1;
     text-align: right;
+    word-break: break-all;
 }
 
 .equip-name.empty {
-    color: rgba(255, 255, 255, 0.3);
+    color: #999;
     font-style: italic;
-    text-shadow: none;
 }
 
-/* 卡片内容 */
+/* 卡片内容区 */
 .equip-body {
-    padding: 15px;
-    flex-grow: 1;
+    padding: 12px;
     display: flex;
     flex-direction: column;
 }
 
-/* 品级标签 */
+/* 品级徽章 - 半透明磨砂背景 + 对应色系边框 */
 .equip-quality {
     font-size: 12px;
+    font-weight: bold;
     padding: 4px 12px;
     border-radius: 6px;
-    margin: 0 auto 12px;
+    margin: 0 auto 10px;
     text-align: center;
-    /* 半透明磨砂背景 + 边框 */
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* 颜色适配深色背景 */
+/* 劣 - 暗灰 */
 .equip-quality[data-quality="0"] {
-    background: rgba(120, 120, 120, 0.2);
-    border-color: #777;
-    color: #ccc;
+    background: rgba(120, 120, 120, 0.3);
+    border-color: rgba(150, 150, 150, 0.4);
+    color: #b0b0b0;
 }
 
+/* 普 - 淡绿 */
 .equip-quality[data-quality="1"] {
-    background: rgba(76, 175, 80, 0.2);
-    border-color: #4caf50;
-    color: #81c784;
+    background: rgba(76, 175, 80, 0.25);
+    border-color: rgba(129, 199, 132, 0.4);
+    color: #a5d6a7;
 }
 
+/* 优 - 淡蓝 */
 .equip-quality[data-quality="2"] {
-    background: rgba(33, 150, 243, 0.2);
-    border-color: #2196f3;
-    color: #64b5f6;
+    background: rgba(33, 150, 243, 0.25);
+    border-color: rgba(100, 181, 246, 0.4);
+    color: #90caf9;
 }
 
+/* 精 - 淡紫 */
 .equip-quality[data-quality="3"] {
-    background: rgba(156, 39, 176, 0.2);
-    border-color: #9c27b0;
-    color: #ba68c8;
+    background: rgba(156, 39, 176, 0.3);
+    border-color: rgba(186, 104, 200, 0.4);
+    color: #ce93d8;
 }
 
+/* 极 - 橙色 */
 .equip-quality[data-quality="4"] {
-    background: rgba(255, 152, 0, 0.2);
-    border-color: #ff9800;
+    background: rgba(255, 152, 0, 0.3);
+    border-color: rgba(255, 183, 77, 0.5);
     color: #ffb74d;
 }
 
+/* 绝 - 红色 */
 .equip-quality[data-quality="5"] {
-    background: rgba(244, 67, 54, 0.2);
-    border-color: #f44336;
-    color: #e57373;
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(239, 83, 80, 0.5);
+    color: #ef9a9a;
 }
 
+/* 顶 - 金色发光 */
 .equip-quality[data-quality="6"] {
-    background: rgba(255, 215, 0, 0.15);
-    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.25);
+    border-color: rgba(255, 215, 0, 0.6);
     color: #FFD700;
     box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
 }
 
-/* 属性 */
+/* 属性列表 */
 .equip-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    font-size: 14px;
-    color: #F5E6D3;
-    margin-bottom: 15px;
+    gap: 6px;
+    font-size: 13px;
+    color: #eee;
 }
 
 .equip-stats div {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px 8px;
     border-radius: 4px;
-    border-left: 2px solid rgba(255, 215, 0, 0.5);
-    /* 金色高光 */
+    border-left: 2px solid rgba(255, 215, 0, 0.4);
 }
 
-/* 附魔 */
+/* 附魔区 */
 .equip-fumo {
-    margin-top: auto;
-    font-size: 13px;
-    color: #ffb74d;
-    /* 橙色文字 */
+    font-size: 12px;
+    color: #ce93d8;
     text-align: center;
-    padding: 8px;
-    background: rgba(255, 152, 0, 0.1);
-    border: 1px dashed rgba(255, 152, 0, 0.4);
+    margin-top: 10px;
+    padding: 6px 10px;
+    background: rgba(156, 39, 176, 0.15);
+    border: 1px dashed rgba(186, 104, 200, 0.4);
     border-radius: 6px;
-    text-shadow: 0 0 5px rgba(255, 152, 0, 0.2);
 }
 
-/* 页脚 */
+/* --- 中间展示区 --- */
+.center-panel {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px;
+    min-width: 200px;
+}
+
+.player-title {
+    font-family: "NZBZ", sans-serif;
+    font-size: 28px;
+    color: #FFD700;
+    text-shadow: 0 0 10px #ff4500, 0 2px 8px rgba(0, 0, 0, 0.8);
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+}
+
+.player-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: #F5E6D3;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 5, 5, 0.6));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 8px 20px;
+    border-radius: 20px;
+}
+
+/* --- 页脚 --- */
 .footer {
-    text-align: right;
-    font-size: 12px;
-    color: rgba(255, 215, 0, 0.4);
-    margin-right: 10px;
+    position: absolute;
+    bottom: 8px;
+    right: 15px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
