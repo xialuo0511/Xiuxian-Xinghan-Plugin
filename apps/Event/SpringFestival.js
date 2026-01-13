@@ -1,6 +1,6 @@
 
 import plugin from '../../../../lib/plugins/plugin.js';
-import { puppeteer } from '../../api/puppeteer-wrapper.js'; // 使用自定义的wrappper
+import puppeteer from '../../api/puppeteer-wrapper.js'; // 使用自定义截图模块
 import path from 'path';
 
 // 春节活动配置
