@@ -220,6 +220,7 @@ function renderTemplate(tplFile, data) {
  */
 export async function screenshot(name, options = {}) {
     const config = { ...defaultConfig, ...options };
+    console.log(`[Screenshot] ${name} Config: scale=${config.scale}, imgType=${config.imgType}, quality=${config.quality}, width=${config.width || 'auto'}`);
     const startTime = Date.now();
     let page = null;
 

@@ -138,7 +138,7 @@ export class WanxiangActivity extends plugin {
     };
     try {
       const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_oaths', 'wanxiang_oaths.html');
-      const img = await puppeteer.screenshot('wanxiang_oaths', { tplFile: htmlPath, ...renderData, imgType: 'png' });
+      const img = await puppeteer.screenshot('wanxiang_oaths', { tplFile: htmlPath, ...renderData, imgType: 'png', scale: 2 });
       await e.reply(img);
     } catch (err) {
       e.reply('查询失败：' + err.message);
@@ -208,7 +208,8 @@ export class WanxiangActivity extends plugin {
         list,
         remainingTime,
         pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`,
-        imgType: 'png'
+        imgType: 'png',
+        scale: 2
       });
       await e.reply(img);
       await tempClient.disconnect();
@@ -255,7 +256,7 @@ export class WanxiangActivity extends plugin {
         pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
       };
       const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_shop', 'wanxiang_shop.html');
-      const img = await puppeteer.screenshot('wanxiang_shop', { tplFile: htmlPath, ...renderData, imgType: 'png' });
+      const img = await puppeteer.screenshot('wanxiang_shop', { tplFile: htmlPath, ...renderData, imgType: 'png', scale: 2 });
       await e.reply(img);
       await tempClient.disconnect();
     } catch (err) {
@@ -386,7 +387,7 @@ export class WanxiangActivity extends plugin {
         pluResPath: `file://${process.cwd().replace(/\\/g, '/')}/plugins/xiuxian-emulator-plugin/resources/`
       };
       const htmlPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'resources', 'html', 'wanxiang_secrets.html');
-      const img = await puppeteer.screenshot('wanxiang_secrets', { tplFile: htmlPath, ...renderData, imgType: 'png' });
+      const img = await puppeteer.screenshot('wanxiang_secrets', { tplFile: htmlPath, ...renderData, imgType: 'png', scale: 2 });
       await e.reply(img);
     } catch (err) { if (tempClient) await tempClient.disconnect(); e.reply('查询失败：' + err.message); }
   }
@@ -1161,7 +1162,7 @@ export class WanxiangActivity extends plugin {
         pluResPath: `file://${process.cwd()}/plugins/xiuxian-emulator-plugin/resources/`
       };
       const dFP = await new Show(e).get_imgData('wanxiang_status', renderData);
-      const img = await puppeteer.screenshot('wanxiang_status', { ...dFP, imgType: 'png' }); await e.reply(img);
+      const img = await puppeteer.screenshot('wanxiang_status', { ...dFP, imgType: 'png', scale: 2 }); await e.reply(img);
     } catch (err) { if (tempClient) await tempClient.disconnect(); }
   }
 
