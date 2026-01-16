@@ -1,3 +1,6 @@
+# ==========================================
+# Java 相关
+# ==========================================
 # Compiled class file
 *.class
 
@@ -10,7 +13,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -19,13 +22,24 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 
+# ==========================================
+# IDE 和依赖
+# ==========================================
 /.idea
 /node_modules
 
-/GEMINI.md
+# ==========================================
+# 项目特定文件（根目录）
+# ==========================================
+# AI 助手工作区
 /.agent
+/.shared
 
-GEMINI.md
+# AI 笔记文件
+/GEMINI.md
+
+# 临时文件夹
+/临时文件夹
