@@ -8,7 +8,7 @@ import {
   handleGive,
   handleOpenWallet
 } from '../../logic/money_logic.js';
-import { foundthing, convert2integer, Check_thing } from '../Xiuxian/xiuxian.js';
+import { foundthing, convert2integer } from '../Xiuxian/xiuxian.js';
 import { Go } from './UserHome.js';
 
 export class MoneyOperation extends plugin {
@@ -94,8 +94,8 @@ export class MoneyOperation extends plugin {
       const result = await handleGive(A_qq, B_qq, '灵石', { amount: lingshi, totalCost });
       if (result.success) {
         e.reply([segment.at(A_qq),
-          segment.at(B_qq),
-          `${B_player.名号} 获得了由 ${A_player.名号} ${result.message}`]);
+        segment.at(B_qq),
+        `${B_player.名号} 获得了由 ${A_player.名号} ${result.message}`]);
       } else {
         e.reply(result.message);
       }
@@ -112,21 +112,67 @@ export class MoneyOperation extends plugin {
         amount = await convert2integer(pinji_str);
       }
 
-      const thing_exist = await foundthing(thing_name);
-      if (!thing_exist) return e.reply(`这方世界没有[${thing_name}]`);
-      if (await Check_thing(thing_exist) === 1) return e.reply(`${thing_exist.name}为特殊物品，不可赠送！`);
+      // 使用 DAL 获取发送者纳戒数据进行检查
+      const senderData = await DAL.getAllPlayerData(A_qq);
+      if (!senderData || !senderData.najie) {
+        return e.reply('未找到你的纳戒数据');
+      }
+      const najie = senderData.najie;
+
+      // 查找物品及其类别
+      let foundItem = null;
+      let foundCategory = null;
+      const categories = ['装备', '丹药', '道具', '功法', '草药', '材料', '食材', '盒子', '仙宠', '仙宠口粮'];
+
+      for (const category of categories) {
+        if (najie[category]) {
+          const item = najie[category].find(i => i.name === thing_name);
+          if (item) {
+            foundItem = item;
+            foundCategory = category;
+            break;
+          }
+        }
+      }
+
+      if (!foundItem) {
+        return e.reply(`你的纳戒中没有[${thing_name}]`);
+      }
+
+      // 检查物品数量
+      if (foundItem.数量 < amount) {
+        return e.reply(`你的[${thing_name}]数量不足，当前拥有 ${foundItem.数量} 个`);
+      }
+
+      // 检查是否锁定
+      if (foundItem.islockd === 1) {
+        return e.reply(`[${thing_name}]已被锁定，无法赠送！请先解锁后再操作。`);
+      }
+
+      // 检查是否为活动类物品
+      if (foundItem.class === '活动') {
+        return e.reply(`[${thing_name}]为活动物品，不可赠送！`);
+      }
+
+      // 检查特殊物品ID范围 (与原 Check_thing 逻辑一致)
+      if (foundItem.id >= 5005000 && foundItem.id <= 5005009) {
+        return e.reply(`[${thing_name}]为特殊物品，不可赠送！`);
+      }
+      if (foundItem.id >= 400991 && foundItem.id <= 400999) {
+        return e.reply(`[${thing_name}]为特殊物品，不可赠送！`);
+      }
 
       const result = await handleGive(A_qq, B_qq, '物品', {
         thingName: thing_name,
-        thingClass: thing_exist.class,
+        thingClass: foundCategory,
         amount: amount,
         pinji: pinji
       });
 
       if (result.success) {
         e.reply([segment.at(A_qq),
-          segment.at(B_qq),
-          `${B_player.名号} 获得了由 ${A_player.名号} ${result.message}`]);
+        segment.at(B_qq),
+        `${B_player.名号} 获得了由 ${A_player.名号} ${result.message}`]);
       } else {
         e.reply(result.message);
       }
@@ -162,7 +208,7 @@ export class MoneyOperation extends plugin {
   }
 
 
-// 优化后的 wup 函数
+  // 优化后的 wup 函数
   async wup(e) {
     if (!e.isMaster) return;
 
