@@ -73,7 +73,7 @@ node ./plugins/xiuxian-emulator-plugin/migrate-to-redis.js
 ### 验证迁移
 
 1. 启动机器人
-2. 在群聊中发送 `#个人信息`
+2. 在群聊中发送 `#我的练气`
 3. 检查玩家数据是否正确显示
 
 ## 配置说明
