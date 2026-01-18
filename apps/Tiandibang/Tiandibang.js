@@ -495,7 +495,7 @@ export class Tiandibang extends plugin {
             return e.reply(`积分不足，还需${item.积分 - (tiandibang?.jifen || 0)}积分`, true);
         }
 
-        // 扣除积分 (复用已获取的playerData)
+        // 扣除积分 - 通过 player.tiandibang 更新
         playerData.player.tiandibang.jifen -= item.积分;
 
         // 特殊处理：如果是称号，直接添加到玩家称号列表
@@ -510,8 +510,10 @@ export class Tiandibang extends plugin {
 
         await DAL.savePlayer(userId, playerData.player);
 
-        // 添加物品
-        await DAL.updateNajieItem(userId, item.name, item.class, 1);
+        // 添加物品到纳戒（称号除外，已添加到称号列表）
+        if (item.class !== '称号') {
+            await DAL.updateNajieItem(userId, item.name, item.class, 1);
+        }
 
         // 更新排行榜
         await redis.zAdd('xiuxian:tiandibang:leaderboard', {
@@ -519,7 +521,7 @@ export class Tiandibang extends plugin {
             value: String(userId)
         });
 
-        e.reply(`兑换成功！获得【${item.name}】，剩余${playerData.tiandibang.jifen}积分`);
+        e.reply(`兑换成功！获得【${item.name}】，剩余${playerData.player.tiandibang.jifen}积分`);
     }
 
     /**
