@@ -10,13 +10,13 @@ const execAsync = promisify(exec);
 const pluginPath = `${process.cwd()}/plugins/xiuxian-emulator-plugin/`;
 let updating = false;
 
-// 尝试导入官方 Restart 模块
+// 尝试导入重启模块
 let Restart = null;
 try {
-  const restartModule = await import('../../../../lib/plugins/restart.js');
-  Restart = restartModule.default || restartModule.Restart;
-} catch (e) {
-  // Restart 模块不可用，将使用传统方式
+  Restart = (await import('../../other/restart.js').catch(() => null))?.Restart;
+  Restart ||= (await import('../../system/apps/restart.ts').catch(() => null))?.Restart;
+} catch {
+  logger.warn('[修仙插件] 未获取到重启模块，更新后需手动重启');
 }
 
 export class admin extends plugin {
