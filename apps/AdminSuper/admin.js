@@ -13,8 +13,8 @@ let updating = false;
 // 尝试导入重启模块
 let Restart = null;
 try {
-  Restart = (await import('../../other/restart.js').catch(() => null))?.Restart;
-  Restart ||= (await import('../../system/apps/restart.ts').catch(() => null))?.Restart;
+  Restart = (await import('../../../other/restart.js').catch(() => null))?.Restart;
+  Restart ||= (await import('../../../system/apps/restart.ts').catch(() => null))?.Restart;
 } catch {
   logger.warn('[修仙插件] 未获取到重启模块，更新后需手动重启');
 }
