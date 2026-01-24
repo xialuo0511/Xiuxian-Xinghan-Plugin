@@ -557,4 +557,18 @@ export async function getNajieItemAmount(userId, itemName, itemClass) {
   }
 }
 
-export { redisClient };
+// 为向后兼容性创建一个 Proxy，自动调用 getRedisClient()
+// 使用方式: await redisClient.get(...) 会自动等待连接
+const redisClientProxy = new Proxy({}, {
+  get(target, prop) {
+    return async (...args) => {
+      const client = await getRedisClient();
+      if (typeof client[prop] === 'function') {
+        return client[prop](...args);
+      }
+      return client[prop];
+    };
+  }
+});
+
+export { redisClientProxy as redisClient };
