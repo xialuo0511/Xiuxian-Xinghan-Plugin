@@ -15,7 +15,7 @@ let connectionPromise = null;
  * 获取 Redis 客户端（延迟初始化）
  * 第一次调用时才创建连接，避免启动时竞争
  */
-async function getRedisClient() {
+export async function getRedisClient() {
   // 如果已经有连接，直接返回
   if (redisClient && redisClient.isOpen) {
     return redisClient;

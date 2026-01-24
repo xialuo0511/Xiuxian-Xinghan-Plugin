@@ -1,4 +1,4 @@
-import { redisClient } from './data-access.js'; // 导入DAL中已有的redis客户端
+import { getRedisClient } from './data-access.js';
 
 /**
  * 调度一个新任务
@@ -6,7 +6,8 @@ import { redisClient } from './data-access.js'; // 导入DAL中已有的redis客
  * @param {number} endTime 任务结束的Unix时间戳 (毫秒)
  */
 export async function scheduleTask(payload, endTime) {
-  await redisClient.zAdd('tasks:scheduled', {
+  const client = await getRedisClient();
+  await client.zAdd('tasks:scheduled', {
     score: endTime,
     value: JSON.stringify(payload)
   });
