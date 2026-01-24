@@ -7,14 +7,57 @@ import path from 'path';
 import data from '../model/XiuxianData.js';
 import XiuxianData from '../model/XiuxianData.js';
 
-
 // --- 创建独立的 Redis 客户端 ---
 const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
-const redisConfig = YAML.parse(fs.readFileSync(redisConfigPath, 'utf8'));
-const redisClient = createClient({
-  url: `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`
-});
-redisClient.connect().catch(err => console.error('[DAL] 独立Redis客户端连接失败:', err));
+
+// 排查日志：检查配置文件
+console.log('[DAL] Redis 配置文件路径:', redisConfigPath);
+console.log('[DAL] 配置文件是否存在:', fs.existsSync(redisConfigPath));
+
+let redisClient = null;
+
+try {
+  if (!fs.existsSync(redisConfigPath)) {
+    console.error('[DAL] ❌ Redis 配置文件不存在！请检查路径:', redisConfigPath);
+    console.error('[DAL] 当前工作目录 (cwd):', process.cwd());
+    throw new Error('Redis 配置文件不存在');
+  }
+
+  const redisConfigRaw = fs.readFileSync(redisConfigPath, 'utf8');
+  console.log('[DAL] 配置文件内容预览:', redisConfigRaw.substring(0, 200));
+
+  const redisConfig = YAML.parse(redisConfigRaw);
+  console.log('[DAL] 解析后的配置:', JSON.stringify({
+    host: redisConfig.host,
+    port: redisConfig.port,
+    db: redisConfig.db,
+    hasPassword: !!redisConfig.password
+  }));
+
+  const redisUrl = `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`;
+  console.log('[DAL] 尝试连接 Redis URL:', redisUrl.replace(/:([^:@]+)@/, ':****@')); // 隐藏密码
+
+  redisClient = createClient({ url: redisUrl });
+
+  redisClient.on('error', (err) => {
+    console.error('[DAL] Redis 客户端错误:', err.message);
+  });
+
+  redisClient.on('connect', () => {
+    console.log('[DAL] ✅ Redis 客户端连接成功');
+  });
+
+  redisClient.connect().catch(err => {
+    console.error('[DAL] ❌ Redis 客户端连接失败:', err.message);
+    console.error('[DAL] 错误类型:', err.constructor.name);
+    console.error('[DAL] 完整错误:', err);
+  });
+
+} catch (err) {
+  console.error('[DAL] ❌ Redis 初始化过程出错:', err.message);
+  console.error('[DAL] 错误堆栈:', err.stack);
+}
+
 
 const ASSOCIATION_KEY_PREFIX = 'XinghanXiuxian:Data:Association:';
 
@@ -223,7 +266,7 @@ export async function transaction_update(userId, updateFunction) {
       console.info(`[TX] 用户 ${userId} 数据发生写入冲突 (CAS失败)，正在重试...`);
       // 释放当前资源的锁，然后重试
       await releaseLock(userId, lockToken);
-      return await transaction_update(userId, updateFunction); 
+      return await transaction_update(userId, updateFunction);
     }
     return true;
 
