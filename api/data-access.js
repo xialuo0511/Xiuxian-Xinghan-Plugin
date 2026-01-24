@@ -1,4 +1,4 @@
-// /api/data-access.js (最终独立版)
+// /api/data-access.js (延迟初始化版)
 
 import { createClient } from 'redis';
 import fs from 'fs';
@@ -7,78 +7,82 @@ import path from 'path';
 import data from '../model/XiuxianData.js';
 import XiuxianData from '../model/XiuxianData.js';
 
-// --- 创建独立的 Redis 客户端 ---
-const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
-
-// 排查日志：检查配置文件
-console.log('[DAL] Redis 配置文件路径:', redisConfigPath);
-console.log('[DAL] 配置文件是否存在:', fs.existsSync(redisConfigPath));
-
+// --- 延迟初始化的 Redis 客户端 ---
 let redisClient = null;
+let connectionPromise = null;
 
-try {
-  if (!fs.existsSync(redisConfigPath)) {
-    console.error('[DAL] ❌ Redis 配置文件不存在！请检查路径:', redisConfigPath);
-    console.error('[DAL] 当前工作目录 (cwd):', process.cwd());
-    throw new Error('Redis 配置文件不存在');
+/**
+ * 获取 Redis 客户端（延迟初始化）
+ * 第一次调用时才创建连接，避免启动时竞争
+ */
+async function getRedisClient() {
+  // 如果已经有连接，直接返回
+  if (redisClient && redisClient.isOpen) {
+    return redisClient;
   }
 
-  const redisConfigRaw = fs.readFileSync(redisConfigPath, 'utf8');
-  console.log('[DAL] 配置文件内容预览:', redisConfigRaw.substring(0, 200));
+  // 如果正在连接中，等待连接完成
+  if (connectionPromise) {
+    return connectionPromise;
+  }
 
-  const redisConfig = YAML.parse(redisConfigRaw);
-  console.log('[DAL] 解析后的配置:', JSON.stringify({
-    host: redisConfig.host,
-    port: redisConfig.port,
-    db: redisConfig.db,
-    hasPassword: !!redisConfig.password
-  }));
+  // 开始建立连接
+  connectionPromise = (async () => {
+    try {
+      const redisConfigPath = path.join(process.cwd(), 'config', 'config', 'redis.yaml');
 
-  const redisUrl = `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`;
-  console.log('[DAL] 尝试连接 Redis URL:', redisUrl.replace(/:([^:@]+)@/, ':****@')); // 隐藏密码
-
-  redisClient = createClient({
-    url: redisUrl,
-    socket: {
-      connectTimeout: 10000,  // 连接超时 10 秒
-      reconnectStrategy: (retries) => {
-        if (retries > 5) {
-          console.error('[DAL] ❌ Redis 重连次数超过 5 次，停止重试');
-          return false;
-        }
-        const delay = Math.min(retries * 500, 3000);
-        console.log(`[DAL] Redis 连接失败，${delay}ms 后第 ${retries} 次重试...`);
-        return delay;
+      if (!fs.existsSync(redisConfigPath)) {
+        console.error('[DAL] ❌ Redis 配置文件不存在:', redisConfigPath);
+        throw new Error('Redis 配置文件不存在');
       }
+
+      const redisConfigRaw = fs.readFileSync(redisConfigPath, 'utf8');
+      const redisConfig = YAML.parse(redisConfigRaw);
+
+      const redisUrl = `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`;
+      console.log('[DAL] 延迟初始化 Redis 连接:', redisUrl.replace(/:([^:@]+)@/, ':****@'));
+
+      redisClient = createClient({
+        url: redisUrl,
+        socket: {
+          connectTimeout: 10000,
+          reconnectStrategy: (retries) => {
+            if (retries > 5) {
+              console.error('[DAL] ❌ Redis 重连超过 5 次，停止重试');
+              return false;
+            }
+            const delay = Math.min(retries * 1000, 5000);
+            console.log(`[DAL] Redis 连接失败，${delay}ms 后第 ${retries} 次重试...`);
+            return delay;
+          }
+        }
+      });
+
+      redisClient.on('error', (err) => {
+        console.error('[DAL] Redis 错误:', err.message);
+      });
+
+      await redisClient.connect();
+      console.log('[DAL] ✅ Redis 客户端连接成功');
+
+      return redisClient;
+    } catch (err) {
+      console.error('[DAL] ❌ Redis 连接失败:', err.message);
+      connectionPromise = null; // 允许重试
+      throw err;
     }
-  });
+  })();
 
-  redisClient.on('error', (err) => {
-    console.error('[DAL] Redis 客户端错误:', err.message);
-  });
-
-  redisClient.on('connect', () => {
-    console.log('[DAL] ✅ Redis 客户端连接成功');
-  });
-
-  redisClient.connect().catch(err => {
-    console.error('[DAL] ❌ Redis 客户端连接失败:', err.message);
-    console.error('[DAL] 错误类型:', err.constructor.name);
-    console.error('[DAL] 完整错误:', err);
-  });
-
-} catch (err) {
-  console.error('[DAL] ❌ Redis 初始化过程出错:', err.message);
-  console.error('[DAL] 错误堆栈:', err.stack);
+  return connectionPromise;
 }
-
 
 const ASSOCIATION_KEY_PREFIX = 'XinghanXiuxian:Data:Association:';
 
 // --- 存在性检查 ---
 export async function existPlayer(userId) {
+  const client = await getRedisClient();
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-  const result = await redisClient.exists(mainKey);
+  const result = await client.exists(mainKey);
   return result === 1;
 }
 
@@ -110,8 +114,9 @@ async function executeWithLock(key, task) {
 // --- 数据读写 ---
 export async function getAllPlayerData(userId) {
   try {
+    const client = await getRedisClient();
     const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-    const data = await redisClient.hGetAll(mainKey);
+    const data = await client.hGetAll(mainKey);
     if (!data || Object.keys(data).length === 0) return null;
     return {
       player: JSON.parse(data.player || '{}'),
@@ -126,8 +131,9 @@ export async function getAllPlayerData(userId) {
 
 export async function savePlayer(userId, playerData) {
   await executeWithLock(userId, async () => {
+    const client = await getRedisClient();
     const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-    await redisClient.hSet(mainKey, 'player', JSON.stringify(playerData));
+    await client.hSet(mainKey, 'player', JSON.stringify(playerData));
   });
 }
 
@@ -138,8 +144,9 @@ export async function savePlayer(userId, playerData) {
  */
 export async function saveNajie(userId, najieData) {
   await executeWithLock(userId, async () => {
+    const client = await getRedisClient();
     const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-    await redisClient.hSet(mainKey, 'najie', JSON.stringify(najieData));
+    await client.hSet(mainKey, 'najie', JSON.stringify(najieData));
   });
 }
 
@@ -150,8 +157,9 @@ export async function saveNajie(userId, najieData) {
  */
 export async function saveEquipment(userId, equipmentData) {
   await executeWithLock(userId, async () => {
+    const client = await getRedisClient();
     const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
-    await redisClient.hSet(mainKey, 'equipment', JSON.stringify(equipmentData));
+    await client.hSet(mainKey, 'equipment', JSON.stringify(equipmentData));
   });
 }
 
@@ -165,10 +173,11 @@ export async function saveEquipment(userId, equipmentData) {
  * @returns {Promise<string|null>} 成功返回锁的token，失败返回null
  */
 async function acquireLock(key, ttl = 5000) {
+  const client = await getRedisClient();
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
   const lockKey = `XinghanXiuxian:Lock:${key}`;
   try {
-    const result = await redisClient.set(lockKey, token, {
+    const result = await client.set(lockKey, token, {
       NX: true,
       PX: ttl
     });
@@ -185,6 +194,7 @@ async function acquireLock(key, ttl = 5000) {
  * @param {string} token 获取锁时得到的token
  */
 async function releaseLock(key, token) {
+  const client = await getRedisClient();
   const lockKey = `XinghanXiuxian:Lock:${key}`;
   const script = `
     if redis.call("get", KEYS[1]) == ARGV[1] then
@@ -194,7 +204,7 @@ async function releaseLock(key, token) {
     end
   `;
   try {
-    await redisClient.eval(script, {
+    await client.eval(script, {
       keys: [lockKey],
       arguments: [token]
     });
@@ -220,7 +230,8 @@ export async function transaction_update(userId, updateFunction) {
   }
 
   // 事务需要一个独立的连接来执行 WATCH
-  const transactionClient = redisClient.duplicate();
+  const mainClient = await getRedisClient();
+  const transactionClient = mainClient.duplicate();
   await transactionClient.connect();
   const mainKey = `XinghanXiuxian:Data:Player:${userId}`;
 
@@ -300,23 +311,23 @@ export async function transaction_update(userId, updateFunction) {
  * @returns {Promise<object|null>}
  */
 export async function getPlayerAction(userId) {
+  const client = await getRedisClient();
   const actionKey = `XinghanXiuxian:Player:${userId}:action`;
-  const actionJson = await redisClient.get(actionKey);
+  const actionJson = await client.get(actionKey);
 
   if (!actionJson) return null;
 
   try {
     const actionDetails = JSON.parse(actionJson);
-    // 兼容 endTime 和 end_time 两种格式
     const endTime = actionDetails.endTime || actionDetails.end_time;
     if (Date.now() > endTime) {
-      await redisClient.del(actionKey);
+      await client.del(actionKey);
       return null;
     }
     return actionDetails;
   } catch (e) {
     console.error(`[DAL] 解析玩家 ${userId} 的 action 数据失败:`, actionJson, e);
-    await redisClient.del(actionKey);
+    await client.del(actionKey);
     return null;
   }
 }
@@ -328,8 +339,9 @@ export async function getPlayerAction(userId) {
  * @returns {Promise<void>}
  */
 export async function setPlayerAction(userId, actionDetails) {
+  const client = await getRedisClient();
   const actionKey = `XinghanXiuxian:Player:${userId}:action`;
-  await redisClient.set(actionKey, JSON.stringify(actionDetails));
+  await client.set(actionKey, JSON.stringify(actionDetails));
 }
 
 /**
@@ -338,8 +350,9 @@ export async function setPlayerAction(userId, actionDetails) {
  * @returns {Promise<void>}
  */
 export async function deletePlayerAction(userId) {
+  const client = await getRedisClient();
   const actionKey = `XinghanXiuxian:Player:${userId}:action`;
-  await redisClient.del(actionKey);
+  await client.del(actionKey);
 }
 
 /**
@@ -348,8 +361,9 @@ export async function deletePlayerAction(userId) {
  * @returns {Promise<object|null>}
  */
 export async function getAssociation(sectName) {
+  const client = await getRedisClient();
   const key = `${ASSOCIATION_KEY_PREFIX}${sectName}`;
-  const data = await redisClient.get(key);
+  const data = await client.get(key);
   if (!data) {
     return null;
   }
@@ -370,8 +384,9 @@ export async function getAssociation(sectName) {
 export async function saveAssociation(sectName, sectData) {
   const lockKey = `Association:${sectName}`;
   await executeWithLock(lockKey, async () => {
+    const client = await getRedisClient();
     const key = `${ASSOCIATION_KEY_PREFIX}${sectName}`;
-    await redisClient.set(key, JSON.stringify(sectData));
+    await client.set(key, JSON.stringify(sectData));
   });
 }
 
