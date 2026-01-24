@@ -37,7 +37,21 @@ try {
   const redisUrl = `redis://${redisConfig.password ? ':' + redisConfig.password + '@' : ''}${redisConfig.host}:${redisConfig.port}/${redisConfig.db}`;
   console.log('[DAL] 尝试连接 Redis URL:', redisUrl.replace(/:([^:@]+)@/, ':****@')); // 隐藏密码
 
-  redisClient = createClient({ url: redisUrl });
+  redisClient = createClient({
+    url: redisUrl,
+    socket: {
+      connectTimeout: 10000,  // 连接超时 10 秒
+      reconnectStrategy: (retries) => {
+        if (retries > 5) {
+          console.error('[DAL] ❌ Redis 重连次数超过 5 次，停止重试');
+          return false;
+        }
+        const delay = Math.min(retries * 500, 3000);
+        console.log(`[DAL] Redis 连接失败，${delay}ms 后第 ${retries} 次重试...`);
+        return delay;
+      }
+    }
+  });
 
   redisClient.on('error', (err) => {
     console.error('[DAL] Redis 客户端错误:', err.message);
