@@ -84,6 +84,12 @@
     - icon: help-icon_38
       title: '#沉迷秘境xxx'
       desc: '沉迷秘境挂机'
+    - icon: help-icon_70
+      title: '#沉迷收获'
+      desc: '查看沉迷探索收益详情'
+    - icon: help-icon_48
+      title: '#清除沉迷记录'
+      desc: '清除已完成的沉迷记录'
 
 - group: 管理指令
   list:

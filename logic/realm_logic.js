@@ -5,6 +5,7 @@ import data from '../model/XiuxianData.js';
 import config from '../model/Config.js';
 import { battleEngine } from './battle_logic.js';
 import { checkSecretPlaceBaitDrops } from '../logic/fishing_logic.js';
+import { createAddictionHistory, updateAddictionHistory, completeAddictionHistory } from '../api/data-access.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
@@ -19,92 +20,98 @@ const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function enterRealm(userId, realmName, realmType, e, runCount = 1, isAddiction = false) {
-    if (runCount <= 0 || runCount > 10) {
-        return { success: false, message: '轮数必须在1到10之间。' };
+  if (runCount <= 0 || runCount > 10) {
+    return { success: false, message: '轮数必须在1到10之间。' };
+  }
+
+  const realmDataList = {
+    '秘境': data.didian_list,
+    '禁地': data.forbiddenarea_list,
+    '仙境': data.Fairyrealm_list,
+  };
+
+  const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
+  if (!realmInfo) {
+    return { success: false, message: `未知的${realmType}：${realmName}` };
+  }
+
+  const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
+  const totalRuns = isAddiction ? 10 * runCount : 1;
+  const totalDuration = singleDuration * totalRuns;
+
+  let checkResult = { success: true, message: '' };
+  const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
+    const costMultiplier = totalRuns; // 沉迷模式按总次数算，单次就是1
+    const totalCost = realmInfo.Price * costMultiplier;
+
+    if (player.灵石 < totalCost) {
+      checkResult = { success: false, message: `灵石不足, 需要${totalCost}灵石。` };
+      return false;
     }
 
-    const realmDataList = {
-        '秘境': data.didian_list,
-        '禁地': data.forbiddenarea_list,
-        '仙境': data.Fairyrealm_list,
-    };
-
-    const realmInfo = realmDataList[realmType]?.find(item => item.name === realmName);
-    if (!realmInfo) {
-        return { success: false, message: `未知的${realmType}：${realmName}` };
-    }
-
-    const singleDuration = xiuxianConfigData.CD.secretplace * 60 * 1000;
-    const totalRuns = isAddiction ? 10 * runCount : 1;
-    const totalDuration = singleDuration * totalRuns;
-
-    let checkResult = { success: true, message: '' };
-    const transactionSuccess = await DAL.transaction_update(userId, (player, equipment, najie) => {
-        const costMultiplier = totalRuns; // 沉迷模式按总次数算，单次就是1
-        const totalCost = realmInfo.Price * costMultiplier;
-
-        if (player.灵石 < totalCost) {
-            checkResult = { success: false, message: `灵石不足, 需要${totalCost}灵石。` };
-            return false;
-        }
-
-        if (isAddiction) {
-            const keyName = '秘境之匙';
-            const keyCategory = '道具';
-            const keyItem = najie[keyCategory]?.find(item => item.name === keyName);
-            if (!keyItem || keyItem.数量 < runCount) {
-                checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。'};
-                return false;
-            }
-            keyItem.数量 -= runCount;
-        }
-        
-        player.灵石 -= totalCost;
-        if (realmInfo.experience) {
-            // 确保修为也乘以正确的倍数
-            player.修为 -= (realmInfo.experience * costMultiplier);
-        }
-        return true;
-    });
-
-    if (!transactionSuccess) {
-        return checkResult;
-    }
-
-    const startTime = Date.now();
-    // 最终结束时间无论是沉迷还是单次，都是总时长
-    const endTime = startTime + totalDuration; 
-    
-    const actionName = isAddiction ? `沉迷${realmType}探索` : `${realmType}探索`;
-
-    const actionDetails = {
-        action: actionName,
-        startTime: startTime,
-        endTime: endTime,
-        groupId: e.group_id,
-        realmInfo: { name: realmName, type: realmType },
-    };
-
-    const taskPayload = {
-        type: 'settleRealm',
-        userId: userId,
-        startTime: startTime,
-        endTime: startTime + singleDuration,
-        groupId: e.group_id,
-        realmInfo: { name: realmName, type: realmType },
-    };
-    
-    if (isAddiction && totalRuns > 1) {
-        taskPayload.remainingRuns = totalRuns - 1;
-    }
-
-    await DAL.setPlayerAction(userId, actionDetails);
-    await scheduleTask(taskPayload, startTime + singleDuration);
-    
     if (isAddiction) {
-        return { success: true, message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。` };
+      const keyName = '秘境之匙';
+      const keyCategory = '道具';
+      const keyItem = najie[keyCategory]?.find(item => item.name === keyName);
+      if (!keyItem || keyItem.数量 < runCount) {
+        checkResult = { success: false, message: '你没有足够的[秘境之匙]来进行沉迷探索。' };
+        return false;
+      }
+      keyItem.数量 -= runCount;
     }
-    return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
+
+    player.灵石 -= totalCost;
+    if (realmInfo.experience) {
+      // 确保修为也乘以正确的倍数
+      player.修为 -= (realmInfo.experience * costMultiplier);
+    }
+    return true;
+  });
+
+  if (!transactionSuccess) {
+    return checkResult;
+  }
+
+  const startTime = Date.now();
+  // 最终结束时间无论是沉迷还是单次，都是总时长
+  const endTime = startTime + totalDuration;
+
+  const actionName = isAddiction ? `沉迷${realmType}探索` : `${realmType}探索`;
+
+  const actionDetails = {
+    action: actionName,
+    startTime: startTime,
+    endTime: endTime,
+    groupId: e.group_id,
+    realmInfo: { name: realmName, type: realmType },
+  };
+
+  const taskPayload = {
+    type: 'settleRealm',
+    userId: userId,
+    startTime: startTime,
+    endTime: startTime + singleDuration,
+    groupId: e.group_id,
+    realmInfo: { name: realmName, type: realmType },
+  };
+
+  if (isAddiction && totalRuns > 1) {
+    taskPayload.remainingRuns = totalRuns - 1;
+  }
+
+  await DAL.setPlayerAction(userId, actionDetails);
+  await scheduleTask(taskPayload, startTime + singleDuration);
+
+  // 沉迷模式下创建沉迷记录
+  if (isAddiction) {
+    await createAddictionHistory(userId, {
+      location: realmName,
+      locationType: realmType,
+      totalRuns: totalRuns
+    });
+    return { success: true, message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。` };
+  }
+  return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
 }
 
 
@@ -126,11 +133,11 @@ export async function settleRealm(task) {
     }
 
     const realmDataList = {
-        '秘境': data.didian_list,
-        '禁地': data.forbiddenarea_list,
-        '仙府': data.timeplace_list,
-        '仙境': data.Fairyrealm_list,
-        '遗迹': data.yiji_list
+      '秘境': data.didian_list,
+      '禁地': data.forbiddenarea_list,
+      '仙府': data.timeplace_list,
+      '仙境': data.Fairyrealm_list,
+      '遗迹': data.yiji_list
     };
     realm = realmDataList[realmInfo.type].find(item => item.name === realmInfo.name);
     if (!realm) {
@@ -145,36 +152,50 @@ export async function settleRealm(task) {
 
     rewards = { items: [], xiuwei: 0, xueqi: 0 };
     if (battleResult.A_win) {
-        rewards = calculateLoot(realm, player);
+      rewards = calculateLoot(realm, player);
     } else {
-        rewards.xiuwei = 800;
+      rewards.xiuwei = 800;
     }
 
     let updateSuccess = false;
     for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-            await DAL.transaction_update(userId, async (player, equipment, najie) => {
-                player.修为 += rewards.xiuwei;
-                player.血气 += rewards.xueqi;
-                player.当前血量 = battleResult.A_player_final.当前血量;
-                for (const item of rewards.items) {
-                    DAL.updateNajieSync(najie, item.name, item.class, item.amount, item.pinji);
-                }
-                return true;
-            });
-            updateSuccess = true;
-            break; 
-        } catch (err) {
-            if (err.message && (err.message.includes('WatchError') || err.message.includes('Please close the client'))) {
-                console.warn(`[settleRealm] 事务冲突 (用户: ${userId}), 正在重试 (${attempt + 1}/3)...`);
-                await new Promise(r => setTimeout(r, 100 + Math.random() * 200)); 
-            } else {
-                throw err; 
-            }
+      try {
+        await DAL.transaction_update(userId, async (player, equipment, najie) => {
+          player.修为 += rewards.xiuwei;
+          player.血气 += rewards.xueqi;
+          player.当前血量 = battleResult.A_player_final.当前血量;
+          for (const item of rewards.items) {
+            DAL.updateNajieSync(najie, item.name, item.class, item.amount, item.pinji);
+          }
+          return true;
+        });
+        updateSuccess = true;
+        break;
+      } catch (err) {
+        if (err.message && (err.message.includes('WatchError') || err.message.includes('Please close the client'))) {
+          console.warn(`[settleRealm] 事务冲突 (用户: ${userId}), 正在重试 (${attempt + 1}/3)...`);
+          await new Promise(r => setTimeout(r, 100 + Math.random() * 200));
+        } else {
+          throw err;
         }
+      }
     }
     if (!updateSuccess) {
-         throw new Error('Settlement transaction failed after 3 retries due to concurrency.');
+      throw new Error('Settlement transaction failed after 3 retries due to concurrency.');
+    }
+
+    // 更新沉迷记录（如果是沉迷模式）
+    if (task.remainingRuns !== undefined || (task.remainingRuns === undefined && task.type === 'settleRealm')) {
+      const rewardItems = rewards.items.map(item => ({
+        name: item.name,
+        class: item.class || item.classx || '未知',
+        amount: item.amount || 1
+      }));
+      await updateAddictionHistory(userId, {
+        xiuwei: rewards.xiuwei,
+        xueqi: rewards.xueqi,
+        items: rewardItems
+      }, !battleResult.A_win);
     }
 
     // Only drop baits if player wins the battle
@@ -201,7 +222,7 @@ export async function settleRealm(task) {
 
       await scheduleTask(nextTaskPayload, nextEndTime);
 
-    } catch(e) {
+    } catch (e) {
       console.error(`[settleRealm] 循环任务调度或通知出错 (用户: ${userId}):`, e);
       // 此处出错也应中断，防止无限循环
       await DAL.deletePlayerAction(userId);
@@ -210,27 +231,29 @@ export async function settleRealm(task) {
   } else {
     // 这是最后一次或单次任务，清理状态
     await DAL.deletePlayerAction(userId);
+    // 标记沉迷记录为已完成
+    await completeAddictionHistory(userId);
   }
 
   // 将其包裹在独立的 try-catch 中，防止它失败时影响核心状态
   try {
     const renderData = {
-        A_win: battleResult.A_win,
-        battleLog: battleResult.msg.slice(-1)[0],
-        rewards: rewards,
-        realmName: realm.name,
-        remainingRuns: task.remainingRuns || 0, // 将剩余次数添加到渲染数据中
-        extraInfo: fishingDropMessage // Include the extra message here
+      A_win: battleResult.A_win,
+      battleLog: battleResult.msg.slice(-1)[0],
+      rewards: rewards,
+      realmName: realm.name,
+      remainingRuns: task.remainingRuns || 0, // 将剩余次数添加到渲染数据中
+      extraInfo: fishingDropMessage // Include the extra message here
     };
     await Notifier.notify(groupId, userId, {
-        render: 'secret_place_log',
-        data: renderData
+      render: 'secret_place_log',
+      data: renderData
     });
   } catch (renderError) {
     console.error(`[settleRealm] 渲染战报图片失败 (用户: ${userId}):`, renderError);
     // 即使图片发送失败，也通知用户已结算
     await Notifier.notify(groupId, userId, {
-        message: '探索已结算，但战报生成失败。'
+      message: '探索已结算，但战报生成失败。'
     });
   }
 }

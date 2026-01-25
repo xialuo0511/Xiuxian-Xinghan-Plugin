@@ -571,4 +571,136 @@ const redisClientProxy = new Proxy({}, {
   }
 });
 
+// =========================
+// 沉迷收获记录系统
+// =========================
+const ADDICTION_HISTORY_KEY_PREFIX = 'XinghanXiuxian:Player:';
+const ADDICTION_HISTORY_KEY_SUFFIX = ':addictionHistory';
+
+/**
+ * 创建沉迷记录
+ * @param {string} userId 玩家ID
+ * @param {object} data 初始数据 { location, locationType, totalRuns }
+ * @returns {Promise<void>}
+ */
+export async function createAddictionHistory(userId, historyData) {
+  const client = await getRedisClient();
+  const key = `${ADDICTION_HISTORY_KEY_PREFIX}${userId}${ADDICTION_HISTORY_KEY_SUFFIX}`;
+  const record = {
+    startTime: Date.now(),
+    location: historyData.location,
+    locationType: historyData.locationType,
+    totalRuns: historyData.totalRuns,
+    completedRuns: 0,
+    failedRuns: 0,
+    xiuweiGained: 0,
+    xueqiGained: 0,
+    itemsGained: [],
+    status: 'in_progress',
+    endTime: null
+  };
+  await client.set(key, JSON.stringify(record));
+}
+
+/**
+ * 获取沉迷记录
+ * @param {string} userId 玩家ID
+ * @returns {Promise<object|null>}
+ */
+export async function getAddictionHistory(userId) {
+  const client = await getRedisClient();
+  const key = `${ADDICTION_HISTORY_KEY_PREFIX}${userId}${ADDICTION_HISTORY_KEY_SUFFIX}`;
+  const data = await client.get(key);
+  if (!data) return null;
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    console.error(`[DAL] 解析沉迷记录失败, userId: ${userId}`, e);
+    return null;
+  }
+}
+
+/**
+ * 更新沉迷记录（累加收益）
+ * @param {string} userId 玩家ID
+ * @param {object} rewards { xiuwei, xueqi, items: [{name, class, amount}] }
+ * @param {boolean} failed 本次是否失败
+ * @returns {Promise<boolean>}
+ */
+export async function updateAddictionHistory(userId, rewards, failed = false) {
+  const client = await getRedisClient();
+  const key = `${ADDICTION_HISTORY_KEY_PREFIX}${userId}${ADDICTION_HISTORY_KEY_SUFFIX}`;
+  const data = await client.get(key);
+  if (!data) return false;
+
+  try {
+    const record = JSON.parse(data);
+    record.completedRuns += 1;
+    if (failed) {
+      record.failedRuns += 1;
+    }
+    record.xiuweiGained += (rewards.xiuwei || 0);
+    record.xueqiGained += (rewards.xueqi || 0);
+
+    // 合并物品
+    if (rewards.items && rewards.items.length > 0) {
+      for (const newItem of rewards.items) {
+        const existing = record.itemsGained.find(
+          i => i.name === newItem.name && i.class === newItem.class
+        );
+        if (existing) {
+          existing.amount += (newItem.amount || 1);
+        } else {
+          record.itemsGained.push({
+            name: newItem.name,
+            class: newItem.class || newItem.classx || '未知',
+            amount: newItem.amount || 1
+          });
+        }
+      }
+    }
+
+    await client.set(key, JSON.stringify(record));
+    return true;
+  } catch (e) {
+    console.error(`[DAL] 更新沉迷记录失败, userId: ${userId}`, e);
+    return false;
+  }
+}
+
+/**
+ * 标记沉迷记录为已完成
+ * @param {string} userId 玩家ID
+ * @returns {Promise<boolean>}
+ */
+export async function completeAddictionHistory(userId) {
+  const client = await getRedisClient();
+  const key = `${ADDICTION_HISTORY_KEY_PREFIX}${userId}${ADDICTION_HISTORY_KEY_SUFFIX}`;
+  const data = await client.get(key);
+  if (!data) return false;
+
+  try {
+    const record = JSON.parse(data);
+    record.status = 'completed';
+    record.endTime = Date.now();
+    await client.set(key, JSON.stringify(record));
+    return true;
+  } catch (e) {
+    console.error(`[DAL] 完成沉迷记录失败, userId: ${userId}`, e);
+    return false;
+  }
+}
+
+/**
+ * 清除沉迷记录
+ * @param {string} userId 玩家ID
+ * @returns {Promise<boolean>}
+ */
+export async function clearAddictionHistory(userId) {
+  const client = await getRedisClient();
+  const key = `${ADDICTION_HISTORY_KEY_PREFIX}${userId}${ADDICTION_HISTORY_KEY_SUFFIX}`;
+  const result = await client.del(key);
+  return result > 0;
+}
+
 export { redisClientProxy as redisClient };

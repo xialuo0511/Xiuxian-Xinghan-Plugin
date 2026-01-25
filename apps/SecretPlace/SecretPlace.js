@@ -6,6 +6,7 @@ import { Gulid, puppeteer, Show, plugin } from '../../api/api.js';
 
 // 【新增】: 导入新的逻辑函数
 import { enterRealm } from '../../logic/realm_logic.js';
+import { getFormattedAddictionHistory, clearAddictionHistoryIfCompleted } from '../../logic/addiction_history_logic.js';
 
 export class SecretPlace extends plugin {
   constructor() {
@@ -22,6 +23,8 @@ export class SecretPlace extends plugin {
         { reg: '^#前往禁地.*$', fnc: 'goForbiddenArea' },
         { reg: '^#沉迷禁地.*$', fnc: 'goForbiddenAreaAddiction' },
         { reg: '^#沉迷仙境.*$', fnc: 'goFairyRealmAddiction' },
+        { reg: '^#沉迷收获$', fnc: 'showAddictionHistory' },
+        { reg: '^#清除沉迷记录$', fnc: 'clearAddictionHistory' },
         { reg: '^#逃离', fnc: 'giveUp' }
       ]
     });
@@ -156,5 +159,68 @@ export class SecretPlace extends plugin {
     } else {
       e.reply('你当前的状态无法逃离。');
     }
+  }
+
+  // --- 沉迷收获系统 ---
+  async showAddictionHistory(e) {
+    if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
+    const userId = await Gulid(e.user_id.toString().replace('qg_', ''));
+    if (!await DAL.existPlayer(userId)) {
+      return;
+    }
+
+    const historyData = await getFormattedAddictionHistory(userId);
+    if (!historyData) {
+      e.reply('暂无沉迷记录。使用 #沉迷秘境xxx*n 开始沉迷探索后即可查看收获。');
+      return;
+    }
+
+    try {
+      const img = await puppeteer.screenshot('addiction_history', {
+        ...historyData,
+        pluResPath: `${process.cwd()}/plugins/xiuxian-emulator-plugin/resources`
+      });
+      await e.reply(img);
+    } catch (err) {
+      console.error('[沉迷收获] 渲染图片失败:', err);
+      // 降级为文字版
+      let msg = `【沉迷收获详情】\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `沉迷地点：${historyData.location}\n`;
+      msg += `地点类型：${historyData.locationType}\n`;
+      msg += `探索进度：${historyData.completedRuns}/${historyData.totalRuns}\n`;
+      msg += `失败次数：${historyData.failedRuns}\n`;
+      msg += `获得修为：${historyData.xiuweiGained.toLocaleString()}\n`;
+      msg += `获得血气：${historyData.xueqiGained.toLocaleString()}\n`;
+      msg += `开始时间：${historyData.startTime}\n`;
+      msg += `结束时间：${historyData.endTime}\n`;
+      msg += `持续时间：${historyData.duration}\n`;
+      msg += `状态：${historyData.statusText}\n`;
+      if (historyData.itemsGained.length > 0) {
+        msg += `获得物品：\n`;
+        historyData.itemsGained.forEach((item, i) => {
+          msg += `  ${i + 1}. [${item.name}] x${item.amount}\n`;
+        });
+      }
+      msg += `━━━━━━━━━━━━━━━━━━━━━━`;
+      e.reply(msg);
+    }
+  }
+
+  async clearAddictionHistory(e) {
+    if (!e.isGroup) {
+      e.reply('修仙游戏请在群聊中游玩');
+      return;
+    }
+    const userId = await Gulid(e.user_id.toString().replace('qg_', ''));
+    if (!await DAL.existPlayer(userId)) {
+      return;
+    }
+
+    const result = await clearAddictionHistoryIfCompleted(userId);
+    e.reply(result.message);
   }
 }

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+    <link href="#" rel="shortcut icon" />
+    <style type="text/css">
+        @font-face {
+            font-family: "tttgbnumber";
+            src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+        }
+
+        @font-face {
+            font-family: "NZBZ";
+            src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+        }
+
+        body {
+            width: 600px;
+            margin: 0;
+            padding: 20px;
+            background-image: url('file:///{{pluResPath}}/img/player_pifu/beijing.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: "tttgbnumber", sans-serif;
+            color: #4a2c1a;
+        }
+
+        .panel-container {
+            background: rgba(253, 250, 245, 0.92);
+            border: 2px solid #a88763;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header .title {
+            font-family: "NZBZ", sans-serif;
+            font-size: 36px;
+            color: #6a3906;
+        }
+
+        .header .location-name {
+            font-size: 20px;
+            color: #8B4513;
+            margin-top: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-badge.completed {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+        }
+
+        .status-badge.in-progress {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 2px;
+            background-image: linear-gradient(to right, rgba(168, 135, 99, 0), rgba(168, 135, 99, 0.75), rgba(168, 135, 99, 0));
+            margin: 20px 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #d2b48c;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #7a5533;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4a2c1a;
+        }
+
+        .info-value.highlight {
+            color: #27ae60;
+        }
+
+        .info-value.warning {
+            color: #c0392b;
+        }
+
+        .progress-section {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #d2b48c;
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-container {
+            background: #ddd;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .items-section {
+            margin-top: 20px;
+        }
+
+        .items-title {
+            font-family: "NZBZ", sans-serif;
+            font-size: 24px;
+            color: #6a3906;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .items-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .item-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid #d2b48c;
+            font-size: 16px;
+        }
+
+        .time-section {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .tips {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="panel-container" id="capture">
+        <div class="header">
+            <div class="title">沉迷收获详情</div>
+            <div class="location-name">【{{location}}】· {{locationType}}</div>
+            <span class="status-badge {{if status === 'completed'}}completed{{else}}in-progress{{/if}}">
+                {{statusText}}
+            </span>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- 进度条 -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span>探索进度</span>
+                <span>{{completedRuns}} / {{totalRuns}}</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: {{Math.min(100, (completedRuns / totalRuns) * 100)}}%;"></div>
+            </div>
+        </div>
+
+        <!-- 统计数据 -->
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">获得修为</div>
+                <div class="info-value highlight">+{{xiuweiGained.toLocaleString()}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">获得血气</div>
+                <div class="info-value highlight">+{{xueqiGained.toLocaleString()}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">失败次数</div>
+                <div class="info-value {{if failedRuns > 0}}warning{{/if}}">{{failedRuns}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">持续时间</div>
+                <div class="info-value">{{duration}}</div>
+            </div>
+        </div>
+
+        <!-- 物品列表 -->
+        {{if itemsGained && itemsGained.length > 0}}
+        <div class="items-section">
+            <div class="items-title">获得物品</div>
+            <div class="items-list">
+                {{each itemsGained item}}
+                <span class="item-tag">【{{item.name}}】x{{item.amount}}</span>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+
+        <hr class="section-divider">
+
+        <!-- 时间信息 -->
+        <div class="time-section">
+            <div>开始：{{startTime}}</div>
+            <div>结束：{{endTime}}</div>
+        </div>
+
+        {{if status === 'completed'}}
+        <div class="tips">
+            💡 提示：发送 #清除沉迷记录 可清除本次记录
+        </div>
+        {{/if}}
+
+    </div>
+</body>
+
+</html>
