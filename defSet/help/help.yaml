@@ -94,7 +94,7 @@
 - group: 成就系统
   list:
     - icon: help-icon_70
-      title: '#成就'
+      title: '#修仙成就'
       desc: '查看成就图鉴'
     - icon: help-icon_48
       title: '#领取成就xxx'

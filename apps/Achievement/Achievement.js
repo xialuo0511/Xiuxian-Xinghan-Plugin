@@ -20,7 +20,7 @@ export class Achievement extends plugin {
             event: 'message',
             priority: 600,
             rule: [
-                { reg: '^#成就$', fnc: 'showAchievements' },
+                { reg: '^#修仙成就$', fnc: 'showAchievements' },
                 { reg: '^#成就图鉴$', fnc: 'showAchievements' },
                 { reg: '^#领取成就.*$', fnc: 'claimAchievement' },
                 { reg: '^#一键领取成就$', fnc: 'claimAllAchievements' }
