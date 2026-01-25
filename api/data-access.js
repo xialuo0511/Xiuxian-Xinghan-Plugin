@@ -703,4 +703,108 @@ export async function clearAddictionHistory(userId) {
   return result > 0;
 }
 
+// =========================
+// 成就系统
+// =========================
+const ACHIEVEMENT_KEY_PREFIX = 'XinghanXiuxian:Player:';
+const ACHIEVEMENT_KEY_SUFFIX = ':achievements';
+
+/**
+ * 获取玩家成就数据
+ * @param {string} userId 玩家ID
+ * @returns {Promise<object>}
+ */
+export async function getPlayerAchievements(userId) {
+  const client = await getRedisClient();
+  const key = `${ACHIEVEMENT_KEY_PREFIX}${userId}${ACHIEVEMENT_KEY_SUFFIX}`;
+  const data = await client.get(key);
+  if (!data) {
+    return {
+      unlocked: [],
+      progress: {},
+      claimedRewards: []
+    };
+  }
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    console.error(`[DAL] 解析成就数据失败, userId: ${userId}`, e);
+    return { unlocked: [], progress: {}, claimedRewards: [] };
+  }
+}
+
+/**
+ * 保存玩家成就数据
+ * @param {string} userId 玩家ID
+ * @param {object} achievementData 成就数据
+ * @returns {Promise<void>}
+ */
+export async function savePlayerAchievements(userId, achievementData) {
+  const client = await getRedisClient();
+  const key = `${ACHIEVEMENT_KEY_PREFIX}${userId}${ACHIEVEMENT_KEY_SUFFIX}`;
+  await client.set(key, JSON.stringify(achievementData));
+}
+
+/**
+ * 解锁成就
+ * @param {string} userId 玩家ID
+ * @param {string} achievementId 成就ID
+ * @returns {Promise<boolean>} 是否是新解锁
+ */
+export async function unlockAchievement(userId, achievementId) {
+  const achievements = await getPlayerAchievements(userId);
+  if (achievements.unlocked.includes(achievementId)) {
+    return false; // 已解锁
+  }
+  achievements.unlocked.push(achievementId);
+  await savePlayerAchievements(userId, achievements);
+  return true;
+}
+
+/**
+ * 更新成就进度
+ * @param {string} userId 玩家ID
+ * @param {string} progressKey 进度键（如 explore_count）
+ * @param {number} value 增加的值
+ * @returns {Promise<number>} 更新后的进度值
+ */
+export async function updateAchievementProgress(userId, progressKey, value) {
+  const achievements = await getPlayerAchievements(userId);
+  achievements.progress[progressKey] = (achievements.progress[progressKey] || 0) + value;
+  await savePlayerAchievements(userId, achievements);
+  return achievements.progress[progressKey];
+}
+
+/**
+ * 设置成就进度（绝对值）
+ * @param {string} userId 玩家ID
+ * @param {string} progressKey 进度键
+ * @param {number} value 设置的值
+ * @returns {Promise<void>}
+ */
+export async function setAchievementProgress(userId, progressKey, value) {
+  const achievements = await getPlayerAchievements(userId);
+  achievements.progress[progressKey] = value;
+  await savePlayerAchievements(userId, achievements);
+}
+
+/**
+ * 标记成就奖励已领取
+ * @param {string} userId 玩家ID
+ * @param {string} achievementId 成就ID
+ * @returns {Promise<boolean>} 是否成功领取（false表示已领取过）
+ */
+export async function claimAchievementReward(userId, achievementId) {
+  const achievements = await getPlayerAchievements(userId);
+  if (!achievements.unlocked.includes(achievementId)) {
+    return false; // 未解锁
+  }
+  if (achievements.claimedRewards.includes(achievementId)) {
+    return false; // 已领取
+  }
+  achievements.claimedRewards.push(achievementId);
+  await savePlayerAchievements(userId, achievements);
+  return true;
+}
+
 export { redisClientProxy as redisClient };

@@ -1,0 +1,263 @@
+# 成就配置文件
+# 每个成就包含: id, name, desc, category, rarity, icon, condition, rewards
+
+# ============ 修炼类成就 ============
+- id: first_breakthrough
+  name: 初露锋芒
+  desc: 首次成功突破境界
+  category: 修炼
+  rarity: 1
+  icon: 🌟
+  condition:
+    type: breakthrough_count
+    value: 1
+  rewards:
+    灵石: 10000
+
+- id: foundation_building
+  name: 筑基成功
+  desc: 修炼至筑基期
+  category: 修炼
+  rarity: 2
+  icon: 🏛️
+  condition:
+    type: level_reach
+    value: 4
+  rewards:
+    灵石: 20000
+
+- id: golden_core
+  name: 结丹成道
+  desc: 修炼至金丹期
+  category: 修炼
+  rarity: 3
+  icon: 💎
+  condition:
+    type: level_reach
+    value: 7
+  rewards:
+    灵石: 50000
+
+- id: nascent_soul
+  name: 元婴出窍
+  desc: 修炼至元婴期
+  category: 修炼
+  rarity: 4
+  icon: 👻
+  condition:
+    type: level_reach
+    value: 10
+  rewards:
+    灵石: 100000
+
+- id: ascension
+  name: 羽化登仙
+  desc: 成功飞升仙界
+  category: 修炼
+  rarity: 5
+  icon: 🌌
+  condition:
+    type: level_reach
+    value: 15
+  rewards:
+    灵石: 500000
+
+- id: cultivator_10
+  name: 修行者
+  desc: 累计突破10次
+  category: 修炼
+  rarity: 1
+  icon: 📿
+  condition:
+    type: breakthrough_count
+    value: 10
+  rewards:
+    灵石: 30000
+
+# ============ 探索类成就 ============
+- id: first_explore
+  name: 探索先驱
+  desc: 首次探索秘境
+  category: 探索
+  rarity: 1
+  icon: 🗺️
+  condition:
+    type: explore_count
+    value: 1
+  rewards:
+    灵石: 5000
+
+- id: explorer_50
+  name: 秘境猎人
+  desc: 累计探索秘境50次
+  category: 探索
+  rarity: 2
+  icon: 🏔️
+  condition:
+    type: explore_count
+    value: 50
+  rewards:
+    灵石: 30000
+    秘境之匙: 3
+
+- id: explorer_200
+  name: 秘境大师
+  desc: 累计探索秘境200次
+  category: 探索
+  rarity: 3
+  icon: 🏆
+  condition:
+    type: explore_count
+    value: 200
+  rewards:
+    灵石: 100000
+    秘境之匙: 10
+
+- id: first_addiction
+  name: 沉迷者
+  desc: 首次使用沉迷探索
+  category: 探索
+  rarity: 1
+  icon: 🌀
+  condition:
+    type: addiction_count
+    value: 1
+  rewards:
+    灵石: 10000
+
+- id: rich_harvest
+  name: 满载而归
+  desc: 单次沉迷获得5件及以上物品
+  category: 探索
+  rarity: 2
+  icon: 🎁
+  condition:
+    type: single_addiction_items
+    value: 5
+  rewards:
+    灵石: 20000
+
+# ============ 签到类成就 ============
+- id: first_signin
+  name: 初来乍到
+  desc: 完成首次签到
+  category: 签到
+  rarity: 1
+  icon: ✅
+  condition:
+    type: signin_count
+    value: 1
+  rewards:
+    灵石: 5000
+
+- id: signin_streak_7
+  name: 坚持不懈
+  desc: 连续签到7天
+  category: 签到
+  rarity: 2
+  icon: 🔥
+  condition:
+    type: signin_streak
+    value: 7
+  rewards:
+    灵石: 20000
+    秘境之匙: 2
+
+- id: signin_total_30
+  name: 修行之路
+  desc: 累计签到30天
+  category: 签到
+  rarity: 3
+  icon: 📅
+  condition:
+    type: signin_count
+    value: 30
+  rewards:
+    灵石: 50000
+
+- id: signin_total_100
+  name: 百日修行
+  desc: 累计签到100天
+  category: 签到
+  rarity: 4
+  icon: 💯
+  condition:
+    type: signin_count
+    value: 100
+  rewards:
+    灵石: 200000
+    秘境之匙: 20
+
+# ============ 战斗类成就 ============
+- id: first_duel_win
+  name: 初战告捷
+  desc: 首次在天地榜获得胜利
+  category: 战斗
+  rarity: 1
+  icon: ⚔️
+  condition:
+    type: duel_win_count
+    value: 1
+  rewards:
+    灵石: 10000
+
+- id: win_streak_3
+  name: 连战连胜
+  desc: 天地榜达成3连胜
+  category: 战斗
+  rarity: 2
+  icon: 🔱
+  condition:
+    type: win_streak
+    value: 3
+  rewards:
+    灵石: 30000
+
+- id: win_streak_10
+  name: 无双战神
+  desc: 天地榜达成10连胜
+  category: 战斗
+  rarity: 4
+  icon: 👑
+  condition:
+    type: win_streak
+    value: 10
+  rewards:
+    灵石: 100000
+
+- id: season_champion
+  name: 天榜至尊
+  desc: 天地榜赛季排名第一
+  category: 战斗
+  rarity: 5
+  icon: 🏅
+  condition:
+    type: season_rank
+    value: 1
+  rewards:
+    灵石: 500000
+
+# ============ 财富类成就 ============
+- id: first_million
+  name: 小有积蓄
+  desc: 累计获得100万灵石
+  category: 财富
+  rarity: 2
+  icon: 💰
+  condition:
+    type: total_lingshi
+    value: 1000000
+  rewards:
+    灵石: 50000
+
+- id: ten_million
+  name: 富甲一方
+  desc: 累计获得1000万灵石
+  category: 财富
+  rarity: 4
+  icon: 💎
+  condition:
+    type: total_lingshi
+    value: 10000000
+  rewards:
+    灵石: 200000

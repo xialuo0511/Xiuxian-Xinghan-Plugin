@@ -91,6 +91,18 @@
       title: '#清除沉迷记录'
       desc: '清除已完成的沉迷记录'
 
+- group: 成就系统
+  list:
+    - icon: help-icon_70
+      title: '#成就'
+      desc: '查看成就图鉴'
+    - icon: help-icon_48
+      title: '#领取成就xxx'
+      desc: '领取指定成就奖励'
+    - icon: help-icon_48
+      title: '#一键领取成就'
+      desc: '领取所有可领奖励'
+
 - group: 管理指令
   list:
     - icon: help-icon_48
