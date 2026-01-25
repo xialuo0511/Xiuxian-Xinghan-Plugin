@@ -3,6 +3,7 @@ import * as partnerLogic from './partner_logic.js';
 import config from '../model/Config.js';
 import { loadItemConfig } from '../model/ConfigLoader.js';
 import { getActivityStatus } from './fishing_logic.js';
+import { incrementProgressAndCheck, formatUnlockNotification } from './achievement_logic.js';
 
 // 加载月度累计签到奖励配置
 let monthlyRewardsConfig = loadItemConfig('sign_in_rewards.yaml');
@@ -298,6 +299,27 @@ export async function processDailyCheckIn(userId) {
     logger.error('[协同签到] 处理时发生错误:', error);
   }
 
+  // 成就触发器 - 检查签到相关成就
+  try {
+    const totalSigninDays = transactionResult.player.total_sign_in_days || 1;
+    const consecutiveDays = transactionResult.player.连续签到天数 || 1;
+
+    // 触发累计签到成就
+    const signinAchievements = await incrementProgressAndCheck(userId, 'signin_count', 0);
+    // 直接设置进度值（累计签到）
+    const { checkAndUnlockAchievements } = await import('./achievement_logic.js');
+    const totalUnlocked = await checkAndUnlockAchievements(userId, 'signin_count', totalSigninDays);
+
+    // 触发连续签到成就
+    const streakUnlocked = await checkAndUnlockAchievements(userId, 'signin_streak', consecutiveDays);
+
+    const allUnlocked = [...totalUnlocked, ...streakUnlocked];
+    if (allUnlocked.length > 0) {
+      finalReturn.achievementMsg = formatUnlockNotification(allUnlocked);
+    }
+  } catch (err) {
+    logger.error('[成就系统] 签到成就检查失败:', err);
+  }
 
   return finalReturn;
 }

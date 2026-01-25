@@ -6,6 +6,7 @@ import config from '../model/Config.js';
 import { battleEngine } from './battle_logic.js';
 import { checkSecretPlaceBaitDrops } from '../logic/fishing_logic.js';
 import { createAddictionHistory, updateAddictionHistory, completeAddictionHistory } from '../api/data-access.js';
+import { incrementProgressAndCheck } from './achievement_logic.js';
 
 const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
@@ -109,6 +110,14 @@ export async function enterRealm(userId, realmName, realmType, e, runCount = 1, 
       locationType: realmType,
       totalRuns: totalRuns
     });
+
+    // 成就触发器 - 首次沉迷成就
+    try {
+      await incrementProgressAndCheck(userId, 'addiction_count', 1);
+    } catch (err) {
+      console.error('[成就系统] 沉迷成就检查失败:', err);
+    }
+
     return { success: true, message: `开始在${realmType}【${realmName}】沉迷探索, 共 ${totalRuns} 次, 预计总耗时 ${totalDuration / 60000} 分钟。` };
   }
   return { success: true, message: `开始${realmType}【${realmName}】的探索, ${singleDuration / 60000}分钟后归来!` };
@@ -201,6 +210,13 @@ export async function settleRealm(task) {
     // Only drop baits if player wins the battle
     if (battleResult.A_win) {
       fishingDropMessage = await checkSecretPlaceBaitDrops(userId, 'hanjiang_fishing_2025_10');
+    }
+
+    // 成就触发器 - 探索成就（每次结算触发）
+    try {
+      await incrementProgressAndCheck(userId, 'explore_count', 1);
+    } catch (err) {
+      console.error('[成就系统] 探索成就检查失败:', err);
     }
 
   } catch (error) {
