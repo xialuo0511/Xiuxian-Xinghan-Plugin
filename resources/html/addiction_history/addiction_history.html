@@ -16,9 +16,15 @@
         }
 
         body {
-            width: 600px;
+            width: fit-content;
             margin: 0;
+            padding: 0;
+        }
+
+        #capture {
+            width: 600px;
             padding: 20px;
+            margin: 10px;
             background-image: url('file:///{{pluResPath}}/img/player_pifu/beijing.jpg');
             background-size: cover;
             background-position: center;
@@ -185,75 +191,111 @@
 </head>
 
 <body>
-    <div class="panel-container" id="capture">
-        <div class="header">
-            <div class="title">沉迷收获详情</div>
-            <div class="location-name">【{{location}}】· {{locationType}}</div>
-            <span class="status-badge {{if status === 'completed'}}completed{{else}}in-progress{{/if}}">
-                {{statusText}}
-            </span>
+    <div id="capture">
+        <div class="panel-container">
+            <div class="header">
+                <div class="title">沉迷收获详情</div>
+                <div class="location-name">【{{location}}】· {{locationType}}</div>
+                <span class="status-badge {{if status === 'completed'}}completed{{else}}in-progress{{/if}}">
+                    {{statusText}}
+                </span>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- 进度条 -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>探索进度</span>
+                    <span>{{completedRuns}} / {{totalRuns}}</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{Math.min(100, (completedRuns / totalRuns) * 100)}}%;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计数据 -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">获得修为</div>
+                    <div class="info-value highlight">+{{xiuweiGained.toLocaleString()}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">获得血气</div>
+                    <div class="info-value highlight">+{{xueqiGained.toLocaleString()}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">失败次数</div>
+                    <div class="info-value {{if failedRuns > 0}}warning{{/if}}">{{failedRuns}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">持续时间</div>
+                    <div class="info-value">{{duration}}</div>
+                </div>
+            </div>
+
+            <!-- 物品列表 -->
+            {{if itemsGained && itemsGained.length > 0}}
+            <div class="items-section">
+                <div class="items-title">获得物品</div>
+                <div class="items-list">
+                    {{each itemsGained item}}
+                    <span class="item-tag">【{{item.name}}】x{{item.amount}}</span>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+
+            <hr class="section-divider">
+
+            <!-- 时间信息 -->
+            <div class="time-section">
+                <div>开始：{{startTime}}</div>
+                <div>结束：{{endTime}}</div>
+            </div>
+
+            {{if status === 'completed'}}
+            <div class="tips">
+                💡 提示：发送 #清除沉迷记录 可清除本次记录
+            </div>
+            {{/if}}
+
         </div>
-
-        <hr class="section-divider">
-
-        <!-- 进度条 -->
-        <div class="progress-section">
-            <div class="progress-header">
-                <span>探索进度</span>
-                <span>{{completedRuns}} / {{totalRuns}}</span>
-            </div>
-            <div class="progress-bar-container">
-                <div class="progress-bar" style="width: {{Math.min(100, (completedRuns / totalRuns) * 100)}}%;"></div>
-            </div>
-        </div>
-
-        <!-- 统计数据 -->
-        <div class="info-grid">
-            <div class="info-item">
-                <div class="info-label">获得修为</div>
-                <div class="info-value highlight">+{{xiuweiGained.toLocaleString()}}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">获得血气</div>
-                <div class="info-value highlight">+{{xueqiGained.toLocaleString()}}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">失败次数</div>
-                <div class="info-value {{if failedRuns > 0}}warning{{/if}}">{{failedRuns}}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">持续时间</div>
-                <div class="info-value">{{duration}}</div>
-            </div>
-        </div>
-
-        <!-- 物品列表 -->
-        {{if itemsGained && itemsGained.length > 0}}
-        <div class="items-section">
-            <div class="items-title">获得物品</div>
-            <div class="items-list">
-                {{each itemsGained item}}
-                <span class="item-tag">【{{item.name}}】x{{item.amount}}</span>
-                {{/each}}
-            </div>
-        </div>
-        {{/if}}
-
-        <hr class="section-divider">
-
-        <!-- 时间信息 -->
-        <div class="time-section">
-            <div>开始：{{startTime}}</div>
-            <div>结束：{{endTime}}</div>
-        </div>
-
-        {{if status === 'completed'}}
-        <div class="tips">
-            💡 提示：发送 #清除沉迷记录 可清除本次记录
-        </div>
-        {{/if}}
-
     </div>
+
+    <!-- Ready 信号脚本 -->
+    <script>
+        (function () {
+            const images = document.querySelectorAll('img');
+            let loadedCount = 0;
+            const totalImages = images.length;
+
+            function checkAllLoaded() {
+                loadedCount++;
+                if (loadedCount >= totalImages) {
+                    document.getElementById('capture').classList.add('ready');
+                }
+            }
+
+            if (totalImages === 0) {
+                document.getElementById('capture').classList.add('ready');
+            } else {
+                images.forEach(img => {
+                    if (img.complete) checkAllLoaded();
+                    else {
+                        img.addEventListener('load', checkAllLoaded);
+                        img.addEventListener('error', checkAllLoaded);
+                    }
+                });
+            }
+
+            // 保底 3 秒超时
+            setTimeout(() => {
+                document.getElementById('capture').classList.add('ready');
+            }, 3000);
+        })();
+    </script>
 </body>
 
 </html>
