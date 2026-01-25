@@ -20,18 +20,21 @@
     }
 
     body {
+      width: fit-content;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ===== 截图容器 - 按照 puppeteer-wrapper skill 规范 ===== */
+    #capture {
       font-family: 'HYWenHei', 'Microsoft YaHei', sans-serif;
-      /* 使用渐变背景替代外部图片，确保离线可用 */
       background: linear-gradient(135deg, #f5f0e6 0%, #e8dcc8 50%, #d4c4a8 100%);
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       background-color: #f5f0e6;
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      padding: 20px;
+      margin: 10px;
     }
 
     /* ===== 容器样式 ===== */
@@ -278,79 +281,81 @@
 </head>
 
 <body>
-  <div id="capture" class="calendar-container">
-    <div class="header">
-      <h1>仙途签到簿</h1>
-      <p id="calendar-title"></p>
-    </div>
-
-    <div id="calendar-grid" class="calendar-grid">
-    </div>
-
-    <div class="cumulative-rewards-section">
-      <div class="section-header">
-        <h2 class="section-title">本月修行路</h2>
-        <span class="section-stats">本月累计: <span class="highlight">{{personal_progress.count}}</span> /
-          {{personal_progress.total_days_in_month}} 天</span>
+  <div id="capture">
+    <div class="calendar-container">
+      <div class="header">
+        <h1>仙途签到簿</h1>
+        <p id="calendar-title"></p>
       </div>
-      <div class="progress-bar-wrapper">
-        <div class="progress-bar">
-          <div class="progress-bar-filler personal"
-            style="width: {{(personal_progress.count / personal_progress.total_days_in_month) * 100}}%;"></div>
+
+      <div id="calendar-grid" class="calendar-grid">
+      </div>
+
+      <div class="cumulative-rewards-section">
+        <div class="section-header">
+          <h2 class="section-title">本月修行路</h2>
+          <span class="section-stats">本月累计: <span class="highlight">{{personal_progress.count}}</span> /
+            {{personal_progress.total_days_in_month}} 天</span>
         </div>
-        {{each personal_progress.tiers tier}}
-        <div class="reward-node {{if tier.isClaimed}}claimed{{/if}}" style="left: {{tier.position}}%;">
-          <span class="reward-icon">🎁</span>
-          <span class="reward-day-text">{{tier.days}}天</span>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar">
+            <div class="progress-bar-filler personal"
+              style="width: {{(personal_progress.count / personal_progress.total_days_in_month) * 100}}%;"></div>
+          </div>
+          {{each personal_progress.tiers tier}}
+          <div class="reward-node {{if tier.isClaimed}}claimed{{/if}}" style="left: {{tier.position}}%;">
+            <span class="reward-icon">🎁</span>
+            <span class="reward-day-text">{{tier.days}}天</span>
+          </div>
+          {{/each}}
         </div>
-        {{/each}}
       </div>
-    </div>
 
-    {{if show_coop_signin}}
-    <div class="cumulative-rewards-section">
-      <div class="section-header">
-        <h2 class="section-title">仙侣同心</h2>
-        <span class="section-stats">本月协同: <span class="highlight-pink">{{coop_progress.count}}</span> /
-          {{personal_progress.total_days_in_month}} 天</span>
-      </div>
-      <div class="progress-bar-wrapper">
-        <div class="progress-bar">
-          <div class="progress-bar-filler coop"
-            style="width: {{(coop_progress.count / coop_progress.total_days_in_month) * 100}}%;"></div>
+      {{if show_coop_signin}}
+      <div class="cumulative-rewards-section">
+        <div class="section-header">
+          <h2 class="section-title">仙侣同心</h2>
+          <span class="section-stats">本月协同: <span class="highlight-pink">{{coop_progress.count}}</span> /
+            {{personal_progress.total_days_in_month}} 天</span>
         </div>
-        {{each coop_progress.tiers tier}}
-        <div class="reward-node {{if tier.isClaimed}}claimed{{/if}}" style="left: {{tier.position}}%;">
-          <span class="reward-icon">❤️</span>
-          <span class="reward-day-text">{{tier.days}}天</span>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar">
+            <div class="progress-bar-filler coop"
+              style="width: {{(coop_progress.count / coop_progress.total_days_in_month) * 100}}%;"></div>
+          </div>
+          {{each coop_progress.tiers tier}}
+          <div class="reward-node {{if tier.isClaimed}}claimed{{/if}}" style="left: {{tier.position}}%;">
+            <span class="reward-icon">❤️</span>
+            <span class="reward-day-text">{{tier.days}}天</span>
+          </div>
+          {{/each}}
         </div>
-        {{/each}}
       </div>
-    </div>
-    {{/if}}
+      {{/if}}
 
-    <div class="rewards-section">
-      <h2>签到成功！本次收获:</h2>
-      <div class="rewards-content">
-        <p>连续签到: <span class="value">{{consecutiveDays}}</span> 天</p>
-        <p>获得修为: <span class="value">{{dailyRewards.修为}}</span></p>
-        <p>获得秘境之匙: <span class="value">{{dailyRewards.秘境之匙}}</span> 个</p>
-        {{if dailyRewards.message.length > 0}}
-        <p class="bonus-text">{{dailyRewards.message[0]}}</p>
-        {{/if}}
+      <div class="rewards-section">
+        <h2>签到成功！本次收获:</h2>
+        <div class="rewards-content">
+          <p>连续签到: <span class="value">{{consecutiveDays}}</span> 天</p>
+          <p>获得修为: <span class="value">{{dailyRewards.修为}}</span></p>
+          <p>获得秘境之匙: <span class="value">{{dailyRewards.秘境之匙}}</span> 个</p>
+          {{if dailyRewards.message.length > 0}}
+          <p class="bonus-text">{{dailyRewards.message[0]}}</p>
+          {{/if}}
+        </div>
       </div>
-    </div>
 
-    {{if extraRewardsInfo && extraRewardsInfo.items.length > 0}}
-    <div class="extra-rewards-section">
-      <h2>🎉 额外收获 <span class="subtitle">({{extraRewardsInfo.messages.join('、')}})</span></h2>
-      <div class="rewards-content">
-        {{each extraRewardsInfo.items item}}
-        <p>获得 {{item.name}}: <span class="value-yellow">{{item.amount || item.数量}}</span></p>
-        {{/each}}
+      {{if extraRewardsInfo && extraRewardsInfo.items.length > 0}}
+      <div class="extra-rewards-section">
+        <h2>🎉 额外收获 <span class="subtitle">({{extraRewardsInfo.messages.join('、')}})</span></h2>
+        <div class="rewards-content">
+          {{each extraRewardsInfo.items item}}
+          <p>获得 {{item.name}}: <span class="value-yellow">{{item.amount || item.数量}}</span></p>
+          {{/each}}
+        </div>
       </div>
+      {{/if}}
     </div>
-    {{/if}}
   </div>
 
   <script>
@@ -406,6 +411,9 @@
 
         calendarGrid.appendChild(dayCell);
       }
+
+      // 渲染完成后添加 ready 信号
+      document.getElementById('capture').classList.add('ready');
     }
     renderCalendar();
   </script>
