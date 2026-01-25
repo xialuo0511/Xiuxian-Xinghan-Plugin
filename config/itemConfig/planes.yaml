@@ -1,0 +1,123 @@
+# 位面系统配置
+# 星瀚修仙·四大位面
+
+# ============ 凡尘界（起始位面）============
+- id: mortal_realm
+  name: 凡尘界
+  desc: 万丈红尘，凡人修仙的起点。万物生灵于此诞生，修士在此踏上仙途。
+  icon: 🌍
+  theme: 凡人修仙
+  currency: 红尘珠
+  unlockCondition:
+    type: default  # 默认解锁
+  attribute_bonus:
+    攻击: 0
+    防御: 0
+    生命: 0
+  stages: []  # 起始位面无进阶
+
+# ============ 太虚幻境 ============
+- id: taixu_realm
+  name: 太虚幻境
+  desc: 梦境与现实的交界，幻术奥义之地。一切皆幻，亦真亦假。
+  icon: 🌀
+  theme: 梦境幻术
+  currency: 幻梦碎片
+  unlockCondition:
+    type: level_and_item
+    minLevel: 7  # 金丹期
+    item: 太虚令
+  attribute_bonus:
+    幻术伤害: 20
+  stages:
+    - id: 1
+      name: 幻梦初醒
+      desc: 初入幻境，感知虚实
+      condition: { currency: 0 }
+      bonus: {}
+    - id: 2
+      name: 梦境行者
+      desc: 行走梦境，操控幻象
+      condition: { currency: 500 }
+      bonus: { 幻术伤害: 10 }
+    - id: 3
+      name: 虚境真人
+      desc: 虚实一体，幻术大成
+      condition: { currency: 2000, 梦境领悟: 10 }
+      bonus: { 幻术伤害: 25, 控制免疫: true }
+    - id: 4
+      name: 太虚仙尊
+      desc: 创造幻境，囚敌于梦
+      condition: { minLevel: 15, 虚境试炼: true }
+      bonus: { 幻术伤害: 40, 幻境囚敌: true }
+
+# ============ 炼狱深渊 ============
+- id: lianyu_realm
+  name: 炼狱深渊
+  desc: 魔道至尊的修炼圣地，杀戮与血腥弥漫。强者为尊，弱者为食。
+  icon: 🔥
+  theme: 魔道杀戮
+  currency: 魔煞之源
+  unlockCondition:
+    type: level_and_item
+    minLevel: 10  # 元婴期
+    item: 深渊石
+  attribute_bonus:
+    物理伤害: 20
+    受到伤害: 10
+  stages:
+    - id: 1
+      name: 魔道初入
+      desc: 踏入深渊，沾染魔气
+      condition: { currency: 0 }
+      bonus: {}
+    - id: 2
+      name: 嗜血狂徒
+      desc: 嗜血成性，战斗吸血
+      condition: { currency: 500 }
+      bonus: { 战斗吸血: 5 }
+    - id: 3
+      name: 魔尊
+      desc: 魔道大成，杀戮无双
+      condition: { currency: 2000, 杀戮值: 1000 }
+      bonus: { 战斗吸血: 15, 暴击伤害: 20 }
+    - id: 4
+      name: 深渊主宰
+      desc: 主宰深渊，魔化降临
+      condition: { minLevel: 15, 深渊试炼: true }
+      bonus: { 战斗吸血: 25, 魔化形态: true }
+
+# ============ 星辰圣域（终极位面）============
+- id: xingchen_realm
+  name: 星辰圣域
+  desc: 星辰大道的最终归宿，宇宙奥义蕴藏于此。星河璀璨，力量无穷。
+  icon: ⭐
+  theme: 星辰大道
+  currency: 星辰精华
+  unlockCondition:
+    type: level_and_item
+    minLevel: 15  # 仙人境
+    item: 星辰令
+  attribute_bonus:
+    全属性: 10
+  stages:
+    - id: 1
+      name: 星辰初悟
+      desc: 初悟星辰，感应星河
+      condition: { currency: 0 }
+      bonus: {}
+    - id: 2
+      name: 星辰使者
+      desc: 星辰代言，星力加身
+      condition: { currency: 1000 }
+      bonus: { 全属性: 5 }
+    - id: 3
+      name: 星辰君主
+      desc: 统御星辰，护体星光
+      condition: { currency: 5000, 星辰共鸣: 20 }
+      bonus: { 全属性: 15, 星辰护体: true }
+    - id: 4
+      name: 星瀚圣主
+      desc: 执掌星瀚，召唤星辰
+      condition: { minLevel: 18, 星辰试炼: true }
+      bonus: { 全属性: 30, 召唤星辰: true }

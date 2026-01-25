@@ -807,4 +807,103 @@ export async function claimAchievementReward(userId, achievementId) {
   return true;
 }
 
+// =========================
+// 位面系统
+// =========================
+const PLANE_KEY_PREFIX = 'XinghanXiuxian:Player:';
+const PLANE_KEY_SUFFIX = ':plane';
+
+/**
+ * 获取玩家位面数据
+ * @param {string} userId 玩家ID
+ * @returns {Promise<object>}
+ */
+export async function getPlayerPlaneData(userId) {
+  const client = await getRedisClient();
+  const key = `${PLANE_KEY_PREFIX}${userId}${PLANE_KEY_SUFFIX}`;
+  const data = await client.get(key);
+  if (!data) {
+    return {
+      currentPlane: 'mortal_realm',
+      unlockedPlanes: ['mortal_realm'],
+      planeProgress: {},
+      lastTeleport: 0
+    };
+  }
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    console.error(`[DAL] 解析位面数据失败, userId: ${userId}`, e);
+    return { currentPlane: 'mortal_realm', unlockedPlanes: ['mortal_realm'], planeProgress: {}, lastTeleport: 0 };
+  }
+}
+
+/**
+ * 保存玩家位面数据
+ * @param {string} userId 玩家ID
+ * @param {object} planeData 位面数据
+ * @returns {Promise<void>}
+ */
+export async function savePlayerPlaneData(userId, planeData) {
+  const client = await getRedisClient();
+  const key = `${PLANE_KEY_PREFIX}${userId}${PLANE_KEY_SUFFIX}`;
+  await client.set(key, JSON.stringify(planeData));
+}
+
+/**
+ * 传送到指定位面
+ * @param {string} userId 玩家ID
+ * @param {string} planeId 位面ID
+ * @returns {Promise<boolean>} 是否成功
+ */
+export async function teleportToPlane(userId, planeId) {
+  const planeData = await getPlayerPlaneData(userId);
+  if (!planeData.unlockedPlanes.includes(planeId)) {
+    return false; // 未解锁
+  }
+  planeData.currentPlane = planeId;
+  planeData.lastTeleport = Date.now();
+  await savePlayerPlaneData(userId, planeData);
+  return true;
+}
+
+/**
+ * 解锁位面
+ * @param {string} userId 玩家ID
+ * @param {string} planeId 位面ID
+ * @returns {Promise<boolean>} 是否是新解锁
+ */
+export async function unlockPlane(userId, planeId) {
+  const planeData = await getPlayerPlaneData(userId);
+  if (planeData.unlockedPlanes.includes(planeId)) {
+    return false; // 已解锁
+  }
+  planeData.unlockedPlanes.push(planeId);
+  // 初始化进阶进度
+  planeData.planeProgress[planeId] = {
+    stage: 1,
+    currency: 0,
+    stats: {}
+  };
+  await savePlayerPlaneData(userId, planeData);
+  return true;
+}
+
+/**
+ * 更新位面货币
+ * @param {string} userId 玩家ID
+ * @param {string} planeId 位面ID
+ * @param {number} amount 增加的货币量
+ * @returns {Promise<number>} 更新后的货币量
+ */
+export async function updatePlaneCurrency(userId, planeId, amount) {
+  const planeData = await getPlayerPlaneData(userId);
+  if (!planeData.planeProgress[planeId]) {
+    planeData.planeProgress[planeId] = { stage: 1, currency: 0, stats: {} };
+  }
+  planeData.planeProgress[planeId].currency += amount;
+  await savePlayerPlaneData(userId, planeData);
+  return planeData.planeProgress[planeId].currency;
+}
+
 export { redisClientProxy as redisClient };

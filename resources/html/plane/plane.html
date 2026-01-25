@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+    <link href="#" rel="shortcut icon" />
+    <style type="text/css">
+        @font-face {
+            font-family: "tttgbnumber";
+            src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+        }
+
+        @font-face {
+            font-family: "NZBZ";
+            src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+        }
+
+        body {
+            width: fit-content;
+            margin: 0;
+            padding: 0;
+        }
+
+        #capture {
+            width: 650px;
+            padding: 20px;
+            margin: 10px;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%);
+            font-family: "tttgbnumber", sans-serif;
+            color: #e8e8e8;
+        }
+
+        .panel-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(138, 180, 248, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 60px rgba(138, 180, 248, 0.05);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header .title {
+            font-family: "NZBZ", sans-serif;
+            font-size: 36px;
+            background: linear-gradient(135deg, #8ab4f8, #c7a4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(138, 180, 248, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .current-plane {
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.2), rgba(199, 164, 255, 0.2));
+            border: 1px solid rgba(138, 180, 248, 0.5);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .current-plane-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .current-plane-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 0 10px rgba(138, 180, 248, 0.8));
+        }
+
+        .current-plane-info h2 {
+            font-family: "NZBZ", sans-serif;
+            font-size: 24px;
+            color: #8ab4f8;
+            margin: 0;
+        }
+
+        .current-plane-info .desc {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .plane-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .plane-stat {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .plane-stat .label {
+            color: #888;
+        }
+
+        .plane-stat .value {
+            color: #8ab4f8;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-family: "NZBZ", sans-serif;
+            font-size: 20px;
+            color: #c7a4ff;
+            margin: 20px 0 15px 0;
+            border-bottom: 1px solid rgba(199, 164, 255, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .planes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .plane-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .plane-card.locked {
+            filter: grayscale(60%) opacity(0.7);
+        }
+
+        .plane-card.current {
+            border-color: #8ab4f8;
+            box-shadow: 0 0 15px rgba(138, 180, 248, 0.3);
+        }
+
+        .plane-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .plane-icon {
+            font-size: 24px;
+        }
+
+        .plane-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .plane-status {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 14px;
+        }
+
+        .plane-desc {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .plane-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .plane-currency {
+            color: #ffd700;
+        }
+
+        .cooldown-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cooldown-label {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .cooldown-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .cooldown-value.ready {
+            color: #4ade80;
+        }
+
+        .cooldown-value.waiting {
+            color: #f87171;
+        }
+
+        .tips {
+            font-size: 12px;
+            color: #555;
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="capture">
+        <div class="panel-container">
+            <div class="header">
+                <div class="title">星瀚位面</div>
+                <div class="subtitle">{{playerName}}的诸天万界</div>
+            </div>
+
+            <!-- 当前位面 -->
+            {{if currentPlane}}
+            <div class="current-plane">
+                <div class="current-plane-header">
+                    <span class="current-plane-icon">{{currentPlane.icon}}</span>
+                    <div class="current-plane-info">
+                        <h2>{{currentPlane.name}}</h2>
+                        <div class="desc">{{currentPlane.theme}}</div>
+                    </div>
+                </div>
+                <div class="plane-stats">
+                    <div class="plane-stat">
+                        <span class="label">货币：</span>
+                        <span class="value">{{currentPlane.progress.currency || 0}} {{currentPlane.currency}}</span>
+                    </div>
+                    {{if currentPlane.stages && currentPlane.stages.length > 0}}
+                    <div class="plane-stat">
+                        <span class="label">阶段：</span>
+                        <span class="value">{{currentPlane.stages[currentPlane.progress.stage - 1]?.name ||
+                            '初入'}}</span>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="section-title">📍 位面列表</div>
+            <div class="planes-grid">
+                {{each planes plane}}
+                <div class="plane-card {{if !plane.isUnlocked}}locked{{/if}} {{if plane.isCurrent}}current{{/if}}">
+                    <span class="plane-status">
+                        {{if plane.isCurrent}}📍{{else if plane.isUnlocked}}✅{{else}}🔒{{/if}}
+                    </span>
+                    <div class="plane-card-header">
+                        <span class="plane-icon">{{plane.icon}}</span>
+                        <span class="plane-name">{{plane.name}}</span>
+                    </div>
+                    <div class="plane-desc">{{plane.desc}}</div>
+                    <div class="plane-meta">
+                        <span class="plane-currency">💰 {{plane.currency}}</span>
+                        {{if plane.isUnlocked}}
+                        <span>{{plane.currentStageName}}</span>
+                        {{else}}
+                        <span>🔒 未解锁</span>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="cooldown-bar">
+                <span class="cooldown-label">⏱️ 传送阵状态</span>
+                <span class="cooldown-value {{if canTeleport}}ready{{else}}waiting{{/if}}">
+                    {{if canTeleport}}✅ 可传送{{else}}冷却中...{{/if}}
+                </span>
+            </div>
+
+            <div class="tips">
+                发送 #传送xxx 前往指定位面 | 发送 #位面信息 查看当前位面详情
+            </div>
+        </div>
+    </div>
+
+    <!-- Ready 信号脚本 -->
+    <script>
+        (function () {
+            document.getElementById('capture').classList.add('ready');
+        })();
+    </script>
+</body>
+
+</html>

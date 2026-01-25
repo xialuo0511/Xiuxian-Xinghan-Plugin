@@ -103,6 +103,18 @@
       title: '#一键领取成就'
       desc: '领取所有可领奖励'
 
+- group: 位面系统
+  list:
+    - icon: help-icon_70
+      title: '#位面'
+      desc: '查看位面列表'
+    - icon: help-icon_48
+      title: '#传送xxx'
+      desc: '传送到指定位面'
+    - icon: help-icon_48
+      title: '#位面信息'
+      desc: '查看当前位面详情'
+
 - group: 管理指令
   list:
     - icon: help-icon_48
