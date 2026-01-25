@@ -1,16 +1,6 @@
 // Worker 进程 - 独立运行，不依赖主线程
 console.log('[Worker] 进程启动中...');
 
-// 定义 Worker 专用的全局变量，让依赖模块可以正常加载
-// 这些模块在主线程中使用 Yunzai 的全局变量
-globalThis.logger = {
-  info: (...args) => console.log('[Worker-Logger]', ...args),
-  warn: (...args) => console.warn('[Worker-Logger]', ...args),
-  error: (...args) => console.error('[Worker-Logger]', ...args),
-  mark: (...args) => console.log('[Worker-Logger]', ...args),
-  debug: (...args) => console.log('[Worker-Logger]', ...args),
-};
-
 // 全局异常捕获
 process.on('uncaughtException', (err) => {
   console.error('[Worker] 未捕获的异常:', err);
