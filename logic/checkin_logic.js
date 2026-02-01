@@ -11,6 +11,14 @@ const xiuxianConfigData = config.getConfig('xiuxian', 'xiuxian');
 
 monthlyRewardsConfig = Object.values(monthlyRewardsConfig);
 
+// 加载2026马年春节活动签到配置
+let springFestivalSigninConfig = null;
+try {
+  springFestivalSigninConfig = loadItemConfig('spring_festival_signin.yaml');
+} catch (err) {
+  logger.warn('[签到] 春节活动配置加载失败，活动签到功能将不可用:', err.message);
+}
+
 
 /**
  * 为指定用户清除今日的签到记录
@@ -205,6 +213,100 @@ export async function processDailyCheckIn(userId) {
     }
   }
 
+  // 检查并添加【2026马年春节活动】的每日签到奖励
+  const springFestivalStart = new Date('2026-02-02 00:00:00').getTime();
+  const springFestivalEnd = new Date('2026-03-08 23:59:59').getTime();
+  const currentTime = Date.now();
+
+  // 活动签到数据（用于UI展示）
+  let springFestivalData = null;
+
+  if (currentTime >= springFestivalStart && currentTime <= springFestivalEnd) {
+    // 每日基础奖励
+    const festivalRewards = [
+      { name: '马年福袋', class: '活动', amount: 1 },
+      { name: '灵石', class: '资源', amount: 2000 }
+    ];
+    extraRewards.push(...festivalRewards);
+    extraMessages.push('【万马奔腾】新春签到福利');
+
+    // 为玩家发放活动签到奖励
+    for (const reward of festivalRewards) {
+      await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount, reward);
+    }
+
+    // 修为翻倍奖励（在已有修为基础上再加一倍）
+    const bonusXiuwei = transactionResult.dailyRewards.修为;
+    await DAL.transaction_update(userId, (p) => {
+      p.修为 += bonusXiuwei;
+    });
+    extraRewards.push({ name: '修为', class: '资源', amount: bonusXiuwei });
+    extraMessages.push(`新春加成：额外修为+${bonusXiuwei}`);
+
+    // ===== 活动累计签到奖励 =====
+    if (springFestivalSigninConfig && springFestivalSigninConfig.rewards) {
+      const activitySigninKey = `XinghanXiuxian:SpringFestival:2026:SignIn:${userId}`;
+      const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+
+      // 获取当前活动签到数据
+      const lastActivitySignDate = await redis.hGet(activitySigninKey, 'last_date');
+      let activitySignCount = parseInt(await redis.hGet(activitySigninKey, 'count') || '0');
+      let claimedActivityRewards = JSON.parse(await redis.hGet(activitySigninKey, 'claimed') || '[]');
+
+      // 今日是否已签（防止重复计数，因为普通签到已有判断）
+      if (lastActivitySignDate !== todayStr) {
+        activitySignCount += 1;
+        await redis.hSet(activitySigninKey, 'count', String(activitySignCount));
+        await redis.hSet(activitySigninKey, 'last_date', todayStr);
+
+        // 设置过期时间（活动结束后7天清理）
+        const expireAt = Math.floor((springFestivalEnd + 7 * 24 * 60 * 60 * 1000) / 1000);
+        await redis.expireAt(activitySigninKey, expireAt);
+      }
+
+      // 检查并发放累计签到奖励
+      const rewardTiers = springFestivalSigninConfig.rewards;
+      for (const tier of rewardTiers) {
+        if (activitySignCount >= tier.days && !claimedActivityRewards.includes(tier.days)) {
+          claimedActivityRewards.push(tier.days);
+
+          // 发放奖励
+          for (const reward of tier.rewards) {
+            if (reward.class === '称号') {
+              // 称号奖励特殊处理
+              await DAL.transaction_update(userId, (p) => {
+                if (!p.titles) p.titles = [];
+                if (!p.titles.includes(reward.name)) {
+                  p.titles.push(reward.name);
+                }
+              });
+              extraRewards.push({ name: `称号「${reward.name}」`, class: '称号', amount: 1 });
+            } else {
+              await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount, reward);
+              extraRewards.push({ name: reward.name, class: reward.class, amount: reward.amount });
+            }
+          }
+          extraMessages.push(`🏮「${tier.name}」累计${tier.days}天奖励`);
+        }
+      }
+
+      await redis.hSet(activitySigninKey, 'claimed', JSON.stringify(claimedActivityRewards));
+
+      // 构建活动签到数据用于UI展示
+      springFestivalData = {
+        count: activitySignCount,
+        claimed: claimedActivityRewards,
+        tiers: rewardTiers.map(tier => ({
+          days: tier.days,
+          name: tier.name,
+          isClaimed: claimedActivityRewards.includes(tier.days),
+          canClaim: activitySignCount >= tier.days && !claimedActivityRewards.includes(tier.days)
+        }))
+      };
+    }
+  }
+
+
   // 发放奖励物品 (事务成功后执行)
   await DAL.updateNajieItem(userId, '秘境之匙', '道具', transactionResult.dailyRewards.秘境之匙);
   for (const item of transactionResult.cumulativeRewards) {
@@ -241,8 +343,11 @@ export async function processDailyCheckIn(userId) {
     extraRewardsInfo: {
       messages: [...new Set(extraMessages)], // 消息去重
       items: extraRewards
-    }
+    },
+    // 新春活动签到数据（用于UI展示）
+    springFestivalData: springFestivalData
   };
+
 
   try {
     const partnerId = await partnerLogic.getPartnerId(userId);

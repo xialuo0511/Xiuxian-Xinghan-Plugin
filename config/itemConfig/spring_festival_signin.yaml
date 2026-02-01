@@ -1,0 +1,63 @@
+# 2026马年春节活动 - 阶段一签到奖励配置
+# 活动时间：2026/2/2 00:00:00 ~ 2026/3/8 23:59:59
+
+activity:
+  id: spring_festival_2026
+  name: "万马奔腾"
+  phase: 1
+  phase_name: "福临门庭"
+  start_time: "2026-02-02 00:00:00"
+  end_time: "2026-03-08 23:59:59"
+
+# 累计签到奖励
+# 玩家通过普通签到自动累计活动天数，达到指定天数后自动发放奖励
+rewards:
+  - days: 1
+    name: "开门迎春"
+    rewards:
+      - name: "2w"
+        class: "道具"
+        amount: 1
+      - name: "驭马令"
+        class: "活动"
+        amount: 1
+
+  - days: 3
+    name: "三阳开泰"
+    rewards:
+      - name: "5w"
+        class: "道具"
+        amount: 1
+      - name: "血气瓶"
+        class: "道具"
+        amount: 10
+
+  - days: 7
+    name: "七星高照"
+    rewards:
+      - name: "10w"
+        class: "道具"
+        amount: 1
+      - name: "七星玄元丹"
+        class: "道具"
+        amount: 1
+
+  - days: 14
+    name: "天马行空"
+    rewards:
+      - name: "20w"
+        class: "道具"
+        amount: 1
+      - name: "天马之魂"
+        class: "活动"
+        amount: 1
+
+  - days: 21
+    name: "马到成功"
+    rewards:
+      - name: "50w"
+        class: "道具"
+        amount: 1
+      - name: "马到成功"
+        class: "称号"
+        amount: 1

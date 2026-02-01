@@ -25,45 +25,102 @@
       padding: 0;
     }
 
-    /* ===== 截图容器 - 按照 puppeteer-wrapper skill 规范 ===== */
+    /* ===== 截图容器 - 新年主题 ===== */
     #capture {
       font-family: 'HYWenHei', 'Microsoft YaHei', sans-serif;
-      background: linear-gradient(135deg, #f5f0e6 0%, #e8dcc8 50%, #d4c4a8 100%);
+      /* 新年红金主题背景 */
+      background: linear-gradient(135deg, #8B0000 0%, #DC143C 30%, #B22222 60%, #8B0000 100%);
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-color: #f5f0e6;
       padding: 20px;
       margin: 10px;
+      position: relative;
     }
 
-    /* ===== 容器样式 ===== */
+    /* 新年装饰：顶部灯笼 */
+    #capture::before {
+      content: "🏮";
+      position: absolute;
+      top: 5px;
+      left: 25px;
+      font-size: 36px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    #capture::after {
+      content: "🏮";
+      position: absolute;
+      top: 5px;
+      right: 25px;
+      font-size: 36px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    /* ===== 容器样式 - 新年风格 ===== */
     .calendar-container {
-      background: rgba(255, 253, 247, 0.9);
-      backdrop-filter: blur(5px);
-      border: 2px solid #8B4513;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 248, 220, 0.95) 0%, rgba(255, 239, 186, 0.95) 100%);
+      backdrop-filter: blur(8px);
+      border: 3px solid #DAA520;
+      box-shadow:
+        0 0 30px rgba(218, 165, 32, 0.4),
+        0 0 60px rgba(139, 0, 0, 0.2),
+        inset 0 0 30px rgba(255, 215, 0, 0.1);
       width: 600px;
-      border-radius: 0.5rem;
+      border-radius: 16px;
       padding: 1.5rem;
+      position: relative;
     }
 
-    /* ===== 头部样式 ===== */
+    /* 容器金边装饰 */
+    .calendar-container::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      border: 1px dashed rgba(218, 165, 32, 0.5);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    /* ===== 头部样式 - 新年风格 ===== */
     .header {
       text-align: center;
       margin-bottom: 1rem;
+      position: relative;
     }
 
     .header h1 {
-      font-size: 1.875rem;
+      font-size: 2rem;
       font-weight: 700;
-      color: #6a3906;
-      letter-spacing: 0.1em;
+      color: #8B0000;
+      letter-spacing: 0.15em;
+      text-shadow: 0 2px 4px rgba(218, 165, 32, 0.5);
+      position: relative;
+      display: inline-block;
+    }
+
+    /* 标题两侧装饰 */
+    .header h1::before {
+      content: "✦";
+      position: absolute;
+      left: -30px;
+      color: #DAA520;
+    }
+
+    .header h1::after {
+      content: "✦";
+      position: absolute;
+      right: -30px;
+      color: #DAA520;
     }
 
     .header p {
       font-size: 1.125rem;
-      color: #8B4513;
+      color: #B8860B;
+      margin-top: 0.25rem;
     }
 
     /* ===== 日历网格 ===== */
@@ -74,14 +131,15 @@
     }
 
     .day-header {
-      color: #8B4513;
+      color: #8B0000;
       text-align: center;
       font-weight: 700;
       padding: 0.5rem;
     }
 
     .day-cell {
-      border: 1px solid #D2B48C;
+      border: 1px solid #DAA520;
+      background: rgba(255, 255, 255, 0.6);
       transition: all 0.3s ease;
       padding: 0.5rem;
       height: 5rem;
@@ -90,22 +148,30 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      border-radius: 6px;
     }
 
     .day-cell .day-number {
       font-size: 1.125rem;
       font-weight: 600;
-      color: #6a3906;
+      color: #8B0000;
     }
 
     .checked-in {
-      background-color: rgba(138, 201, 134, 0.5);
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 193, 7, 0.3) 100%);
+      border-color: #FFD700;
     }
 
     .today-check-in {
-      background-color: rgba(60, 179, 113, 0.7);
-      border: 2px solid #2E8B57;
+      background: linear-gradient(135deg, rgba(220, 20, 60, 0.7) 0%, rgba(178, 34, 34, 0.6) 100%);
+      border: 2px solid #FFD700;
       transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+
+    .today-check-in .day-number {
+      color: #FFF8DC;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
 
     .check-mark {
@@ -117,11 +183,130 @@
       opacity: 0.9;
     }
 
+    /* ===== 新春活动签到进度区域 ===== */
+    .spring-festival-section {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, rgba(139, 0, 0, 0.15) 0%, rgba(220, 20, 60, 0.1) 100%);
+      border: 2px solid #DC143C;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .spring-festival-section::before {
+      content: "🐴";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      background: #FFF8DC;
+      padding: 0 8px;
+      border-radius: 50%;
+    }
+
+    .spring-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .spring-section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #8B0000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .spring-section-stats {
+      font-size: 1rem;
+      color: #B8860B;
+    }
+
+    .spring-section-stats .highlight {
+      font-weight: 700;
+      color: #DC143C;
+      font-size: 1.1em;
+    }
+
+    /* 活动进度条 */
+    .spring-progress-wrapper {
+      position: relative;
+      padding: 2rem 0 1rem 0;
+    }
+
+    .spring-progress-bar {
+      height: 12px;
+      background: rgba(139, 0, 0, 0.2);
+      border-radius: 6px;
+      overflow: visible;
+      position: relative;
+    }
+
+    .spring-progress-filler {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD700, #FF6347, #DC143C);
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+      transition: width 0.8s ease-in-out;
+    }
+
+    /* 活动奖励节点 */
+    .spring-reward-node {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .spring-reward-node.claimed {
+      filter: grayscale(0.5) opacity(0.7);
+    }
+
+    .spring-reward-node.can-claim {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.15);
+      }
+    }
+
+    .spring-reward-icon {
+      font-size: 28px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .spring-reward-text {
+      font-size: 11px;
+      color: #8B0000;
+      font-weight: bold;
+      margin-top: 2px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
     /* ===== 累计奖励区域 ===== */
     .cumulative-rewards-section {
       margin-top: 1.5rem;
       padding: 1rem;
-      border-top: 2px dashed #D2B48C;
+      border-top: 2px dashed #DAA520;
     }
 
     .section-header {
@@ -134,17 +319,17 @@
     .section-title {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #6a3906;
+      color: #8B0000;
     }
 
     .section-stats {
       font-size: 1rem;
-      color: #8B4513;
+      color: #B8860B;
     }
 
     .section-stats .highlight {
       font-weight: 700;
-      color: #d97706;
+      color: #DC143C;
     }
 
     .section-stats .highlight-pink {
@@ -160,7 +345,7 @@
 
     .progress-bar {
       height: 10px;
-      background-color: rgba(139, 69, 19, 0.3);
+      background-color: rgba(139, 0, 0, 0.2);
       border-radius: 5px;
       overflow: hidden;
     }
@@ -172,8 +357,8 @@
     }
 
     .progress-bar-filler.personal {
-      background: linear-gradient(90deg, #fceabb, #f8b500);
-      box-shadow: 0 0 5px rgba(248, 181, 0, 0.7);
+      background: linear-gradient(90deg, #FFD700, #FFA500);
+      box-shadow: 0 0 8px rgba(255, 165, 0, 0.7);
     }
 
     .progress-bar-filler.coop {
@@ -212,7 +397,7 @@
 
     .reward-day-text {
       font-size: 12px;
-      color: #8B4513;
+      color: #8B0000;
       font-weight: bold;
       margin-top: 2px;
       line-height: 1;
@@ -222,13 +407,13 @@
     .rewards-section {
       margin-top: 1.5rem;
       padding: 1rem;
-      border-top: 2px dashed #D2B48C;
+      border-top: 2px dashed #DAA520;
     }
 
     .rewards-section h2 {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #6a3906;
+      color: #8B0000;
       margin-bottom: 0.5rem;
     }
 
@@ -243,42 +428,45 @@
 
     .rewards-content .value {
       font-weight: 700;
-      color: #15803d;
+      color: #228B22;
     }
 
     .rewards-content .value-yellow {
       font-weight: 700;
-      color: #a16207;
+      color: #B8860B;
     }
 
     .rewards-content .bonus-text {
       font-size: 0.875rem;
       font-style: italic;
-      color: #a16207;
+      color: #B8860B;
       margin-top: 0.5rem;
     }
 
-    /* ===== 额外奖励区域 ===== */
+    /* ===== 额外奖励区域 - 新年风格 ===== */
     .extra-rewards-section {
       margin-top: 1rem;
       padding: 1rem;
-      border-top: 2px dashed #D2B48C;
-      background: rgba(252, 229, 174, 0.2);
+      border-top: 2px dashed #DAA520;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 193, 7, 0.1) 100%);
+      border-radius: 8px;
     }
 
     .extra-rewards-section h2 {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #6a3906;
+      color: #8B0000;
       margin-bottom: 0.5rem;
     }
 
     .extra-rewards-section .subtitle {
       font-size: 0.875rem;
       font-weight: 400;
+      color: #B8860B;
     }
   </style>
 </head>
+
 
 <body>
   <div id="capture">
@@ -311,7 +499,30 @@
         </div>
       </div>
 
+      {{if springFestivalData}}
+      <div class="spring-festival-section">
+        <div class="spring-section-header">
+          <h2 class="spring-section-title">🏮 万马奔腾 · 新春签到</h2>
+          <span class="spring-section-stats">活动累计: <span class="highlight">{{springFestivalData.count}}</span> / 21
+            天</span>
+        </div>
+        <div class="spring-progress-wrapper">
+          <div class="spring-progress-bar">
+            <div class="spring-progress-filler" style="width: {{(springFestivalData.count / 21) * 100}}%;"></div>
+          </div>
+          {{each springFestivalData.tiers tier}}
+          <div class="spring-reward-node {{if tier.isClaimed}}claimed{{/if}} {{if tier.canClaim}}can-claim{{/if}}"
+            style="left: {{(tier.days / 21) * 100}}%;">
+            <span class="spring-reward-icon">{{if tier.isClaimed}}✅{{else if tier.canClaim}}🎁{{else}}🔒{{/if}}</span>
+            <span class="spring-reward-text">{{tier.days}}天</span>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
       {{if show_coop_signin}}
+
       <div class="cumulative-rewards-section">
         <div class="section-header">
           <h2 class="section-title">仙侣同心</h2>
