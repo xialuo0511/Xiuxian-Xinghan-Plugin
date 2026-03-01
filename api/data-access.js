@@ -552,7 +552,7 @@ export async function getNajieItemAmount(userId, itemName, itemClass) {
     return item?.数量 || 0;
 
   } catch (error) {
-    logger.error(`[getNajieItemAmount] 获取玩家 ${userId} 物品 ${itemName} 数量时出错:`, error);
+    console.error(`[getNajieItemAmount] 获取玩家 ${userId} 物品 ${itemName} 数量时出错:`, error);
     return 0;
   }
 }
