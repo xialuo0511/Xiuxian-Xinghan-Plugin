@@ -40,7 +40,7 @@ body {
 
 .head-box .title {
   font-size: 42px;
-  font-family: "NZBZ", "微软雅黑", sans-serif;
+  font-family: "NZBZ", "HYWH", "HYWenHei", "Microsoft YaHei", sans-serif;
   color: #FFD700;
   text-shadow:
     0 0 10px rgba(255, 215, 0, 0.8),
@@ -59,7 +59,7 @@ body {
 }
 
 .label {
-  font-family: "微软雅黑", sans-serif;
+  font-family: "HYWH", "HYWenHei", "Microsoft YaHei", sans-serif;
   color: rgba(180, 160, 140, 0.7);
   font-size: 13px;
   margin-top: 10px;
