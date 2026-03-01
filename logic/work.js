@@ -46,8 +46,7 @@ export async function work(task, isRandom = true, e = null) {
   }
 
   // 删除对应的动作
-  const actionKey = `XinghanXiuxian:Player:${userId}:action`;
-  await redis.del(actionKey);
+  await DAL.deletePlayerAction(userId);
 
   const playerData = (await DAL.getAllPlayerData(userId))?.player;
   if (!playerData) return;

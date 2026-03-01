@@ -13,13 +13,13 @@ function loadYaml(fileName) {
   try {
     const filePath = path.join(configDir, fileName);
     if (!fs.existsSync(filePath)) {
-      logger.warn(`[配置加载] 配置文件不存在: ${filePath}`);
+      console.warn(`[配置加载] 配置文件不存在: ${filePath}`);
       return null;
     }
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     return YAML.parse(fileContent);
   } catch (error) {
-    logger.error(`[配置加载] 加载或解析配置文件 ${fileName} 时出错:`, error);
+    console.error(`[配置加载] 加载或解析配置文件 ${fileName} 时出错:`, error);
     return null;
   }
 }

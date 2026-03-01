@@ -3,7 +3,7 @@ import { loadItemConfig } from '../model/ConfigLoader.js';
 import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs';
-import { foundthing } from '../apps/Xiuxian/xiuxian.js';
+import { foundthing } from '../api/item-utils.js';
 
 const configPath = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin', 'config', 'activity_schedule.yaml');
 const file = fs.readFileSync(configPath, 'utf8');
@@ -37,15 +37,15 @@ export async function getFishShopData(userId) {
 
   // 修复：遍历纳戒所有分类，而不仅仅是'活动'，以兼容像"花篮"这样被归类为"礼物"的物品
   for (const categoryName in playerData.najie) {
-      const items = playerData.najie[categoryName];
-      if (Array.isArray(items)) {
-          items.forEach(item => {
-              if (item && catchableItemNames.has(item.name)) {
-                  // 如果存在多个分类有同名物品（理论不应发生），累加数量
-                  ownedFish[item.name] = (ownedFish[item.name] || 0) + item.数量;
-              }
-          });
-      }
+    const items = playerData.najie[categoryName];
+    if (Array.isArray(items)) {
+      items.forEach(item => {
+        if (item && catchableItemNames.has(item.name)) {
+          // 如果存在多个分类有同名物品（理论不应发生），累加数量
+          ownedFish[item.name] = (ownedFish[item.name] || 0) + item.数量;
+        }
+      });
+    }
   }
 
   const purchaseHistoryKey = `XinghanXiuxian:fish_shop_history:${userId}:${EVENT_KEY}`;
@@ -150,11 +150,11 @@ export async function getAnglerCodex(userId) {
   const getOwnedAmount = (itemName) => {
     let total = 0;
     for (const categoryName in najie) {
-        const list = najie[categoryName];
-        if (Array.isArray(list)) {
-            const item = list.find(i => i && i.name === itemName);
-            if (item) total += item.数量;
-        }
+      const list = najie[categoryName];
+      if (Array.isArray(list)) {
+        const item = list.find(i => i && i.name === itemName);
+        if (item) total += item.数量;
+      }
     }
     return total;
   };
@@ -293,28 +293,28 @@ export async function goFishing(userId) {
     const activityItems = playerData?.najie?.['活动'] || [];
 
     const availableBaitsInInventory = allBaits
-        .map(b => {
-            const item = activityItems.find(i => i.name === b.name);
-            return { bait: b, amount: item?.数量 || 0 };
-        })
-        .filter(entry => entry.amount > 0 && entry.bait.name !== bait.name);
+      .map(b => {
+        const item = activityItems.find(i => i.name === b.name);
+        return { bait: b, amount: item?.数量 || 0 };
+      })
+      .filter(entry => entry.amount > 0 && entry.bait.name !== bait.name);
 
     if (availableBaitsInInventory.length > 0) {
-        const nextBaitToEquip = availableBaitsInInventory[0].bait;
-        await equip(userId, 'bait', nextBaitToEquip.name);
-        autoEquipMessage += `你的【${bait.name}】已用尽，已为你自动装备【${nextBaitToEquip.name}】。\n`;
+      const nextBaitToEquip = availableBaitsInInventory[0].bait;
+      await equip(userId, 'bait', nextBaitToEquip.name);
+      autoEquipMessage += `你的【${bait.name}】已用尽，已为你自动装备【${nextBaitToEquip.name}】。\n`;
 
-        // Re-get fishing status with the new bait
-        const newStatus = await getFishingStatus(userId);
-        rod = newStatus.rod; // Re-assign rod in case it was needed, though not expected to change here
-        bait = newStatus.bait;
-        bait_amount = newStatus.bait_amount;
-        if (!bait) { // Should not happen if availableBaitsInInventory was not empty
-             return { success: false, message: `${autoEquipMessage}然而，自动装备的鱼饵也未能成功识别，请联系管理员。` };
-        }
+      // Re-get fishing status with the new bait
+      const newStatus = await getFishingStatus(userId);
+      rod = newStatus.rod; // Re-assign rod in case it was needed, though not expected to change here
+      bait = newStatus.bait;
+      bait_amount = newStatus.bait_amount;
+      if (!bait) { // Should not happen if availableBaitsInInventory was not empty
+        return { success: false, message: `${autoEquipMessage}然而，自动装备的鱼饵也未能成功识别，请联系管理员。` };
+      }
     } else {
-        // No other baits available, break loop and return final message
-        return { success: false, message: `${autoEquipMessage}你的【${bait.name}】已经用完了，可通过【修仙签到】或【秘境探索】获取。` };
+      // No other baits available, break loop and return final message
+      return { success: false, message: `${autoEquipMessage}你的【${bait.name}】已经用完了，可通过【修仙签到】或【秘境探索】获取。` };
     }
   }
 

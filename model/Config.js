@@ -7,7 +7,7 @@ import lodash from "lodash";
 class Config {
     constructor() {
         /** 默认配置文件路径 */
-        this.defSetPath = "./plugins/xiuxian-emulator-plugin/defSet/";        
+        this.defSetPath = "./plugins/xiuxian-emulator-plugin/defSet/";
         this.defSet = {};
 
         /** 用户自己配置的配置文件路径 */
@@ -88,7 +88,11 @@ class Config {
         const watcher = chokidar.watch(file);
         watcher.on("change", (path) => {
             delete this[type][key];
-            logger.mark(`[修改配置文件][${type}][${app}][${name}]`);
+            if (typeof logger !== 'undefined') {
+                logger.mark(`[修改配置文件][${type}][${app}][${name}]`);
+            } else {
+                console.log(`[修改配置文件][${type}][${app}][${name}]`);
+            }
             if (this[`change_${app}${name}`]) {
                 this[`change_${app}${name}`]();
             }
