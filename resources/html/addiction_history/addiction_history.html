@@ -6,13 +6,18 @@
     <link href="#" rel="shortcut icon" />
     <style type="text/css">
         @font-face {
+            font-family: "HYWenHei";
+            src: url("{{pluResPath}}font/HYWenHei-55W.ttf");
+        }
+
+        @font-face {
             font-family: "tttgbnumber";
-            src: url("file:///{{pluResPath}}/font/tttgbnumber.ttf");
+            src: url("{{pluResPath}}font/tttgbnumber.ttf");
         }
 
         @font-face {
             font-family: "NZBZ";
-            src: url("file:///{{pluResPath}}/font/NZBZ.TTF");
+            src: url("{{pluResPath}}font/NZBZ.TTF");
         }
 
         body {
@@ -28,7 +33,7 @@
             background-image: url('file:///{{pluResPath}}/img/player_pifu/beijing.jpg');
             background-size: cover;
             background-position: center;
-            font-family: "tttgbnumber", sans-serif;
+            font-family: "HYWenHei", "tttgbnumber", sans-serif;
             color: #4a2c1a;
         }
 
@@ -46,7 +51,7 @@
         }
 
         .header .title {
-            font-family: "NZBZ", sans-serif;
+            font-family: "NZBZ", "HYWenHei", sans-serif;
             font-size: 36px;
             color: #6a3906;
         }
