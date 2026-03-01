@@ -224,16 +224,21 @@ export async function processDailyCheckIn(userId) {
   if (currentTime >= springFestivalStart && currentTime <= springFestivalEnd) {
     // 每日基础奖励
     const festivalRewards = [
-      { name: '马年福袋', class: '活动', amount: 1 },
-      { name: '灵石', class: '资源', amount: 2000 }
+      { name: '马年福袋', class: '活动', amount: 1 }
     ];
+    const festivalLingshi = 2000;
     extraRewards.push(...festivalRewards);
+    extraRewards.push({ name: '灵石', class: '资源', amount: festivalLingshi });
     extraMessages.push('【万马奔腾】新春签到福利');
 
     // 为玩家发放活动签到奖励
     for (const reward of festivalRewards) {
       await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount, reward);
     }
+    // 灵石直接加到玩家属性，不经过纳戒系统
+    await DAL.transaction_update(userId, (p) => {
+      p.灵石 = (p.灵石 || 0) + festivalLingshi;
+    });
 
     // 修为翻倍奖励（在已有修为基础上再加一倍）
     const bonusXiuwei = transactionResult.dailyRewards.修为;

@@ -401,6 +401,10 @@ export function updateNajieSync(najie, itemName, itemClass, quantity, pinji = nu
   const findItemTemplate = (name, className) => {
     const listMap = XiuxianData.itemListMap;
     const listsToSearch = listMap[className] || listMap['默认'];
+    if (!listsToSearch) {
+      console.warn(`[findItemTemplate] 未知物品类别 "${className}"，无法查找物品模板 "${name}"`);
+      return null;
+    }
     for (const listName of listsToSearch) {
       const item = data[listName]?.find(i => i.name === name);
       if (item) return item;
