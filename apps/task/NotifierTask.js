@@ -1,7 +1,7 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import { redisClient } from '../../api/redis.js';
 import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 
 const AT_ALL_FLAG = '__AT_ALL__';
 
@@ -76,7 +76,7 @@ export class NotifierTask extends plugin {
           // 渲染图片
           const tempE = { user_id: notification.user_id, group_id: notification.group_id };
           const dataForPuppeteer = await new Show(tempE).get_secret_place_log(messageContent.data);
-          const img = await puppeteer.screenshot(messageContent.render, { ...dataForPuppeteer });
+          const img = await puppeteer.screenshot(messageContent.render, { ...dataForPuppeteer, scale: 2 });
           finalMsg.push(img);
         } else {
           // 普通文本
