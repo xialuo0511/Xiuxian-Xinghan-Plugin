@@ -179,10 +179,8 @@ export class SecretPlace extends plugin {
     }
 
     try {
-      const img = await puppeteer.screenshot('addiction_history', {
-        ...historyData,
-        pluResPath: `${process.cwd()}/plugins/xiuxian-emulator-plugin/resources`
-      });
+      const dataForPuppeteer = await new Show(e).get_imgData('addiction_history', historyData);
+      const img = await puppeteer.screenshot('addiction_history', { ...dataForPuppeteer });
       await e.reply(img);
     } catch (err) {
       console.error('[沉迷收获] 渲染图片失败:', err);
