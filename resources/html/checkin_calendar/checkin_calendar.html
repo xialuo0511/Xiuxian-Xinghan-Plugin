@@ -8,8 +8,28 @@
   <style>
     /* ===== 字体定义 ===== */
     @font-face {
+      font-family: 'tttgbnumber';
+      src: url('{{pluResPath}}font/tttgbnumber.ttf');
+    }
+
+    @font-face {
+      font-family: 'HYWH';
+      src: url('{{pluResPath}}font/HYWH-65W.ttf');
+    }
+
+    @font-face {
       font-family: 'HYWenHei';
       src: url('{{pluResPath}}font/HYWenHei-55W.ttf');
+    }
+
+    @font-face {
+      font-family: 'huawen';
+      src: url('{{pluResPath}}font/华文中宋.TTF');
+    }
+
+    @font-face {
+      font-family: 'NZBZ';
+      src: url('{{pluResPath}}font/NZBZ.TTF');
     }
 
     /* ===== 基础重置和布局类 ===== */
@@ -27,7 +47,7 @@
 
     /* ===== 截图容器 - 新年主题 ===== */
     #capture {
-      font-family: 'HYWenHei', 'Microsoft YaHei', sans-serif;
+      font-family: 'tttgbnumber', 'HYWH', 'HYWenHei', 'huawen', 'Microsoft YaHei', sans-serif;
       /* 新年红金主题背景 */
       background: linear-gradient(135deg, #8B0000 0%, #DC143C 30%, #B22222 60%, #8B0000 100%);
       background-size: cover;
