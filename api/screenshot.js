@@ -246,21 +246,23 @@ export async function screenshot(name, options = {}) {
         // 这一步将极其显著地提升加载速度，因为避开了文件加载等待
         let html = inlineResources(htmlRaw);
 
-        // 4.5 注入全局 emoji 字体 CSS
-        // 服务器 Puppeteer 无头 Chromium 缺少 emoji 字体，会导致 emoji 显示为方块/感叹号。
-        // 通过在 * 选择器末尾追加多个系统 emoji 字体名，让浏览器在中文字体不覆盖某字符时
-        // 自动 fallback 到系统内置的 emoji 字体（Linux 常见：Noto Color Emoji）。
-        const emojiGlobalCss = `
-<style id="__emoji_font_inject__">
-* {
-  font-family: inherit, "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "EmojiOne Color", "Twemoji Mozilla", "Android Emoji", sans-serif !important;
-}
-/* 对于明确声明了 font-family 的元素，追加 emoji fallback */
-[style*="font-family"] {
-  font-family: inherit, "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "EmojiOne Color" !important;
-}
-</style>`;
-        html = html.replace('</head>', emojiGlobalCss + '</head>');
+        // 4.5 向所有 font-family 声明末尾追加 emoji 字体
+        // 用正则匹配所有 font-family 声明，在已有字体链末尾追加 emoji 字体名。
+        // 中文字体优先，遇到 emoji 字符时 fallback 到系统 emoji 字体，互不干扰。
+        // 注：服务器需安装 emoji 字体：
+        //   yum install google-noto-emoji-color-fonts   (CentOS/RHEL)
+        //   dnf install google-noto-emoji-color-fonts   (Fedora)
+        const EMOJI_FONTS = '"Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "Twemoji Mozilla"';
+        html = html.replace(
+            /font-family\s*:\s*([^;}"'<>\n]{3,}?)\s*(?=[;}"'])/gi,
+            (match, fonts) => {
+                if (fonts.includes('Noto Color Emoji') || fonts.includes('Segoe UI Emoji')) {
+                    return match;
+                }
+                const cleaned = fonts.trim().replace(/,\s*$/, '');
+                return `font-family: ${cleaned}, ${EMOJI_FONTS}`;
+            }
+        );
 
         // 5. 直接使用 setContent 加载
         await page.setContent(html, {
