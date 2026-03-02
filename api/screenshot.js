@@ -244,7 +244,23 @@ export async function screenshot(name, options = {}) {
 
         // 4. 内联资源（CSS & 图片）
         // 这一步将极其显著地提升加载速度，因为避开了文件加载等待
-        const html = inlineResources(htmlRaw);
+        let html = inlineResources(htmlRaw);
+
+        // 4.5 注入全局 emoji 字体 CSS
+        // 服务器 Puppeteer 无头 Chromium 缺少 emoji 字体，会导致 emoji 显示为方块/感叹号。
+        // 通过在 * 选择器末尾追加多个系统 emoji 字体名，让浏览器在中文字体不覆盖某字符时
+        // 自动 fallback 到系统内置的 emoji 字体（Linux 常见：Noto Color Emoji）。
+        const emojiGlobalCss = `
+<style id="__emoji_font_inject__">
+* {
+  font-family: inherit, "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "EmojiOne Color", "Twemoji Mozilla", "Android Emoji", sans-serif !important;
+}
+/* 对于明确声明了 font-family 的元素，追加 emoji fallback */
+[style*="font-family"] {
+  font-family: inherit, "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "EmojiOne Color" !important;
+}
+</style>`;
+        html = html.replace('</head>', emojiGlobalCss + '</head>');
 
         // 5. 直接使用 setContent 加载
         await page.setContent(html, {
