@@ -78,7 +78,7 @@ body {
     height: 220px;
     top: -12px;
     left: -22px;
-    background-image: url("../../../img/materials/qingming/qingming_willow_left.svg");
+    background-image: url("../../../img/materials/qingming/qingming_willow_left.png");
 }
 
 .l-2 {
@@ -86,7 +86,7 @@ body {
     height: 210px;
     top: -6px;
     right: -18px;
-    background-image: url("../../../img/materials/qingming/qingming_willow_right.svg");
+    background-image: url("../../../img/materials/qingming/qingming_willow_right.png");
 }
 
 .l-3 {
@@ -94,7 +94,7 @@ body {
     height: 116px;
     top: 52px;
     right: 88px;
-    background-image: url("../../../img/materials/qingming/qingming_swallow.svg");
+    background-image: url("../../../img/materials/qingming/qingming_swallow.png");
 }
 
 .l-4 {
@@ -102,7 +102,7 @@ body {
     height: 120px;
     top: 108px;
     left: 96px;
-    background-image: url("../../../img/materials/qingming/qingming_mist.svg");
+    background-image: url("../../../img/materials/qingming/qingming_mist.png");
     opacity: 0.8;
 }
 
@@ -111,16 +111,11 @@ body {
     height: 126px;
     bottom: 42px;
     right: 14px;
-    background-image: url("../../../img/materials/qingming/qingming_kite.svg");
+    background-image: url("../../../img/materials/qingming/qingming_kite.png");
 }
 
 .t-2 {
-    width: 104px;
-    height: 104px;
-    bottom: 108px;
-    left: 8px;
-    background-image: url("../../../img/materials/qingming/qingming_leaf_swirls.svg");
-    opacity: 0.82;
+    display: none;
 }
 
 .panel-container {
