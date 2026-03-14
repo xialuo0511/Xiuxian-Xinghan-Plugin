@@ -25,21 +25,6 @@
         }
 
         @font-face {
-            font-family: "HYWH";
-            src: url("{{pluResPath}}font/HYWH-65W.ttf");
-        }
-
-        @font-face {
-            font-family: "huawen";
-            src: url("{{pluResPath}}font/华文中宋.TTF");
-        }
-
-        @font-face {
-            font-family: "HYWenHei";
-            src: url("{{pluResPath}}font/HYWenHei-55W.ttf");
-        }
-
-        @font-face {
             font-family: "NZBZ";
             src: url("{{pluResPath}}font/NZBZ.TTF");
         }
@@ -50,7 +35,6 @@
             --ink-light: #5a5a5a;
             --red-seal: #b22c2c;
             --border-color: #8c7b65;
-
             --gold: #b58900;
             --wood: #598c14;
             --water: #266b96;
@@ -108,7 +92,7 @@
 
         .turn-header::before,
         .turn-header::after {
-            content: "— ✤ —";
+            content: "· ✦ ·";
             color: var(--border-color);
             margin: 0 10px;
             font-size: 14px;
@@ -148,12 +132,24 @@
         }
 
         .av-badge {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 2px;
             font-size: 12px;
             background: #eee;
             padding: 1px 5px;
             border-radius: 2px;
-            font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
             color: #666;
+        }
+
+        .metric-label,
+        .metric-prefix,
+        .metric-unit {
+            font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", sans-serif;
+        }
+
+        .metric-number {
+            font-family: "tttgbnumber", "HYWH", "HYWenHei", "huawen", sans-serif;
         }
 
         .skill-name {
@@ -163,7 +159,6 @@
             margin-left: auto;
         }
 
-        /* 目标列表 */
         .target-row {
             display: flex;
             justify-content: space-between;
@@ -185,7 +180,9 @@
         }
 
         .effect-info {
-            font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
+            display: inline-flex;
+            align-items: baseline;
+            gap: 1px;
             font-size: 20px;
             font-weight: bold;
         }
@@ -202,7 +199,6 @@
             color: var(--shield-yellow);
         }
 
-        /* 状态面板 (支持头像) */
         .status-panel {
             margin-top: 12px;
             padding-top: 8px;
@@ -293,7 +289,6 @@
         .hp-val {
             width: 60px;
             text-align: right;
-            font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
             font-size: 12px;
         }
 
@@ -302,7 +297,6 @@
             text-decoration: line-through;
         }
 
-        /* 等级标签 */
         .rank-boss {
             color: var(--red-seal);
             font-weight: bold;
@@ -318,7 +312,6 @@
             vertical-align: middle;
         }
 
-        /* 五行色 */
         .ele-金 {
             color: var(--gold);
         }
@@ -339,15 +332,12 @@
             color: var(--earth);
         }
 
-        /* 战斗细节文本 */
         .action-details {
             margin-top: 8px;
             border-top: 1px dashed #d4cbb8;
-            /* 古风虚线 */
             padding-top: 6px;
             font-size: 13px;
             color: #777;
-            /* 略浅的墨色 */
             font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", sans-serif;
             line-height: 1.5;
         }
@@ -370,26 +360,27 @@
 </head>
 
 <body>
-
     <div id="capture">
         <div class="log-container">
             {{each log line}}
             {{if line.type === 'start' || line.type === 'system'}}
-            <div class="system-text">◈ {{line.text}} ◈</div>
+            <div class="system-text">● {{line.text}} ●</div>
             {{else if line.type === 'end'}}
-            <div class="end-text">☁ {{line.text}} ☁</div>
+            <div class="end-text">★ {{line.text}} ★</div>
             {{else if line.type === 'turn'}}
             <div class="turn-header">{{line.text}}</div>
             {{else if line.type === 'action'}}
             <div class="action-card {{if line.caster.team === 'player'}}player-action{{else}}enemy-action{{/if}}">
                 <div class="action-header">
                     <div class="caster-info">
-                        <span class="av-badge">耗时 {{line.av_cost}}</span>
-                        <!-- 头像逻辑: 如果id > 10000 (QQ号) 显示头像，否则显示文字图标 -->
+                        <span class="av-badge">
+                            <span class="metric-label">耗时</span>
+                            <span class="metric-number">{{line.av_cost}}</span>
+                        </span>
                         <span class="ele-{{line.caster.element}} {{if line.caster.level >= 5}}rank-boss{{/if}}">
                             {{if line.caster.level >= 5}}<span class="boss-tag">首</span>{{/if}}{{line.caster.name}}
                         </span>
-                        <span class="skill-name">「{{line.skill}}」</span>
+                        <span class="skill-name">《{{line.skill}}》</span>
                     </div>
                 </div>
 
@@ -397,16 +388,18 @@
                     {{each line.targets target}}
                     <div class="target-row">
                         <div class="target-name">
-                            <span class="action-arrow">➢</span>
+                            <span class="action-arrow">➣</span>
                             <span class="ele-{{target.element}}">{{target.name}}</span>
                         </div>
                         <div class="effect-info effect-{{target.type}}">
                             {{if target.is_crit}}<span class="crit-tag">暴击</span>{{/if}}
-                            {{if target.is_counter}}<span class="crit-tag"
-                                style="color:#c53828; border-color:#c53828;">克制</span>{{/if}}
-                            {{if target.type === 'damage'}}-{{target.value_display}}
-                            {{else if target.type === 'heal'}}+{{target.value_display}}
-                            {{else if target.type === 'shield'}}⊞{{target.value_display}}
+                            {{if target.is_counter}}<span class="crit-tag" style="color:#c53828; border-color:#c53828;">克制</span>{{/if}}
+                            {{if target.type === 'damage'}}
+                            <span class="metric-prefix">-{{splitDisplayText(target.value_display).prefix}}</span><span class="metric-number">{{splitDisplayText(target.value_display).number}}</span><span class="metric-unit">{{splitDisplayText(target.value_display).suffix}}</span>
+                            {{else if target.type === 'heal'}}
+                            <span class="metric-prefix">+{{splitDisplayText(target.value_display).prefix}}</span><span class="metric-number">{{splitDisplayText(target.value_display).number}}</span><span class="metric-unit">{{splitDisplayText(target.value_display).suffix}}</span>
+                            {{else if target.type === 'shield'}}
+                            <span class="metric-prefix">⊞{{splitDisplayText(target.value_display).prefix}}</span><span class="metric-number">{{splitDisplayText(target.value_display).number}}</span><span class="metric-unit">{{splitDisplayText(target.value_display).suffix}}</span>
                             {{/if}}
                         </div>
                     </div>
@@ -427,7 +420,7 @@
                                 <div class="hp-fill player" style="width: {{unit.hp_percent}}%"></div>
                                 <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
                             </div>
-                            <span class="hp-val">{{unit.hp_display}}</span>
+                            <span class="hp-val"><span class="metric-prefix">{{splitDisplayText(unit.hp_display).prefix}}</span><span class="metric-number">{{splitDisplayText(unit.hp_display).number}}</span><span class="metric-unit">{{splitDisplayText(unit.hp_display).suffix}}</span></span>
                         </div>
                         {{/each}}
                     </div>
@@ -444,7 +437,7 @@
                                 <div class="hp-fill enemy" style="width: {{unit.hp_percent}}%"></div>
                                 <div class="shield-fill" style="width: {{unit.shield_percent}}%"></div>
                             </div>
-                            <span class="hp-val">{{unit.hp_display}}</span>
+                            <span class="hp-val"><span class="metric-prefix">{{splitDisplayText(unit.hp_display).prefix}}</span><span class="metric-number">{{splitDisplayText(unit.hp_display).number}}</span><span class="metric-unit">{{splitDisplayText(unit.hp_display).suffix}}</span></span>
                         </div>
                         {{/each}}
                     </div>
@@ -480,7 +473,6 @@
                 });
             }
 
-            // 保底 3 秒超时
             setTimeout(() => {
                 document.getElementById('capture').classList.add('ready');
             }, 3000);

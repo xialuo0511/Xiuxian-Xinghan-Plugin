@@ -200,8 +200,24 @@ function renderTemplate(tplFile, data) {
     template.defaults.imports.JSON = JSON;
     template.defaults.imports.Math = Math;
     template.defaults.imports.Date = Date;
+    template.defaults.imports.splitDisplayText = splitDisplayText;
 
     return template.render(tplContent, data);
+}
+
+function splitDisplayText(value) {
+    const text = value == null ? '' : String(value);
+    const match = text.match(/^(.*?)(-?\d+(?:\.\d+)?)([^\d.]*)$/);
+
+    if (!match) {
+        return { prefix: text, number: '', suffix: '' };
+    }
+
+    return {
+        prefix: match[1] || '',
+        number: match[2] || '',
+        suffix: match[3] || ''
+    };
 }
 
 /**
