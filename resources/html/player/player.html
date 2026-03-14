@@ -29,6 +29,9 @@
     <div class="panel-container">
       <div class="card-base main-header">
         <div class="avatar-frame">
+          {{if skinConfig && skinConfig.id === 'qingming_2026'}}
+          <div class="avatar-mist"></div>
+          {{/if}}
           <img class="avatar-image" onerror="this.src='file:///{{pluResPath}}/img/player/touxiang.jpg'"
             src="{{head_pic}}" />
         </div>

@@ -91,12 +91,7 @@ body {
 }
 
 .l-4 {
-    width: 140px;
-    height: 120px;
-    top: 108px;
-    left: 96px;
-    background-image: url("../../../img/materials/qingming/qingming_mist.png");
-    opacity: 0.8;
+    display: none;
 }
 
 .t-1 {
@@ -197,6 +192,20 @@ body {
     top: -30px;
     right: -68px;
     background-image: url("../../../img/materials/qingming/qingming_willow_right.png");
+}
+
+.avatar-frame .avatar-mist {
+    position: absolute;
+    width: 220px;
+    height: 132px;
+    left: 50%;
+    bottom: -26px;
+    transform: translateX(-50%);
+    background: url("../../../img/materials/qingming/qingming_mist.png") center / contain no-repeat;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.78;
+    filter: drop-shadow(0 8px 12px rgba(96, 132, 105, 0.10));
 }
 
 .avatar-image {
