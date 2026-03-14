@@ -5,7 +5,22 @@
 
 @font-face {
     font-family: "NZBZ";
-    src: url("../../../font/NZBZ.TTF");
+    src: url("../../../font/NZBZ.ttf");
+}
+
+@font-face {
+    font-family: "HYWH";
+    src: url("../../../font/HYWH-65W.ttf");
+}
+
+@font-face {
+    font-family: "HYWenHei";
+    src: url("../../../font/HYWenHei-55W.ttf");
+}
+
+@font-face {
+    font-family: "huawen";
+    src: url("../../../font/华文中宋.TTF");
 }
 
 body {
@@ -20,7 +35,7 @@ body {
     background-image: url('../../../img/player_pifu/default.jpg');
     background-size: cover;
     background-position: center center;
-    font-family: "tttgbnumber", sans-serif;
+    font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
     color: #4a2c1a;
 }
 

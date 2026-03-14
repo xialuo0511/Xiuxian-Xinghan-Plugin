@@ -7,8 +7,13 @@
 }
 
 @font-face {
+    font-family: 'HYWH';
+    src: url('../../font/HYWH-65W.ttf');
+}
+
+@font-face {
     font-family: 'HYWenHei';
-    src: url('../../font/HYWenHei-85W.ttf');
+    src: url('../../font/HYWenHei-55W.ttf');
 }
 
 :root {
@@ -39,7 +44,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'HYWH', 'HYWenHei', 'Microsoft YaHei', sans-serif;
+    font-family: 'HYWH', 'HYWenHei', 'Microsoft YaHei', 'NZBZ', 'tttgbnumber', sans-serif;
     width: 720px;
     min-height: 600px;
     position: relative;

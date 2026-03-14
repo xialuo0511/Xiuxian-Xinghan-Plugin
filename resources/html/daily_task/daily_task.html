@@ -13,8 +13,23 @@
         }
 
         @font-face {
+            font-family: 'HYWH';
+            src: url('{{pluResPath}}font/HYWH-65W.ttf');
+        }
+
+        @font-face {
             font-family: 'HYWenHei';
-            src: url('{{pluResPath}}font/HYWenHei-85W.ttf');
+            src: url('{{pluResPath}}font/HYWenHei-55W.ttf');
+        }
+
+        @font-face {
+            font-family: 'huawen';
+            src: url('{{pluResPath}}font/华文中宋.TTF');
+        }
+
+        @font-face {
+            font-family: 'tttgbnumber';
+            src: url('{{pluResPath}}font/tttgbnumber.ttf');
         }
 
         /* ===== 基础重置 ===== */
@@ -25,7 +40,7 @@
         }
 
         body {
-            font-family: 'HYWenHei', '微软雅黑', sans-serif;
+            font-family: 'HYWH', 'HYWenHei', 'huawen', 'Microsoft YaHei', 'NZBZ', 'tttgbnumber', sans-serif;
             width: 650px;
             min-height: 100vh;
             position: relative;
