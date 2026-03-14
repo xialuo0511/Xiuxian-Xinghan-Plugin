@@ -48,8 +48,12 @@ function getBase64FromUrl(fileUrl, baseDir) {
 
         // MIME映射
         let mimeType = ext;
-        if (ext === 'jpg') mimeType = 'jpeg';
-        else if (ext === 'svg') mimeType = 'svg+xml';
+        if (ext === 'jpg') mimeType = 'image/jpeg';
+        else if (ext === 'jpeg') mimeType = 'image/jpeg';
+        else if (ext === 'png') mimeType = 'image/png';
+        else if (ext === 'gif') mimeType = 'image/gif';
+        else if (ext === 'webp') mimeType = 'image/webp';
+        else if (ext === 'svg') mimeType = 'image/svg+xml';
         else if (ext === 'ttf') mimeType = 'font/ttf';
         else if (ext === 'woff') mimeType = 'font/woff';
         else if (ext === 'woff2') mimeType = 'font/woff2';
