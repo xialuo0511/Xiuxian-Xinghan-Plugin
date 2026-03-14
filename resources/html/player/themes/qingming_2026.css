@@ -60,7 +60,7 @@ body {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 8;
+    z-index: 28;
 }
 
 .lantern,
@@ -71,6 +71,7 @@ body {
     background-position: center;
     opacity: 0.95;
     filter: drop-shadow(0 8px 12px rgba(96, 132, 105, 0.14));
+    z-index: 29;
 }
 
 .l-1 {
@@ -153,7 +154,7 @@ body {
 .card-base > *,
 .details-card > * {
     position: relative;
-    z-index: 2;
+    z-index: 32;
 }
 
 .main-header {
