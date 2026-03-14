@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="220" viewBox="0 0 260 220" fill="none">
+  <defs>
+    <linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9CCB8E"/>
+      <stop offset="100%" stop-color="#5B8C5A"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 4C84 40 111 89 126 203" stroke="#729B71" stroke-width="5" stroke-linecap="round"/>
+  <path d="M31 22C78 44 112 86 145 215" stroke="#7EAA7A" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <g opacity="0.92">
+    <path d="M66 52C81 46 91 48 97 61C80 66 69 62 66 52Z" fill="url(#leaf)"/>
+    <path d="M92 77C108 71 119 74 124 88C106 93 96 90 92 77Z" fill="url(#leaf)"/>
+    <path d="M110 108C126 102 137 105 142 119C124 125 114 122 110 108Z" fill="url(#leaf)"/>
+    <path d="M124 141C140 135 151 138 156 152C138 157 128 154 124 141Z" fill="url(#leaf)"/>
+    <path d="M133 177C149 170 160 173 165 188C147 193 137 191 133 177Z" fill="url(#leaf)"/>
+    <path d="M49 75C62 69 72 71 77 84C62 89 53 86 49 75Z" fill="url(#leaf)" opacity="0.75"/>
+    <path d="M76 101C89 95 99 97 104 110C89 115 80 112 76 101Z" fill="url(#leaf)" opacity="0.78"/>
+    <path d="M98 134C111 128 121 130 126 143C111 148 102 145 98 134Z" fill="url(#leaf)" opacity="0.76"/>
+  </g>
+</svg>

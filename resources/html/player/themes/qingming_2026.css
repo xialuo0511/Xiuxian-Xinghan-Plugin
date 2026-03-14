@@ -1,0 +1,365 @@
+@font-face {
+    font-family: "tttgbnumber";
+    src: url("../../../font/tttgbnumber.ttf");
+}
+
+@font-face {
+    font-family: "NZBZ";
+    src: url("../../../font/NZBZ.ttf");
+}
+
+@font-face {
+    font-family: "HYWH";
+    src: url("../../../font/HYWH-65W.ttf");
+}
+
+@font-face {
+    font-family: "HYWenHei";
+    src: url("../../../font/HYWenHei-55W.ttf");
+}
+
+@font-face {
+    font-family: "huawen";
+    src: url("../../../font/华文中宋.TTF");
+}
+
+body {
+    width: fit-content;
+    margin: 0;
+    padding: 0;
+}
+
+#capture {
+    width: 650px;
+    padding: 20px;
+    box-sizing: border-box;
+    background:
+        radial-gradient(circle at top right, rgba(223, 240, 220, 0.95), transparent 30%),
+        linear-gradient(180deg, rgba(244, 250, 244, 0.98), rgba(230, 241, 231, 0.96));
+    background-size: cover;
+    background-position: center;
+    font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
+    color: #2f4636;
+    position: relative;
+    overflow: hidden;
+}
+
+#capture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.34), transparent 38%),
+        radial-gradient(circle at 15% 10%, rgba(160, 202, 168, 0.16), transparent 22%),
+        radial-gradient(circle at 85% 15%, rgba(143, 187, 162, 0.16), transparent 20%);
+    pointer-events: none;
+}
+
+.festival-layer {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 8;
+}
+
+.lantern,
+.tassel {
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    opacity: 0.95;
+    filter: drop-shadow(0 8px 12px rgba(96, 132, 105, 0.14));
+}
+
+.l-1 {
+    width: 250px;
+    height: 220px;
+    top: -12px;
+    left: -22px;
+    background-image: url("../../../img/materials/qingming/qingming_willow_left.svg");
+}
+
+.l-2 {
+    width: 240px;
+    height: 210px;
+    top: -6px;
+    right: -18px;
+    background-image: url("../../../img/materials/qingming/qingming_willow_right.svg");
+}
+
+.l-3 {
+    width: 116px;
+    height: 116px;
+    top: 52px;
+    right: 88px;
+    background-image: url("../../../img/materials/qingming/qingming_swallow.svg");
+}
+
+.l-4 {
+    width: 140px;
+    height: 120px;
+    top: 108px;
+    left: 96px;
+    background-image: url("../../../img/materials/qingming/qingming_mist.svg");
+    opacity: 0.8;
+}
+
+.t-1 {
+    width: 126px;
+    height: 126px;
+    bottom: 42px;
+    right: 14px;
+    background-image: url("../../../img/materials/qingming/qingming_kite.svg");
+}
+
+.t-2 {
+    width: 104px;
+    height: 104px;
+    bottom: 108px;
+    left: 8px;
+    background-image: url("../../../img/materials/qingming/qingming_leaf_swirls.svg");
+    opacity: 0.82;
+}
+
+.panel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    z-index: 12;
+}
+
+.card-base,
+.details-card {
+    background: linear-gradient(180deg, rgba(250, 253, 249, 0.84), rgba(238, 246, 238, 0.76));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(122, 162, 125, 0.42);
+    border-radius: 18px;
+    box-shadow: 0 10px 26px rgba(92, 130, 101, 0.12);
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-base::before,
+.details-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.35), transparent 22%),
+        repeating-linear-gradient(135deg, rgba(130, 168, 136, 0.05) 0 10px, rgba(255,255,255,0) 10px 20px);
+    pointer-events: none;
+}
+
+.card-base > *,
+.details-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.main-header {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 12px 18px;
+    align-items: center;
+}
+
+.avatar-frame {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(195, 223, 195, 0.95), rgba(123, 170, 132, 0.88));
+    border: 3px solid rgba(118, 163, 123, 0.6);
+    box-shadow: 0 8px 20px rgba(88, 126, 95, 0.18);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+}
+
+.player-name,
+.player-title,
+.power-display,
+.details-card-title,
+.equipment-name {
+    font-family: "NZBZ", "HYWH", "HYWenHei", sans-serif;
+}
+
+.player-name {
+    font-size: 34px;
+    color: #3e6e4e;
+    letter-spacing: 2px;
+}
+
+.player-title {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 4px 14px;
+    font-size: 25px;
+    color: #547b59;
+    background: rgba(205, 230, 203, 0.6);
+    border-radius: 999px;
+    border: 1px solid rgba(126, 166, 121, 0.4);
+}
+
+.power-display {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 7px 16px;
+    font-size: 18px;
+    color: #f4fff5;
+    background: linear-gradient(90deg, #6d9f72, #84b18b);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.realm-progress-section {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+    margin-top: 6px;
+}
+
+.progress-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #618464;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 22px;
+    background: rgba(115, 152, 120, 0.12);
+    border-radius: 999px;
+    margin-top: 4px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(125, 162, 128, 0.2);
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 999px;
+}
+
+.progress-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 1px 1px rgba(38, 53, 41, 0.6);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 18px;
+}
+
+.info-item {
+    display: flex;
+}
+
+.info-label {
+    width: 86px;
+    flex-shrink: 0;
+    color: #678668;
+    font-weight: 700;
+}
+
+.info-value {
+    color: #2f4636;
+}
+
+.details-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.details-card-title {
+    font-size: 21px;
+    text-align: center;
+    color: #49714e;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(116, 153, 118, 0.28);
+    padding-bottom: 6px;
+}
+
+.stat-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.stat-line svg {
+    width: 18px;
+    height: 18px;
+    fill: #6c9470;
+    flex-shrink: 0;
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.equipment-item {
+    background: rgba(255, 255, 255, 0.34);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid rgba(127, 168, 122, 0.28);
+}
+
+.equipment-name {
+    font-size: 16px;
+    color: #446d4e;
+    margin-bottom: 6px;
+}
+
+.equipment-stats {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #2f4636;
+}
+
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: rgba(53, 77, 58, 0.82);
+    letter-spacing: 1px;
+}
+
+.pb-hp {
+    background: linear-gradient(to right, #96d3a1, #4f8f63);
+}
+
+.pb-exp {
+    background: linear-gradient(to right, #b9deb2, #7db091);
+}
+
+.pb-body {
+    background: linear-gradient(to right, #d4e8bf, #8eb180);
+}
+
+.pb-job {
+    background: linear-gradient(to right, #8fc6ac, #5f947d);
+}

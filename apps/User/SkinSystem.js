@@ -72,6 +72,8 @@ import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
 import Show from '../../model/show.js';
 import * as SkinLogic from '../../logic/skin_logic.js';
 import * as DAL from '../../api/data-access.js';
+import customPuppeteer from '../../api/puppeteer-wrapper.js';
+import { aggregatePlayerData, transformPlayerDataForRender } from '../../logic/player_view_logic.js';
 // 使用DAL的existPlayer函数
 
 export class SkinSystem extends plugin {
@@ -93,6 +95,10 @@ export class SkinSystem extends plugin {
                 {
                     reg: '^#测试皮肤(.+)$',
                     fnc: 'testSkin'
+                },
+                {
+                    reg: '^#测试练气(.+)$',
+                    fnc: 'testPlayerSkin'
                 },
                 {
                     reg: '^#发放皮肤(.+)$',
@@ -128,7 +134,7 @@ export class SkinSystem extends plugin {
             const defaultColors = {
                 primary: '#6a3906',
                 secondary: '#a88763',
-                background: '#fdfaf5', // 默认浅色背景
+                background: '#fdfaf5', // 默认浅色背景 
                 text: '#4a2c1a',
                 border: '#d2b48c',
                 accent: '#7a5533'
@@ -227,6 +233,64 @@ export class SkinSystem extends plugin {
         // 渲染预览图
         const dataForPuppeteer = await new Show(e).get_imgData('skinPreview', previewData);
         const img = await puppeteer.screenshot('skinPreview', { ...dataForPuppeteer });
+        await e.reply(img);
+    }
+
+    /**
+     * 管理员测试练气面板皮肤效果（真实练气页）
+     */
+    async testPlayerSkin(e) {
+        if (!e.isMaster) {
+            return e.reply('仅管理员可使用此指令');
+        }
+
+        if (!e.isGroup) {
+            return e.reply('请在群聊中使用此指令');
+        }
+
+        const userId = e.user_id;
+        if (!await DAL.existPlayer(userId)) {
+            return e.reply('请先发送#踏入仙途创建角色');
+        }
+
+        const skinName = e.msg.replace(/^#测试练气/, '').trim();
+        if (!skinName) {
+            return e.reply('请输入皮肤名称，例如：#测试练气雨霁青岚');
+        }
+
+        const skin = SkinLogic.FindSkinByName(skinName);
+        if (!skin) {
+            return e.reply(`未找到名为【${skinName}】的皮肤`);
+        }
+
+        const rawData = await aggregatePlayerData(userId);
+        if (!rawData) {
+            return e.reply('未找到玩家数据');
+        }
+
+        const renderData = await transformPlayerDataForRender(rawData, e);
+        renderData.skinConfig = skin;
+
+        if (skin.colors) {
+            const c = skin.colors;
+            renderData.skinStyle = `<style>
+      :root {
+        --skin-primary: ${c.primary || '#6a3906'};
+        --skin-secondary: ${c.secondary || '#a88763'};
+        --skin-background: ${c.background || 'rgba(253, 250, 245, 0.88)'};
+        --skin-text: ${c.text || '#4a2c1a'};
+        --skin-border: ${c.border || '#d2b48c'};
+        --skin-accent: ${c.accent || '#7a5533'};
+      }
+      </style>`;
+        } else {
+            renderData.skinStyle = '';
+        }
+
+        await e.reply(`正在预览练气主题【${skin.name}】...`);
+
+        const dataForPuppeteer = await new Show(e).get_playerData(renderData);
+        const img = await customPuppeteer.screenshot('player', { ...dataForPuppeteer });
         await e.reply(img);
     }
 
