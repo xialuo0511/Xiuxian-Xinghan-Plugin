@@ -133,7 +133,7 @@
           <div class="stat-line">修炼加成：{{talent}}%</div>
           <div class="stat-line">职业：[{{occupation}}]</div>
           <div class="stat-line">幸运：{{(player.幸运*100).toFixed(1)}}%</div>
-          <div class="stat-line">位面：{{位面.icon}} {{位面.name}}</div>
+          <div class="stat-line">位面：{{if planeInfo}}{{planeInfo.icon}} {{planeInfo.name}}{{else if 位面}}{{位面.icon}} {{位面.name}}{{else}}🌍 凡尘界{{/if}}</div>
         </div>
       </div>
 

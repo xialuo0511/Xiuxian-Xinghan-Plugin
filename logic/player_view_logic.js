@@ -8,6 +8,7 @@ import {
 import data from '../model/XiuxianData.js';
 import { GetPower, bigNumberTransform } from '../apps/ShowImeg/showData.js';
 import config from '../model/Config.js';
+import { getPlaneConfig } from './plane_logic.js';
 
 const versionData = config.getdefSet('version', 'version');
 
@@ -50,11 +51,12 @@ export async function aggregatePlayerData(userId) {
   if (!await DAL.existPlayer(userId)) {
     return null;
   }
-  const [playerAllData, currentAction, qinmiduData, dingjixianshi] = await Promise.all([
+  const [playerAllData, currentAction, qinmiduData, dingjixianshi, planeData] = await Promise.all([
     DAL.getAllPlayerData(userId),
     DAL.getPlayerAction(userId),
     Read_qinmidu().catch(() => []),
-    redis.get(`xiuxian:player:${userId}:dingjixianshi`).catch(() => 0)
+    redis.get(`xiuxian:player:${userId}:dingjixianshi`).catch(() => 0),
+    DAL.getPlayerPlaneData(userId).catch(() => ({ currentPlane: 'mortal_realm', unlockedPlanes: ['mortal_realm'], planeProgress: {} }))
   ]);
   if (!playerAllData) return null;
   return {
@@ -63,7 +65,8 @@ export async function aggregatePlayerData(userId) {
     najie: playerAllData.najie,
     action: currentAction,
     qinmidu: qinmiduData,
-    dingjixianshi: dingjixianshi || 0
+    dingjixianshi: dingjixianshi || 0,
+    planeData: planeData
   };
 }
 
@@ -75,8 +78,24 @@ function needMax(num) {
  * [处理层] 负责将原始数据计算并格式化为最终用于渲染的视图模型
  */
 export async function transformPlayerDataForRender(rawData, e) {
-  const { player, equipment, qinmidu, dingjixianshi } = rawData;
+  const { player, equipment, qinmidu, dingjixianshi, planeData } = rawData;
   const usr_qq = player.id;
+
+  // 位面信息处理
+  const currentPlaneConfig = getPlaneConfig(planeData?.currentPlane || 'mortal_realm');
+  const currentPlaneProgress = planeData?.planeProgress?.[planeData?.currentPlane] || { stage: 0, currency: 0 };
+  let currentStageName = '-';
+  if (currentPlaneProgress.stage > 0 && currentPlaneConfig?.stages?.length > 0) {
+    const stageInfo = currentPlaneConfig.stages.find(s => s.id === currentPlaneProgress.stage);
+    currentStageName = stageInfo?.name || '-';
+  }
+  const currentPlaneInfo = {
+    name: currentPlaneConfig?.name || '凡尘界',
+    icon: currentPlaneConfig?.icon || '🌍',
+    stage: currentStageName,
+    currency: currentPlaneProgress.currency || 0,
+    currencyName: currentPlaneConfig?.currency || '红尘珠'
+  };
 
   // 状态
   let status = '空闲';
@@ -230,6 +249,10 @@ export async function transformPlayerDataForRender(rawData, e) {
     仙宠: player.仙宠 && player.仙宠.name ? player.仙宠 : { name: '暂无', 品级: '', 等级: 0, type: '无', 加成: 0 },
 
     武器评级, 护具评级, 法宝评级,
-    修仙版本: versionData
+    修仙版本: versionData,
+
+    // 位面信息
+    位面: currentPlaneInfo,
+    planeInfo: currentPlaneInfo
   };
 }
