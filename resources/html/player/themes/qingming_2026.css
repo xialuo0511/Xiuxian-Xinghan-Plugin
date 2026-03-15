@@ -318,6 +318,7 @@ body {
 }
 
 .info-value {
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #2f4636;
 }
 
@@ -342,6 +343,7 @@ body {
     gap: 8px;
     margin-bottom: 8px;
     font-size: 16px;
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .stat-line svg {
@@ -374,6 +376,7 @@ body {
     font-size: 13px;
     line-height: 1.55;
     color: #2f4636;
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .footer {

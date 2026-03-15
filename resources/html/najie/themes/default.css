@@ -179,6 +179,7 @@ body {
     font-size: 14px;
     line-height: 1.7;
     flex-grow: 1;
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .item-footer {

@@ -417,6 +417,7 @@ body {
 }
 
 .info-value {
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #fff;
     font-size: 14px;
     font-weight: bold;
@@ -429,6 +430,7 @@ body {
 }
 
 .info-item[style*="column"] .info-value {
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #FFD700;
     font-style: italic;
 }
@@ -460,6 +462,7 @@ body {
     padding: 5px 8px;
     background: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .stat-line svg {
@@ -509,6 +512,7 @@ body {
     font-size: 12px;
     color: #eee;
     line-height: 1.5;
+    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .equipment-item[style*="column"] {
