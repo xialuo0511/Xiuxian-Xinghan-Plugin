@@ -1,9 +1,10 @@
 import * as DAL from '../api/data-access.js';
 import * as partnerLogic from './partner_logic.js';
 import config from '../model/Config.js';
-import { loadItemConfig } from '../model/ConfigLoader.js';
+import { loadItemConfig, loadSystemConfig } from '../model/ConfigLoader.js';
 import { getActivityStatus } from './fishing_logic.js';
 import { incrementProgressAndCheck, formatUnlockNotification } from './achievement_logic.js';
+import { grantActivityReward } from './activity_reward_logic.js';
 
 // 加载月度累计签到奖励配置
 let monthlyRewardsConfig = loadItemConfig('sign_in_rewards.yaml');
@@ -14,9 +15,38 @@ monthlyRewardsConfig = Object.values(monthlyRewardsConfig);
 // 加载2026马年春节活动签到配置
 let springFestivalSigninConfig = null;
 try {
-  springFestivalSigninConfig = loadItemConfig('spring_festival_signin.yaml');
+  springFestivalSigninConfig = loadSystemConfig('spring_festival_signin.yaml');
 } catch (err) {
   logger.warn('[签到] 春节活动配置加载失败，活动签到功能将不可用:', err.message);
+}
+
+// 加载2026清明活动签到配置
+let qingmingSigninConfig = null;
+try {
+  qingmingSigninConfig = loadSystemConfig('qingming_signin.yaml');
+} catch (err) {
+  logger.warn('[签到] 清明活动配置加载失败，活动签到功能将不可用:', err.message);
+}
+
+function parseActivityTimestamp(dateTime) {
+  if (!dateTime) return 0;
+  return new Date(dateTime).getTime();
+}
+
+function buildSeasonalEventRenderData(eventName, totalDays, count, claimed, rewardTiers, theme = 'spring') {
+  return {
+    eventName,
+    totalDays,
+    count,
+    claimed,
+    theme,
+    tiers: rewardTiers.map(tier => ({
+      days: tier.days,
+      name: tier.name,
+      isClaimed: claimed.includes(tier.days),
+      canClaim: count >= tier.days && !claimed.includes(tier.days)
+    }))
+  };
 }
 
 
@@ -213,83 +243,66 @@ export async function processDailyCheckIn(userId) {
     }
   }
 
-  // 检查并添加【2026马年春节活动】的每日签到奖励
-  const springFestivalStart = new Date('2026-02-02 00:00:00').getTime();
-  const springFestivalEnd = new Date('2026-03-08 23:59:59').getTime();
+  // 检查并添加【2026马年春节活动】和【2026清明活动】签到奖励
   const currentTime = Date.now();
-
-  // 活动签到数据（用于UI展示）
   let springFestivalData = null;
+  let qingmingData = null;
+  let seasonalEventData = null;
+
+  const springFestivalStart = parseActivityTimestamp(springFestivalSigninConfig?.activity?.start_time)
+    || new Date('2026-02-02 00:00:00').getTime();
+  const springFestivalEnd = parseActivityTimestamp(springFestivalSigninConfig?.activity?.end_time)
+    || new Date('2026-03-08 23:59:59').getTime();
 
   if (currentTime >= springFestivalStart && currentTime <= springFestivalEnd) {
-    // 每日基础奖励
-    const festivalRewards = [
-      { name: '马年福袋', class: '活动', amount: 1 }
-    ];
+    const festivalRewards = [{ name: '马年福袋', class: '活动', amount: 1 }];
     const festivalLingshi = 2000;
-    extraRewards.push(...festivalRewards);
-    extraRewards.push({ name: '灵石', class: '资源', amount: festivalLingshi });
+
+    for (const reward of festivalRewards) {
+      const grantResult = await grantActivityReward(userId, reward);
+      extraRewards.push(...grantResult.granted);
+      extraMessages.push(...grantResult.messages);
+    }
+
+    const lingshiResult = await grantActivityReward(userId, { name: '灵石', class: '资源', amount: festivalLingshi });
+    extraRewards.push(...lingshiResult.granted);
+    extraMessages.push(...lingshiResult.messages);
     extraMessages.push('【万马奔腾】新春签到福利');
 
-    // 为玩家发放活动签到奖励
-    for (const reward of festivalRewards) {
-      await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount, reward);
-    }
-    // 灵石直接加到玩家属性，不经过纳戒系统
-    await DAL.transaction_update(userId, (p) => {
-      p.灵石 = (p.灵石 || 0) + festivalLingshi;
-    });
-
-    // 修为翻倍奖励（在已有修为基础上再加一倍）
+    // 新春加成：额外修为+100%
     const bonusXiuwei = transactionResult.dailyRewards.修为;
-    await DAL.transaction_update(userId, (p) => {
-      p.修为 += bonusXiuwei;
-    });
-    extraRewards.push({ name: '修为', class: '资源', amount: bonusXiuwei });
+    const xiuweiResult = await grantActivityReward(userId, { name: '修为', class: '资源', amount: bonusXiuwei });
+    extraRewards.push(...xiuweiResult.granted);
+    extraMessages.push(...xiuweiResult.messages);
     extraMessages.push(`新春加成：额外修为+${bonusXiuwei}`);
 
-    // ===== 活动累计签到奖励 =====
-    if (springFestivalSigninConfig && springFestivalSigninConfig.rewards) {
+    if (springFestivalSigninConfig && Array.isArray(springFestivalSigninConfig.rewards)) {
+      const rewardTiers = springFestivalSigninConfig.rewards;
+      const springTotalDays = Number(springFestivalSigninConfig?.activity?.progress_total_days) || 21;
       const activitySigninKey = `XinghanXiuxian:SpringFestival:2026:SignIn:${userId}`;
       const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
 
-      // 获取当前活动签到数据
       const lastActivitySignDate = await redis.hGet(activitySigninKey, 'last_date');
       let activitySignCount = parseInt(await redis.hGet(activitySigninKey, 'count') || '0');
       let claimedActivityRewards = JSON.parse(await redis.hGet(activitySigninKey, 'claimed') || '[]');
 
-      // 今日是否已签（防止重复计数，因为普通签到已有判断）
       if (lastActivitySignDate !== todayStr) {
         activitySignCount += 1;
         await redis.hSet(activitySigninKey, 'count', String(activitySignCount));
         await redis.hSet(activitySigninKey, 'last_date', todayStr);
 
-        // 设置过期时间（活动结束后7天清理）
         const expireAt = Math.floor((springFestivalEnd + 7 * 24 * 60 * 60 * 1000) / 1000);
         await redis.expireAt(activitySigninKey, expireAt);
       }
 
-      // 检查并发放累计签到奖励
-      const rewardTiers = springFestivalSigninConfig.rewards;
       for (const tier of rewardTiers) {
         if (activitySignCount >= tier.days && !claimedActivityRewards.includes(tier.days)) {
           claimedActivityRewards.push(tier.days);
 
-          // 发放奖励
-          for (const reward of tier.rewards) {
-            if (reward.class === '称号') {
-              // 称号奖励特殊处理
-              await DAL.transaction_update(userId, (p) => {
-                if (!p.titles) p.titles = [];
-                if (!p.titles.includes(reward.name)) {
-                  p.titles.push(reward.name);
-                }
-              });
-              extraRewards.push({ name: `称号「${reward.name}」`, class: '称号', amount: 1 });
-            } else {
-              await DAL.updateNajieItem(userId, reward.name, reward.class, reward.amount, reward);
-              extraRewards.push({ name: reward.name, class: reward.class, amount: reward.amount });
-            }
+          for (const reward of tier.rewards || []) {
+            const grantResult = await grantActivityReward(userId, reward);
+            extraRewards.push(...grantResult.granted);
+            extraMessages.push(...grantResult.messages);
           }
           extraMessages.push(`🏮「${tier.name}」累计${tier.days}天奖励`);
         }
@@ -297,18 +310,83 @@ export async function processDailyCheckIn(userId) {
 
       await redis.hSet(activitySigninKey, 'claimed', JSON.stringify(claimedActivityRewards));
 
-      // 构建活动签到数据用于UI展示
-      springFestivalData = {
-        count: activitySignCount,
-        claimed: claimedActivityRewards,
-        tiers: rewardTiers.map(tier => ({
-          days: tier.days,
-          name: tier.name,
-          isClaimed: claimedActivityRewards.includes(tier.days),
-          canClaim: activitySignCount >= tier.days && !claimedActivityRewards.includes(tier.days)
-        }))
-      };
+      springFestivalData = buildSeasonalEventRenderData(
+        `${springFestivalSigninConfig?.activity?.name || '万马奔腾'} · 新春签到`,
+        springTotalDays,
+        activitySignCount,
+        claimedActivityRewards,
+        rewardTiers,
+        'spring'
+      );
+      seasonalEventData = springFestivalData;
     }
+  }
+
+  const qingmingStart = parseActivityTimestamp(qingmingSigninConfig?.activity?.start_time);
+  const qingmingEnd = parseActivityTimestamp(qingmingSigninConfig?.activity?.end_time);
+  if (qingmingStart && qingmingEnd && currentTime >= qingmingStart && currentTime <= qingmingEnd) {
+    const activityInfo = qingmingSigninConfig.activity || {};
+    const dailyItems = qingmingSigninConfig?.daily_rewards?.items || [];
+    const dailyResources = qingmingSigninConfig?.daily_rewards?.resources || [];
+    const rewardTiers = Array.isArray(qingmingSigninConfig.rewards) ? qingmingSigninConfig.rewards : [];
+    const maxTierDays = rewardTiers.length > 0 ? Math.max(...rewardTiers.map(t => Number(t.days) || 0)) : 1;
+    const progressTotalDays = Number(activityInfo.progress_total_days) || maxTierDays;
+
+    for (const reward of dailyItems) {
+      const grantResult = await grantActivityReward(userId, reward);
+      extraRewards.push(...grantResult.granted);
+      extraMessages.push(...grantResult.messages);
+    }
+    for (const reward of dailyResources) {
+      const grantResult = await grantActivityReward(userId, { ...reward, class: '资源' });
+      extraRewards.push(...grantResult.granted);
+      extraMessages.push(...grantResult.messages);
+    }
+    if (dailyItems.length > 0 || dailyResources.length > 0) {
+      extraMessages.push(`【${activityInfo.name || '清明活动'}】每日签到福利`);
+    }
+
+    const activityId = activityInfo.id || 'qingming_2026';
+    const activitySigninKey = `XinghanXiuxian:Activity:${activityId}:SignIn:${userId}`;
+    const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+
+    const lastActivitySignDate = await redis.hGet(activitySigninKey, 'last_date');
+    let activitySignCount = parseInt(await redis.hGet(activitySigninKey, 'count') || '0');
+    let claimedActivityRewards = JSON.parse(await redis.hGet(activitySigninKey, 'claimed') || '[]');
+
+    if (lastActivitySignDate !== todayStr) {
+      activitySignCount += 1;
+      await redis.hSet(activitySigninKey, 'count', String(activitySignCount));
+      await redis.hSet(activitySigninKey, 'last_date', todayStr);
+
+      const expireAt = Math.floor((qingmingEnd + 7 * 24 * 60 * 60 * 1000) / 1000);
+      await redis.expireAt(activitySigninKey, expireAt);
+    }
+
+    for (const tier of rewardTiers) {
+      if (activitySignCount >= tier.days && !claimedActivityRewards.includes(tier.days)) {
+        claimedActivityRewards.push(tier.days);
+
+        for (const reward of tier.rewards || []) {
+          const grantResult = await grantActivityReward(userId, reward);
+          extraRewards.push(...grantResult.granted);
+          extraMessages.push(...grantResult.messages);
+        }
+        extraMessages.push(`🌿「${tier.name}」累计${tier.days}天奖励`);
+      }
+    }
+
+    await redis.hSet(activitySigninKey, 'claimed', JSON.stringify(claimedActivityRewards));
+
+    qingmingData = buildSeasonalEventRenderData(
+      `${activityInfo.name || '清明活动'} · 累计签到`,
+      progressTotalDays,
+      activitySignCount,
+      claimedActivityRewards,
+      rewardTiers,
+      'qingming'
+    );
+    seasonalEventData = qingmingData;
   }
 
 
@@ -350,7 +428,11 @@ export async function processDailyCheckIn(userId) {
       items: extraRewards
     },
     // 新春活动签到数据（用于UI展示）
-    springFestivalData: springFestivalData
+    springFestivalData: springFestivalData,
+    // 清明活动签到数据（用于UI展示）
+    qingmingData: qingmingData,
+    // 当前活动签到数据（统一面板）
+    seasonalEventData: seasonalEventData
   };
 
 

@@ -18,3 +18,18 @@
   desc: 天地榜赛季结算排名前三获得
   category: 榜单
   rarity: 3
+
+- name: 马到成功
+  desc: 在【万马奔腾】活动累计签到中获得
+  category: 活动
+  rarity: 4
+
+- name: 清明行客
+  desc: 在【清明青岚】活动累计签到中获得
+  category: 活动
+  rarity: 4
+
+- name: 柳烟问道
+  desc: 在【清明青岚】活动累计签到中获得
+  category: 活动
+  rarity: 5

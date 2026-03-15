@@ -297,7 +297,7 @@ export class Tiandibang extends plugin {
         }
 
         resultMsgs.push(``);
-        resultMsgs.push(isWin ? `🎉 ${player.名号} 获胜！` : `💔 ${player.名号} 落败`);
+        resultMsgs.push(isWin ? `✦ ${player.名号} 获胜！` : `✗ ${player.名号} 落败`);
         resultMsgs.push(`积分 +${result.jifen} (当前: ${result.totalJifen})`);
         resultMsgs.push(`灵石 +${result.lingshi}`);
         resultMsgs.push(`段位: ${result.duanwei.name}`);
@@ -311,7 +311,7 @@ export class Tiandibang extends plugin {
 
         // 添加天地榜结果到战斗日志
         battleResult.log.push({ type: 'system', text: `【${tianxiang.name}】生效中` });
-        battleResult.log.push({ type: 'end', text: isWin ? `🎉 ${player.名号} 获胜！` : `💔 ${player.名号} 落败` });
+        battleResult.log.push({ type: 'end', text: isWin ? `✦ ${player.名号} 获胜！` : `✗ ${player.名号} 落败` });
         battleResult.log.push({ type: 'system', text: `积分 +${result.jifen} | 灵石 +${result.lingshi} | 段位: ${result.duanwei.name}` });
         if (result.messages && result.messages.length > 0) {
             result.messages.forEach(msg => battleResult.log.push({ type: 'system', text: msg }));

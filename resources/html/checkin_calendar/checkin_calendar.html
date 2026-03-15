@@ -322,6 +322,38 @@
       white-space: nowrap;
     }
 
+    /* 清明活动风格 */
+    .spring-festival-section.qingming {
+      background: linear-gradient(135deg, rgba(82, 127, 87, 0.15) 0%, rgba(141, 186, 136, 0.12) 100%);
+      border-color: #4f8f63;
+    }
+
+    .spring-festival-section.qingming::before {
+      content: "🌿";
+    }
+
+    .spring-festival-section.qingming .spring-section-title,
+    .spring-festival-section.qingming .spring-reward-text {
+      color: #2f5d3a;
+    }
+
+    .spring-festival-section.qingming .spring-section-stats {
+      color: #547b4a;
+    }
+
+    .spring-festival-section.qingming .spring-section-stats .highlight {
+      color: #3b7a57;
+    }
+
+    .spring-festival-section.qingming .spring-progress-bar {
+      background: rgba(59, 122, 87, 0.2);
+    }
+
+    .spring-festival-section.qingming .spring-progress-filler {
+      background: linear-gradient(90deg, #9fcb9a, #6da77f, #4f8f63);
+      box-shadow: 0 0 10px rgba(79, 143, 99, 0.45);
+    }
+
     /* ===== 累计奖励区域 ===== */
     .cumulative-rewards-section {
       margin-top: 1.5rem;
@@ -519,20 +551,21 @@
         </div>
       </div>
 
-      {{if springFestivalData}}
-      <div class="spring-festival-section">
+      {{if seasonalEventData}}
+      <div class="spring-festival-section {{if seasonalEventData.theme === 'qingming'}}qingming{{/if}}">
         <div class="spring-section-header">
-          <h2 class="spring-section-title">🏮 万马奔腾 · 新春签到</h2>
-          <span class="spring-section-stats">活动累计: <span class="highlight">{{springFestivalData.count}}</span> / 21
+          <h2 class="spring-section-title">{{if seasonalEventData.theme === 'qingming'}}🌿{{else}}🏮{{/if}} {{seasonalEventData.eventName}}</h2>
+          <span class="spring-section-stats">活动累计: <span class="highlight">{{seasonalEventData.count}}</span> / {{seasonalEventData.totalDays}}
             天</span>
         </div>
         <div class="spring-progress-wrapper">
           <div class="spring-progress-bar">
-            <div class="spring-progress-filler" style="width: {{(springFestivalData.count / 21) * 100}}%;"></div>
+            <div class="spring-progress-filler"
+              style="width: {{(seasonalEventData.count / seasonalEventData.totalDays) * 100}}%;"></div>
           </div>
-          {{each springFestivalData.tiers tier}}
+          {{each seasonalEventData.tiers tier}}
           <div class="spring-reward-node {{if tier.isClaimed}}claimed{{/if}} {{if tier.canClaim}}can-claim{{/if}}"
-            style="left: {{(tier.days / 21) * 100}}%;">
+            style="left: {{(tier.days / seasonalEventData.totalDays) * 100}}%;">
             <span class="spring-reward-icon">{{if tier.isClaimed}}✅{{else if tier.canClaim}}🎁{{else}}🔒{{/if}}</span>
             <span class="spring-reward-text">{{tier.days}}天</span>
           </div>

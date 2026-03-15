@@ -2,10 +2,11 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import puppeteer from '../../api/puppeteer-wrapper.js'; // 使用自定义截图模块
 import path from 'path';
+import { OpenLootbox, IsActivityActive } from '../../logic/spring_festival_logic.js';
 
 // 春节活动配置
 const ACTIVITY_CONFIG = {
-    startTime: new Date('2026-02-02 09:00:00').getTime(), // 活动开始时间
+    startTime: new Date('2026-02-02 00:00:00').getTime(), // 活动开始时间
     endTime: new Date('2026-03-08 23:59:59').getTime(),   // 活动结束时间
     commands: [
         { cmd: '#进入天马牧场', desc: '进入天马牧场秘境' },
@@ -26,6 +27,10 @@ export class SpringFestival extends plugin {
                 {
                     reg: '^#?(新春活动|万马奔腾|春节活动)$',
                     fnc: 'showActivityPage'
+                },
+                {
+                    reg: '^#?(打开|使用)马年福袋(\\d*)$',
+                    fnc: 'openFudai'
                 }
             ]
         });
@@ -76,5 +81,24 @@ export class SpringFestival extends plugin {
         });
 
         await e.reply(img);
+    }
+
+    /**
+     * 打开马年福袋
+     */
+    async openFudai(e) {
+        const userId = e.user_id;
+
+        // 解析打开数量
+        const match = e.msg.match(/(\d+)$/);
+        const count = match ? Math.min(parseInt(match[1]), 99) : 1; // 最多一次开99个
+
+        if (count <= 0) {
+            await e.reply('请输入有效的数量！');
+            return;
+        }
+
+        const result = await OpenLootbox(userId, '马年福袋', count);
+        await e.reply(result.message);
     }
 }

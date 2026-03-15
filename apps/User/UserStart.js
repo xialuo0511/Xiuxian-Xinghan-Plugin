@@ -275,6 +275,9 @@ export class UserStart extends plugin {
         }))
       },
       extraRewardsInfo: result.extraRewardsInfo,
+      springFestivalData: result.springFestivalData || null,
+      qingmingData: result.qingmingData || null,
+      seasonalEventData: result.seasonalEventData || result.qingmingData || result.springFestivalData || null,
 
       show_coop_signin: false
     };
