@@ -19,6 +19,11 @@
 }
 
 @font-face {
+    font-family: "LXGWWenKaiMonoLight";
+    src: url("../../../font/LXGWWenKaiMono-Light.ttf");
+}
+
+@font-face {
     font-family: "huawen";
     src: url("../../../font/华文中宋.TTF");
 }
@@ -38,7 +43,7 @@ body {
         linear-gradient(180deg, rgba(244, 250, 244, 0.98), rgba(230, 241, 231, 0.96));
     background-size: cover;
     background-position: center;
-    font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
+    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #2f4636;
     position: relative;
     overflow: hidden;
@@ -222,7 +227,7 @@ body {
 .power-display,
 .details-card-title,
 .equipment-name {
-    font-family: "NZBZ", "HYWH", "HYWenHei", sans-serif;
+    font-family: "NZBZ", "HYWH", "HYWenHei", "LXGWWenKaiMonoLight", sans-serif;
 }
 
 .player-name {

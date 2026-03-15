@@ -19,6 +19,11 @@
 }
 
 @font-face {
+    font-family: "LXGWWenKaiMonoLight";
+    src: url("../../../font/LXGWWenKaiMono-Light.ttf");
+}
+
+@font-face {
     font-family: "huawen";
     src: url("../../../font/华文中宋.TTF");
 }
@@ -35,7 +40,7 @@ body {
     background-image: url('../../../img/player_pifu/default.jpg');
     background-size: cover;
     background-position: center center;
-    font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
+    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #4a2c1a;
 }
 
@@ -82,14 +87,14 @@ body {
 }
 
 .player-name {
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 32px;
     color: #6a3906;
     margin-top: 5px;
 }
 
 .player-title {
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 32px;
     color: #b8860b;
     margin-top: 8px;
@@ -104,7 +109,7 @@ body {
 
 .power-display {
     padding: 5px 20px;
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 24px;
     background: linear-gradient(145deg, #c8a87e, #a88763);
     color: #fff;
@@ -199,7 +204,7 @@ body {
 }
 
 .details-card-title {
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 20px;
     text-align: center;
     color: #6a3906;
@@ -237,7 +242,7 @@ body {
 }
 
 .equipment-name {
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 16px;
     color: #6a3906;
     margin-bottom: 5px;

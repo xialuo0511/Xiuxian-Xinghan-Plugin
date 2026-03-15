@@ -25,6 +25,11 @@
 }
 
 @font-face {
+    font-family: "LXGWWenKaiMonoLight";
+    src: url("../../../font/LXGWWenKaiMono-Light.ttf");
+}
+
+@font-face {
     font-family: "huawen";
     src: url("../../../font/华文中宋.TTF");
 }
@@ -43,7 +48,7 @@ body {
     background-color: #1a0505;
     background-size: cover;
     background-position: center;
-    font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
+    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #F5E6D3;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     position: relative;
@@ -268,7 +273,7 @@ body {
 .player-name {
     grid-row: 1;
     grid-column: 2;
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 36px;
     color: #FFD700;
     text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
@@ -282,7 +287,7 @@ body {
 .player-title {
     grid-row: 2;
     grid-column: 2;
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 28px;
     color: #ffaa00;
     font-weight: normal;
@@ -301,7 +306,7 @@ body {
 .power-display {
     grid-row: 3;
     grid-column: 2;
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 18px;
     color: #eee;
     background: linear-gradient(90deg, #d32f2f, transparent);
@@ -401,7 +406,7 @@ body {
 }
 
 .info-label {
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     color: #FFD700;
     font-size: 14px;
     width: 75px;
@@ -436,7 +441,7 @@ body {
 }
 
 .details-card-title {
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 20px;
     color: #FFD700;
     text-align: left;
@@ -492,7 +497,7 @@ body {
 }
 
 .equipment-name {
-    font-family: "NZBZ", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
     font-size: 15px;
     color: #FFD700;
     margin-bottom: 5px;
