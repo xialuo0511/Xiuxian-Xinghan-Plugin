@@ -40,7 +40,7 @@ body {
     background-image: url('../../../img/player_pifu/default.jpg');
     background-size: cover;
     background-position: center center;
-    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #4a2c1a;
 }
 
@@ -187,7 +187,7 @@ body {
 }
 
 .info-value {
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #4a2c1a;
 }
 
@@ -219,7 +219,7 @@ body {
     align-items: center;
     font-size: 16px;
     margin-bottom: 8px;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .stat-line svg {
@@ -259,7 +259,7 @@ body {
     font-size: 13px;
     color: #4a2c1a;
     line-height: 1.5;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .footer {

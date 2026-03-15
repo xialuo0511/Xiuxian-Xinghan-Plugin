@@ -41,7 +41,7 @@ body {
     padding: 20px;
     background-size: cover;
     background-position: center;
-    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #4a2c1a;
 }
 
@@ -179,7 +179,7 @@ body {
     font-size: 14px;
     line-height: 1.7;
     flex-grow: 1;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .item-footer {

@@ -43,7 +43,7 @@ body {
         linear-gradient(180deg, rgba(244, 250, 244, 0.98), rgba(230, 241, 231, 0.96));
     background-size: cover;
     background-position: center;
-    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #2f4636;
     position: relative;
     overflow: hidden;
@@ -227,7 +227,7 @@ body {
 .power-display,
 .details-card-title,
 .equipment-name {
-    font-family: "NZBZ", "HYWH", "HYWenHei", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
 }
 
 .player-name {
@@ -318,7 +318,7 @@ body {
 }
 
 .info-value {
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #2f4636;
 }
 
@@ -343,7 +343,7 @@ body {
     gap: 8px;
     margin-bottom: 8px;
     font-size: 16px;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .stat-line svg {
@@ -376,7 +376,7 @@ body {
     font-size: 13px;
     line-height: 1.55;
     color: #2f4636;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .footer {

@@ -42,7 +42,7 @@ body {
     background-color: #1a0505;
     background-size: cover;
     background-position: center;
-    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #F5E6D3;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
@@ -205,7 +205,7 @@ body {
     line-height: 1.6;
     flex-grow: 1;
     color: #eee;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .item-footer {
@@ -270,7 +270,7 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     line-height: 1.4;
     font-style: italic;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .item-expiration {
@@ -279,7 +279,7 @@ body {
     font-weight: bold;
     margin-top: 5px;
     text-align: left;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 /* --- 装备品级样式 (磨砂玻璃风格适配) --- */

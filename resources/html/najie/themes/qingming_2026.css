@@ -42,7 +42,7 @@ body {
         linear-gradient(180deg, rgba(244, 250, 244, 0.98), rgba(230, 241, 231, 0.96));
     background-size: cover;
     background-position: center;
-    font-family: "HYWH", "HYWenHei", "huawen", "tttgbnumber", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
     color: #2f4636;
     position: relative;
     overflow: hidden;
@@ -189,7 +189,7 @@ body {
 .info-label,
 .grid-title,
 .item-name {
-    font-family: "NZBZ", "HYWH", "HYWenHei", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
 }
 
 .info-label {
@@ -286,7 +286,7 @@ body {
     line-height: 1.6;
     flex-grow: 1;
     color: #35503c;
-    font-family: "HYWH", "HYWenHei", "huawen", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 
 .item-footer {
