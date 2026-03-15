@@ -516,13 +516,133 @@
       font-weight: 400;
       color: #B8860B;
     }
+
+    /* ===== 整页清明主题覆盖 ===== */
+    #capture.qingming-theme {
+      background: linear-gradient(135deg, #4b7f57 0%, #6ea57a 35%, #86b58f 65%, #4b7f57 100%);
+    }
+
+    #capture.qingming-theme::before {
+      content: "🍃";
+    }
+
+    #capture.qingming-theme::after {
+      content: "🍃";
+    }
+
+    .calendar-container.qingming-theme {
+      background: linear-gradient(135deg, rgba(239, 247, 238, 0.96) 0%, rgba(230, 243, 229, 0.96) 100%);
+      border: 3px solid #7fa87a;
+      box-shadow:
+        0 0 28px rgba(90, 133, 95, 0.24),
+        0 0 56px rgba(62, 102, 67, 0.14),
+        inset 0 0 20px rgba(136, 181, 143, 0.18);
+    }
+
+    .calendar-container.qingming-theme::before {
+      border-color: rgba(127, 168, 122, 0.55);
+    }
+
+    .calendar-container.qingming-theme .header h1 {
+      color: #2f5d3a;
+      text-shadow: 0 2px 4px rgba(127, 168, 122, 0.5);
+    }
+
+    .calendar-container.qingming-theme .header h1::before,
+    .calendar-container.qingming-theme .header h1::after {
+      color: #7fa87a;
+    }
+
+    .calendar-container.qingming-theme .header p {
+      color: #5c8665;
+    }
+
+    .calendar-container.qingming-theme .day-header {
+      color: #2f5d3a;
+    }
+
+    .calendar-container.qingming-theme .day-cell {
+      border-color: #7fa87a;
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .calendar-container.qingming-theme .day-cell .day-number {
+      color: #2f5d3a;
+    }
+
+    .calendar-container.qingming-theme .checked-in {
+      background: linear-gradient(135deg, rgba(159, 203, 154, 0.45) 0%, rgba(141, 186, 136, 0.32) 100%);
+      border-color: #6da77f;
+    }
+
+    .calendar-container.qingming-theme .today-check-in {
+      background: linear-gradient(135deg, rgba(79, 143, 99, 0.8) 0%, rgba(62, 118, 80, 0.72) 100%);
+      border-color: #b8dfa8;
+      box-shadow: 0 0 15px rgba(109, 167, 127, 0.6);
+    }
+
+    .calendar-container.qingming-theme .today-check-in .day-number {
+      color: #f3fff1;
+    }
+
+    .calendar-container.qingming-theme .cumulative-rewards-section,
+    .calendar-container.qingming-theme .rewards-section,
+    .calendar-container.qingming-theme .extra-rewards-section {
+      border-top-color: #8eb88f;
+    }
+
+    .calendar-container.qingming-theme .section-title,
+    .calendar-container.qingming-theme .rewards-section h2,
+    .calendar-container.qingming-theme .extra-rewards-section h2 {
+      color: #2f5d3a;
+    }
+
+    .calendar-container.qingming-theme .section-stats,
+    .calendar-container.qingming-theme .rewards-content,
+    .calendar-container.qingming-theme .extra-rewards-section .subtitle,
+    .calendar-container.qingming-theme .rewards-content .bonus-text {
+      color: #5c8665;
+    }
+
+    .calendar-container.qingming-theme .section-stats .highlight {
+      color: #3b7a57;
+    }
+
+    .calendar-container.qingming-theme .progress-bar {
+      background-color: rgba(79, 143, 99, 0.2);
+    }
+
+    .calendar-container.qingming-theme .progress-bar-filler.personal {
+      background: linear-gradient(90deg, #b8dfa8, #79b08c);
+      box-shadow: 0 0 8px rgba(121, 176, 140, 0.6);
+    }
+
+    .calendar-container.qingming-theme .reward-icon {
+      filter: drop-shadow(0 0 3px rgba(121, 176, 140, 0.8));
+    }
+
+    .calendar-container.qingming-theme .reward-day-text {
+      color: #2f5d3a;
+    }
+
+    .calendar-container.qingming-theme .rewards-content .value {
+      color: #3b7a57;
+    }
+
+    .calendar-container.qingming-theme .rewards-content .value-yellow {
+      color: #4f8f63;
+    }
+
+    .calendar-container.qingming-theme .extra-rewards-section {
+      background: linear-gradient(135deg, rgba(159, 203, 154, 0.18) 0%, rgba(141, 186, 136, 0.12) 100%);
+    }
   </style>
 </head>
 
 
 <body>
-  <div id="capture">
-    <div class="calendar-container">
+  <div id="capture" class="{{if seasonalEventData && seasonalEventData.theme === 'qingming'}}qingming-theme{{/if}}">
+    <div class="calendar-container {{if seasonalEventData && seasonalEventData.theme === 'qingming'}}qingming-theme{{/if}}">
       <div class="header">
         <h1>仙途签到簿</h1>
         <p id="calendar-title"></p>
