@@ -1,4 +1,3 @@
-/* --- 字体定义 --- */
 @font-face {
     font-family: "tttgbnumber";
     src: url("../../../font/tttgbnumber.ttf");
@@ -24,7 +23,6 @@
     src: url("../../../font/华文中宋.TTF");
 }
 
-/* --- 基础样式 --- */
 body {
     width: fit-content;
     margin: 0;
@@ -34,48 +32,61 @@ body {
 #capture {
     width: 800px;
     padding: 20px;
-    background-color: #1a0505;
+    background:
+        radial-gradient(circle at top right, rgba(223, 240, 220, 0.95), transparent 30%),
+        linear-gradient(180deg, rgba(244, 250, 244, 0.98), rgba(230, 241, 231, 0.96));
     background-size: cover;
     background-position: center;
     font-family: "HYWH", "HYWenHei", "huawen", "Microsoft YaHei", "tttgbnumber", sans-serif;
-    color: #F5E6D3;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    color: #2f4636;
+    position: relative;
+    overflow: hidden;
 }
 
-/* --- 主容器 --- */
-.panel-container {
-    background: transparent;
-    /* 透明，展示背景图 */
+#capture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.34), transparent 38%),
+        radial-gradient(circle at 15% 10%, rgba(160, 202, 168, 0.16), transparent 22%),
+        radial-gradient(circle at 85% 15%, rgba(143, 187, 162, 0.16), transparent 20%);
+    pointer-events: none;
+}
 
-    /* 移除之前的深色背景，改为仅布局容器 */
+.panel-container {
     display: flex;
     flex-direction: column;
     gap: 15px;
     padding: 5px;
+    position: relative;
+    z-index: 1;
 }
 
-/* --- 顶部信息 (Glassmorphism) --- */
+.header-section,
+.item-card,
+.pagination {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
 .header-section {
     display: flex;
     align-items: center;
     gap: 20px;
     padding: 20px;
-    border-bottom: 2px solid #FFD700;
-    /* 磨砂玻璃效果 */
-    background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 5, 5, 0.6));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(118, 163, 123, 0.35);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(250, 253, 249, 0.84), rgba(238, 246, 238, 0.76));
+    box-shadow: 0 10px 26px rgba(92, 130, 101, 0.12);
 }
 
 .avatar {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    border: 2px solid #FFD700;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    border: 3px solid rgba(118, 163, 123, 0.55);
+    box-shadow: 0 6px 16px rgba(92, 130, 101, 0.16);
     flex-shrink: 0;
 }
 
@@ -92,24 +103,27 @@ body {
     gap: 15px;
 }
 
+.info-label,
+.grid-title,
+.item-name {
+    font-family: "NZBZ", "HYWH", "HYWenHei", sans-serif;
+}
+
 .info-label {
-    font-family: "NZBZ", sans-serif;
     font-size: 22px;
-    color: #FFD700;
-    /* 金色标签 */
+    color: #547b59;
     width: 100px;
-    text-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
     text-align: right;
 }
 
 .progress-bar-container {
     flex-grow: 1;
     height: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(115, 152, 120, 0.12);
     border-radius: 10px;
     padding: 3px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(125, 162, 128, 0.2);
+    box-shadow: inset 0 1px 3px rgba(60, 91, 67, 0.15);
 }
 
 .progress-bar {
@@ -117,7 +131,7 @@ body {
     border-radius: 8px;
     position: relative;
     transition: width 0.5s ease-in-out;
-    box-shadow: 0 0 8px currentColor;
+    box-shadow: 0 0 8px rgba(107, 157, 114, 0.28);
 }
 
 .progress-text {
@@ -127,23 +141,20 @@ body {
     color: #fff;
     font-size: 13px;
     font-weight: bold;
-    text-shadow: 1px 1px 2px #000;
+    text-shadow: 1px 1px 2px rgba(38, 53, 41, 0.55);
     line-height: 20px;
     z-index: 2;
 }
 
-/* --- 物品展示区 --- */
 .content-section {
     padding-top: 10px;
 }
 
 .grid-title {
-    font-family: "NZBZ", sans-serif;
     font-size: 32px;
     text-align: center;
-    color: #FFD700;
+    color: #49714e;
     margin-bottom: 20px;
-    text-shadow: 0 0 10px #ff4500;
     letter-spacing: 4px;
 }
 
@@ -155,34 +166,27 @@ body {
 }
 
 .item-card {
-    /* 卡片 Glassmorphism */
-    background: rgba(40, 5, 5, 0.55);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-
-    border: 1px solid rgba(218, 165, 32, 0.4);
-    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(250, 253, 249, 0.84), rgba(238, 246, 238, 0.76));
+    border: 1px solid rgba(118, 163, 123, 0.28);
+    border-radius: 14px;
     padding: 12px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 22px rgba(92, 130, 101, 0.10);
 }
 
 .item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    border-bottom: 1px solid rgba(118, 163, 123, 0.2);
     padding-bottom: 6px;
     margin-bottom: 8px;
 }
 
 .item-name {
-    font-family: "NZBZ", sans-serif;
     font-size: 18px;
-    color: #FFD700;
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    color: #446d4e;
 }
 
 .item-category {
@@ -190,16 +194,15 @@ body {
     color: white;
     padding: 2px 6px;
     border-radius: 4px;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .item-details {
     font-size: 13px;
     line-height: 1.6;
     flex-grow: 1;
-    color: #eee;
+    color: #35503c;
 }
 
 .item-footer {
@@ -209,10 +212,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    border-top: 1px dashed rgba(118, 163, 123, 0.16);
 }
 
-/* 锁定状态样式 */
 .lock-status {
     display: flex;
     align-items: center;
@@ -220,61 +222,57 @@ body {
 }
 
 .lock-status.locked {
-    color: #ff5252;
+    color: #d0605c;
 }
 
 .lock-status.unlocked {
-    color: #69f0ae;
+    color: #4d9c67;
 }
 
 .lock-status svg {
     width: 14px;
     height: 14px;
     margin-right: 4px;
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
 }
 
-/* --- 分页与页脚 --- */
 .pagination {
     text-align: center;
     margin-top: 25px;
     font-size: 16px;
-    color: #FFD700;
-    text-shadow: 0 0 4px #000;
-    background: rgba(0, 0, 0, 0.3);
+    color: #547b59;
+    background: rgba(255, 255, 255, 0.48);
     padding: 5px 15px;
     border-radius: 20px;
     display: inline-block;
-    border: 1px solid rgba(255, 215, 0, 0.2);
+    border: 1px solid rgba(118, 163, 123, 0.2);
     align-self: center;
 }
 
 .footer {
     text-align: center;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(53, 77, 58, 0.78);
     margin-top: 15px;
 }
 
 .item-desc {
     font-size: 12px;
-    color: #ccc;
+    color: #66796c;
     padding-top: 6px;
     margin-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(118, 163, 123, 0.12);
     line-height: 1.4;
     font-style: italic;
 }
 
 .item-expiration {
     font-size: 12px;
-    color: #ff5252;
+    color: #d0605c;
     font-weight: bold;
     margin-top: 5px;
     text-align: left;
 }
 
-/* --- 装备品级样式 (磨砂玻璃风格适配) --- */
 .item-quality {
     font-size: 12px;
     font-weight: bold;
@@ -282,60 +280,51 @@ body {
     border-radius: 6px;
     margin-bottom: 6px;
     display: inline-block;
-    /* 磨砂玻璃基础样式 */
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     border: 1px solid;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
 }
 
-/* 劣 - 暗灰 */
 .item-quality[data-quality="0"] {
-    background: rgba(120, 120, 120, 0.3);
-    border-color: rgba(150, 150, 150, 0.4);
-    color: #b0b0b0;
+    background: rgba(120, 120, 120, 0.2);
+    border-color: rgba(150, 150, 150, 0.3);
+    color: #7f8681;
 }
 
-/* 普 - 淡绿 */
 .item-quality[data-quality="1"] {
-    background: rgba(76, 175, 80, 0.25);
-    border-color: rgba(129, 199, 132, 0.4);
-    color: #a5d6a7;
+    background: rgba(109, 167, 113, 0.18);
+    border-color: rgba(109, 167, 113, 0.3);
+    color: #4d8a58;
 }
 
-/* 优 - 淡蓝 */
 .item-quality[data-quality="2"] {
-    background: rgba(33, 150, 243, 0.25);
-    border-color: rgba(100, 181, 246, 0.4);
-    color: #90caf9;
+    background: rgba(90, 162, 192, 0.18);
+    border-color: rgba(90, 162, 192, 0.28);
+    color: #4c7f95;
 }
 
-/* 精 - 淡紫 */
 .item-quality[data-quality="3"] {
-    background: rgba(156, 39, 176, 0.3);
-    border-color: rgba(186, 104, 200, 0.4);
-    color: #ce93d8;
+    background: rgba(147, 126, 186, 0.2);
+    border-color: rgba(147, 126, 186, 0.3);
+    color: #7a629f;
 }
 
-/* 极 - 橙色 */
 .item-quality[data-quality="4"] {
-    background: rgba(255, 152, 0, 0.3);
-    border-color: rgba(255, 183, 77, 0.5);
-    color: #ffb74d;
+    background: rgba(216, 171, 92, 0.2);
+    border-color: rgba(216, 171, 92, 0.32);
+    color: #9f7540;
 }
 
-/* 绝 - 红色 */
 .item-quality[data-quality="5"] {
-    background: rgba(244, 67, 54, 0.3);
-    border-color: rgba(239, 83, 80, 0.5);
-    color: #ef9a9a;
+    background: rgba(208, 96, 92, 0.2);
+    border-color: rgba(208, 96, 92, 0.3);
+    color: #a55a59;
 }
 
-/* 顶 - 金色发光 */
 .item-quality[data-quality="6"] {
-    background: rgba(255, 215, 0, 0.25);
-    border-color: rgba(255, 215, 0, 0.6);
-    color: #FFD700;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-    text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+    background: rgba(224, 201, 122, 0.22);
+    border-color: rgba(224, 201, 122, 0.32);
+    color: #9d8441;
+    box-shadow: 0 2px 8px rgba(193, 170, 96, 0.18);
 }
