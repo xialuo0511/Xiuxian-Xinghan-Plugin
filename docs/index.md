@@ -4,7 +4,7 @@ layout: home
 
 hero:
   name: "✨ 星瀚修仙"
-  text: "v3.2.0「清明青岚 · 主题签到」"
+  text: "v3.2.0「雨霁青岚 · 春笺签到」"
   tagline: 基于 Yunzai-Bot 的高性能群聊修仙文字游戏插件
   actions:
     - theme: brand
