@@ -9,6 +9,7 @@ import puppeteer from 'puppeteer';
 import template from 'art-template';
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 // 插件根目录
 const PLUGIN_ROOT = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
@@ -135,9 +136,10 @@ const defaultConfig = {
     debugSave: process.env.XIUXIAN_SCREENSHOT_DEBUG === '1' // 默认关闭调试落盘
 };
 
-// `Runtime.callFunctionOn timed out` often happens on heavy templates when this is too low.
-const BROWSER_PROTOCOL_TIMEOUT = Number(process.env.XIUXIAN_PROTOCOL_TIMEOUT || 120000);
+// Keep protocol timeout moderate to avoid a single stuck call blocking for too long.
+const BROWSER_PROTOCOL_TIMEOUT = Number(process.env.XIUXIAN_PROTOCOL_TIMEOUT || 60000);
 const PAGE_CLOSE_TIMEOUT = Number(process.env.XIUXIAN_PAGE_CLOSE_TIMEOUT || 2000);
+const ENABLE_PLAYER_FILE_RENDER = process.env.XIUXIAN_PLAYER_FILE_RENDER !== '0';
 
 /**
  * 获取浏览器实例（单例模式）
@@ -165,7 +167,8 @@ async function getBrowser() {
                 '--metrics-recording-only',
                 '--mute-audio',
                 '--no-first-run',
-                '--safebrowsing-disable-auto-update'
+                '--safebrowsing-disable-auto-update',
+                '--allow-file-access-from-files'
             ]
         });
 
@@ -256,6 +259,24 @@ function splitDisplayText(value) {
     };
 }
 
+function appendEmojiFallbackFonts(html) {
+    const EMOJI_FONTS = '"Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "Twemoji Mozilla"';
+    return html.replace(
+        /font-family\s*:\s*([^;}"'<>\n]{3,}?)\s*(?=[;}"'])/gi,
+        (match, fonts) => {
+            if (fonts.includes('Noto Color Emoji') || fonts.includes('Segoe UI Emoji')) {
+                return match;
+            }
+            const cleaned = fonts.trim().replace(/,\s*$/, '');
+            return `font-family: ${cleaned}, ${EMOJI_FONTS}`;
+        }
+    );
+}
+
+function isPlayerTemplate(tplFile = '') {
+    return /[\\/]resources[\\/]html[\\/]player[\\/]/i.test(String(tplFile));
+}
+
 /**
  * 截图核心函数
  * 
@@ -274,6 +295,7 @@ export async function screenshot(name, options = {}) {
     const config = { ...defaultConfig, ...options };
     const startTime = Date.now();
     let page = null;
+    let tempHtmlPath = '';
     let stage = 'init';
 
     try {
@@ -298,36 +320,52 @@ export async function screenshot(name, options = {}) {
         }
 
         const htmlRaw = renderTemplate(config.tplFile, options);
+        const usePlayerFileRender = ENABLE_PLAYER_FILE_RENDER && isPlayerTemplate(config.tplFile);
+        let pageLoaded = false;
 
-        // 4. 内联资源（CSS & 图片）
-        // 这一步将极其显著地提升加载速度，因为避开了文件加载等待
-        stage = 'inlineResources';
-        let html = inlineResources(htmlRaw);
-
-        // 4.5 向所有 font-family 声明末尾追加 emoji 字体
-        // 用正则匹配所有 font-family 声明，在已有字体链末尾追加 emoji 字体名。
-        // 中文字体优先，遇到 emoji 字符时 fallback 到系统 emoji 字体，互不干扰。
-        // 注：服务器需安装 emoji 字体：
-        //   yum install google-noto-emoji-color-fonts   (CentOS/RHEL)
-        //   dnf install google-noto-emoji-color-fonts   (Fedora)
-        const EMOJI_FONTS = '"Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "Twemoji Mozilla"';
-        html = html.replace(
-            /font-family\s*:\s*([^;}"'<>\n]{3,}?)\s*(?=[;}"'])/gi,
-            (match, fonts) => {
-                if (fonts.includes('Noto Color Emoji') || fonts.includes('Segoe UI Emoji')) {
-                    return match;
+        if (usePlayerFileRender) {
+            try {
+                // Player 页面资源体积很大，优先使用 file:// 临时页，避免 setContent 传输超大HTML。
+                stage = 'writeTempHtml';
+                const tempDir = path.join(PLUGIN_ROOT, 'temp', 'rendered_html');
+                if (!fs.existsSync(tempDir)) {
+                    fs.mkdirSync(tempDir, { recursive: true });
                 }
-                const cleaned = fonts.trim().replace(/,\s*$/, '');
-                return `font-family: ${cleaned}, ${EMOJI_FONTS}`;
-            }
-        );
 
-        // 5. 直接使用 setContent 加载
-        stage = 'setContent';
-        await page.setContent(html, {
-            waitUntil: 'domcontentloaded',
-            timeout: 5000
-        });
+                const html = appendEmojiFallbackFonts(htmlRaw);
+                tempHtmlPath = path.join(
+                    tempDir,
+                    `${name}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.html`
+                );
+                fs.writeFileSync(tempHtmlPath, html, 'utf-8');
+
+                stage = 'gotoTempHtml';
+                await page.goto(pathToFileURL(tempHtmlPath).href, {
+                    waitUntil: 'domcontentloaded',
+                    timeout: 15000
+                });
+                pageLoaded = true;
+            } catch (fileRenderError) {
+                console.warn(`[Screenshot] ${name}: file渲染模式失败，回退setContent: ${fileRenderError.message}`);
+                if (tempHtmlPath && fs.existsSync(tempHtmlPath)) {
+                    fs.unlinkSync(tempHtmlPath);
+                    tempHtmlPath = '';
+                }
+            }
+        }
+
+        if (!pageLoaded) {
+            // 回退路径：内联资源 + setContent
+            stage = 'inlineResources';
+            let html = inlineResources(htmlRaw);
+            html = appendEmojiFallbackFonts(html);
+
+            stage = 'setContent';
+            await page.setContent(html, {
+                waitUntil: 'domcontentloaded',
+                timeout: 5000
+            });
+        }
 
         // 5. 等待ready信号
         stage = 'waitReady';
@@ -391,6 +429,14 @@ export async function screenshot(name, options = {}) {
         // 关闭页面
         if (page) {
             await closePageSafely(page, name);
+        }
+
+        if (tempHtmlPath && fs.existsSync(tempHtmlPath)) {
+            try {
+                fs.unlinkSync(tempHtmlPath);
+            } catch (unlinkError) {
+                console.warn(`[Screenshot] ${name}: 清理临时HTML失败: ${unlinkError.message}`);
+            }
         }
     }
 }
