@@ -9,25 +9,14 @@
 }
 
 @font-face {
-    font-family: "HYWH";
-    src: url("../../../font/HYWH-65W.ttf");
-}
-
-@font-face {
     font-family: "HYWenHei";
     src: url("../../../font/HYWenHei-55W.ttf");
 }
-
-@font-face {
-    font-family: "LXGWWenKaiMonoLight";
-    src: url("../../../font/LXGWWenKaiMono-Light.ttf");
+:root {
+    --font-number: "tttgbnumber", "Consolas", "Courier New", monospace;
+    --font-title: "NZBZ", "HYWenHei", "Microsoft YaHei", sans-serif;
+    --font-body: "HYWenHei", "Microsoft YaHei", sans-serif;
 }
-
-@font-face {
-    font-family: "huawen";
-    src: url("../../../font/华文中宋.TTF");
-}
-
 body {
     width: fit-content;
     margin: 0;
@@ -43,7 +32,7 @@ body {
         linear-gradient(180deg, rgba(244, 250, 244, 0.98), rgba(230, 241, 231, 0.96));
     background-size: cover;
     background-position: center;
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
     color: #2f4636;
     position: relative;
     overflow: hidden;
@@ -227,7 +216,7 @@ body {
 .power-display,
 .details-card-title,
 .equipment-name {
-    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: var(--font-title);
 }
 
 .player-name {
@@ -248,6 +237,7 @@ body {
 }
 
 .power-display {
+    font-family: var(--font-number), var(--font-title);
     display: inline-block;
     margin-top: 8px;
     padding: 7px 16px;
@@ -298,6 +288,7 @@ body {
     font-weight: bold;
     color: #ffffff;
     text-shadow: 0 1px 1px rgba(38, 53, 41, 0.6);
+    font-family: var(--font-number), var(--font-body);
 }
 
 .info-grid {
@@ -318,7 +309,7 @@ body {
 }
 
 .info-value {
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
     color: #2f4636;
 }
 
@@ -343,7 +334,7 @@ body {
     gap: 8px;
     margin-bottom: 8px;
     font-size: 16px;
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
 }
 
 .stat-line svg {
@@ -351,6 +342,11 @@ body {
     height: 18px;
     fill: #6c9470;
     flex-shrink: 0;
+}
+
+
+.stat-line sup {
+    font-family: var(--font-number), var(--font-body);
 }
 
 .equipment-grid {
@@ -376,7 +372,7 @@ body {
     font-size: 13px;
     line-height: 1.55;
     color: #2f4636;
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
 }
 
 .footer {

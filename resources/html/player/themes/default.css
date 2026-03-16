@@ -9,25 +9,14 @@
 }
 
 @font-face {
-    font-family: "HYWH";
-    src: url("../../../font/HYWH-65W.ttf");
-}
-
-@font-face {
     font-family: "HYWenHei";
     src: url("../../../font/HYWenHei-55W.ttf");
 }
-
-@font-face {
-    font-family: "LXGWWenKaiMonoLight";
-    src: url("../../../font/LXGWWenKaiMono-Light.ttf");
+:root {
+    --font-number: "tttgbnumber", "Consolas", "Courier New", monospace;
+    --font-title: "NZBZ", "HYWenHei", "Microsoft YaHei", sans-serif;
+    --font-body: "HYWenHei", "Microsoft YaHei", sans-serif;
 }
-
-@font-face {
-    font-family: "huawen";
-    src: url("../../../font/华文中宋.TTF");
-}
-
 body {
     width: fit-content;
     margin: 0;
@@ -40,7 +29,7 @@ body {
     background-image: url('../../../img/player_pifu/default.jpg');
     background-size: cover;
     background-position: center center;
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
     color: #4a2c1a;
 }
 
@@ -87,14 +76,14 @@ body {
 }
 
 .player-name {
-    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: var(--font-title);
     font-size: 32px;
     color: #6a3906;
     margin-top: 5px;
 }
 
 .player-title {
-    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: var(--font-title);
     font-size: 32px;
     color: #b8860b;
     margin-top: 8px;
@@ -109,7 +98,7 @@ body {
 
 .power-display {
     padding: 5px 20px;
-    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: var(--font-number), var(--font-title);
     font-size: 24px;
     background: linear-gradient(145deg, #c8a87e, #a88763);
     color: #fff;
@@ -164,6 +153,7 @@ body {
     font-weight: bold;
     text-shadow: 1px 1px 1px #000;
     z-index: 2;
+    font-family: var(--font-number), var(--font-body);
 }
 
 .info-grid {
@@ -187,7 +177,7 @@ body {
 }
 
 .info-value {
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
     color: #4a2c1a;
 }
 
@@ -205,7 +195,7 @@ body {
 }
 
 .details-card-title {
-    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: var(--font-title);
     font-size: 20px;
     text-align: center;
     color: #6a3906;
@@ -219,7 +209,7 @@ body {
     align-items: center;
     font-size: 16px;
     margin-bottom: 8px;
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
 }
 
 .stat-line svg {
@@ -227,6 +217,11 @@ body {
     height: 18px;
     margin-right: 8px;
     fill: #7a5533;
+}
+
+
+.stat-line sup {
+    font-family: var(--font-number), var(--font-body);
 }
 
 .equipment-grid {
@@ -244,7 +239,7 @@ body {
 }
 
 .equipment-name {
-    font-family: "NZBZ", "LXGWWenKaiMonoLight", sans-serif;
+    font-family: var(--font-title);
     font-size: 16px;
     color: #6a3906;
     margin-bottom: 5px;
@@ -259,7 +254,7 @@ body {
     font-size: 13px;
     color: #4a2c1a;
     line-height: 1.5;
-    font-family: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    font-family: var(--font-body);
 }
 
 .footer {
