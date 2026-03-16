@@ -16,13 +16,13 @@
 }
 
 @font-face {
-    font-family: "HYWenHei";
-    src: url("../../../font/HYWenHei-55W.ttf");
+    font-family: "LXGWWenKaiMonoLight";
+    src: url("../../../font/LXGWWenKaiMono-Light.ttf");
 }
 :root {
     --font-number: "tttgbnumber", "Consolas", "Courier New", monospace;
-    --font-title: "NZBZ", "HYWenHei", "Microsoft YaHei", sans-serif;
-    --font-body: "HYWenHei", "Microsoft YaHei", sans-serif;
+    --font-title: "NZBZ", "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
+    --font-body: "LXGWWenKaiMonoLight", "Microsoft YaHei", sans-serif;
 }
 /* --- 基础样式 --- */
 body {
