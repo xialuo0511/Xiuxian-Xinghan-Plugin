@@ -9,25 +9,17 @@ import puppeteer from 'puppeteer';
 import template from 'art-template';
 import fs from 'fs';
 import path from 'path';
-import { pathToFileURL } from 'url';
 
 // 插件根目录
 const PLUGIN_ROOT = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
 const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
 
-const FONT_EXTENSIONS = new Set(['.ttf', '.otf', '.woff', '.woff2', '.eot']);
-const USE_FILE_URL_FOR_FONTS = process.env.XIUXIAN_FONT_FILE_URL === '1';
-
-function getExtFromUrl(urlLike = '') {
-    const clean = String(urlLike).split('?')[0].split('#')[0];
-    return path.extname(clean).toLowerCase();
-}
-
-function isFontAsset(urlLike = '', realPath = '') {
-    return FONT_EXTENSIONS.has(getExtFromUrl(realPath || urlLike));
-}
-
-function resolveLocalAssetPath(fileUrl, baseDir) {
+/**
+ * 读取本地文件并转为Base64 Data URI
+ * @param {string} fileUrl file://开头的路径
+ * @returns {string} base64 data uri
+ */
+function getBase64FromUrl(fileUrl, baseDir) {
     try {
         let realPath = fileUrl;
 
@@ -40,22 +32,8 @@ function resolveLocalAssetPath(fileUrl, baseDir) {
         }
 
         realPath = realPath.replace(/['"]/g, '');
-        if (!fs.existsSync(realPath)) return null;
-        return realPath;
-    } catch {
-        return null;
-    }
-}
 
-/**
- * 读取本地文件并转为Base64 Data URI
- * @param {string} fileUrl file://开头的路径
- * @returns {string} base64 data uri
- */
-function getBase64FromUrl(fileUrl, baseDir) {
-    try {
-        const realPath = resolveLocalAssetPath(fileUrl, baseDir);
-        if (!realPath) {
+        if (!fs.existsSync(realPath)) {
             return fileUrl;
         }
 
@@ -80,6 +58,7 @@ function getBase64FromUrl(fileUrl, baseDir) {
         return fileUrl;
     }
 }
+
 /**
  * 将HTML中的外部资源（CSS、图片）内联
  * @param {string} html 原始HTML
@@ -95,8 +74,14 @@ function inlineResources(html) {
         }
 
         try {
-            const cssPath = resolveLocalAssetPath(url);
-            if (!cssPath) return match;
+            let cssPath = url;
+            if (url.startsWith('file://')) {
+                const filePath = url.replace('file://', '');
+                cssPath = process.platform === 'win32' && filePath.startsWith('/') ? filePath.slice(1) : filePath;
+                cssPath = decodeURIComponent(cssPath);
+            }
+
+            if (!fs.existsSync(cssPath)) return match;
 
             const cssDir = path.dirname(cssPath);
             let cssContent = fs.readFileSync(cssPath, 'utf-8');
@@ -104,16 +89,7 @@ function inlineResources(html) {
             // 递归处理CSS中的 url(...)，传入cssDir作为基准目录解析相对路径
             cssContent = cssContent.replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi, (match, assetUrl) => {
                 if (assetUrl.startsWith('data:')) return match;
-
-                const assetPath = resolveLocalAssetPath(assetUrl, cssDir);
-                if (!assetPath) return match;
-
-                // 某些环境中 setContent + file:// 字体可能加载失败，默认保持内联稳定性
-                if (USE_FILE_URL_FOR_FONTS && isFontAsset(assetUrl, assetPath)) {
-                    return `url("${pathToFileURL(assetPath).href}")`;
-                }
-
-                const base64 = getBase64FromUrl(assetPath);
+                const base64 = getBase64FromUrl(assetUrl, cssDir);
                 return `url("${base64}")`;
             });
 
@@ -127,10 +103,6 @@ function inlineResources(html) {
     // 2. 内联HTML中的内联样式图片 url(...)
     html = html.replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi, (match, imgUrl) => {
         if (imgUrl.startsWith('data:')) return match;
-        const assetPath = resolveLocalAssetPath(imgUrl);
-        if (USE_FILE_URL_FOR_FONTS && assetPath && isFontAsset(imgUrl, assetPath)) {
-            return `url("${pathToFileURL(assetPath).href}")`;
-        }
         // HTML中的相对路径通常相对于HTML文件位置，但这里我们在内存中，通常只能处理绝对路径或file协议
         const base64 = getBase64FromUrl(imgUrl);
         return `url("${base64}")`;
@@ -150,7 +122,6 @@ function inlineResources(html) {
 
 // 浏览器实例（单例）
 let browserInstance = null;
-let browserWarmupPromise = null;
 
 // 默认配置
 const defaultConfig = {
@@ -163,55 +134,6 @@ const defaultConfig = {
     selector: '#capture',    // 截图区域选择器
     debugSave: process.env.XIUXIAN_SCREENSHOT_DEBUG === '1' // 默认关闭调试落盘
 };
-
-async function warmupBrowser(browser) {
-    const start = Date.now();
-    const fontDir = path.join(PLUGIN_ROOT, 'resources', 'font');
-    const warmFonts = [
-        path.join(fontDir, 'tttgbnumber.ttf'),
-        path.join(fontDir, 'NZBZ.ttf'),
-        path.join(fontDir, 'LXGWWenKaiMono-Light.ttf')
-    ].filter(file => fs.existsSync(file));
-
-    if (warmFonts.length === 0) return;
-
-    let page = null;
-    try {
-        page = await browser.newPage();
-        await page.setViewport({
-            width: 64,
-            height: 64,
-            deviceScaleFactor: 1
-        });
-
-        const css = warmFonts.map((fontFile, i) =>
-            `@font-face{font-family:"WarmFont${i}";src:url("${pathToFileURL(fontFile).href}")}`
-        ).join('\n');
-
-        const text = '字体预热 Warmup 1234567890';
-        const bodyFont = warmFonts.length > 0 ? '"WarmFont0", sans-serif' : 'sans-serif';
-
-        const html = `<!doctype html><html><head><meta charset="utf-8"><style>${css}body{font-family:${bodyFont};font-size:16px;}</style></head><body>${text}</body></html>`;
-        await page.setContent(html, {
-            waitUntil: 'domcontentloaded',
-            timeout: 5000
-        });
-
-        const warmJobs = warmFonts.map((_, i) => `16px "WarmFont${i}"`);
-        await page.evaluate(async (jobs) => {
-            await Promise.all(jobs.map(job => document.fonts.load(job)));
-            await document.fonts.ready;
-        }, warmJobs).catch(() => { });
-
-        console.log(`[Screenshot] 浏览器字体预热完成 (${Date.now() - start}ms)`);
-    } catch (error) {
-        console.warn(`[Screenshot] 浏览器字体预热失败: ${error.message}`);
-    } finally {
-        if (page) {
-            await page.close().catch(() => { });
-        }
-    }
-}
 
 /**
  * 获取浏览器实例（单例模式）
@@ -242,13 +164,10 @@ async function getBrowser() {
             ]
         });
 
-        browserWarmupPromise = warmupBrowser(browserInstance).catch(() => { });
-
         // 监听浏览器断开事件
         browserInstance.on('disconnected', () => {
             console.log('[Screenshot] 浏览器实例已断开');
             browserInstance = null;
-            browserWarmupPromise = null;
         });
     }
     return browserInstance;
@@ -261,7 +180,6 @@ export async function closeBrowser() {
     if (browserInstance) {
         await browserInstance.close();
         browserInstance = null;
-        browserWarmupPromise = null;
         console.log('[Screenshot] 浏览器实例已关闭');
     }
 }
@@ -324,7 +242,6 @@ export async function screenshot(name, options = {}) {
         // 1. 获取浏览器实例
         const browser = await getBrowser();
         page = await browser.newPage();
-        await page.setCacheEnabled(true);
 
         // 2. 设置视口
         await page.setViewport({
