@@ -156,6 +156,11 @@ import path from 'path';
 const PLUGIN_ROOT = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
 const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
 
+function isRecoverableCustomScreenshotError(error) {
+  const message = String(error?.message || '');
+  return /ProtocolError|Target closed|Session closed|Execution context was destroyed|Most likely the page has been closed|timed out/i.test(message);
+}
+
 /**
  * 统一截图接口
  *
@@ -192,6 +197,18 @@ async function screenshot(name, options = {}) {
     const result = await customScreenshot(name, options);
     return result;
   } catch (error) {
+    if (isRecoverableCustomScreenshotError(error)) {
+      console.warn(`[PuppeteerWrapper] 自定义截图遇到可恢复异常，重置浏览器后重试: ${error.message}`);
+      await closeBrowser().catch(() => { });
+
+      try {
+        return await customScreenshot(name, options);
+      } catch (retryError) {
+        console.warn(`[PuppeteerWrapper] 自定义截图重试失败，准备回退yunzai: ${retryError.message}`);
+        error = retryError;
+      }
+    }
+
     console.warn(`[PuppeteerWrapper] 自定义截图失败，回退yunzai: ${error.message}`);
 
     // 回退到yunzai官方截图

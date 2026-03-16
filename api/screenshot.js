@@ -135,6 +135,9 @@ const defaultConfig = {
     debugSave: process.env.XIUXIAN_SCREENSHOT_DEBUG === '1' // 默认关闭调试落盘
 };
 
+const BROWSER_PROTOCOL_TIMEOUT = Number(process.env.XIUXIAN_PROTOCOL_TIMEOUT || 30000);
+const PAGE_CLOSE_TIMEOUT = Number(process.env.XIUXIAN_PAGE_CLOSE_TIMEOUT || 2000);
+
 /**
  * 获取浏览器实例（单例模式）
  */
@@ -143,6 +146,7 @@ async function getBrowser() {
         console.log('[Screenshot] 启动浏览器实例...');
         browserInstance = await puppeteer.launch({
             headless: true,
+            protocolTimeout: BROWSER_PROTOCOL_TIMEOUT,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -173,14 +177,46 @@ async function getBrowser() {
     return browserInstance;
 }
 
+async function forceKillBrowser(browser, reason = '') {
+    const browserProcess = browser?.process?.();
+    if (browserProcess && !browserProcess.killed) {
+        browserProcess.kill('SIGKILL');
+        console.warn(`[Screenshot] 浏览器进程已强制结束${reason ? `: ${reason}` : ''}`);
+    }
+}
+
 /**
  * 关闭浏览器实例
  */
 export async function closeBrowser() {
-    if (browserInstance) {
-        await browserInstance.close();
-        browserInstance = null;
-        console.log('[Screenshot] 浏览器实例已关闭');
+    const browser = browserInstance;
+    browserInstance = null;
+
+    if (browser) {
+        try {
+            await Promise.race([
+                browser.close(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('browser.close timeout')), PAGE_CLOSE_TIMEOUT))
+            ]);
+            console.log('[Screenshot] 浏览器实例已关闭');
+        } catch (error) {
+            console.warn(`[Screenshot] 关闭浏览器实例失败: ${error.message}`);
+            await forceKillBrowser(browser, error.message);
+        }
+    }
+}
+
+async function closePageSafely(page, name) {
+    if (!page || page.isClosed()) return;
+
+    try {
+        await Promise.race([
+            page.close(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('page.close timeout')), PAGE_CLOSE_TIMEOUT))
+        ]);
+    } catch (error) {
+        console.warn(`[Screenshot] ${name}: 页面关闭失败，准备重置浏览器: ${error.message}`);
+        await closeBrowser().catch(() => { });
     }
 }
 
@@ -339,7 +375,7 @@ export async function screenshot(name, options = {}) {
     } finally {
         // 关闭页面
         if (page) {
-            await page.close().catch(() => { });
+            await closePageSafely(page, name);
         }
     }
 }
