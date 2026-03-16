@@ -135,7 +135,8 @@ const defaultConfig = {
     debugSave: process.env.XIUXIAN_SCREENSHOT_DEBUG === '1' // 默认关闭调试落盘
 };
 
-const BROWSER_PROTOCOL_TIMEOUT = Number(process.env.XIUXIAN_PROTOCOL_TIMEOUT || 30000);
+// `Runtime.callFunctionOn timed out` often happens on heavy templates when this is too low.
+const BROWSER_PROTOCOL_TIMEOUT = Number(process.env.XIUXIAN_PROTOCOL_TIMEOUT || 120000);
 const PAGE_CLOSE_TIMEOUT = Number(process.env.XIUXIAN_PAGE_CLOSE_TIMEOUT || 2000);
 
 /**
@@ -273,13 +274,17 @@ export async function screenshot(name, options = {}) {
     const config = { ...defaultConfig, ...options };
     const startTime = Date.now();
     let page = null;
+    let stage = 'init';
 
     try {
         // 1. 获取浏览器实例
+        stage = 'getBrowser';
         const browser = await getBrowser();
+        stage = 'newPage';
         page = await browser.newPage();
 
         // 2. 设置视口
+        stage = 'setViewport';
         await page.setViewport({
             width: 1200,
             height: 800,
@@ -287,6 +292,7 @@ export async function screenshot(name, options = {}) {
         });
 
         // 3. 渲染HTML模板
+        stage = 'renderTemplate';
         if (!config.tplFile) {
             throw new Error(`[Screenshot] ${name}: 未指定模板文件(tplFile)`);
         }
@@ -295,6 +301,7 @@ export async function screenshot(name, options = {}) {
 
         // 4. 内联资源（CSS & 图片）
         // 这一步将极其显著地提升加载速度，因为避开了文件加载等待
+        stage = 'inlineResources';
         let html = inlineResources(htmlRaw);
 
         // 4.5 向所有 font-family 声明末尾追加 emoji 字体
@@ -316,12 +323,14 @@ export async function screenshot(name, options = {}) {
         );
 
         // 5. 直接使用 setContent 加载
+        stage = 'setContent';
         await page.setContent(html, {
             waitUntil: 'domcontentloaded',
             timeout: 5000
         });
 
         // 5. 等待ready信号
+        stage = 'waitReady';
         try {
             await page.waitForSelector(config.readySelector, {
                 timeout: config.timeout
@@ -333,12 +342,14 @@ export async function screenshot(name, options = {}) {
         }
 
         // 6. 获取截图区域
+        stage = 'queryElement';
         const element = await page.$(config.selector);
         if (!element) {
             throw new Error(`[Screenshot] ${name}: 找不到截图区域 ${config.selector}`);
         }
 
         // 7. 截图
+        stage = 'takeScreenshot';
         const screenshotOptions = {
             type: config.imgType,
             encoding: 'binary'
@@ -363,6 +374,7 @@ export async function screenshot(name, options = {}) {
         console.log(`[Screenshot] ${name}: 截图完成 (${Date.now() - startTime}ms), 大小: ${(imgBuffer.length / 1024).toFixed(2)}KB`);
 
         // 8. 返回icqq兼容的消息段格式
+        stage = 'done';
         // yunzai使用全局segment对象，也可直接返回对象格式
         return {
             type: 'image',
@@ -370,7 +382,10 @@ export async function screenshot(name, options = {}) {
         };
 
     } catch (error) {
-        console.error(`[Screenshot] ${name}: 截图失败`, error);
+        console.error(
+            `[Screenshot] ${name}: 截图失败(stage=${stage}, elapsed=${Date.now() - startTime}ms)`,
+            error
+        );
         throw error;
     } finally {
         // 关闭页面
