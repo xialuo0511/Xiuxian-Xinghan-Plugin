@@ -16,6 +16,7 @@ const PLUGIN_ROOT = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin
 const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
 
 const FONT_EXTENSIONS = new Set(['.ttf', '.otf', '.woff', '.woff2', '.eot']);
+const USE_FILE_URL_FOR_FONTS = process.env.XIUXIAN_FONT_FILE_URL === '1';
 
 function getExtFromUrl(urlLike = '') {
     const clean = String(urlLike).split('?')[0].split('#')[0];
@@ -107,8 +108,8 @@ function inlineResources(html) {
                 const assetPath = resolveLocalAssetPath(assetUrl, cssDir);
                 if (!assetPath) return match;
 
-                // 字体资源不再内联base64，改为 file:// 引用，避免超大HTML导致渲染变慢
-                if (isFontAsset(assetUrl, assetPath)) {
+                // 某些环境中 setContent + file:// 字体可能加载失败，默认保持内联稳定性
+                if (USE_FILE_URL_FOR_FONTS && isFontAsset(assetUrl, assetPath)) {
                     return `url("${pathToFileURL(assetPath).href}")`;
                 }
 
@@ -127,7 +128,7 @@ function inlineResources(html) {
     html = html.replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi, (match, imgUrl) => {
         if (imgUrl.startsWith('data:')) return match;
         const assetPath = resolveLocalAssetPath(imgUrl);
-        if (assetPath && isFontAsset(imgUrl, assetPath)) {
+        if (USE_FILE_URL_FOR_FONTS && assetPath && isFontAsset(imgUrl, assetPath)) {
             return `url("${pathToFileURL(assetPath).href}")`;
         }
         // HTML中的相对路径通常相对于HTML文件位置，但这里我们在内存中，通常只能处理绝对路径或file协议
