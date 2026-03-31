@@ -1,6 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import * as fishingLogic from '../logic/fishing_logic.js';
-import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../api/puppeteer-wrapper.js';
 import Show from '../model/show.js';
 import path from 'path';
 import fs from 'fs';

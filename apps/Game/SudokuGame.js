@@ -1,5 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js'
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
+import puppeteer from "../../api/puppeteer-wrapper.js"
 import data from '../../model/XiuxianData.js'
 import Show from "../../model/show.js"
 import path from "path"

@@ -4,7 +4,7 @@ import config from "../../model/Config.js"
 import { timestampToTime, shijianc, exist_najie_thing, ForwardMsg, Add_najie_thing } from '../Xiuxian/xiuxian.js'
 
 //如需截图必须引入以下两库
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 /**
  * 作者：湖中屋

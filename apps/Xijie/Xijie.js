@@ -3,7 +3,7 @@ import fs from 'fs';
 import { __PATH } from '../Xiuxian/xiuxian.js';
 import path from 'path';
 import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import {
     existplayer,
     Read_player,

@@ -3,7 +3,7 @@ import data from '../../model/XiuxianData.js';
 import fs from 'fs';
 import path from 'path';
 import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import { __PATH, Locked_najie_thing, Read_yijie_beibao } from '../Xiuxian/xiuxian.js';
 import {
     yijie_existplayer,

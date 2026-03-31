@@ -26,7 +26,7 @@ import {
 import { get_yijie_player_img, get_ranking_xinghunbi_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 import Show from "../../model/show.js"
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
+import puppeteer from "../../api/puppeteer-wrapper.js"
 import { verc, Gulid2, Gulid } from '../../api/api.js'
 
 /**

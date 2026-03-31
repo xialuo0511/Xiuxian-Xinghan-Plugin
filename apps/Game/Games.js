@@ -18,7 +18,7 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js';
 import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 
 /**
  * 全局变量

@@ -6,7 +6,7 @@ import fs from "fs"
 import { existplayer, Write_player, isNotNull, exist_najie_thing, Add_najie_thing, Add_职业经验, Add_灵石, sleep, ForwardMsg } from '../Xiuxian/xiuxian.js'
 import { Read_player, __PATH } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js"
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
+import puppeteer from "../../api/puppeteer-wrapper.js"
 import { zd_battle } from "../Battle/Battle.js"
 import { sql_run, Gulid } from '../../api/api.js'
 

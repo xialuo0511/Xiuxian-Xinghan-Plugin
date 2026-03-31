@@ -5,7 +5,7 @@ import data from '../../model/XiuxianData.js'
 import fs from "fs"
 import { Read_player, existplayer, isNotNull, Add_灵石, Add_najie_thing } from '../Xiuxian/xiuxian.js'
 import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 
 //本模块由(qq:1695037643)和jio佬完成
 let WorldBOSSBattleCD = [];//CD

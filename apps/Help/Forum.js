@@ -12,7 +12,7 @@ import {
 } from "../Xiuxian/xiuxian.js"
 import { existplayer, Read_player, isNotNull, exist_najie_thing } from "../Xiuxian/xiuxian.js"
 import Show from "../../model/show.js"
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js"
+import puppeteer from "../../api/puppeteer-wrapper.js"
 /**
  * 冒险家协会byDD斩首(3196383818)
  */

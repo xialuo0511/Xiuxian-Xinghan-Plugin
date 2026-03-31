@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import * as partnerLogic from '../logic/partner_logic.js';
 import * as DAL from '../api/data-access.js';
-import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../api/puppeteer-wrapper.js';
 import Show from '../model/show.js';
 
 export class partner extends plugin {

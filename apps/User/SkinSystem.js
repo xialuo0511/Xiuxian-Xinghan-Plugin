@@ -68,7 +68,7 @@
  */
 
 import plugin from '../../../../lib/plugins/plugin.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 import * as SkinLogic from '../../logic/skin_logic.js';
 import * as DAL from '../../api/data-access.js';

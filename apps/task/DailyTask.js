@@ -1,6 +1,6 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import { getTaskRenderData } from '../../logic/daily_task_logic.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import path from 'path';
 
 export class DailyTask extends plugin {

@@ -1,6 +1,6 @@
 import plugin from "../../../../lib/plugins/plugin.js";
 import Show from "../../model/show.js";
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
+import puppeteer from "../../api/puppeteer-wrapper.js";
 import data from '../../model/XiuxianData.js'
 import { Read_yijie_player, __PATH } from "../Xiuxian/xiuxian.js"
 import { get_gongfa_img, get_danyao_img, get_wuqi_img, get_fabao_img, get_huju_img, get_daoju_img, get_XianChong_img, get_huanying_img } from '../ShowImeg/showData.js'

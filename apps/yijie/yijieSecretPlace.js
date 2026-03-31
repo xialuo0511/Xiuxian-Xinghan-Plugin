@@ -5,7 +5,7 @@ import config from "../../model/Config.js"
 import { __PATH, Read_player, yijie_existplayer, isNotNull, sleep, exist_najie_thing, Add_yijie_beibao_thing, Read_yijie_player, Add_星魂币, yijie_zhanlijisuan } from '../Xiuxian/xiuxian.js'
 import { exist_yijie_beibao_thing } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
+import puppeteer from "../../api/puppeteer-wrapper.js";
 import fs from "fs"
 
 /**

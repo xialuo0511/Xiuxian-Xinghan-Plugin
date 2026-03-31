@@ -1,5 +1,5 @@
 import plugin from '../../../../lib/plugins/plugin.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import customPuppeteer from '../../api/puppeteer-wrapper.js';
 import Help from '../../model/help.js';
 import Help1 from '../../model/xunbaohelp.js';

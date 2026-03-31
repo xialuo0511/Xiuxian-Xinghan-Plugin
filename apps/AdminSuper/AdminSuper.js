@@ -36,7 +36,7 @@ const require = createRequire(import.meta.url);
 const { execSync } = require('child_process');
 
 //如需截图必须引入以下两库
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 import { sql_run } from '../../api/api.js';
 import * as checkinLogic from '../../logic/checkin_logic.js';

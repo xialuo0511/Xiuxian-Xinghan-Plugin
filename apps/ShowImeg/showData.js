@@ -1,6 +1,6 @@
 import plugin from '../../../../lib/plugins/plugin.js';
 import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import customPuppeteer from '../../api/puppeteer-wrapper.js';
 import config from '../../model/Config.js';
 import Config from '../../model/Config.js';

@@ -5,7 +5,7 @@ import config from "../../model/Config.js"
 import { Read_player, existplayer, isNotNull, sleep, exist_najie_thing, Add_najie_thing, convert2integer } from '../Xiuxian/xiuxian.js'
 import { Add_灵石, Add_修为 } from '../Xiuxian/xiuxian.js'
 import Show from "../../model/show.js";
-import puppeteer from "../../../../lib/puppeteer/puppeteer.js";
+import puppeteer from "../../api/puppeteer-wrapper.js";
 
 import { Gulid } from '../../api/api.js'
 

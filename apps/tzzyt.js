@@ -2,7 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 
 import data from '../model/XiuxianData.js'
 //如需截图必须引入以下两库
-import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../api/puppeteer-wrapper.js';
 import Show from '../model/show.js';
 
 export class tzzyt extends plugin {

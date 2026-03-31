@@ -18,7 +18,7 @@ import { get_yijie_player_img, get_beibao_img } from '../ShowImeg/showData.js'
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 //如需截图必须引入以下两库
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 
 /**

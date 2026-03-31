@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import * as DAL from '../api/data-access.js';
 import { loadItemConfig } from '../model/ConfigLoader.js';
-import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../api/puppeteer-wrapper.js';
 import Show from '../model/show.js';
 import { runCombat } from '../logic/combat/CombatEngine.js';
 import fs from 'fs';

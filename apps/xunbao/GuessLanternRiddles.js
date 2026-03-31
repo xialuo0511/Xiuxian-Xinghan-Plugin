@@ -6,7 +6,7 @@ import { Add_najie_thing, isNotNull, ForwardMsg, Write_player, sleep, exist_naji
 import { __PATH } from "../Xiuxian/xiuxian.js"
 
 //如需截图必须引入以下两库
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import Show from '../../model/show.js';
 
 

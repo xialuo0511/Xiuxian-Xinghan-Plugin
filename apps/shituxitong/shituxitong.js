@@ -13,7 +13,7 @@ import {
 } from '../Xiuxian/xiuxian.js';
 import { Add_灵石, Add_修为, Add_血气 } from '../Xiuxian/xiuxian.js';
 import Show from '../../model/show.js';
-import puppeteer from '../../../../lib/puppeteer/puppeteer.js';
+import puppeteer from '../../api/puppeteer-wrapper.js';
 import data from '../../model/XiuxianData.js';
 import { Write_player, Add_najie_thing } from '../Xiuxian/xiuxian.js';
 let allaction = false; //全局状态判断
