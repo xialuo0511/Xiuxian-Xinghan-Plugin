@@ -14,7 +14,7 @@ activity:
 daily_rewards:
   items:
     - name: "血气瓶"
-      class: "道具"
+      class: "丹药"
       amount: 2
   resources:
     - name: "灵石"
@@ -29,7 +29,7 @@ rewards:
         class: "道具"
         amount: 1
       - name: "血气瓶"
-        class: "道具"
+        class: "丹药"
         amount: 5
 
   - days: 3
@@ -74,7 +74,7 @@ rewards:
         class: "道具"
         amount: 1
       - name: "七星玄元丹"
-        class: "道具"
+        class: "丹药"
         amount: 1
       - name: "柳烟问道"
         class: "称号"
