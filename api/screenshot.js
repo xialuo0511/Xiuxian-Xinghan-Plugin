@@ -139,7 +139,26 @@ const defaultConfig = {
 // Keep protocol timeout moderate to avoid a single stuck call blocking for too long.
 const BROWSER_PROTOCOL_TIMEOUT = Number(process.env.XIUXIAN_PROTOCOL_TIMEOUT || 60000);
 const PAGE_CLOSE_TIMEOUT = Number(process.env.XIUXIAN_PAGE_CLOSE_TIMEOUT || 2000);
+const ENABLE_FILE_RENDER = process.env.XIUXIAN_FILE_RENDER !== '0';
+// 兼容旧开关：历史上仅控制 player 的 file 渲染
 const ENABLE_PLAYER_FILE_RENDER = process.env.XIUXIAN_PLAYER_FILE_RENDER !== '0';
+const DEFAULT_FILE_RENDER_TEMPLATES = new Set([
+    'player',
+    'universal_battle_log',
+    'astral_combat_log',
+    'tiandibang_battle',
+    'battle'
+]);
+const FILE_RENDER_TEMPLATES = (() => {
+    const raw = process.env.XIUXIAN_FILE_RENDER_TEMPLATES;
+    if (!raw) return DEFAULT_FILE_RENDER_TEMPLATES;
+
+    const parsed = raw
+        .split(',')
+        .map(item => item.trim().toLowerCase())
+        .filter(Boolean);
+    return new Set(parsed.length > 0 ? parsed : [...DEFAULT_FILE_RENDER_TEMPLATES]);
+})();
 
 /**
  * 获取浏览器实例（单例模式）
@@ -273,8 +292,23 @@ function appendEmojiFallbackFonts(html) {
     );
 }
 
-function isPlayerTemplate(tplFile = '') {
-    return /[\\/]resources[\\/]html[\\/]player[\\/]/i.test(String(tplFile));
+function getTemplateName(tplFile = '') {
+    const tplPath = String(tplFile);
+    const match = tplPath.match(/[\\/]resources[\\/]html[\\/]([^\\/]+)[\\/]/i);
+    return match ? String(match[1]).toLowerCase() : '';
+}
+
+function shouldUseFileRender(tplFile = '') {
+    if (!ENABLE_FILE_RENDER) return false;
+
+    const templateName = getTemplateName(tplFile);
+    if (!templateName) return false;
+
+    if (templateName === 'player' && !ENABLE_PLAYER_FILE_RENDER) {
+        return false;
+    }
+
+    return FILE_RENDER_TEMPLATES.has(templateName);
 }
 
 /**
@@ -320,12 +354,12 @@ export async function screenshot(name, options = {}) {
         }
 
         const htmlRaw = renderTemplate(config.tplFile, options);
-        const usePlayerFileRender = ENABLE_PLAYER_FILE_RENDER && isPlayerTemplate(config.tplFile);
+        const useFileRender = shouldUseFileRender(config.tplFile);
         let pageLoaded = false;
 
-        if (usePlayerFileRender) {
+        if (useFileRender) {
             try {
-                // Player 页面资源体积很大，优先使用 file:// 临时页，避免 setContent 传输超大HTML。
+                // 大模板优先 file:// 临时页，避免 setContent 传输超大 HTML。
                 stage = 'writeTempHtml';
                 const tempDir = path.join(PLUGIN_ROOT, 'temp', 'rendered_html');
                 if (!fs.existsSync(tempDir)) {
