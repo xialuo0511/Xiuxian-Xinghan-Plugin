@@ -142,23 +142,6 @@ const PAGE_CLOSE_TIMEOUT = Number(process.env.XIUXIAN_PAGE_CLOSE_TIMEOUT || 2000
 const ENABLE_FILE_RENDER = process.env.XIUXIAN_FILE_RENDER !== '0';
 // 兼容旧开关：历史上仅控制 player 的 file 渲染
 const ENABLE_PLAYER_FILE_RENDER = process.env.XIUXIAN_PLAYER_FILE_RENDER !== '0';
-const DEFAULT_FILE_RENDER_TEMPLATES = new Set([
-    'player',
-    'universal_battle_log',
-    'astral_combat_log',
-    'tiandibang_battle',
-    'battle'
-]);
-const FILE_RENDER_TEMPLATES = (() => {
-    const raw = process.env.XIUXIAN_FILE_RENDER_TEMPLATES;
-    if (!raw) return DEFAULT_FILE_RENDER_TEMPLATES;
-
-    const parsed = raw
-        .split(',')
-        .map(item => item.trim().toLowerCase())
-        .filter(Boolean);
-    return new Set(parsed.length > 0 ? parsed : [...DEFAULT_FILE_RENDER_TEMPLATES]);
-})();
 
 /**
  * 获取浏览器实例（单例模式）
@@ -298,17 +281,30 @@ function getTemplateName(tplFile = '') {
     return match ? String(match[1]).toLowerCase() : '';
 }
 
+function injectBaseHref(html, tplFile = '') {
+    if (!tplFile) return html;
+    if (/<base\s+/i.test(html)) return html;
+
+    const tplDir = path.dirname(path.resolve(String(tplFile)));
+    const baseHref = pathToFileURL(`${tplDir}${path.sep}`).href;
+    const baseTag = `<base href="${baseHref}">`;
+
+    if (/<head[^>]*>/i.test(html)) {
+        return html.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`);
+    }
+
+    return `${baseTag}${html}`;
+}
+
 function shouldUseFileRender(tplFile = '') {
     if (!ENABLE_FILE_RENDER) return false;
 
     const templateName = getTemplateName(tplFile);
-    if (!templateName) return false;
-
     if (templateName === 'player' && !ENABLE_PLAYER_FILE_RENDER) {
         return false;
     }
 
-    return FILE_RENDER_TEMPLATES.has(templateName);
+    return true;
 }
 
 /**
@@ -366,7 +362,8 @@ export async function screenshot(name, options = {}) {
                     fs.mkdirSync(tempDir, { recursive: true });
                 }
 
-                const html = appendEmojiFallbackFonts(htmlRaw);
+                let html = appendEmojiFallbackFonts(htmlRaw);
+                html = injectBaseHref(html, config.tplFile);
                 tempHtmlPath = path.join(
                     tempDir,
                     `${name}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.html`
