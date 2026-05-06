@@ -1,0 +1,280 @@
+# 2026 端午入夏小游戏活动配置
+
+events:
+  - id: lixia_dew_2026
+    name: "立夏采露"
+    command: "#采露"
+    start_time: "2026-05-06 00:00:00"
+    end_time: "2026-05-16 23:59:59"
+    summary: "立夏初临，晨露含灵。每日入山采一盏灵露，积攒入夏机缘。"
+    play_hint: "发送 #采露 晨露 / #采露 花露 / #采露 灵露"
+    progress_name: "露华"
+    options:
+      - key: "晨露"
+        label: "晨露"
+        text: "你俯身拂开草叶，收得一盏清晨灵露。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 3000
+          - name: "修为"
+            class: "资源"
+            amount: 1800
+      - key: "花露"
+        label: "花露"
+        text: "花影摇曳，露珠落入玉瓶，暗香随行。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 4500
+      - key: "灵露"
+        label: "灵露"
+        text: "一缕灵光自叶脉浮起，你采得今日最清的一滴。"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 3200
+    milestones:
+      - days: 3
+        name: "露满青盏"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 8000
+      - days: 7
+        name: "立夏纳凉"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 12000
+      - days: 11
+        name: "青露成珠"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 20000
+
+  - id: xiaoman_field_2026
+    name: "小满育灵田"
+    command: "#育田"
+    start_time: "2026-05-17 00:00:00"
+    end_time: "2026-05-27 23:59:59"
+    summary: "小满未满，灵田待熟。每日照料灵田，等一场饱满收成。"
+    play_hint: "发送 #育田 浇灌 / #育田 除草 / #育田 施肥"
+    progress_name: "田契"
+    match_text: "今日田况正合此法，灵田长势更盛。"
+    match_rewards:
+      - name: "灵石"
+        class: "资源"
+        amount: 3000
+    options:
+      - key: "浇灌"
+        label: "浇灌"
+        text: "你引来一线灵泉，田垄间新苗舒展。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 4200
+      - key: "除草"
+        label: "除草"
+        text: "杂草尽去，灵苗得以吸纳日华。"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 2600
+      - key: "施肥"
+        label: "施肥"
+        text: "你撒下灵肥，土息渐厚，谷穗初成。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 3000
+          - name: "修为"
+            class: "资源"
+            amount: 1600
+    milestones:
+      - days: 3
+        name: "苗色渐深"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 8000
+      - days: 7
+        name: "小满未央"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 15000
+      - days: 11
+        name: "灵田初熟"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 24000
+
+  - id: mangzhong_grain_2026
+    name: "芒种问穗"
+    command: "#问穗"
+    start_time: "2026-05-28 00:00:00"
+    end_time: "2026-06-07 23:59:59"
+    summary: "芒种落籽，万物争时。每日择一枚灵种，问今日穗运。"
+    play_hint: "发送 #问穗 青芒 / #问穗 赤芒 / #问穗 金芒"
+    progress_name: "穗印"
+    options:
+      - key: "青芒"
+        label: "青芒"
+        text: "青芒入土，灵机清正，穗影微明。"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 3000
+      - key: "赤芒"
+        label: "赤芒"
+        text: "赤芒遇火，田畔暑气翻涌，生势极快。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 5000
+      - key: "金芒"
+        label: "金芒"
+        text: "金芒落定，穗铃轻响，似有丰年之兆。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 3500
+          - name: "修为"
+            class: "资源"
+            amount: 1800
+    milestones:
+      - days: 3
+        name: "一穗初成"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 9000
+      - days: 7
+        name: "芒种知时"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 14000
+      - days: 11
+        name: "金穗满袖"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 26000
+
+  - id: meiyu_lotus_2026
+    name: "梅雨听荷"
+    command: "#听荷"
+    start_time: "2026-06-08 00:00:00"
+    end_time: "2026-06-18 23:59:59"
+    summary: "梅雨连山，荷声入梦。每日听一段雨荷，辨声得缘。"
+    play_hint: "发送 #听荷 听风 / #听荷 听雨 / #听荷 听蛙"
+    progress_name: "荷声"
+    match_text: "你听中了今日荷塘真声，雨意化作一缕清机。"
+    match_rewards:
+      - name: "修为"
+        class: "资源"
+        amount: 3000
+    options:
+      - key: "听风"
+        label: "听风"
+        text: "风过荷塘，叶影相叠，你于声中得一息清明。"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 2800
+      - key: "听雨"
+        label: "听雨"
+        text: "雨珠落荷，声声入定，灵台渐静。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 4600
+      - key: "听蛙"
+        label: "听蛙"
+        text: "蛙声忽近忽远，像是在替你报今日吉兆。"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 3200
+          - name: "修为"
+            class: "资源"
+            amount: 1700
+    milestones:
+      - days: 3
+        name: "荷雨初闻"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 9000
+      - days: 7
+        name: "梅雨入定"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 16000
+      - days: 11
+        name: "一池清音"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 22000
+
+  - id: duanyang_boat_2026
+    name: "端阳竞渡"
+    command: "#竞渡"
+    start_time: "2026-06-19 00:00:00"
+    end_time: "2026-06-30 23:59:59"
+    summary: "端阳鼓响，龙舟破浪。每日择一位职司，随舟争先。"
+    play_hint: "发送 #竞渡 击鼓 / #竞渡 划桨 / #竞渡 掌舵"
+    progress_name: "竞渡分"
+    options:
+      - key: "击鼓"
+        label: "击鼓"
+        text: "鼓点如雷，众人齐心，龙舟一线破浪。"
+        score: 3
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 5200
+      - key: "划桨"
+        label: "划桨"
+        text: "你随浪起落，桨影连成一道白线。"
+        score: 2
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 3400
+      - key: "掌舵"
+        label: "掌舵"
+        text: "你稳住舟首，避开暗流，队伍顺势前冲。"
+        score: 2
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 3800
+          - name: "修为"
+            class: "资源"
+            amount: 1800
+    milestones:
+      - days: 3
+        name: "鼓响三通"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 12000
+      - days: 7
+        name: "竞渡争先"
+        rewards:
+          - name: "修为"
+            class: "资源"
+            amount: 18000
+      - days: 12
+        name: "端阳破浪"
+        rewards:
+          - name: "灵石"
+            class: "资源"
+            amount: 30000

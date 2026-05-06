@@ -80,7 +80,9 @@ export async function cleanupExpiredItems(task) {
           // 渔友商行购买记录 (包含eventKey，精确匹配)
           `XinghanXiuxian:fish_shop_history:${userId}:${eventKeyToClean}`,
           // 钓鱼冷却记录
-          `XinghanXiuxian:fishing_cd:${userId}`
+          `XinghanXiuxian:fishing_cd:${userId}`,
+          // 端午入夏小游戏进度记录
+          `XinghanXiuxian:SummerMiniEvent:${eventKeyToClean}:${userId}`
         ];
 
         const deletedCount = await redisClient.del(keysToDelete);

@@ -150,11 +150,20 @@
  */
 
 import { screenshot as customScreenshot, closeBrowser } from './screenshot.js';
-import yunzaiPuppeteer from '../../../lib/puppeteer/puppeteer.js';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 const PLUGIN_ROOT = path.join(process.cwd(), 'plugins', 'xiuxian-emulator-plugin');
 const HTML_ROOT = path.join(PLUGIN_ROOT, 'resources', 'html');
+let yunzaiPuppeteer = null;
+
+async function getYunzaiPuppeteer() {
+  if (yunzaiPuppeteer) return yunzaiPuppeteer;
+  const modulePath = path.join(process.cwd(), 'lib', 'puppeteer', 'puppeteer.js');
+  const module = await import(pathToFileURL(modulePath).href);
+  yunzaiPuppeteer = module.default || module;
+  return yunzaiPuppeteer;
+}
 
 function isRecoverableCustomScreenshotError(error) {
   const message = String(error?.message || '');
@@ -213,7 +222,8 @@ async function screenshot(name, options = {}) {
 
     // 回退到yunzai官方截图
     try {
-      return await yunzaiPuppeteer.screenshot(name, options);
+      const fallbackPuppeteer = await getYunzaiPuppeteer();
+      return await fallbackPuppeteer.screenshot(name, options);
     } catch (fallbackError) {
       console.error(`[PuppeteerWrapper] yunzai截图也失败: ${fallbackError.message}`);
       throw fallbackError;
@@ -231,7 +241,8 @@ async function screenshot(name, options = {}) {
  * @returns {Promise<any>} 图片消息段
  */
 async function screenshotLegacy(name, options = {}) {
-  return await yunzaiPuppeteer.screenshot(name, options);
+  const fallbackPuppeteer = await getYunzaiPuppeteer();
+  return await fallbackPuppeteer.screenshot(name, options);
 }
 
 // 导出兼容yunzai的接口

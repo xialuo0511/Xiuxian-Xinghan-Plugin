@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>端午入夏小游戏活动</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      width: fit-content;
+      margin: 0;
+      padding: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: transparent;
+    }
+
+    #capture {
+      width: 860px;
+      min-height: 620px;
+      padding: 30px;
+      color: #254034;
+      background:
+        linear-gradient(135deg, rgba(249, 255, 245, 0.94), rgba(229, 248, 238, 0.96)),
+        radial-gradient(circle at 12% 12%, rgba(112, 173, 94, 0.18), transparent 30%),
+        radial-gradient(circle at 84% 10%, rgba(44, 133, 112, 0.16), transparent 28%);
+      border: 2px solid rgba(63, 124, 88, 0.32);
+      border-radius: 18px;
+      box-shadow: 0 12px 36px rgba(27, 70, 54, 0.22);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 22px;
+      border-bottom: 1px solid rgba(62, 115, 91, 0.24);
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 38px;
+      line-height: 1.15;
+      color: #1d5b42;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      font-size: 17px;
+      color: #537262;
+    }
+
+    .stamp {
+      min-width: 178px;
+      align-self: flex-start;
+      padding: 12px 16px;
+      border: 1px solid rgba(28, 103, 73, 0.28);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.58);
+      color: #2a6a4e;
+      text-align: right;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .current {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.64);
+      border: 1px solid rgba(67, 128, 97, 0.24);
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+
+    .current-name {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      color: #1d5b42;
+      font-size: 29px;
+      font-weight: 700;
+    }
+
+    .command {
+      color: #8a4d12;
+      font-size: 20px;
+      white-space: nowrap;
+    }
+
+    .summary {
+      margin: 12px 0 14px;
+      font-size: 18px;
+      line-height: 1.7;
+      color: #3d5e4f;
+    }
+
+    .hint {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(244, 235, 196, 0.55);
+      color: #785115;
+      font-size: 16px;
+    }
+
+    .progress {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .progress-box {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(238, 250, 242, 0.8);
+      border: 1px solid rgba(73, 130, 98, 0.18);
+    }
+
+    .progress-label {
+      color: #6a7d71;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .progress-value {
+      color: #215d43;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .event-card {
+      min-height: 152px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(59, 113, 87, 0.2);
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .event-card.active {
+      border-color: rgba(34, 116, 78, 0.58);
+      background: rgba(221, 247, 229, 0.86);
+    }
+
+    .event-card.ended {
+      opacity: 0.58;
+    }
+
+    .event-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #245b43;
+      margin-bottom: 8px;
+    }
+
+    .event-time {
+      color: #65786e;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .event-command {
+      margin-top: 10px;
+      color: #8a4d12;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .milestones {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .milestone {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(73, 130, 98, 0.2);
+      color: #456556;
+      font-size: 14px;
+    }
+
+    .milestone.claimed {
+      background: rgba(44, 133, 112, 0.16);
+      color: #1d5b42;
+      font-weight: 700;
+    }
+
+    .empty {
+      padding: 26px;
+      background: rgba(255, 255, 255, 0.62);
+      border-radius: 12px;
+      color: #506f5e;
+      font-size: 20px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="capture">
+    <div class="header">
+      <div>
+        <h1 class="title">端午入夏小游戏</h1>
+        <div class="subtitle">5/6 至 6/30 连续开放，每日一局，累计领奖</div>
+      </div>
+      <div class="stamp">
+        <div>星瀚修仙</div>
+        <div>{{generatedAt}}</div>
+      </div>
+    </div>
+
+    {{if activeEvent}}
+    <section class="current">
+      <div class="current-name">
+        <span>{{activeEvent.name}}</span>
+        <span class="command">{{activeEvent.command}}</span>
+      </div>
+      <p class="summary">{{activeEvent.summary}}</p>
+      <div class="hint">{{activeEvent.play_hint}}</div>
+
+      {{if playerProgress}}
+      <div class="progress">
+        <div class="progress-box">
+          <div class="progress-label">累计参与</div>
+          <div class="progress-value">{{playerProgress.count}} 天</div>
+        </div>
+        <div class="progress-box">
+          <div class="progress-label">今日状态</div>
+          <div class="progress-value">{{playerProgress.playedToday ? '已完成' : '未完成'}}</div>
+        </div>
+        <div class="progress-box">
+          <div class="progress-label">活动积分</div>
+          <div class="progress-value">{{playerProgress.score}}</div>
+        </div>
+      </div>
+
+      <div class="milestones">
+        {{each playerProgress.milestones tier}}
+        <span class="milestone {{tier.claimed ? 'claimed' : ''}}">{{tier.days}}天 · {{tier.name}}{{tier.claimed ? ' ✓' : ''}}</span>
+        {{/each}}
+      </div>
+      {{/if}}
+    </section>
+    {{else}}
+    <section class="empty">
+      当前没有正在开放的入夏小游戏。
+      {{if nextEvent}}下一场【{{nextEvent.name}}】将在 {{nextEvent.start_time}} 开启。{{/if}}
+    </section>
+    {{/if}}
+
+    <div class="event-grid">
+      {{each events event}}
+      <div class="event-card {{event.state}}">
+        <div class="event-name">{{event.name}}</div>
+        <div class="event-time">{{event.start_time}}<br />{{event.end_time}}</div>
+        <div class="event-command">{{event.command}}</div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('capture').classList.add('ready');
+  </script>
+</body>
+
+</html>
